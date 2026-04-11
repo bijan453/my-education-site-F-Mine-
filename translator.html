@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Переводчик</title>
+<style>
+  @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1e1e2f, #3a3a6a);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  padding: 40px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(0,0,0,0.3);
+}
+
+h1 {
+  margin-bottom: 15px;
+  text-shadow: 0 0 15px #6c63ff;
+  font-size: 2rem;
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 5px #ffeb3b, 0 0 10px #ffeb3b; }
+  to { text-shadow: 0 0 20px #ffeb3b, 0 0 30px #ffeb3b; }
+}
+
+textarea {
+  width: 100%;
+  height: 120px;
+  border-radius: 12px;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  resize: none;
+  margin-bottom: 15px;
+  background: rgba(0,0,0,0.2);
+  color: white;
+  box-shadow: 0 0 10px #6c63ff;
+}
+
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 20px #ffeb3b, 0 0 30px #ffeb3b;
+}
+
+/* Новый стиль для select */
+select {
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  margin: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  background: rgba(255, 215, 0, 0.1); /* прозрачный золотой фон */
+  color: gold; /* текст золотой */
+  box-shadow: 0 0 10px #ffeb3b;
+  appearance: none;
+}
+
+select option {
+  background: rgba(30, 30, 47, 0.9); /* фон каждой опции */
+  color: gold; /* текст опции золотой */
+  padding: 8px;
+  text-shadow: 0 0 5px gold, 0 0 10px gold;
+}
+
+button {
+  padding: 12px 25px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  background: linear-gradient(135deg,#6c63ff,#4a47d1);
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 10px #6c63ff;
+  margin: 5px;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px #ffeb3b, 0 0 30px #ffeb3b;
+}
+
+.history {
+  margin-top: 20px;
+  max-height: 120px;
+  overflow-y: auto;
+  text-align: left;
+  font-size: 14px;
+  opacity: 0.8;
+  background: rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 10px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🌍 Переводчик</h1>
+
+  <textarea id="textInput" placeholder="Введите текст"></textarea>
+
+  <div>
+    <select id="fromLang">
+      <option value="auto">Определить язык</option>
+      <option value="ru">Русский</option>
+      <option value="en">Английский</option>
+      <option value="es">Испанский</option>
+      <option value="fr">Французский</option>
+      <option value="de">Немецкий</option>
+      <option value="it">Итальянский</option>
+    </select>
+
+    <button id="swapBtn">↔</button>
+
+    <select id="toLang">
+      <option value="en">Английский</option>
+      <option value="ru">Русский</option>
+      <option value="es">Испанский</option>
+      <option value="fr">Французский</option>
+      <option value="de">Немецкий</option>
+      <option value="it">Итальянский</option>
+    </select>
+  </div>
+
+  <button id="translateBtn">Перевести</button>
+  <button onclick="window.location.href='lobby.html'">⬅ Назад</button>
+
+  <textarea id="resultOutput" readonly placeholder="Результат перевода"></textarea>
+
+  <div class="history" id="historyBox">История переводов:</div>
+</div>
+
+<script>
+var translateBtn = document.getElementById('translateBtn');
+var swapBtn = document.getElementById('swapBtn');
+var fromLang = document.getElementById('fromLang');
+var toLang = document.getElementById('toLang');
+var textInput = document.getElementById('textInput');
+var resultOutput = document.getElementById('resultOutput');
+var historyBox = document.getElementById('historyBox');
+
+function addHistory(original, translated) {
+  var entry = document.createElement('div');
+  entry.textContent = original + ' → ' + translated;
+  historyBox.prepend(entry);
+}
+
+function translateText() {
+  var text = textInput.value.trim();
+  if (!text) { alert('Введите текст для перевода!'); return; }
+
+resultOutput.value = 'Перевод...';
+
+  var source = fromLang.value;
+  if (source === 'auto') source = 'ru'; // авто по умолчанию
+
+  var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) +
+            '&langpair=' + source + '|' + toLang.value;
+
+  fetch(url)
+  .then(function(response){ return response.json(); })
+  .then(function(data){
+    if (data.responseData && data.responseData.translatedText) {
+      resultOutput.value = data.responseData.translatedText;
+      addHistory(text, data.responseData.translatedText);
+    } else {
+      resultOutput.value = 'Ошибка перевода 😕 Попробуйте снова';
+    }
+  })
+  .catch(function(err){
+    console.error(err);
+    resultOutput.value = 'Ошибка перевода 😕 Попробуйте снова';
+  });
+}
+
+translateBtn.addEventListener('click', translateText);
+
+swapBtn.addEventListener('click', function(){
+  var tmp = fromLang.value;
+  fromLang.value = toLang.value;
+  toLang.value = tmp;
+
+  var tmpText = textInput.value;
+  textInput.value = resultOutput.value;
+  resultOutput.value = tmpText;
+});
+</script>
+</body>
+</html>
+

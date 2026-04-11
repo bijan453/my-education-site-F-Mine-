@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Математика</title>
+
+<style>
+  @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(135deg,#1e1e2f,#3a3a6a); color:white; text-align:center; transition:0.5s; }
+body.light { background:linear-gradient(135deg,#f5f5f5,#d0d0ff); color:#222; }
+
+.container { padding:20px; animation:fadeIn 0.8s ease; }
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(20px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+h1 { font-size:36px; margin-bottom:20px; }
+
+.user-info {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-bottom:20px;
+  flex-direction:column;
+}
+
+.user-info img {
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  cursor:pointer;
+  object-fit:cover;
+  margin-bottom:10px;
+}
+
+.user-info span {
+  font-weight:bold;
+  font-size:20px;
+}
+
+/* 🔥 Улучшенные кнопки */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 колонки */
+  gap: 20px;
+  margin-top: 20px;
+  justify-items: center;
+}
+
+button {
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #6c63ff;
+  color: white;
+  font-size: 18px;
+  transition: 0.3s;
+  width: 90%;         /* делаем длиннее */
+  max-width: 260px;   /* норм размер */
+}
+button:hover {
+  transform:scale(1.05) translateY(-3px);
+  box-shadow:0 5px 15px rgba(0,0,0,0.3);
+  background:#574bff;
+}
+
+input {
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  margin-top:15px;
+  font-size:18px;
+  width:80%;
+  max-width:300px;
+  text-align:center;
+}
+
+.task-box { margin-top:30px; }
+.result { margin-top:15px; font-size:20px; }
+.solution { margin-top:10px; opacity:0.8; }
+.progress { margin-top:10px; font-weight:bold; }
+
+.progress-bar {
+  width:80%;
+  height:15px;
+  background:#444;
+  margin:15px auto;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+#progressFill {
+  width:0%;
+  height:100%;
+  background:#ffcc00;
+  transition:0.5s;
+}
+
+.hidden { display:none; }
+
+.footer {
+  margin-top:40px;
+  padding:15px;
+  font-size:16px;
+  opacity:0.8;
+}
+
+.footer.dark-glow p {
+  text-shadow:0 0 10px #6c63ff;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div class="user-info">
+  <img id="avatar" src="default-avatar.png">
+  <span id="nickname">Пользователь</span>
+</div>
+
+<h1>📚 Математика</h1>
+
+<div id="grades">
+  <h2>Выбери класс</h2>
+  <div class="grid">
+    <button onclick="selectGrade('7')">7 класс</button>
+    <button onclick="selectGrade('9')">9 класс</button>
+    <button onclick="selectGrade('8')">8 класс</button>
+     <button onclick="selectGrade('10')">10 класс</button>
+  </div>
+
+  <div style="margin-top:20px;">
+  <button onclick="toggleTheme()">🌓 Сменить тему</button>
+</div>
+</div>
+
+<div id="topics" class="hidden">
+  <h2>Выбери тему</h2>
+
+  <div class="grid">
+    <button onclick="startTopic('linear')">Линейные</button>
+    <button onclick="startTopic('equations')">Уравнения</button>
+    <button onclick="startTopic('fractions')">Дроби</button>
+    <button onclick="startTopic('powers')">Степени</button>
+    <button onclick="startTopic('roots')">Корни</button>
+    <button onclick="startTopic('mixed')">Смешанные</button>
+  </div>
+
+  <div style="margin-top:20px;">
+  <button onclick="backToGrades()">⬅ Назад</button>
+</div>
+</div>
+
+<div id="tasks" class="hidden">
+  <div class="progress" id="progress"></div>
+  <div class="progress-bar"><div id="progressFill"></div></div>
+
+  <p id="question"></p>
+  <input id="answer">
+
+  <br>
+  <button onclick="checkAnswer()">Проверить</button>
+  <button onclick="showHint()">💡 Подсказка</button>
+  <button id="nextBtn" class="hidden" onclick="nextTask()">Далее</button>
+
+  <div class="result" id="result"></div>
+  <div class="solution" id="solution"></div>
+
+ <div style="margin-top:20px;">
+  <button onclick="backToTopics()">⬅ Назад</button>
+</div>
+</div>
+
+</div>
+
+<script>
+// пользователь
+let user = JSON.parse(localStorage.getItem('userData')) || {nickname:'Пользователь', avatar:'default-avatar.png'};
+document.getElementById('nickname').innerText = user.nickname;
+document.getElementById('avatar').src = user.avatar;
+
+// логика
+let tasks=[], index=0, currentTopic='', currentClass='7';
+function selectGrade(c){
+  currentClass=c;
+  document.getElementById('grades').classList.add('hidden');
+  document.getElementById('topics').classList.remove('hidden');
+}
+
+function backToGrades(){
+  document.getElementById('topics').classList.add('hidden');
+  document.getElementById('grades').classList.remove('hidden');
+}
+
+function backToTopics(){
+  document.getElementById('tasks').classList.add('hidden');
+  document.getElementById('topics').classList.remove('hidden');
+}
+
+// генерация задач
+function generateTasks(topic){
+  let arr=[];
+
+  for(let i=0;i<10;i++){
+
+    let a=Math.floor(Math.random()*10+1);
+    let b=Math.floor(Math.random()*10+1);
+
+    // --- 7 класс ---
+    if(currentClass==='7'){
+      if(topic==='linear') arr.push({q:a+'x + '+b+' = 0', a:(-b/a).toString(), s:'x=-b/a'});
+      if(topic==='equations') arr.push({q:a+'x = '+(a*b), a:b.toString(), s:'x='+b});
+      if(topic==='fractions') arr.push({q:a+'/10 + '+b+'/10', a:(a+b)+'/10', s:'Сложи'});
+      if(topic==='powers') arr.push({q:a+'²', a:(a*a).toString(), s:'Квадрат'});
+      if(topic==='roots') arr.push({q:'√'+(a*a), a:a.toString(), s:'Корень'});
+      if(topic==='mixed') arr.push({q:a+'x-'+b+'='+a*b, a:((a*b+b)/a).toString(), s:'Реши'});
+    }
+
+    // --- 8 класс ---
+    if(currentClass==='8'){
+      if(topic==='linear') arr.push({q:a+'x + '+b+' = '+(a*b), a:((a*b-b)/a).toString(), s:'Реши'});
+      if(topic==='equations') arr.push({q:a+'x - '+b+' = '+(a*b), a:((a*b+b)/a).toString(), s:'Реши'});
+      if(topic==='fractions') arr.push({q:a+'/3 + '+b+'/4', a:(a*4+b*3)+'/12', s:'Общий знаменатель'});
+      if(topic==='powers') arr.push({q:a+'³', a:(a*a*a).toString(), s:'Куб'});
+      if(topic==='roots') arr.push({q:'√'+(a*a*4), a:(a*2).toString(), s:'Корень'});
+      if(topic==='mixed') arr.push({q:a+'x + '+b+' = '+(a*b+5), a:((a*b+5-b)/a).toString(), s:'Реши'});
+    }
+
+    // --- 9 и 10 класс ---
+    if(currentClass==='9' || currentClass==='10'){
+      if(topic==='linear') arr.push({q:a+'x + '+b+' = '+(a*b+10), a:((a*b+10-b)/a).toString(), s:'Реши'});
+      if(topic==='equations') arr.push({q:'x² - '+(a+b)+'x + '+(a*b)+' = 0', a:a+' '+b, s:'Корни'});
+      if(topic==='fractions') arr.push({q:a+'/5 + '+b+'/7', a:(a*7+b*5)+'/35', s:'Общий знаменатель'});
+      if(topic==='powers') arr.push({q:a+'^3 + '+b+'^2', a:(a*a*a + b*b).toString(), s:'Посчитай'});
+      if(topic==='roots') arr.push({q:'√'+(a*a*9), a:(a*3).toString(), s:'Корень'});
+      if(topic==='mixed') arr.push({q:a+'x² - '+b+' = 0', a:Math.sqrt(b/a).toString(), s:'Корень'});
+    }
+
+  }
+
+  return arr;
+}
+function startTopic(topic){
+  currentTopic=topic;
+  document.getElementById('topics').classList.add('hidden');
+  document.getElementById('tasks').classList.remove('hidden');
+  tasks=generateTasks(topic);
+  index=0;
+  loadTask();
+}
+
+function loadTask(){
+  let t=tasks[index];
+  document.getElementById('question').innerText=t.q;
+  document.getElementById('answer').value='';
+  document.getElementById('result').innerText='';
+  document.getElementById('solution').innerText='';
+  document.getElementById('nextBtn').classList.add('hidden');
+
+  document.getElementById('progress').innerText='Задание '+(index+1)+' / '+tasks.length;
+  document.getElementById('progressFill').style.width=((index+1)/tasks.length*100)+'%';
+}
+
+function normalize(str){ return str.replace(/\s+/g,''); }
+
+function checkAnswer(){
+  let userAns = normalize(document.getElementById('answer').value);
+  let correct = normalize(tasks[index].a);
+
+  if(userAns === correct){
+    document.getElementById('result').innerText='✅ Правильно!';
+    document.getElementById('nextBtn').classList.remove('hidden');
+
+    // --- фикс прогресса ---
+    let currentUser = localStorage.getItem('currentUser') || 'guest';
+
+    let key = currentUser+'_math'+currentClass;
+    let data = JSON.parse(localStorage.getItem(key)) || {};
+
+    // отмечаем тему как пройденную
+    data[currentTopic] = true;
+
+    // считаем %
+    let totalTopics = 6;
+    let done = Object.keys(data).length;
+    let percent = Math.round((done / totalTopics) * 100);
+
+    localStorage.setItem(key, JSON.stringify(data));
+    localStorage.setItem(currentUser+'_math'+currentClass+'_percent', percent);
+
+  } else {
+    document.getElementById('result').innerText='❌ Неправильно';
+    document.getElementById('solution').innerText='Решение: '+tasks[index].s;
+  }
+}
+function showHint(){
+  document.getElementById('solution').innerText=tasks[index].s;
+}
+
+function nextTask(){
+  if(index<tasks.length-1){
+    index++;
+    loadTask();
+  } else {
+    alert('🎉 Завершено!');
+    backToTopics();
+  }
+}
+
+function toggleTheme(){
+  document.body.classList.toggle('light');
+}
+</script>
+
+</body>
+</html>

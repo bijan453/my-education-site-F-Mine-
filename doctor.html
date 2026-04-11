@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤖 Научный Бот</title>
+<style>
+  @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.container {
+  width:90%;
+  max-width:600px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  padding:30px;
+  border-radius:20px;
+  box-shadow:0 0 30px rgba(0,0,0,0.3);
+}
+h1 {
+  text-align:center;
+  font-size:2.5rem;
+  margin-bottom:10px;
+}
+#chat {
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:12px;
+  padding:10px;
+  height:400px;
+  overflow-y:auto;
+  margin-bottom:15px;
+  background: rgba(0,0,0,0.1);
+}
+.message {
+  margin:5px 0;
+}
+.user { color:#6c63ff; }
+.bot { color:#ffd700; }
+input { width:70%; padding:10px; border-radius:10px; border:none; margin-right:5px; font-size:16px;}
+button { padding:10px 15px; border-radius:10px; border:none; background:#6c63ff; color:white; cursor:pointer; margin:2px;}
+.thinking { display:inline-block; }
+.dot {
+  display:inline-block;
+  width:18px; height:18px;
+  background:gray;
+  border-radius:50%;
+  margin:0 3px;
+  animation:bounce 1s infinite;
+}
+.dot:nth-child(2) { animation-delay:0.2s; }
+.dot:nth-child(3) { animation-delay:0.4s; }
+@keyframes bounce {
+  0%,80%,100% { transform:scale(0); }
+  40% { transform:scale(1); }
+}
+.language-select { margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🤖 Научный Бот</h1>
+<div class="language-select">
+  <button id="btnRU" onclick="setLang('RU')">RU</button>
+  <button id="btnEN" onclick="setLang('EN')">EN</button>
+</div>
+<div id="chat"></div>
+<input id="userInput" placeholder="Введите вопрос">
+<button id="sendBtn" onclick="sendMessage()">Отправить</button>
+<button id="voiceBtn" onclick="startVoice()">🎤 Говорить</button>
+<button id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
+</div>
+
+<script>
+var chat = document.getElementById('chat');
+var lang='RU';
+var recognition;
+var placeholders={'RU':'Введите вопрос','EN':'Enter your question'};
+var sendBtnTexts={'RU':'Отправить','EN':'Send'};
+var exitBtnTexts={'RU':'⬅ Выйти в лобби','EN':'⬅ Back to lobby'};
+var voiceBtnTexts={'RU':'🎤 Говорить','EN':'🎤 Speak'};
+
+function setLang(l){
+  lang=l;
+  document.getElementById('userInput').placeholder = placeholders[l];
+  document.getElementById('sendBtn').textContent = sendBtnTexts[l];
+  document.getElementById('exitBtn').textContent = exitBtnTexts[l];
+  document.getElementById('voiceBtn').textContent = voiceBtnTexts[l];
+  addMessage('Система', (l==='RU'?'Язык установлен на русский':'Language set to English'), 'bot');
+}
+
+function goLobby(){ window.location.href='lobby.html'; }
+
+function addMessage(sender,text,cls){
+  var div=document.createElement('div');
+  div.classList.add('message',cls);
+  div.textContent=sender+': '+text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function showThinking(){
+  var thinking=document.createElement('div');
+  thinking.id='thinking';
+  thinking.classList.add('thinking');
+  for(var i=0;i<3;i++){
+    var dot=document.createElement('div');
+    dot.classList.add('dot');
+    thinking.appendChild(dot);
+  }
+  chat.appendChild(thinking);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function hideThinking(){ var t=document.getElementById('thinking'); if(t) t.remove(); }
+
+function sendMessage(){
+  var input=document.getElementById('userInput');
+  var text=input.value.trim();
+  if(text==='') return;
+
+  addMessage('Вы',text,'user');
+  input.value='';
+  showThinking();
+  setTimeout(function(){
+    hideThinking();
+    getBotResponse(text).then(function(response){
+      addMessage('Бот',response,'bot');
+    });
+  },500);
+}
+// Голосовой ввод
+function startVoice(){
+  if(!('webkitSpeechRecognition' in window)){
+    alert('Ваш браузер не поддерживает голосовой ввод');
+    return;
+  }
+  recognition=new webkitSpeechRecognition();
+  recognition.lang=(lang==='RU'?'ru-RU':'en-US');
+  recognition.onresult=function(event){
+    var text=event.results[0][0].transcript;
+    document.getElementById('userInput').value=text;
+    sendMessage();
+  };
+  recognition.start();
+}
+
+// --- Умный бот ---
+async function getBotResponse(text){
+  // Проверка языка
+  var isEnglish = lang==='EN';
+
+  // --- Простые приветствия ---
+  var greetings={'привет':'Здравствуйте','hello':'Hello','hi':'Hello'};
+  for(var key in greetings){
+    if(text.toLowerCase().includes(key)) return greetings[key];
+  }
+
+  // --- Наука: физика, химия, биология ---
+  var knowledge = [
+  // --- Физика ---
+  {keywords:['первый закон ньютона','закон инерции','first law newton'], answerRU:'Первый закон Ньютона: тело сохраняет состояние покоя или равномерного движения, если на него не действуют силы.', answerEN:'Newton\'s first law: an object remains at rest or in uniform motion unless acted upon by a force.'},
+  {keywords:['второй закон ньютона','f=ma','second law newton'], answerRU:'Второй закон Ньютона: F = m * a, сила равна массе умноженной на ускорение.', answerEN:'Newton\'s second law: F = m * a, force equals mass times acceleration.'},
+  {keywords:['третий закон ньютона','action reaction','third law newton'], answerRU:'Третий закон Ньютона: на каждое действие есть равное и противоположное противодействие.', answerEN:'Newton\'s third law: For every action, there is an equal and opposite reaction.'},
+  {keywords:['скорость','velocity','v'], answerRU:'Скорость — это изменение положения тела за единицу времени.', answerEN:'Velocity is the change in position of an object per unit time.'},
+  {keywords:['ускорение','acceleration','a'], answerRU:'Ускорение — это изменение скорости тела за единицу времени.', answerEN:'Acceleration is the change in velocity per unit time.'},
+  {keywords:['сила','force','f'], answerRU:'Сила — это воздействие, которое изменяет движение тела.', answerEN:'Force is an interaction that changes the motion of an object.'},
+  {keywords:['работа','work','w'], answerRU:'Работа = сила * путь * cos(угол).', answerEN:'Work = force * distance * cos(angle).'},
+  {keywords:['энергия','energy','e'], answerRU:'Энергия — способность тела совершать работу.', answerEN:'Energy is the ability of an object to do work.'},
+  {keywords:['мощность','power','p'], answerRU:'Мощность = работа / время.', answerEN:'Power = work / time.'},
+  
+  // --- Химия ---
+  {keywords:['атом','atom'], answerRU:'Атом — это наименьшая частица химического элемента, сохраняющая его свойства.', answerEN:'Atom is the smallest particle of a chemical element that retains its properties.'},
+  {keywords:['молекула','molecule'], answerRU:'Молекула — частица вещества, состоящая из двух или более атомов, соединённых химической связью.', answerEN:'A molecule is a particle made of two or more atoms bonded together.'},
+  {keywords:['вода','h2o','water'], answerRU:'H₂O — химическая формула воды.', answerEN:'H₂O is the chemical formula of water.'},
+  {keywords:['углерод','carbon','c'], answerRU:'Углерод — химический элемент с атомным номером 6.', answerEN:'Carbon is the chemical element with atomic number 6.'},
+  {keywords:['кислота','acid'], answerRU:'Кислота — вещество, способное отдавать протон (H⁺).', answerEN:'Acid is a substance capable of donating a proton (H⁺).'},
+  {keywords:['основание','base','alkali'], answerRU:'Основание — вещество, способное принимать протон или отдавать OH⁻.', answerEN:'Base is a substance capable of accepting a proton or donating OH⁻.'},
+  {keywords:['соль','salt'], answerRU:'Соль — соединение кислоты и основания.', answerEN:'Salt is a compound of an acid and a base.'},
+  {keywords:['дрожжи','yeast'], answerRU:'Дрожжи — одноклеточные грибы.', answerEN:'Yeast are unicellular fungi.'},
+  
+  // --- Биология ---
+  {keywords:['клетка','cell'], answerRU:'Клетка — основная единица жизни.', answerEN:'Cell is the basic unit of life.'},
+  {keywords:['ядро','nucleus'], answerRU:'Ядро — органелла, содержащая генетический материал клетки.', answerEN:'Nucleus is the organelle containing the cell\'s genetic material.'},
+  {keywords:['митоз','mitosis'], answerRU:'Митоз — процесс деления клетки, при котором образуются две одинаковые клетки.', answerEN:'Mitosis is the process of cell division producing two identical cells.'},
+  {keywords:['мейоз','meiosis'], answerRU:'Мейоз — деление клеток для образования гамет с половинным числом хромосом.', answerEN:'Meiosis is cell division producing gametes with half the number of chromosomes.'},
+{keywords:['хлоропласт','chloroplast'], answerRU:'Хлоропласт — органелла, где происходит фотосинтез.', answerEN:'Chloroplast is the organelle where photosynthesis occurs.'},
+  {keywords:['митохондрия','mitochondria'], answerRU:'Митохондрия — органелла, производящая энергию в клетке.', answerEN:'Mitochondria are organelles producing energy in the cell.'},
+  {keywords:['фотосинтез','photosynthesis'], answerRU:'Фотосинтез — процесс образования органических веществ из углекислого газа и воды с помощью света.', answerEN:'Photosynthesis is the process of creating organic compounds from CO₂ and water using light.'},
+  {keywords:['дыхание','respiration'], answerRU:'Дыхание — процесс получения энергии из пищи с участием кислорода.', answerEN:'Respiration is the process of obtaining energy from food using oxygen.'},
+  
+  // --- Прочее ---
+  {keywords:['массa','mass','m'], answerRU:'Масса — количество вещества в теле.', answerEN:'Mass is the amount of matter in an object.'},
+  {keywords:['температура','temperature','t'], answerRU:'Температура — мера нагрева тела.', answerEN:'Temperature is a measure of how hot an object is.'}
+];
+
+
+  text = text.toLowerCase();
+
+  for(var i=0;i<knowledge.length;i++){
+    for(var j=0;j<knowledge[i].keywords.length;j++){
+      if(text.includes(knowledge[i].keywords[j])){
+        return isEnglish ? knowledge[i].answerEN : knowledge[i].answerRU;
+      }
+    }
+  }
+
+  // --- Если это простая арифметика ---
+  if(text.match(/[0-9\+\-\*\/\%]/)){
+    try{
+      var res=eval(text);
+      if(!isNaN(res)) return (isEnglish?'Solution: ':'Решение: ')+res;
+    }catch(e){}
+  }
+
+  return isEnglish?'Я могу объяснять физику, химию, биологию и решать задачи. Задайте вопрос.':'Я могу объяснять физику, химию, биологию и решать задачи. Задайте вопрос.';
+}
+</script>
+</body>
+</html>

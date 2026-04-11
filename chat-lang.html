@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💛 Языковой Бот Fmine Улучшенный</title>
+<style>
+  @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+* {margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+body {height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#1e1e2f,#3a3a6a);color:white;}
+body.light {background:linear-gradient(135deg,#f5f5f5,#d0d0ff);color:#222;}
+.container {width:90%;max-width:600px;background:rgba(255,255,255,0.05);backdrop-filter:blur(15px);padding:30px;border-radius:15px;}
+h1 {text-align:center;margin-bottom:15px;font-size:2.2rem;background:linear-gradient(90deg,gold,#ffd700,gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shine 2s infinite alternate;}
+@keyframes shine {0%{background-position:0%}100%{background-position:100%}}
+#chat {border:1px solid rgba(255,255,255,0.3);border-radius:10px;padding:10px;height:370px;overflow-y:auto;margin-bottom:10px;background:rgba(0,0,0,0.1);}
+.message {margin:5px 0;}
+.user {color:#6c63ff;}
+.bot {color:#ffd700;}
+input {width:65%;padding:10px;border-radius:8px;border:none;margin-right:5px;}
+button {padding:10px 15px;border-radius:8px;border:none;background:#6c63ff;color:white;cursor:pointer;margin:2px;}
+button:hover {opacity:0.9;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>💛 Языковой Бот Fmine</h1>
+<div id="chat"></div>
+<input id="userInput" placeholder="Напишите текст или тему для доклада">
+<button onclick="sendMessage()">Отправить</button>
+<button onclick="startVoice()">🎤 Голосовой ввод</button>
+<button onclick="speakLast()">🔊 Прочитать ответ</button>
+<button onclick="toggleTheme()">🌓 Сменить тему</button>
+</div>
+<script>
+let chat = document.getElementById('chat');
+let lastBotText = "";
+let chatHistory = [];
+
+function addMessage(sender,text,cls){
+  let div=document.createElement('div');
+  div.classList.add('message',cls);
+  div.textContent = sender+": "+text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  if(cls==='bot') lastBotText=text;
+  chatHistory.push({sender,text});
+}
+
+function sendMessage(){
+  let input=document.getElementById('userInput');
+  let text=input.value.trim();
+  if(!text) return;
+  addMessage('Вы',text,'user');
+  input.value='';
+  handleText(text);
+}
+
+async function handleText(text){
+  // доклад
+  if(/^доклад:/i.test(text) || /^report:/i.test(text)){
+    let topic=text.split(":")[1]?.trim();
+    if(!topic){addMessage('Бот','Укажите тему после двоеточия','bot');return;}
+    addMessage('Бот','Собираю доклад...','bot');
+    let report=await fetchWikiReport(topic);
+    let formatted=formatReport(report);
+    addMessage('Бот',formatted,'bot');
+    return;
+  }
+  // проверка текста
+  if(/^проверь текст:/i.test(text) || /^check text:/i.test(text)){
+    let txt=text.split(":")[1]?.trim();
+    if(!txt){addMessage('Бот','Напишите текст после ":"','bot');return;}
+    addMessage('Бот','Проверяю текст...','bot');
+    checkText(txt);
+    return;
+  }
+  // вопросы к докладу
+  if(/^вопрос:/i.test(text) || /^question:/i.test(text)){
+    let question=text.split(":")[1]?.trim();
+    if(!question){addMessage('Бот','Напишите вопрос после ":"','bot');return;}
+    addMessage('Бот','Обрабатываю вопрос...','bot');
+    answerQuestion(question);
+    return;
+  }
+  addMessage('Бот','Напишите "Доклад: тема", "Проверь текст: текст" или "Вопрос: вопрос"','bot');
+}
+
+async function fetchWikiReport(topic){
+  try{
+    let url="https://ru.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(topic);
+    let res=await fetch(url);
+    let data=await res.json();
+    if(data.extract){
+      return data.extract;
+    }
+    return 'Не удалось найти информацию по теме.';
+  }catch(e){return 'Ошибка при получении информации.';}
+}
+
+function formatReport(text){
+  let sentences=text.split('.');
+  let intro=sentences[0]+'.';
+  let main=text;
+  return `Введение:\n${intro}\n\nОсновная часть:\n${main}\n\nЗаключение:\nТема важна для изучения.`;
+}
+
+async function checkText(txt){
+  try{
+    let res=await fetch('https://api.languagetool.org/v2/check',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'text='+encodeURIComponent(txt)+'&language=ru'});
+    let data=await res.json();
+    if(data.matches.length===0){addMessage('Бот','Ошибок не найдено.','bot');}
+    else{
+      let out='';
+      data.matches.forEach((m,i)=>{
+        out+=(i+1)+'. '+m.message+'\n';
+        if(m.replacements.length>0){out+='Предложения: '+m.replacements.map(r=>r.value).join(', ')+'\n';}
+      });
+      addMessage('Бот',out,'bot');
+    }
+  }catch(e){addMessage('Бот','Ошибка проверки текста.','bot');}
+}
+
+function answerQuestion(q){
+  let lower=q.toLowerCase();
+  if(chatHistory.length>0){
+    let lastDoc=chatHistory.filter(m=>m.sender==='bot').pop()?.text||'';
+    addMessage('Бот','Ответ на вопрос: '+lastDoc,'bot');
+  } else {addMessage('Бот','Нет информации для ответа.','bot');}
+}
+
+function startVoice(){
+  if(!('webkitSpeechRecognition' in window)){alert('Голосовой ввод не поддерживается');return;}
+  let rec=new webkitSpeechRecognition();
+  rec.lang='ru-RU';
+  rec.onresult=e=>{document.getElementById('userInput').value=e.results[0][0].transcript;sendMessage();}
+  rec.start();
+}
+
+function speakLast(){
+  if(!lastBotText) return;
+  let u=new SpeechSynthesisUtterance(lastBotText);
+  speechSynthesis.speak(u);
+}
+
+function toggleTheme(){document.body.classList.toggle('light');}
+
+window.onload=()=>{addMessage('Бот','Привет! Используйте "Доклад: тема", "Проверь текст: текст" или "Вопрос: вопрос"','bot');}
+</script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>География: Логика и Вопросы</title>
+<style>
+/* Основные стили */
+@media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+body {
+  margin: 0; padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #1e1e2f;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+h1 { margin-bottom: 20px; color: gold; text-shadow: 0 0 8px gold; }
+
+/* Сетка уровней */
+.levels-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 90%;
+  max-width: 1300px;
+}
+
+/* Кнопки уровней */
+.level-btn {
+  padding: 25px;
+  background: linear-gradient(135deg, #ffd700, #ffb700);
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(255,215,0,0.7);
+  transition: 0.3s;
+}
+.level-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(255,215,0,1);
+}
+
+/* Модальное окно викторины */
+#quiz-modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex; justify-content: center; align-items: center;
+  opacity: 0; visibility: hidden;
+  transition: 0.5s;
+}
+#quiz-modal.open {
+  opacity: 1; visibility: visible;
+}
+
+/* Контейнер внутри модального окна */
+.quiz-box {
+  background: #2e2e4d;
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  position: relative;
+}
+
+/* Вопрос и кнопки */
+.quiz-question { font-size: 1.2rem; margin-bottom: 20px; }
+.quiz-options { display: flex; flex-direction: column; gap: 15px; }
+.quiz-option {
+  padding: 12px;
+  border: none; border-radius: 10px;
+  background: #555; color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.quiz-option:hover { transform: translateY(-2px); }
+.quiz-option.correct { background: #28a745; }
+.quiz-option.wrong { background: #dc3545; }
+
+/* Прогресс */
+.progress { height: 15px; background: #444; border-radius: 10px; margin-top: 20px; overflow: hidden; }
+.progress-bar { height: 100%; width: 0; background: gold; transition: 0.5s; }
+
+/* Кнопка закрытия */
+.close-btn {
+  position: absolute; top: 10px; right: 10px;
+  background: #ff6b6b; border: none;
+  color: white; padding: 6px 12px;
+  border-radius: 10px; cursor: pointer;
+  font-weight: bold;
+}
+
+/* Таблица рекордов */
+.record-board {
+  margin-top: 30px;
+  width: 90%;
+  max-width: 600px;
+  background: rgba(255,215,0,0.1);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 0 10px gold;
+}
+.record-board h2 { margin-bottom: 10px; color: gold; }
+.record-item { padding: 6px 0; border-bottom: 1px solid #444; }
+</style>
+</head>
+<body>
+
+<h1>🌍 Географический Квиз</h1>
+
+<div class="levels-container" id="levels-container"></div>
+
+<div id="quiz-modal">
+  <div class="quiz-box">
+    <button class="close-btn" id="closeQuiz">X</button>
+    <div class="quiz-question" id="quizQuestion"></div>
+    <div class="quiz-options" id="quizOptions"></div>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  </div>
+</div>
+
+<div class="record-board">
+  <h2>🏆 Таблица рекордов</h2>
+  <div id="recordsList"></div>
+</div>
+
+<audio id="clickSound" src="click.mp3"></audio>
+
+<script>
+// Проверка, чтобы звук точно работал
+const clickSound = document.getElementById("clickSound");
+function playClick(){ clickSound.currentTime = 0; clickSound.play(); }
+
+// ➤ Данные: 16 уровней × 4 вопроса = 64
+const levels = [
+  // ---- Уровень 1 ----
+  [
+    {q:"Столица Франции?", opts:["Париж","Берлин","Мадрид","Рим"], a:0},
+    {q:"Столица Италии?", opts:["Рим","Венеция","Милан","Флоренция"], a:0},
+    {q:"Столица Испании?", opts:["Севилья","Валенсия","Мадрид","Барселона"], a:2},
+    {q:"Столица Германии?", opts:["Берлин","Гамбург","Мюнхен","Кёльн"], a:0}
+  ],
+  // ---- Уровень 2 ----
+  [
+    {q:"Самая длинная река мира?", opts:["Нил","Амазонка","Миссисипи","Янцзы"], a:1},
+    {q:"Столица Египта?", opts:["Каир","Александрия","Луксор","Гиза"], a:0},
+    {q:"Самый большой океан?", opts:["Индийский","Атлантический","Тихий","Северный"], a:2},
+    {q:"Где находится Эверест?", opts:["Альпы","Гималаи","Анды","Кавказ"], a:1}
+  ],
+  // ---- Уровень 3 ----
+  [
+    {q:"Столица Японии?", opts:["Пекин","Сеул","Токио","Хиросима"], a:2},
+    {q:"Река в России?", opts:["Волга","Рейн","Темза","Амазонка"], a:0},
+    {q:"Озеро Байкал находится в?", opts:["Китай","Монголия","Россия","Канада"], a:2},
+    {q:"Страна‑архипелаг?", opts:["Индонезия","Чили","Монголия","Перу"], a:0}
+  ],
+  // ---- Уровень 4 ----
+  [
+    {q:"Столица Австралии?", opts:["Сидней","Мельбурн","Канберра","Перт"], a:2},
+    {q:"Столица Канады?", opts:["Торонто","Оттава","Ванкувер","Квебек"], a:1},
+    {q:"Страна с формой ботинка?", opts:["Франция","Италия","Германия","Испания"], a:1},
+    {q:"Где находится пустыня Сахара?", opts:["Африка","Азия","Америка","Австралия"], a:0}
+  ],
+  // ---- Уровень 5 ----
+  [
+    {q:"Столица США?", opts:["Нью‑Йорк","Лос‑Анджелес","Вашингтон","Чикаго"], a:2},
+    {q:"Река в Китае?", opts:["Ганг","Янцзы","Хуанхэ","Амур"], a:1},
+    {q:"Столица Индии?", opts:["Колката","Дели","Бангалор","Мумбаи"], a:1},
+    {q:"Страна с наибольшим населением?", opts:["Индия","США","Китай","Перу"], a:2}
+  ],
+  // ---- Уровень 6 ----
+  [
+    {q:"Где находятся Анды?", opts:["Африка","Азия","Южная Америка","Европа"], a:2},
+    {q:"Столица Бразилии?", opts:["Сан‑Паулу","Рио","Бразилиа","Салвадор"], a:2},
+    {q:"Какая пустыня самая большая?", opts:["Сахара","Гоби","Калахари","Намиб"], a:0},
+    {q:"Страна с тысячами озёр?", opts:["Финляндия","Россия","Канада","США"], a:0}
+  ],
+  // ---- Уровень 7 ----
+  [
+    {q:"Столица Великобритании?", opts:["Лондон","Манчестер","Глазго","Эдинбург"], a:0},
+    {q:"Самая высокая гора Европы?", opts:["Монблан","Эльбрус","Маттерхорн","Ушба"], a:1},
+    {q:"Где находится Йеллоустоун?", opts:["США","Канада","Мексика","Бразилия"], a:0},
+    {q:"Страна с формой сапога?", opts:["Испания","Италия","Греция","Турция"], a:1}
+  ],
+  // ---- Уровень 8 ----
+  [
+    {q:"Столица Мексики?", opts:["Гвадалахара","Канкун","Мехико","Монтеррей"], a:2},
+    {q:"Где находятся Пиренеи?", opts:["Испания и Франция","Италия","Португалия","Германия"], a:0},
+    {q:"Самая высокая точка Африки?", opts:["Килиманджаро","Эль‑Бурун","Кения","Рувензори"], a:0},
+    {q:"Океан возле Южной Америки?", opts:["Атлантический","Тихий","Индийский","Северный"], a:0}
+  ],
+  // ---- Уровень 9 ----
+  [
+    {q:"Столица Китая?", opts:["Шанхай","Пекин","Гонконг","Сиань"], a:1},
+    {q:"Река Миссисипи протекает через?", opts:["США","Китай","Бразилия","Египет"], a:0},
+    {q:"Что больше?", opts:["Европа","Азия","Океания","Антарктида"], a:1},
+    {q:"Где находится Гималаи?", opts:["Азия","Африка","Южная Америка","Европа"], a:0}
+  ],
+  // ... я продолжу в следующем сообщении 👌
+    // ---- Уровень 10 ----
+  [
+    {q:"Столица Аргентины?", opts:["Буэнос-Айрес","Кордова","Мендоса","Росарио"], a:0},
+    {q:"Где находятся Альпы?", opts:["Италия, Франция, Швейцария","Испания","Германия","Австрия"], a:0},
+    {q:"Самая большая страна мира?", opts:["Китай","Канада","США","Россия"], a:3},
+    {q:"Где находится Сахара?", opts:["Африка","Азия","Америка","Австралия"], a:0}
+  ],
+  // ---- Уровень 11 ----
+  [
+    {q:"Столица Кении?", opts:["Найроби","Момбаса","Кисуму","Элдорет"], a:0},
+    {q:"Самый длинный горный хребет?", opts:["Анды","Гималаи","Альпы","Рокки"], a:0},
+    {q:"Страна с наибольшим количеством островов?", opts:["Филиппины","Индонезия","Япония","Мальдивы"], a:1},
+    {q:"Океан рядом с Индией?", opts:["Индийский","Атлантический","Тихий","Северный"], a:0}
+  ],
+  // ---- Уровень 12 ----
+  [
+    {q:"Столица Ямайки?", opts:["Кингстон","Монтего-Бэй","Очисе","Негрил"], a:0},
+    {q:"Где находится гора Фудзи?", opts:["Япония","Китай","Корея","Вьетнам"], a:0},
+    {q:"Самое большое озеро Африки?", opts:["Виктория","Ньяса","Танганьика","Альберта"], a:0},
+    {q:"Где находится пустыня Гоби?", opts:["Китай и Монголия","Канада","США","Индия"], a:0}
+  ],
+  // ---- Уровень 13 ----
+  [
+    {q:"Столица Турции?", opts:["Анкара","Стамбул","Измир","Бурса"], a:0},
+    {q:"Река Амазонка протекает через?", opts:["Бразилия, Перу, Колумбия","Мексика","Аргентина","Чили"], a:0},
+    {q:"Самый высокий водопад?", opts:["Анхель","Ниагара","Игуасу","Виктория"], a:0},
+    {q:"Страна, где находится Великий Барьерный риф?", opts:["Австралия","Новая Зеландия","Филиппины","Индонезия"], a:0}
+  ],
+  // ---- Уровень 14 ----
+  [
+    {q:"Столица Норвегии?", opts:["Осло","Берген","Тронхейм","Ставангер"], a:0},
+    {q:"Где находится озеро Лох-Несс?", opts:["Шотландия","Ирландия","Норвегия","Швейцария"], a:0},
+    {q:"Самый большой остров?", opts:["Гренландия","Новая Гвинея","Борнео","Мадагаскар"], a:0},
+    {q:"Где находится вулкан Этна?", opts:["Италия","Франция","Исландия","Греция"], a:0}
+  ],
+  // ---- Уровень 15 ----
+  [
+    {q:"Столица Швеции?", opts:["Стокгольм","Гетеборг","Мальмё","Уппсала"], a:0},
+    {q:"Самая глубокая точка океана?", opts:["Марианская впадина","Тонгаская впадина","Филиппинская впадина","Кермадекская впадина"], a:0},
+    {q:"Где находится гора Килиманджаро?", opts:["Танзания","Кения","Эфиопия","Уганда"], a:0},
+    {q:"Самая северная страна?", opts:["Норвегия","Швеция","Россия","Финляндия"], a:0}
+  ],
+  // ---- Уровень 16 ----
+  [
+    {q:"Столица Южной Кореи?", opts:["Сеул","Пусан","Тэгу","Инчхон"], a:0},
+    {q:"Самая длинная река Европы?", opts:["Волга","Дунай","Рейн","Темза"], a:0},
+    {q:"Где находится гора Эверест?", opts:["Непал и Китай","Индия","Пакистан","Бутан"], a:0},
+    {q:"Самая маленькая страна в мире?", opts:["Ватикан","Монако","Науру","Тувалу"], a:0}
+  ]
+];
+
+// =================== Логика ===================
+const levelsContainer = document.getElementById("levels-container");
+const quizModal = document.getElementById("quiz-modal");
+const quizQuestion = document.getElementById("quizQuestion");
+const quizOptions = document.getElementById("quizOptions");
+const progressBar = document.getElementById("progressBar");
+const closeQuiz = document.getElementById("closeQuiz");
+const recordsList = document.getElementById("recordsList");
+
+let currentLevel = 0;
+let currentQ = 0;
+let score = 0;
+
+// Создание кнопок уровней
+levels.forEach((lvl, idx)=>{
+  const btn = document.createElement("button");
+  btn.innerText = "Уровень " + (idx+1);
+  btn.classList.add("level-btn");
+  btn.addEventListener("click", ()=>{
+    playClick();
+    startLevel(idx);
+  });
+  levelsContainer.appendChild(btn);
+});
+
+// Начало уровня
+function startLevel(levelIdx){
+  currentLevel = levelIdx;
+  currentQ = 0;
+  score = 0;
+  quizModal.classList.add("open");
+  showQuestion();
+  updateProgress();
+}
+
+// Показ вопроса
+function showQuestion(){
+  const q = levels[currentLevel][currentQ];
+  quizQuestion.innerText = q.q;
+  quizOptions.innerHTML = "";
+  q.opts.forEach((opt, i)=>{
+    const btn = document.createElement("button");
+    btn.classList.add("quiz-option");
+    btn.innerText = opt;
+    btn.addEventListener("click", ()=>{
+      playClick();
+      if(i === q.a){
+        btn.classList.add("correct");
+        score++;
+      } else {
+        btn.classList.add("wrong");
+      }
+      setTimeout(()=>{ nextQuestion(); }, 500);
+    });
+    quizOptions.appendChild(btn);
+  });
+}
+
+// Следующий вопрос
+function nextQuestion(){
+  currentQ++;
+  updateProgress();
+  if(currentQ < levels[currentLevel].length){
+    showQuestion();
+  } else {
+    endLevel();
+  }
+}
+
+// Обновление прогресс-бара
+function updateProgress(){
+  const total = levels[currentLevel].length;
+  const perc = (currentQ/total)*100;
+  progressBar.style.width = perc + "%";
+}
+
+// Конец уровня
+function endLevel(){
+  quizModal.classList.remove("open");
+  alert("🎉 Поздравляем! Вы закончили уровень " + (currentLevel+1) + " с результатом " + score + "/" + levels[currentLevel].length);
+  saveRecord(currentLevel+1, score);
+  showRecords();
+}
+
+// Закрыть модалку
+closeQuiz.addEventListener("click", ()=>{
+  quizModal.classList.remove("open");
+});
+
+// Сохранение рекордов в localStorage
+function saveRecord(level, sc){
+  const recs = JSON.parse(localStorage.getItem("geoRecords")||"[]");
+  recs.push({level, score: sc, date: new Date().toLocaleString()});
+  localStorage.setItem("geoRecords", JSON.stringify(recs));
+}
+
+// Показ рекордов
+function showRecords(){
+  const recs = JSON.parse(localStorage.getItem("geoRecords")||"[]");
+  recordsList.innerHTML = "";
+  recs.slice(-10).reverse().forEach(r=>{
+    const div = document.createElement("div");
+    div.classList.add("record-item");
+    div.innerText = `Уровень ${r.level} - ${r.score}/4 (${r.date})`;
+    recordsList.appendChild(div);
+  });
+}
+showRecords();
+</script>
+
+</body>
+</html>

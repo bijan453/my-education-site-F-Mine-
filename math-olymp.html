@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Olympiad</title>
+
+<style>
+  @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  text-align:center;
+}
+
+.container{
+  width:90%;
+  max-width:600px;
+}
+
+/* Заголовок */
+h1{
+  font-size:2.2rem;
+  text-shadow:0 0 15px gold;
+  margin-bottom:20px;
+}
+
+/* Центр блок выбора */
+#grades{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Кнопки */
+button{
+  padding:18px 30px;
+  margin:10px;
+  font-size:18px;
+  border:none;
+  border-radius:15px;
+  cursor:pointer;
+  background:linear-gradient(135deg,#6c63ff,#4a47d1);
+  color:white;
+  font-weight:bold;
+  width:220px;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 20px gold;
+}
+
+/* Поле */
+input{
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  width:200px;
+  text-align:center;
+  font-size:16px;
+}
+
+/* Результат */
+.result{
+  margin-top:15px;
+  font-size:18px;
+  font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🏆 Math Olympiad</h1>
+
+<div id="grades">
+  <h2>Выбери класс</h2>
+  <button onclick="startClass(7)">7 класс</button>
+  <button onclick="startClass(8)">8 класс</button>
+  <button onclick="startClass(9)">9 класс</button>
+</div>
+
+<div id="tasks" style="display:none;">
+  <h2 id="taskTitle"></h2>
+  <p id="question"></p>
+  <input id="answer" placeholder="Ответ">
+  <br><br>
+  <button onclick="checkAnswer()">Проверить</button>
+  <button id="nextBtn" style="display:none;" onclick="nextTask()">Далее</button>
+  <div id="result" class="result"></div>
+</div>
+
+<div id="finish" style="display:none;">
+  <h2 style="color:gold;">Результат</h2>
+  <p id="scoreText"></p>
+  <button onclick="back()">⬅ Назад</button>
+</div>
+
+</div>
+
+<script>
+let currentUser = localStorage.getItem('currentUser') || 'guest';
+
+let tasks=[];
+let index=0;
+let score=0;
+let answered=false;
+let startTime=0;
+let currentClass=7;
+
+/* --- Генерация задач --- */
+function generateTasks(cls){
+  let arr=[];
+
+  for(let i=0;i<10;i++){
+    let a,b,c;
+
+    if(cls===7){
+      a=Math.floor(Math.random()*10)+1;
+      b=Math.floor(Math.random()*10)+1;
+      c=Math.floor(Math.random()*10)+1;
+      arr.push({
+        q:`${a}x + ${b} = ${c}`,
+        a:((c-b)/a).toString()
+      });
+    }
+
+    else if(cls===8){
+      a=Math.floor(Math.random()*10)+1;
+      b=Math.floor(Math.random()*10)+1;
+      arr.push({
+        q:`x² - ${(a+b)}x + ${a*b} = 0`,
+        a:`${a} ${b}`
+      });
+    }
+
+    else if(cls===9){
+      a=Math.floor(Math.random()*10)+1;
+      b=Math.floor(Math.random()*10)+1;
+      arr.push({
+        q:`(${a}x + ${b})(${a}x - ${b})`,
+        a:`${a*a}x²-${b*b}`
+      });
+    }
+  }
+
+  return arr;
+}
+
+/* --- Старт --- */
+function startClass(cls){
+  currentClass=cls;
+  tasks=generateTasks(cls);
+  index=0;
+  score=0;
+  startTime=Date.now();
+
+  document.getElementById('grades').style.display='none';
+  document.getElementById('tasks').style.display='block';
+
+  loadTask();
+}
+
+/* --- Загрузка задания --- */
+function loadTask(){
+  answered=false;
+
+  let t=tasks[index];
+
+  document.getElementById('taskTitle').innerText=`Задание ${index+1}/10`;
+  document.getElementById('question').innerText=t.q;
+  document.getElementById('answer').value='';
+  document.getElementById('result').innerText='';
+  document.getElementById('nextBtn').style.display='none';
+}
+
+/* --- Проверка --- */
+function checkAnswer(){
+  if(answered) return;
+
+  let userInput = document.getElementById('answer').value.trim();
+  let correct = tasks[index].a;
+  let res = document.getElementById('result');
+
+  let userVal = toNumber(userInput);
+  let correctVal = toNumber(correct);
+
+  if(isNaN(userVal)){
+    res.innerText='❗ Введи корректное число';
+    res.style.color='orange';
+    return;
+  }
+
+  if(Math.abs(userVal - correctVal) < 0.01){
+    res.innerText='✅ Правильно!';
+    res.style.color='lightgreen';
+    score++;
+  } else {
+    res.innerText='❌ Неправильно! Ответ: ' + correct;
+    res.style.color='red';
+  }
+  // НОД (для сокращения дробей)
+function gcd(a,b){
+  return b ? gcd(b, a % b) : Math.abs(a);
+}
+
+// сокращение дроби
+function simplifyFraction(num, den){
+  let g = gcd(num, den);
+  return [num/g, den/g];
+}
+
+// перевод в число
+function toNumber(str){
+  str = str.replace(',', '.').trim();
+
+  if(str.includes('/')){
+    let parts = str.split('/');
+    let num = parseFloat(parts[0]);
+    let den = parseFloat(parts[1]);
+
+    if(den === 0) return NaN;
+
+    let simplified = simplifyFraction(num, den);
+    return simplified[0] / simplified[1];
+  }
+
+  return parseFloat(str);
+}
+
+  answered = true;
+  document.getElementById('nextBtn').style.display='inline-block';
+}
+
+/* --- Далее --- */
+function nextTask(){
+  index++;
+
+  if(index<tasks.length){
+    loadTask();
+  } else {
+    finish();
+  }
+}
+
+/* --- Финал --- */
+function finish(){
+  let time=Math.floor((Date.now()-startTime)/1000);
+  let percent=Math.round(score/tasks.length*100);
+
+  document.getElementById('tasks').style.display='none';
+  document.getElementById('finish').style.display='block';
+
+  document.getElementById('scoreText').innerText=
+    percent + '% за ' + time + ' сек';
+
+  // сохранение (по пользователю)
+  let key = currentUser + '_olymp_' + currentClass;
+  localStorage.setItem(key, percent.toString());
+}
+
+/* --- Назад --- */
+function back(){
+  document.getElementById('finish').style.display='none';
+  document.getElementById('grades').style.display='block';
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Hub - F-Mind</title>
+<style>
+  @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+body {
+  min-height:100vh;
+  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  padding-top:80px;
+}
+body.light { background: linear-gradient(135deg,#f5f5f5,#d0d0ff); color:#222; }
+
+.site-header {
+  width:100%;
+  height:80px;
+  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:100;
+  box-shadow:0 4px 15px rgba(0,0,0,0.4);
+  padding:0 20px;
+}
+body.light .site-header { background: linear-gradient(135deg,#f5f5f5,#d0d0ff); }
+
+.logo span {
+  font-size:1.8rem;
+  font-weight:bold;
+  color:white;
+  transition:0.5s;
+}
+@keyframes goldBlink {
+  0%,20%,100% { color:white; text-shadow:none; }
+  50% { color:gold; text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4); }
+}
+.logo span:nth-child(1){ animation:goldBlink 2s infinite; }
+.logo span:nth-child(2){ animation:goldBlink 2s infinite 0.4s; }
+.logo span:nth-child(3){ animation:goldBlink 2s infinite 0.8s; }
+.logo span:nth-child(4){ animation:goldBlink 2s infinite 1.2s; }
+.logo span:nth-child(5){ animation:goldBlink 2s infinite 1.6s; }
+
+.nav-menu { display:flex; gap:15px; }
+.nav-btn {
+  padding:10px 15px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  font-size:0.9rem;
+  cursor:pointer;
+  background: linear-gradient(135deg,#6c63ff,#4a47d1);
+  color:white;
+  transition:0.3s;
+  position:relative;
+}
+.nav-btn:hover { transform:translateY(-3px); box-shadow:0 5px 15px rgba(0,0,0,0.3); }
+.nav-btn::after {
+  content:'';
+  position:absolute;
+  top:-2px; left:-2px; right:-2px; bottom:-2px;
+  border-radius:10px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,0,0.5), rgba(255,255,255,0.3));
+  opacity:0;
+  z-index:-1;
+  transition:opacity 0.3s;
+}
+.nav-btn:hover::after{ opacity:1; animation: glowBtn 1s linear infinite; }
+@keyframes glowBtn { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+
+.user-profile {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.user-profile img {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:2px solid gold;
+  object-fit:cover;
+  cursor:pointer;
+}
+.user-profile span {
+  font-weight:bold;
+  color:gold;
+  text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
+  cursor:pointer;
+}
+
+.container {
+  text-align:center;
+  padding:40px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(15px);
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+  width:90%;
+  max-width:700px;
+  margin:20px auto 0 auto;
+  opacity:0;
+  animation:fadeInContent 1s ease forwards, bgPulse 6s infinite alternate;
+  transition:0.5s;
+}
+body.light .container { background:rgba(255,255,255,0.8); color:#222; }
+
+p.gold-text {
+  margin-bottom:15px;
+  font-size:1.2rem;
+  font-weight:bold;
+  opacity:0.9;
+  color: gold;
+  text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
+}
+
+.menu {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+  margin-top:10px;
+  opacity:0;
+  transform:translateY(20px);
+  animation:fadeUp 0.8s forwards;
+}
+.menu:nth-child(1){animation-delay:0.2s;}
+.menu:nth-child(2){animation-delay:0.4s;}
+.menu:nth-child(3){animation-delay:0.6s;}
+.menu:nth-child(4){animation-delay:0.8s;}
+
+button.main-btn {
+  padding:15px;
+  border:none;
+  border-radius:12px;
+  font-size:1rem;
+  cursor:pointer;
+  background: linear-gradient(135deg,#6c63ff,#4a47d1);
+  color:white;
+  font-weight:bold;
+  position:relative;
+  transition:0.3s;
+}
+button.main-btn:hover { transform:translateY(-5px); box-shadow:0 10px 20px rgba(0,0,0,0.3); }
+button.main-btn:active { animation:clickAnim 0.2s forwards; }
+@keyframes clickAnim { 0%{transform:scale(1);} 50%{transform:scale(0.95);} 100%{transform:scale(1);} }
+.smart-choice {
+  margin:20px auto;
+  padding:12px 15px;
+  width:250px;
+  border-radius:15px;
+  background:rgba(255,215,0,0.1);
+  border:1px solid gold;
+  font-weight:bold;
+  font-size:1rem;
+  opacity:0;
+  transform:translateY(-10px);
+  animation:fadeUp 0.8s forwards;
+  animation-delay:0.1s;
+}
+
+.footer {
+  margin-top:25px;
+  font-size:0.9rem;
+  opacity:0.8;
+  transition:0.5s;
+}
+.footer:hover { color:gold; text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4); }
+.neon-footer {
+  color:#fff;
+  text-shadow:0 0 3px #6c63ff,0 0 5px #6c63ff,0 0 10px #6c63ff,0 0 15px #a394ff;
+  animation:neonGlow 1.5s infinite alternate;
+  font-weight:bold;
+}
+body.light .neon-footer { color:#444; text-shadow:none; }
+
+@keyframes neonGlow { 0%{text-shadow:0 0 2px #6c63ff,0 0 5px #6c63ff,0 0 8px #6c63ff,0 0 12px #a394ff;} 50%{text-shadow:0 0 4px #6c63ff,0 0 10px #6c63ff,0 0 15px #6c63ff,0 0 25px #a394ff;} 100%{text-shadow:0 0 2px #6c63ff,0 0 5px #6c63ff,0 0 8px #6c63ff,0 0 12px #a394ff;} }
+
+@keyframes fadeInContent { 0%{opacity:0; transform:translateY(20px);} 100%{opacity:1; transform:translateY(0);} }
+@keyframes fadeUp { 0%{opacity:0; transform:translateY(20px);} 100%{opacity:1; transform:translateY(0);} }
+@keyframes bgPulse { 0%{background-color:rgba(255,255,255,0.05);} 50%{background-color:rgba(255,255,255,0.1);} 100%{background-color:rgba(255,255,255,0.05);} }
+</style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="logo">
+    <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
+  </div>
+  <nav class="nav-menu">
+    <button onclick="goTo('lobby.html')" class="nav-btn">Главная</button>
+    <button onclick="goTo('translator.html')" class="nav-btn">Переводчик</button>
+    <button onclick="goTo('math.html')" class="nav-btn">Математика</button>
+    <button onclick="goTo('chat-math.html')" class="nav-btn">Чат-бот (математика)</button>
+    <button onclick="goTo('chat-lang.html')" class="nav-btn">Чат-бот (языки)</button>
+    <button onclick="goTo('geo.html')" class="nav-btn">География</button>
+    <button onclick="goTo('history.html')" class="nav-btn">История</button>
+    <button onclick="goTo('math-olymp.html')" class="nav-btn">Математика (test)</button>
+    <button onclick="goTo('chat-geo.html')" class="nav-btn">Чат-бот (География)</button>
+    <button onclick="goTo('doctor.html')" class="nav-btn">Научный бот</button>
+        <button onclick="goTo('exam.html')" class="nav-btn">📋 Экзамен </button>
+
+  </nav>
+  <div class="user-profile">
+    <img id="profile-avatar" src="https://via.placeholder.com/40" alt="Avatar" onclick="changeAvatar()">
+    <span id="profile-nick" onclick="goToAccount()">NIK</span>
+    <input type="file" id="avatar-input" style="display:none;" accept="image/*">
+  </div>
+</header>
+
+<!-- === Лобби: предметы, чат-боты, переводчик + экзамен === -->
+<div class="container">
+  <p>Привет, <span id="nick-text">никнейм</span>! Выбери раздел и начинай обучение</p>
+
+  <!-- === Предметы === -->
+  <h2 style="color:gold; margin-top:20px;">📚 Предметы</h2>
+  <div class="menu">
+    <button onclick="goTo('math.html')" class="main-btn">📚 Математика</button>
+    <button onclick="goTo('math-olymp.html')" class="main-btn">📚 Математика (Olympiad)</button>
+    <button onclick="goTo('geo.html')" class="main-btn">🌍 География</button>
+  </div>
+
+  <!-- === Чат-боты === -->
+  <h2 style="color:gold; margin-top:20px;">🤖 Чат-боты</h2>
+  <div class="menu">
+    <button onclick="goTo('chat-math.html')" class="main-btn">Чат-бот (Математика)</button>
+    <button onclick="goTo('chat-lang.html')" class="main-btn">Чат-бот (Языки)</button>
+    <button onclick="goTo('chat-history.html')" class="main-btn">Чат-бот (История)</button>
+    <button onclick="goTo('chat-geo.html')" class="main-btn">Чат-бот (География)</button>
+    <button onclick="goTo('doctor.html')" class="main-btn">Научный Бот</button>
+  </div>
+
+  <!-- === Переводчик === -->
+  <h2 style="color:gold; margin-top:20px;">🌐 Языковой переводчик</h2>
+  <div class="menu">
+    <button onclick="goTo('translator.html')" class="main-btn">Переводчик</button>
+  </div>
+
+  <!-- === Экзамен === -->
+  <h2 style="color:gold; margin-top:20px;">📋 Умный выбор / Экзамен</h2>
+  <div class="menu">
+    <button onclick="goTo('exam.html')" class="main-btn">📋 Начать экзамен</button>
+  </div>
+
+  <!-- === Смена темы === -->
+  <button onclick="toggleTheme()" style="margin-top:15px; padding:10px 20px; border:none; border-radius:10px; cursor:pointer; background:#6c63ff; color:white; font-weight:bold;">🌓 Сменить тему</button>
+
+  <div class="footer neon-footer">Сделано для олимпиады 💪</div>
+</div>
+
+<script>
+function goTo(page){ window.location.href = page; }
+function toggleTheme(){ document.body.classList.toggle('light'); }
+
+// Никнейм и аватарка
+let currentUser = localStorage.getItem("currentUser");
+if(currentUser){
+    let userData = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
+    document.getElementById("nick-text").innerText = currentUser;
+    document.getElementById("profile-nick").innerText = currentUser;
+    if(userData.avatar) document.getElementById("profile-avatar").src = userData.avatar;
+}
+
+// Смена аватарки
+function changeAvatar(){
+    const fileInput = document.getElementById("avatar-input");
+    fileInput.click();
+    fileInput.onchange = function(){
+        const file = fileInput.files[0];
+        if(file){
+            const reader = new FileReader();
+            reader.onload = function(e){
+                const src = e.target.result;
+                document.getElementById("profile-avatar").src = src;
+                if(currentUser){
+                    let data = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
+                    data.avatar = src;
+                    localStorage.setItem("user_"+currentUser, JSON.stringify(data));
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+}
+function goToAccount(){
+    window.location.href = "account.html";
+}
+
+// И потом назначаем клик:
+document.getElementById("profile-nick").onclick = goToAccount;
+
+</script>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Исторический Чат-бот</title>
+<style>
+  @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.container {
+  width:90%;
+  max-width:600px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  padding:30px;
+  border-radius:20px;
+  box-shadow:0 0 30px rgba(0,0,0,0.3);
+}
+h1 { text-align:center; font-size:2.5rem; margin-bottom:10px; }
+#chat {
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:12px;
+  padding:10px;
+  height:400px;
+  overflow-y:auto;
+  margin-bottom:15px;
+  background: rgba(0,0,0,0.1);
+}
+.message { margin:5px 0; }
+.user { color:#6c63ff; }
+.bot { color:#ffd700; }
+input { width:70%; padding:10px; border-radius:10px; border:none; margin-right:5px; font-size:16px;}
+button { padding:10px 15px; border-radius:10px; border:none; background:#6c63ff; color:white; cursor:pointer; margin:2px;}
+.thinking { display:inline-block; }
+.dot {
+  display:inline-block;
+  width:18px; height:18px;
+  background:gray;
+  border-radius:50%;
+  margin:0 3px;
+  animation:bounce 1s infinite;
+}
+.dot:nth-child(2) { animation-delay:0.2s; }
+.dot:nth-child(3) { animation-delay:0.4s; }
+@keyframes bounce { 0%,80%,100% { transform:scale(0); } 40% { transform:scale(1); } }
+.language-select { margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🤖 Исторический Бот</h1>
+<div class="language-select">
+  <button id="btnRU" onclick="setLang('RU')">RU</button>
+  <button id="btnEN" onclick="setLang('EN')">EN</button>
+</div>
+<div id="chat"></div>
+<input id="userInput" placeholder="Введите вопрос">
+<button id="sendBtn" onclick="sendMessage()">Отправить</button>
+<button id="voiceBtn" onclick="startVoice()">🎤 Говорить</button>
+<button id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
+</div>
+
+<script>
+var chat=document.getElementById('chat');
+var lang='RU';
+var recognition;
+var placeholders={'RU':'Введите вопрос','EN':'Enter your question'};
+var sendBtnTexts={'RU':'Отправить','EN':'Send'};
+var exitBtnTexts={'RU':'⬅ Выйти в лобби','EN':'⬅ Back to lobby'};
+var voiceBtnTexts={'RU':'🎤 Говорить','EN':'🎤 Speak'};
+
+function setLang(l){
+  lang=l;
+  document.getElementById('userInput').placeholder=placeholders[l];
+  document.getElementById('sendBtn').textContent=sendBtnTexts[l];
+  document.getElementById('exitBtn').textContent=exitBtnTexts[l];
+  document.getElementById('voiceBtn').textContent=voiceBtnTexts[l];
+  addMessage('Система',(l==='RU'?'Язык установлен на русский':'Language set to English'),'bot');
+}
+
+function goLobby(){ window.location.href='lobby.html'; }
+
+function addMessage(sender,text,cls){
+  var div=document.createElement('div');
+  div.classList.add('message',cls);
+  div.textContent=sender+': '+text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function showThinking(){
+  var thinking=document.createElement('div');
+  thinking.id='thinking';
+  thinking.classList.add('thinking');
+  for(var i=0;i<3;i++){
+    var dot=document.createElement('div');
+    dot.classList.add('dot');
+    thinking.appendChild(dot);
+  }
+  chat.appendChild(thinking);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function hideThinking(){ var t=document.getElementById('thinking'); if(t) t.remove(); }
+
+async function sendMessage(){
+  var input=document.getElementById('userInput');
+  var text=input.value.trim();
+  if(text==='') return;
+  addMessage('Вы',text,'user');
+  input.value='';
+  showThinking();
+  try{
+    const response=await getWikiAnswer(text);
+    hideThinking();
+    addMessage('Бот',response,'bot');
+  }catch(e){
+    hideThinking();
+    addMessage('Бот',lang==='RU'?'Не удалось найти ответ':'Could not find an answer','bot');
+  }
+}
+// --- Голосовой ввод ---
+function startVoice(){
+  if(!('webkitSpeechRecognition' in window)){
+    alert('Ваш браузер не поддерживает голосовой ввод');
+    return;
+  }
+  recognition=new webkitSpeechRecognition();
+  recognition.lang=(lang==='RU'?'ru-RU':'en-US');
+  recognition.onresult=function(event){
+    var text=event.results[0][0].transcript;
+    document.getElementById('userInput').value=text;
+    sendMessage();
+  };
+  recognition.start();
+}
+
+// --- Получение ответа из Википедии ---
+async function getWikiAnswer(query){
+  // Выделяем ключевые слова: убираем "когда","что","где" и знаки
+  let cleanQuery=query.replace(/когда|что|где|как|\/|\?|\!/gi,'').trim();
+  if(lang==='EN') cleanQuery=query.replace(/when|what|where|how|\/|\?|\!/gi,'').trim();
+
+  // Поиск через MediaWiki API
+  const searchUrl=`https://${lang==='RU'?'ru':'en'}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json&origin=*`;
+  const searchResp=await fetch(searchUrl);
+  const searchData=await searchResp.json();
+  if(searchData.query.search.length===0) throw 'Not found';
+
+  const pageTitle=searchData.query.search[0].title;
+
+  // Получаем содержимое страницы
+  const pageUrl=`https://${lang==='RU'?'ru':'en'}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(pageTitle)}&format=json&origin=*`;
+  const pageResp=await fetch(pageUrl);
+  const pageData=await pageResp.json();
+  const pages=pageData.query.pages;
+  const page=pages[Object.keys(pages)[0]];
+  if(!page.extract) throw 'No extract';
+
+  return page.extract;
+}
+</script>
+</body>
+</html>

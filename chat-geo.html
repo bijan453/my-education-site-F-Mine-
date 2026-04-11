@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Чат-бот География</title>
+<style>
+  @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.container {
+  width:90%;
+  max-width:600px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  padding:30px;
+  border-radius:20px;
+  box-shadow:0 0 30px rgba(0,0,0,0.3);
+}
+h1 {
+  text-align:center;
+  font-size:2.5rem;
+  margin-bottom:10px;
+}
+#chat {
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:12px;
+  padding:10px;
+  height:400px;
+  overflow-y:auto;
+  margin-bottom:15px;
+  background: rgba(0,0,0,0.1);
+}
+.message {
+  margin:5px 0;
+}
+.user { color:#6c63ff; }
+.bot { color:#ffd700; }
+input { width:70%; padding:10px; border-radius:10px; border:none; margin-right:5px; font-size:16px;}
+button { padding:10px 15px; border-radius:10px; border:none; background:#6c63ff; color:white; cursor:pointer; margin:2px;}
+.thinking { display:inline-block; }
+.dot {
+  display:inline-block;
+  width:18px; height:18px;
+  background:gray;
+  border-radius:50%;
+  margin:0 3px;
+  animation:bounce 1s infinite;
+}
+.dot:nth-child(2) { animation-delay:0.2s; }
+.dot:nth-child(3) { animation-delay:0.4s; }
+@keyframes bounce {
+  0%,80%,100% { transform:scale(0); }
+  40% { transform:scale(1); }
+}
+.language-select { margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🌍 География Бот</h1>
+<div class="language-select">
+  <button id="btnRU" onclick="setLang('RU')">RU</button>
+  <button id="btnEN" onclick="setLang('EN')">EN</button>
+</div>
+<div id="chat"></div>
+<input id="userInput" placeholder="Введите вопрос">
+<button id="sendBtn" onclick="sendMessage()">Отправить</button>
+<button id="voiceBtn" onclick="startVoice()">🎤 Говорить</button>
+<button id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
+</div>
+
+<script>
+var chat = document.getElementById('chat');
+var lang='RU';
+var recognition;
+var placeholders={'RU':'Введите вопрос','EN':'Enter your question'};
+var sendBtnTexts={'RU':'Отправить','EN':'Send'};
+var exitBtnTexts={'RU':'⬅ Выйти в лобби','EN':'⬅ Back to lobby'};
+var voiceBtnTexts={'RU':'🎤 Говорить','EN':'🎤 Speak'};
+
+function setLang(l){
+  lang=l;
+  document.getElementById('userInput').placeholder = placeholders[l];
+  document.getElementById('sendBtn').textContent = sendBtnTexts[l];
+  document.getElementById('exitBtn').textContent = exitBtnTexts[l];
+  document.getElementById('voiceBtn').textContent = voiceBtnTexts[l];
+  addMessage('Система', (l==='RU'?'Язык установлен на русский':'Language set to English'), 'bot');
+}
+
+function goLobby(){ window.location.href='lobby.html'; }
+
+function addMessage(sender,text,cls){
+  var div=document.createElement('div');
+  div.classList.add('message',cls);
+  div.textContent=sender+': '+text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function showThinking(){
+  var thinking=document.createElement('div');
+  thinking.id='thinking';
+  thinking.classList.add('thinking');
+  for(var i=0;i<3;i++){
+    var dot=document.createElement('div');
+    dot.classList.add('dot');
+    thinking.appendChild(dot);
+  }
+  chat.appendChild(thinking);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function hideThinking(){ var t=document.getElementById('thinking'); if(t) t.remove(); }
+
+function sendMessage(){
+  var input=document.getElementById('userInput');
+  var text=input.value.trim();
+  if(text==='') return;
+
+  addMessage('Вы',text,'user');
+  input.value='';
+  showThinking();
+  setTimeout(function(){
+    hideThinking();
+    getWikiAnswer(text).then(function(response){
+      addMessage('Бот',response,'bot');
+    });
+  },1000+Math.random()*1000);
+}
+// --- Голосовой ввод ---
+function startVoice(){
+  if(!('webkitSpeechRecognition' in window)){
+    alert('Ваш браузер не поддерживает голосовой ввод');
+    return;
+  }
+  recognition=new webkitSpeechRecognition();
+  recognition.lang=(lang==='RU'?'ru-RU':'en-US');
+  recognition.onresult=function(event){
+    var text=event.results[0][0].transcript;
+    document.getElementById('userInput').value=text;
+    sendMessage();
+  };
+  recognition.start();
+}
+
+// --- География Бот: получение ответа с Wikipedia API ---
+async function getWikiAnswer(query){
+  try{
+    var searchUrl='https://'+(lang==='RU'?'ru':'en')+'.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch='+encodeURIComponent(query)+'&origin=*';
+    var searchRes=await fetch(searchUrl);
+    var searchData=await searchRes.json();
+    if(searchData.query.search.length===0) return lang==='RU'?'Извините, я не нашёл статью по вашему вопросу':'Sorry, I could not find an article';
+    var title=searchData.query.search[0].title;
+    var summaryUrl='https://'+(lang==='RU'?'ru':'en')+'.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title);
+    var summaryRes=await fetch(summaryUrl);
+    var summaryData=await summaryRes.json();
+    if(summaryData.extract) return summaryData.extract;
+    return lang==='RU'?'Извините, я не смог получить текст статьи':'Sorry, I could not retrieve article text';
+  }catch(e){
+    return lang==='RU'?'Произошла ошибка при поиске':'An error occurred during search';
+  }
+}
+</script>
+</body>
+</html>

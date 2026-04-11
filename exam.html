@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Экзамен - F-Mind</title>
+<style>
+    @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{min-height:100vh;background:linear-gradient(135deg,#1e1e2f,#3a3a6a);color:white;padding-top:80px;transition:0.5s;}
+body.light{background:linear-gradient(135deg,#f5f5f5,#d0d0ff);color:#222;}
+
+.site-header{width:100%;height:80px;background:linear-gradient(135deg,#1e1e2f,#3a3a6a);display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;z-index:100;box-shadow:0 4px 15px rgba(0,0,0,0.4);padding:0 20px;transition:0.5s;}
+body.light .site-header{background:linear-gradient(135deg,#f5f5f5,#d0d0ff);}
+
+.logo span{font-size:1.8rem;font-weight:bold;color:white;transition:0.5s;}
+@keyframes goldBlink{0%,20%,100%{color:white;text-shadow:none;}50%{color:gold;text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4);}}
+.logo span:nth-child(1){animation:goldBlink 2s infinite;} 
+.logo span:nth-child(2){animation:goldBlink 2s infinite 0.4s;}
+.logo span:nth-child(3){animation:goldBlink 2s infinite 0.8s;} 
+.logo span:nth-child(4){animation:goldBlink 2s infinite 1.2s;}
+.logo span:nth-child(5){animation:goldBlink 2s infinite 1.6s;} 
+.logo span:nth-child(6){animation:goldBlink 2s infinite 2s;}
+
+.nav-menu{display:flex;gap:10px;flex-wrap:wrap;}
+.nav-btn{padding:8px 12px;border:none;border-radius:10px;font-weight:bold;font-size:0.9rem;cursor:pointer;background:linear-gradient(135deg,#6c63ff,#4a47d1);color:white;transition:0.3s;position:relative;}
+.nav-btn:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+.nav-btn::after{content:'';position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,0,0.5), rgba(255,255,255,0.3));opacity:0;z-index:-1;transition:opacity 0.3s;}
+.nav-btn:hover::after{opacity:1;animation:glowBtn 1s linear infinite;}
+@keyframes glowBtn{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+
+.user-profile{display:flex;align-items:center;gap:10px;}
+.user-profile img{width:40px;height:40px;border-radius:50%;border:2px solid gold;object-fit:cover;cursor:pointer;}
+.user-profile span{font-weight:bold;color:gold;text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);cursor:pointer;}
+
+.container{padding:30px;max-width:700px;margin:100px auto;background:rgba(255,255,255,0.05);border-radius:20px;backdrop-filter:blur(15px);box-shadow:0 0 40px rgba(0,0,0,0.3);text-align:center;animation:fadeInContent 1s ease forwards;opacity:0;transition:0.5s;}
+body.light .container{background:rgba(255,255,255,0.8);color:#222;}
+
+h1{font-size:2rem;margin-bottom:15px;}
+h2{font-size:1.5rem;margin-top:20px;margin-bottom:10px;color:gold;text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);}
+
+button.main-btn{padding:12px 20px;margin:8px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;background:linear-gradient(135deg,#6c63ff,#4a47d1);color:white;font-weight:bold;transition:0.3s;position:relative;width:32%;}
+button.main-btn:hover{transform:translateY(-5px);box-shadow:0 10px 20px rgba(0,0,0,0.3);}
+button.main-btn:active{animation:clickAnim 0.2s forwards;}
+@keyframes clickAnim{0%{transform:scale(1);}50%{transform:scale(0.9);}100%{transform:scale(1);}}
+@keyframes fadeInContent{0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);}}
+
+/* Прогресс-бар */
+.progress-bar{width:90%;height:30px;background:#444;border-radius:15px;margin:20px auto;overflow:hidden;position:relative;box-shadow:0 0 10px rgba(0,0,0,0.5);}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#6c63ff,#ffd700);border-radius:15px;text-align:center;line-height:30px;color:white;font-weight:bold;transition:width 0.5s ease;}
+.progress-fill.correct{background:linear-gradient(90deg,#00ff00,#aaff00);}
+.progress-fill.wrong{background:linear-gradient(90deg,#ff0000,#ff8800);}
+.exam-question{margin:20px 0;padding:15px;background:rgba(0,0,0,0.3);border-radius:15px;animation:fadeInContent 0.5s ease forwards;transition:0.3s;}
+.exam-question.correct{background:rgba(0,128,0,0.3);}
+.exam-question.wrong{background:rgba(255,0,0,0.3);}
+input.answer-input{padding:8px 12px;border-radius:8px;border:none;width:60%;font-size:1rem;}
+.submit-btn{padding:10px 18px;border:none;border-radius:10px;background:#6c63ff;color:white;font-weight:bold;cursor:pointer;margin-top:10px;}
+.submit-btn:hover{background:#574bff;}
+.result{margin-top:15px;font-weight:bold;color:gold;}
+.smart-choice{margin-top:20px;padding:20px;background:rgba(255,215,0,0.1);border-radius:15px;animation:fadeInContent 1s forwards;}
+.smart-choice h2{color:gold;text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);}
+.smart-choice button{margin:5px;width:45%;background:linear-gradient(135deg,#ffd700,#ffa500);color:#222;font-weight:bold;}
+.smart-choice button:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(255,215,0,0.3);}
+.exit-btn{margin-top:20px;padding:10px 20px;border:none;border-radius:10px;background:#ff5555;color:white;font-weight:bold;cursor:pointer;}
+.exit-btn:hover{background:#ff0000;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo"><span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span></div>
+  <nav class="nav-menu">
+    <button class="nav-btn" onclick="goTo('lobby.html')">Главная</button>
+    <button class="nav-btn" onclick="goTo('translator.html')">Переводчик</button>
+    <button class="nav-btn" onclick="goTo('math.html')">Математика</button>
+    <button class="nav-btn" onclick="goTo('chat-math.html')">Чат-бот (математика)</button>
+    <button class="nav-btn" onclick="goTo('chat-lang.html')">Чат-бот (языки)</button>
+    <button class="nav-btn" onclick="goTo('geo.html')">География</button>
+    <button class="nav-btn" onclick="goTo('history.html')">Чат-бот (История)</button>
+    <button class="nav-btn" onclick="goTo('math-olymp.html')">Математика (test)</button>
+    <button class="nav-btn" onclick="goTo('chat-geo.html')">Чат-бот (География)</button>
+    <button class="nav-btn" onclick="goTo('doctor.html')">Научный бот</button>
+  </nav>
+  <div class="user-profile">
+    <img id="profile-avatar" src="https://via.placeholder.com/40" alt="Avatar" onclick="changeAvatar()">
+    <span id="profile-nick" onclick="goToAccount()">NIK</span>
+    <input type="file" id="avatar-input" style="display:none;" accept="image/*">
+  </div>
+</header>
+
+<div class="container">
+<h1>📋 Экзамен</h1>
+<p>Привет, <span id="nick-text">никнейм</span>! Выберите класс и начните экзамен</p>
+
+<div class="menu">
+  <button class="main-btn" onclick="startExam(7)">7 класс</button>
+  <button class="main-btn" onclick="startExam(8)">8 класс</button>
+  <button class="main-btn" onclick="startExam(9)">9 класс</button>
+</div>
+
+<div class="progress-bar"><div id="progressFill" class="progress-fill">0%</div></div>
+<div id="examArea"></div>
+<div id="examResult" class="result"></div>
+<div id="smartChoiceArea"></div>
+
+<button onclick="toggleTheme()" style="margin-top:15px;padding:10px 20px;border:none;border-radius:10px;cursor:pointer;background:#6c63ff;color:white;font-weight:bold;">🌓 Сменить тему</button>
+<button class="exit-btn" onclick="goTo('lobby.html')">🏠 Главное меню</button>
+</div>
+
+<script>
+// --- Пользователь ---
+let currentUser = localStorage.getItem("currentUser");
+if(currentUser){
+    let userData = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
+    document.getElementById("nick-text").innerText = currentUser;
+    document.getElementById("profile-nick").innerText = currentUser;
+    if(userData.avatar) document.getElementById("profile-avatar").src = userData.avatar;
+}
+
+// Смена аватарки
+function changeAvatar(){
+    const fileInput=document.getElementById("avatar-input");
+    fileInput.click();
+    fileInput.onchange=function(){
+        const file=fileInput.files[0];
+        if(file){
+            const reader=new FileReader();
+            reader.onload=function(e){
+                const src=e.target.result;
+                document.getElementById("profile-avatar").src=src;
+                if(currentUser){
+                    let data=JSON.parse(localStorage.getItem("user_"+currentUser))||{};
+                    data.avatar=src;
+                    localStorage.setItem("user_"+currentUser,JSON.stringify(data));
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+}
+
+// Навигация
+function goTo(page){window.location.href=page;}
+function goToAccount(){window.location.href="account.html";}
+function toggleTheme(){document.body.classList.toggle('light');}
+
+// --- Экзамен ---
+let examData=[];
+let currentClass=7;
+let startTime;
+
+function generateQuestion(cls){
+    let a=Math.floor(Math.random()*10+1);
+    let b=Math.floor(Math.random()*10+1);
+    let c=Math.floor(Math.random()*10+1);
+    return {q:`${a}x + ${b} = ${c}`,ans:(c-b)/a};
+}
+
+function startExam(cls){
+    currentClass=cls;
+    examData=[];
+    startTime=Date.now();
+    for(let i=0;i<10;i++){examData.push(generateQuestion(cls));}
+    renderExam();
+    document.getElementById('smartChoiceArea').innerHTML='';
+    updateProgress(0);
+}
+
+function renderExam(){
+    const area=document.getElementById('examArea');
+    area.innerHTML='';
+    examData.forEach((item,i)=>{
+        let div=document.createElement('div');
+        div.className='exam-question';
+        div.id='q'+i;
+        div.innerHTML=`<div><strong>Вопрос ${i+1}:</strong> ${item.q}</div>
+                       <input type="text" class="answer-input" id="answer${i}" oninput="updateProgressLive()">`;
+        area.appendChild(div);
+    });
+    let btn=document.createElement('button');
+    btn.className='submit-btn';
+    btn.innerText='Проверить ответы';
+    btn.onclick=checkExam;
+    area.appendChild(btn);
+    document.getElementById('examResult').innerText='';
+}
+
+function updateProgressLive(){
+    let answered=0;
+    examData.forEach((item,i)=>{
+        if(document.getElementById('answer'+i).value.trim()!=='') answered++;
+    });
+    updateProgress(Math.round(answered/examData.length*100));
+}
+
+function updateProgress(percent){
+    const fill=document.getElementById('progressFill');
+    fill.style.width=percent+'%';
+    fill.innerText=percent+'%';
+}
+
+function checkExam(){
+    let correct=0;
+    examData.forEach((item,i)=>{
+        let val=document.getElementById('answer'+i).value.trim();
+        let div=document.getElementById('q'+i);
+        let isCorrect=false;
+        if(val.includes('/')){
+            let parts=val.split('/').map(Number);
+            if(parts.length==2 && Math.abs(parts[0]/parts[1]-item.ans)<0.01) isCorrect=true;
+        } else {
+            if(Math.abs(Number(val)-item.ans)<0.01) isCorrect=true;
+        }
+        if(isCorrect){correct++;div.classList.add('correct');div.classList.remove('wrong');}
+        else{div.classList.add('wrong');div.classList.remove('correct');}
+    });
+    let endTime=(Date.now()-startTime)/1000;
+    let percent=Math.min(Math.round(correct/10*100),100);
+    document.getElementById('examResult').innerHTML=`<span style="font-weight:bold;color:gold;">${percent}% за ${Math.round(endTime)} секунд</span>`;
+    if(currentUser){localStorage.setItem(currentUser+'_exam'+currentClass,JSON.stringify({percent:percent,time:endTime}));}
+    updateProgress(percent);
+    showSmartChoice(percent);
+}
+
+// --- Умный выбор ---
+function showSmartChoice(percent){
+    const area=document.getElementById('smartChoiceArea');
+    area.innerHTML='';
+    let div=document.createElement('div');
+    div.className='smart-choice';
+    div.innerHTML='<h2>💡 Рекомендации</h2>';
+    if(percent<70){
+        div.innerHTML+='<button onclick="startExam('+currentClass+')">Повторить экзамен</button>';
+    } else if(percent>=70 && percent<90){
+        div.innerHTML+='<button onclick="goTo(\'math-olymp.html\')">Попробовать олимпиаду</button>';
+    } else {
+        div.innerHTML+='<button onclick="startExam('+(currentClass+1>9?9:currentClass+1)+')">Перейти к следующему классу</button>';
+        div.innerHTML+='<button onclick="goTo(\'math-olymp.html\')">Попробовать олимпиаду</button>';
+    }
+    area.appendChild(div);
+}
+</script>
+
+</body>
+</html>
