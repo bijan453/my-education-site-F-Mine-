@@ -5,15 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Study Hub - F-Mind</title>
 <style>
-  #account{
-    position:absolute;
-    z-index:999;
+  #profile-nick {
+  position: relative;
+  z-index: 9999;
+  cursor: pointer;
+  color: gold;
+}
+
+/* аватар */
+#profile-avatar {
+  position: relative;
+  z-index: 9999;
+}
+
+/* FIX MEDIA */
+@media (max-width: 768px) {
+  h1 { font-size: 24px; }
+  button { width: 100%; }
+
+  .nav-menu {
+    flex-wrap: wrap;
   }
-  @media (max-width: 768px){
-    position:absolute;
-    z-index:1;
-  h1{ font-size:24px; }
-  button{ width:100%; }
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
 body {
