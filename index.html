@@ -3,128 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F-Mine | Вход</title>
+<title>F-Mine</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+  emailjs.init("Y9LA_RWTTvSW0hk_w");
+</script>
 
 <style>
 body {
-    font-family: 'Segoe UI', sans-serif;
-    min-height: 100vh;
-    background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family:'Segoe UI',sans-serif;
+    min-height:100vh;
+    background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:0;
 }
 
-.container {
-    background: rgba(255,255,255,0.05);
-    padding: 40px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
+.box {
+    background:rgba(255,255,255,0.05);
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 0 40px rgba(0,0,0,0.3);
+    width:90%;
+    max-width:400px;
+    text-align:center;
 }
 
-h1 { color: gold; }
+h2 {
+    color:gold;
+    text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
+    margin-bottom:20px;
+}
 
 input {
-    width: 85%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border: none;
+    width:80%;
+    padding:10px;
+    margin:10px 0;
+    border-radius:10px;
+    border:none;
+    outline:none;
 }
 
 button {
-    padding: 12px 20px;
-    margin: 10px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background: #6c63ff;
-    color: white;
-    font-weight: bold;
+    padding:12px 20px;
+    margin:10px;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    background:linear-gradient(135deg,#6c63ff,#4a47d1);
+    color:white;
+}
+
+button:hover {
+    transform:translateY(-3px);
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+
+@media (max-width:768px){
+    h1{ font-size:24px; }
+    button{ width:100%; }
 }
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="box">
 
-<h1>F-Mine</h1>
+<h2>🎮 F-Mine</h2>
 
-<input type="text" id="nick" placeholder="Никнейм">
-<input type="password" id="password" placeholder="Пароль">
-<input type="email" id="email" placeholder="Email (необязательно)">
-
-<br>
+<input id="nick" placeholder="Ник">
+<input id="email" placeholder="Email">
+<input id="pass" type="password" placeholder="Пароль">
 
 <button onclick="register()">Регистрация</button>
 <button onclick="login()">Войти</button>
-
 </div>
-
 <script>
+    function register() {
 
-// ================= REGISTER =================
-function register() {
     let nick = document.getElementById("nick").value.trim();
-    let pass = document.getElementById("password").value.trim();
     let email = document.getElementById("email").value.trim();
+    let pass = document.getElementById("pass").value.trim();
 
-    if (!nick || !pass) {
-        alert("Введите ник и пароль!");
+    if (!nick||!email||  !pass) {
+        alert("Заполни все поля!");
         return;
     }
 
+    // защита от дубля
     if (localStorage.getItem("user_" + nick)) {
-        alert("Пользователь уже существует!");
+        alert("Такой пользователь уже есть!");
         return;
     }
 
-    let user = {
-        password: pass,
-        email: email
-    };
+    // сохраняем аккаунт
+    localStorage.setItem("user_" + nick, JSON.stringify({
+        email: email,
+        password: pass
+    }));
 
-    localStorage.setItem("user_" + nick, JSON.stringify(user));
+    // запоминаем текущего
     localStorage.setItem("currentUser", nick);
 
-    // ================= КРАСИВОЕ ПИСЬМО =================
-   let message = `
-🎮 F-Mine
-
-━━━━━━━━━━━━━━━
-👋 Добро пожаловать!
-
-Спасибо за регистрацию в F-Mine!
-
-👤 Ник: ${nick}
-📧 Email: ${email}
-
-━━━━━━━━━━━━━━━
-🚀 Удачной игры!`
-;
-
-    fetch("https://formspree.io/f/xnjlqpoy", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            message: message
-        })
-    });
-
     alert("Регистрация успешна!");
+
+    // 👉 ПЕРЕХОД В ЛОББИ
     window.location.href = "lobby.html";
 }
 
+
 // ================= LOGIN =================
 function login() {
+
     let nick = document.getElementById("nick").value.trim();
-    let pass = document.getElementById("password").value.trim();
+    let pass = document.getElementById("pass").value.trim();
 
     let data = localStorage.getItem("user_" + nick);
 
@@ -141,7 +140,46 @@ function login() {
     }
 
     localStorage.setItem("currentUser", nick);
+
+    alert("Вход успешен!");
+
+    // 👉 ПЕРЕХОД В ЛОББИ
     window.location.href = "lobby.html";
+}
+
+</script>
+<script>
+
+function register() {
+
+    let nick = document.getElementById("nick").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let pass = document.getElementById("pass").value.trim();
+
+    if (!nick ||!email|| !pass) {
+        alert("Заполни все поля!");
+        return;
+    }
+
+    // сохраняем пользователя
+    localStorage.setItem("user_" + nick, JSON.stringify({
+        email: email,
+        password: pass
+    }));
+
+    // EMAILJS ОТПРАВКА
+    emailjs.send("service_tj46uwp", "template_aglasg4", {
+        from_name: nick,
+        reply_to: email
+    })
+    .then(() => {
+        alert("🎉 Регистрация успешна! Письмо отправлено на почту");
+    })
+    .catch((err) => {
+        console.log("EmailJS ошибка:", err);
+        alert("⚠️ Ошибка отправки email");
+    });
+
 }
 
 </script>
