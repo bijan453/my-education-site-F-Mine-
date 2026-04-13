@@ -3,92 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F-Mind | Вход</title>
+<title>F-Mine | Вход</title>
+
 <style>
-    @media (max-width: 768px){
-  h1{ font-size:24px; }
-  button{ width:100%; }
-}
 body {
-    font-family:'Segoe UI',sans-serif;
-    min-height:100vh;
-    background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-body.light { background:linear-gradient(135deg,#f5f5f5,#d0d0ff); color:#222; }
+
 .container {
-    background:rgba(255,255,255,0.05);
-    padding:40px;
-    border-radius:20px;
-    box-shadow:0 0 40px rgba(0,0,0,0.3);
-    width:90%;
-    max-width:400px;
-    text-align:center;
+    background: rgba(255,255,255,0.05);
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
 }
-h1 {
-    color:gold;
-    text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
-    margin-bottom:20px;
-}
+
+h1 { color: gold; }
+
 input {
-    width:80%;
-    padding:10px;
-    margin:10px 0;
-    border-radius:10px;
-    border:none;
+    width: 85%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
 }
+
 button {
-    padding:12px 20px;
-    margin:10px;
-    border:none;
-    border-radius:10px;
-    font-weight:bold;
-    cursor:pointer;
-    background:linear-gradient(135deg,#6c63ff,#4a47d1);
-    color:white;
-}
-button:hover {
-    transform:translateY(-3px);
-    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    padding: 12px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #6c63ff;
+    color: white;
+    font-weight: bold;
 }
 </style>
 </head>
+
 <body>
+
 <div class="container">
-<h1>Вход в F-Mine</h1>
-<input type="text" id="nick" placeholder="Введите никнейм">
-<input type="password" id="password" placeholder="Введите пароль">
+
+<h1>F-Mine</h1>
+
+<input type="text" id="nick" placeholder="Никнейм">
+<input type="password" id="password" placeholder="Пароль">
+<input type="email" id="email" placeholder="Email (необязательно)">
+
 <br>
-<button onclick="login()">Войти</button>
+
 <button onclick="register()">Регистрация</button>
+<button onclick="login()">Войти</button>
+
 </div>
 
 <script>
-function register(){
+
+// ================= REGISTER =================
+function register() {
     let nick = document.getElementById("nick").value.trim();
     let pass = document.getElementById("password").value.trim();
-    if(!nick || !pass){ alert("Введите ник и пароль!"); return; }
-    if(localStorage.getItem("user_"+nick)){ alert("Такой пользователь уже существует!"); return; }
-    let userData = { password: pass, avatar:"https://via.placeholder.com/40", email:"" };
-    localStorage.setItem("user_"+nick, JSON.stringify(userData));
+    let email = document.getElementById("email").value.trim();
+
+    if (!nick || !pass) {
+        alert("Введите ник и пароль!");
+        return;
+    }
+
+    if (localStorage.getItem("user_" + nick)) {
+        alert("Пользователь уже существует!");
+        return;
+    }
+
+    let user = {
+        password: pass,
+        email: email
+    };
+
+    localStorage.setItem("user_" + nick, JSON.stringify(user));
     localStorage.setItem("currentUser", nick);
-    alert("Регистрация прошла успешно!");
+
+    // ================= КРАСИВОЕ ПИСЬМО =================
+   let message = `
+🎮 F-Mine
+
+━━━━━━━━━━━━━━━
+👋 Добро пожаловать!
+
+Спасибо за регистрацию в F-Mine!
+
+👤 Ник: ${nick}
+📧 Email: ${email}
+
+━━━━━━━━━━━━━━━
+🚀 Удачной игры!`
+;
+
+    fetch("https://formspree.io/f/xnjlqpoy", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: message
+        })
+    });
+
+    alert("Регистрация успешна!");
     window.location.href = "lobby.html";
 }
 
-function login(){
+// ================= LOGIN =================
+function login() {
     let nick = document.getElementById("nick").value.trim();
     let pass = document.getElementById("password").value.trim();
-    let userJSON = localStorage.getItem("user_"+nick);
-    if(!userJSON){ alert("Пользователь не найден!"); return; }
-    let user = JSON.parse(userJSON);
-    if(user.password !== pass){ alert("Неверный пароль!"); return; }
+
+    let data = localStorage.getItem("user_" + nick);
+
+    if (!data) {
+        alert("Пользователь не найден!");
+        return;
+    }
+
+    let user = JSON.parse(data);
+
+    if (user.password !== pass) {
+        alert("Неверный пароль!");
+        return;
+    }
+
     localStorage.setItem("currentUser", nick);
     window.location.href = "lobby.html";
 }
+
 </script>
+
 </body>
 </html>
