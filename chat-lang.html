@@ -31,10 +31,20 @@ button:hover {opacity:0.9;}
 <input id="userInput" placeholder="Напишите текст или тему для доклада">
 <button onclick="sendMessage()">Отправить</button>
 <button onclick="startVoice()">🎤 Голосовой ввод</button>
-<button onclick="speakLast()">🔊 Прочитать ответ</button>
 <button onclick="toggleTheme()">🌓 Сменить тему</button>
+<button id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
+
+
 </div>
 <script>
+  function goLobby(){
+    if(document.referrer){
+        window.history.back();
+    } else {
+        window.location.href = "lobby.html";
+    }
+}
+
 let chat = document.getElementById('chat');
 let lastBotText = "";
 let chatHistory = [];
