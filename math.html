@@ -139,6 +139,8 @@ input {
 
   <div style="margin-top:20px;">
   <button onclick="toggleTheme()">🌓 Сменить тему</button>
+  <button id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
+
 </div>
 </div>
 
@@ -182,6 +184,14 @@ input {
 </div>
 
 <script>
+  function goLobby(){
+    if(document.referrer){
+        window.history.back();
+    } else {
+        window.location.href = "lobby.html";
+    }
+}
+
 // пользователь
 let user = JSON.parse(localStorage.getItem('userData')) || {nickname:'Пользователь', avatar:'default-avatar.png'};
 document.getElementById('nickname').innerText = user.nickname;
