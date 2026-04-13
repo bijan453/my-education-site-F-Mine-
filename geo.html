@@ -131,7 +131,7 @@ h1 { margin-bottom: 20px; color: gold; text-shadow: 0 0 8px gold; }
     <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
   </div>
 </div>
-
+<button class="level-btn" id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
 <div class="record-board">
   <h2>🏆 Таблица рекордов</h2>
   <div id="recordsList"></div>
@@ -140,6 +140,14 @@ h1 { margin-bottom: 20px; color: gold; text-shadow: 0 0 8px gold; }
 <audio id="clickSound" src="click.mp3"></audio>
 
 <script>
+  function goLobby(){
+    if(document.referrer){
+        window.history.back();
+    } else {
+        window.location.href = "lobby.html";
+    }
+}
+
 // Проверка, чтобы звук точно работал
 const clickSound = document.getElementById("clickSound");
 function playClick(){ clickSound.currentTime = 0; clickSound.play(); }
