@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help - F-Mine</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.container{
+  width:90%;
+  max-width:900px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(15px);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+}
+
+h1{
+  text-align:center;
+  color:gold;
+  text-shadow:0 0 10px rgba(255,215,0,0.7);
+}
+
+.section{
+  margin-top:20px;
+  padding:15px;
+  border-radius:15px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 0 10px rgba(255,255,255,0.05);
+}
+
+.section h2{
+  color:gold;
+  margin-bottom:8px;
+  text-shadow:0 0 8px rgba(255,215,0,0.4);
+}
+
+.section p, .section li{
+  color:white;
+  text-shadow:0 0 6px rgba(255,255,255,0.4);
+  line-height:1.5;
+}
+
+button{
+  margin-top:20px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#6c63ff;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#5751d6;
+  box-shadow:0 0 15px rgba(108,99,255,0.5);
+}
+.section{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:15px;
+  padding:15px;
+  cursor:pointer;
+  transition:0.3s;
+
+  /* ⚪ лёгкий неон по умолчанию */
+  box-shadow:
+    0 0 8px rgba(255,255,255,0.08),
+    0 0 15px rgba(255,255,255,0.05);
+}
+
+/* ⚡ hover эффект */
+.section:hover{
+  transform:translateY(-5px);
+
+  /* 💛 премиум золотой неон */
+  border-color:gold;
+  box-shadow:
+    0 0 10px rgba(255,215,0,0.4),
+    0 0 25px rgba(255,215,0,0.3),
+    0 0 45px rgba(255,215,0,0.15);
+}
+
+/* 💛 заголовки внутри карточек */
+.section h3{
+  color:gold;
+  text-shadow:0 0 8px rgba(255,215,0,0.5);
+}
+
+/* ⚪ описание */
+.section p{
+  color:white;
+  text-shadow:0 0 6px rgba(255,255,255,0.4);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>💡 Help - F-Mine Platform</h1>
+
+<div class="section">
+<h2>🏠 Lobby (Главная система)</h2>
+<p>
+Лобби — это центр проекта. Здесь находятся все основные функции:
+боты, задания, обучение и инструменты.
+Через лобби пользователь переходит ко всем разделам платформы.
+</p>
+</div>
+
+<div class="section">
+<h2>🤖 Чат-боты</h2>
+<p>
+В проекте есть удобные чат-боты, которые помогают:
+</p>
+<ul>
+<li>отвечать на вопросы</li>
+<li>объяснять темы</li>
+<li>помогать с заданиями</li>
+<li>поддерживать обучение</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>📘 Math HTML (Обучение математике)</h2>
+<p>
+Раздел математики помогает ученикам с 7 по 10 класс изучать темы шаг за шагом.
+После прохождения тем сохраняется прогресс в account HTML.
+</p>
+</div>
+
+<div class="section">
+<h2>🏆 Math Olymp HTML</h2>
+<p>
+Олимпиадный режим — это более сложные задания.
+Он подключен к системе прогресса и помогает развивать логическое мышление.
+</p>
+</div>
+
+<div class="section">
+<h2>👤 Account HTML (Прогресс)</h2>
+<p>
+Аккаунт сохраняет прогресс пользователя:
+</p>
+<ul>
+<li>пройденные темы</li>
+<li>результаты заданий</li>
+<li>уровень обучения</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>🌍 Переводчик</h2>
+<p>
+Переводчик поддерживает 6 языков.
+</p>
+<ul>
+<li>можно легко менять языки</li>
+<li>есть кнопка обмена языков</li>
+<li>перевод точный и быстрый</li>
+<li>сохраняется история переводов</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>💎 Цель проекта</h2>
+<p>
+F-Mine — это образовательная платформа для учеников 7–10 классов.
+Она объединяет обучение, помощь, AI и удобные инструменты в одном месте.
+</p>
+</div>
+
+<button onclick="goBack()">⬅ Назад в лобби</button>
+
+</div>
+
+<script>
+function goBack(){
+  window.location.href = "lobby.html";
+}
+</script>
+
+</body>
+</html>

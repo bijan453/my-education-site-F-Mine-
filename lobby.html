@@ -5,27 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Study Hub - F-Mind</title>
 <style>
-  #profile-nick {
-  position: relative;
-  z-index: 9999;
-  cursor: pointer;
-  color: gold;
-}
-
-/* аватар */
-#profile-avatar {
-  position: relative;
-  z-index: 9999;
-}
-
-/* FIX MEDIA */
-@media (max-width: 768px) {
-  h1 { font-size: 24px; }
-  button { width: 100%; }
-
-  .nav-menu {
-    flex-wrap: wrap;
-  }
+  @media (max-width: 768px){
+  h1{ font-size:24px; }
+  button{ width:100%; }
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
 body {
@@ -204,6 +186,37 @@ body.light .neon-footer { color:#444; text-shadow:none; }
 @keyframes fadeInContent { 0%{opacity:0; transform:translateY(20px);} 100%{opacity:1; transform:translateY(0);} }
 @keyframes fadeUp { 0%{opacity:0; transform:translateY(20px);} 100%{opacity:1; transform:translateY(0);} }
 @keyframes bgPulse { 0%{background-color:rgba(255,255,255,0.05);} 50%{background-color:rgba(255,255,255,0.1);} 100%{background-color:rgba(255,255,255,0.05);} }
+.avatar-menu{
+  position:absolute;
+  top:60px;
+  right:0;
+  display:none;
+  flex-direction:column;
+  gap:8px;
+  background:rgba(0,0,0,0.85);
+  padding:10px;
+  border-radius:12px;
+  min-width:180px;
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 20px rgba(0,0,0,0.6);
+  z-index:999;
+}
+
+.avatar-menu button{
+  padding:8px;
+  border:none;
+  border-radius:8px;
+  background:#6c63ff;
+  color:white;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.avatar-menu button:hover{
+  background:#5751d6;
+  box-shadow:0 0 10px rgba(108,99,255,0.5);
+}
+
 </style>
 </head>
 
@@ -213,12 +226,27 @@ body.light .neon-footer { color:#444; text-shadow:none; }
   <div class="logo">
     <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
   </div>
-  
+  <nav class="nav-menu">
+    <button onclick="goTo('about.html')" class="nav-btn">">О нас</button>
+    <button onclick="goTo('function.html')" class="nav-btn">Функции</button>
+    <button onclick="goTo('donate.html')" class="nav-btn">Донатная часть</button>
+    <button onclick="goTo('help.html')" class="nav-btn">Помощь</button>
+    <button onclick="goTo('news.html')" class="nav-btn">Новости</button>
+  </nav>
   <div class="user-profile">
-    <img id="profile-avatar" src="https://via.placeholder.com/40" alt="Avatar" onclick="changeAvatar()">
-    <span id="profile-nick" onclick="goToAccount()">NIK</span>
-    <input type="file" id="avatar-input" style="display:none;" accept="image/*">
+  <img id="profile-avatar" src="https://via.placeholder.com/40" alt="Avatar" onclick="toggleAvatarMenu()">
+  <span id="profile-nick">NIK</span>
+
+  <input type="file" id="avatar-input" style="display:none;" accept="image/*">
+
+  <!-- 📋 МЕНЮ -->
+  <div id="avatar-menu" class="avatar-menu">
+    <button onclick="goToAccount()">👤 Аккаунт</button>
+    <button onclick="changeAvatar()">🖼️ Сменить аватар</button>
+    <button onclick="openSettings()">⚙️ Настройки</button>
   </div>
+</div>
+
 </header>
 
 <!-- === Лобби: предметы, чат-боты, переводчик + экзамен === -->
@@ -295,11 +323,50 @@ function changeAvatar(){
         }
     }
 }
-function goToAccount(){
-    window.location.href = "account.html";
+function toggleAvatarMenu(){
+  const menu = document.getElementById("avatar-menu");
+  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
 }
 
-// И потом назначаем клик:
-document.getElementById("profile-nick").onclick = goToAccount;
+// закрытие меню при клике вне
+document.addEventListener("click", function(e){
+  const menu = document.getElementById("avatar-menu");
+  const avatar = document.getElementById("profile-avatar");
+
+  if(menu && !menu.contains(e.target) && e.target !== avatar){
+    menu.style.display = "none";
+  }
+});
+
+function goToAccount(){
+  window.location.href = "account.html";
+}
+
+function changeAvatar(){
+  const fileInput = document.getElementById("avatar-input");
+  fileInput.click();
+
+  fileInput.onchange = function(){
+    const file = fileInput.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        document.getElementById("profile-avatar").src = e.target.result;
+
+        if(currentUser){
+          let data = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
+          data.avatar = e.target.result;
+          localStorage.setItem("user_"+currentUser, JSON.stringify(data));
+        }
+      }
+      reader.readAsDataURL(file);
+    }
+  }
+}
+
+function openSettings(){
+  alert("⚙️ Настройки пока в разработке");
+}
+
 
 </script>

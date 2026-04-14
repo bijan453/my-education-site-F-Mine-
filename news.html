@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News - F-Mine</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.container{
+  width:90%;
+  max-width:850px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(15px);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+}
+
+/* 💛 заголовок */
+h1{
+  text-align:center;
+  color:gold;
+  text-shadow:0 0 10px rgba(255,215,0,0.8),
+               0 0 25px rgba(255,215,0,0.4);
+}
+
+/* 📰 блок новости */
+.news{
+  margin-top:20px;
+  padding:20px;
+  border-radius:15px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+
+  box-shadow:
+    0 0 10px rgba(255,255,255,0.1),
+    0 0 20px rgba(255,255,255,0.05);
+}
+
+/* 💛 заголовок новости */
+.news h2{
+  color:gold;
+  text-shadow:0 0 10px rgba(255,215,0,0.6);
+}
+
+/* ⚡ текст новости */
+.news p{
+  color:white;
+  line-height:1.6;
+  text-shadow:0 0 6px rgba(255,255,255,0.4);
+}
+
+/* 🔵 highlight неон */
+.highlight{
+  color:white;
+  text-shadow:
+    0 0 8px rgba(255,255,255,0.7),
+    0 0 15px rgba(255,255,255,0.3);
+}
+
+/* 🔘 кнопка */
+button{
+  margin-top:20px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#6c63ff;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#5751d6;
+  box-shadow:0 0 15px rgba(108,99,255,0.5);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📰 F-Mine News</h1>
+
+<div class="news">
+
+<h2>🚀 Beta 1.0 Update Released</h2>
+
+<p>
+В новой версии <span class="highlight">F-Mine Beta 1.0</span> мы добавили крупные улучшения системы.
+</p>
+
+<p>
+💎 Теперь доступна <span class="highlight">усовершенствованная система аккаунтов</span>, которая сохраняет прогресс пользователей,
+уровни обучения и достижения.
+</p>
+
+<p>
+🎨 Мы полностью улучшили <span class="highlight">интерфейс платформы</span>, сделав его более современным, плавным и удобным.
+</p>
+
+<p>
+🖼️ Добавлена функция <span class="highlight">аватарок пользователей</span> — теперь каждый аккаунт можно персонализировать.
+</p>
+
+<p>
+👤 Также переработан <span class="highlight">профиль пользователя</span>, добавлены новые элементы отображения прогресса и активности.
+</p>
+
+<p>
+⚡ В будущем планируется расширение AI-функций, переводчика и системы обучения.
+</p>
+
+</div>
+
+<button onclick="goBack()">⬅ Назад в лобби</button>
+
+</div>
+
+<script>
+function goBack(){
+  window.location.href = "lobby.html";
+}
+</script>
+
+</body>
+</html>

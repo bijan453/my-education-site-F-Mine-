@@ -4,110 +4,114 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Профиль пользователя</title>
+
 <style>
-  @media (max-width: 768px){
-  h1{ font-size:24px; }
-  button{ width:100%; }
-}
-body{
+*{
   margin:0;
+  padding:0;
+  box-sizing:border-box;
   font-family:'Segoe UI',sans-serif;
+}
+.exit-wrap{
+  margin-top:30px;
+  display:flex;
+  justify-content:center;
+}
+
+.exit-btn{
+  padding:12px 25px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,#6c63ff,#4a47d1);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 0 15px rgba(108,99,255,0.3);
+}
+
+.exit-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 20px gold;
+}
+
+body{
   background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
   color:white;
   text-align:center;
 }
 
-/* контейнер */
+/* ===== LAYOUT ===== */
 .container{
-  max-width:700px;
-  margin:80px auto;
+  max-width:1000px;
+  margin:60px auto;
   padding:20px;
 }
 
-/* карточки */
+.layout{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+/* ===== CARDS ===== */
 .card{
   background:rgba(255,255,255,0.05);
   backdrop-filter:blur(15px);
   border-radius:20px;
   padding:20px;
-  margin-bottom:20px;
   box-shadow:0 0 30px rgba(0,0,0,0.4);
+  flex:1;
+  min-width:300px;
   animation:fadeIn 0.8s ease;
 }
 
-/* анимация */
 @keyframes fadeIn{
   from{opacity:0; transform:translateY(20px);}
   to{opacity:1; transform:translateY(0);}
 }
 
-/* заголовки */
-h1{
-  font-size:36px;
-  text-shadow:0 0 15px gold;
-}
-
-h2{
+/* ===== LEFT PROFILE ===== */
+.profile-top{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:15px;
   margin-bottom:15px;
-  color:gold;
-  text-shadow:0 0 10px gold;
 }
 
-/* имя */
+.avatar{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  border:2px solid gold;
+  cursor:pointer;
+}
+
 .username{
   font-size:20px;
   font-weight:bold;
-  color:#fff;
   text-shadow:0 0 8px gold;
 }
 
-/* прогресс линия */
-.progress-line{
-  width:90%;
-  background:#333;
-  border-radius:12px;
-  margin:15px auto;
-  height:22px;
-  position:relative;
-  overflow:hidden;
-}
-
-/* заполнение */
-.progress-fill{
-  height:100%;
-  width:0%;
-  border-radius:12px;
-  background:linear-gradient(90deg,#6c63ff,gold);
-  transition:0.6s;
-}
-
-/* текст */
-.progress-text{
-  position:absolute;
+/* bio */
+.bio{
   width:100%;
-  top:0;
-  left:0;
-  line-height:22px;
-  font-weight:bold;
-}
-
-/* олимпиады */
-.olymp-item{
-  margin:10px 0;
-  font-size:18px;
+  min-height:80px;
   padding:10px;
   border-radius:10px;
-  background:rgba(0,0,0,0.2);
-  transition:0.3s;
+  border:none;
+  outline:none;
+  resize:none;
+  background:rgba(0,0,0,0.25);
+  color:white;
+  margin-top:10px;
 }
 
-.olymp-item:hover{
-  box-shadow:0 0 15px gold;
-}
-
-/* кнопка */
+/* button */
 button{
-  margin-top:15px;
+  margin-top:10px;
   padding:10px 20px;
   border:none;
   border-radius:10px;
@@ -115,150 +119,248 @@ button{
   color:white;
   font-weight:bold;
   cursor:pointer;
-  transition:0.3s;
 }
 
 button:hover{
-  transform:translateY(-3px);
-  box-shadow:0 0 20px gold;
+  box-shadow:0 0 15px gold;
+}
+
+/* ===== PROGRESS ===== */
+.progress-line{
+  width:100%;
+  background:#222;
+  border-radius:12px;
+  height:22px;
+  margin:10px 0;
+  position:relative;
+  overflow:hidden;
+}
+
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#6c63ff,gold);
+  transition:0.6s;
+}
+
+.progress-text{
+  position:absolute;
+  width:100%;
+  top:0;
+  line-height:22px;
+  font-weight:bold;
+}
+
+/* olymp */
+.olymp-item{
+  margin:10px 0;
+  padding:10px;
+  background:rgba(0,0,0,0.2);
+  border-radius:10px;
+}
+
+/* ===== MENU ===== */
+.avatar-menu{
+  position:absolute;
+  display:none;
+  flex-direction:column;
+  gap:8px;
+  padding:10px;
+  background:rgba(0,0,0,0.85);
+  border-radius:12px;
+  margin-top:10px;
+}
+
+.avatar-menu button{
+  background:#6c63ff;
+  border:none;
+  padding:8px;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
 }
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
-  <!-- Профиль -->
-  <div class="card">
-    <h1>👤 Профиль</h1>
-    <p>Привет, <span class="username" id="usernameDisplay"></span></p>
+  <div class="layout">
+
+    <!-- ================= LEFT ================= -->
+    <div class="card">
+
+      <h1>👤 Профиль</h1>
+
+      <div class="profile-top">
+        <img id="profileAvatar"
+             src="https://via.placeholder.com/70"
+             class="avatar"
+             onclick="toggleMenu()">
+
+        <span id="usernameDisplay" class="username"></span>
+      </div>
+
+      <!-- bio -->
+      <textarea id="bio" class="bio" placeholder="Напиши о себе..."></textarea>
+
+      <button onclick="saveBio()">💾 Сохранить</button>
+
+      <!-- menu -->
+      <div id="avatarMenu" class="avatar-menu">
+        <button onclick="changeAvatar()">🖼️ Сменить аватар</button>
+        <button onclick="alert('⚙️ Настройки в разработке')">⚙️ Настройки</button>
+      </div>
+
+      <input type="file" id="avatarInput" style="display:none;" accept="image/*">
+
+    </div>
+
+    <!-- ================= RIGHT ================= -->
+    <div class="card">
+
+      <h2>📚 Прогресс обучения</h2>
+
+      <div class="progress-line">
+        <div class="progress-fill" id="math7Fill"></div>
+        <div class="progress-text" id="math7Text">7 класс: 0%</div>
+      </div>
+
+      <div class="progress-line">
+        <div class="progress-fill" id="math8Fill"></div>
+        <div class="progress-text" id="math8Text">8 класс: 0%</div>
+      </div>
+
+      <div class="progress-line">
+        <div class="progress-fill" id="math9Fill"></div>
+        <div class="progress-text" id="math9Text">9 класс: 0%</div>
+      </div>
+<div class="progress-line">
+        <div class="progress-fill" id="math10Fill"></div>
+        <div class="progress-text" id="math10Text">10 класс: 0%</div>
+      </div>
+
+      <h2 style="margin-top:20px;">🏆 Олимпиада</h2>
+
+      <div class="olymp-item" id="olymp7">7 класс: 0%</div>
+      <div class="olymp-item" id="olymp8">8 класс: 0%</div>
+      <div class="olymp-item" id="olymp9">9 класс: 0%</div>
+      <div class="olymp-item" id="olymp10">10 класс: 0%</div>
+
+    </div>
+
   </div>
-
-  <!-- Прогресс обучения -->
-  <div class="card">
-    <h2>📚 Прогресс обучения</h2>
-
-    <div class="progress-line">
-      <div class="progress-fill" id="math7Fill"></div>
-      <div class="progress-text" id="math7Text">7 класс: 0%</div>
-    </div>
-
-    <div class="progress-line">
-      <div class="progress-fill" id="math8Fill"></div>
-      <div class="progress-text" id="math8Text">8 класс: 0%</div>
-    </div>
-
-    <div class="progress-line">
-      <div class="progress-fill" id="math9Fill"></div>
-      <div class="progress-text" id="math9Text">9 класс: 0%</div>
-    </div>
-
-    <div class="progress-line">
-      <div class="progress-fill" id="math10Fill"></div>
-      <div class="progress-text" id="math10Text">10 класс: 0%</div>
-    </div>
-  </div>
-
-  <!-- Олимпиада -->
-  <div class="card">
-    <h2>🏆 Math Olympiad</h2>
-
-    <div class="olymp-item" id="olymp7">7 класс: 0%</div>
-    <div class="olymp-item" id="olymp8">8 класс: 0%</div>
-    <div class="olymp-item" id="olymp9">9 класс: 0%</div>
-    <div class="olymp-item" id="olymp10">10 класс: 0%</div>
-  </div>
-
-  <button onclick="location.reload()">🔄 Обновить прогресс</button>
 
 </div>
 
 <script>
-// =======================
-// 👤 USER SYSTEM (FIXED)
-// =======================
+
 let user = localStorage.getItem('currentUser') || 'guest';
 document.getElementById('usernameDisplay').innerText = user;
 
-// =======================
-// 📊 PROGRESS SYSTEM (FIXED)
-// =======================
+// ================= LOAD =================
+let data = JSON.parse(localStorage.getItem("user_"+user)) || {};
 
-// считаем прогресс по классам
+if(data.avatar){
+  document.getElementById("profileAvatar").src = data.avatar;
+}
+
+if(data.bio){
+  document.getElementById("bio").value = data.bio;
+}
+
+// ================= SAVE BIO =================
+function saveBio(){
+  let bio = document.getElementById("bio").value;
+
+  let data = JSON.parse(localStorage.getItem("user_"+user)) || {};
+  data.bio = bio;
+
+  localStorage.setItem("user_"+user, JSON.stringify(data));
+
+  alert("💾 Сохранено!");
+}
+
+// ================= MENU =================
+function toggleMenu(){
+  let menu = document.getElementById("avatarMenu");
+  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+}
+
+document.addEventListener("click", function(e){
+  let menu = document.getElementById("avatarMenu");
+  let avatar = document.getElementById("profileAvatar");
+
+  if(menu && !menu.contains(e.target) && e.target !== avatar){
+    menu.style.display = "none";
+  }
+});
+
+// ================= AVATAR =================
+function changeAvatar(){
+  document.getElementById("avatarInput").click();
+
+  document.getElementById("avatarInput").onchange = function(){
+    let file = this.files[0];
+
+    if(file){
+      let reader = new FileReader();
+
+      reader.onload = function(e){
+        let src = e.target.result;
+
+        document.getElementById("profileAvatar").src = src;
+
+        let data = JSON.parse(localStorage.getItem("user_"+user)) || {};
+        data.avatar = src;
+
+        localStorage.setItem("user_"+user, JSON.stringify(data));
+      }
+
+      reader.readAsDataURL(file);
+    }
+  }
+}
+
+// ================= PROGRESS =================
 function getProgress(classNum){
   let key = user + '_math' + classNum + '_percent';
-  let percent = localStorage.getItem(key);
-
-  if(percent === null) return 0;
-
-  percent = parseInt(percent);
-  if(isNaN(percent)) return 0;
-
-  return percent;
+  return parseInt(localStorage.getItem(key)) || 0;
 }
 
-// =======================
-// 🏆 OLYMPIAD SYSTEM (FIXED)
-// =======================
 function getOlymp(classNum){
   let key = user + '_olymp_' + classNum;
-  let val = localStorage.getItem(key);
-
-  if(!val) return 0;
-
-  val = val.replace('%','');
-  val = parseInt(val);
-
-  return isNaN(val) ? 0 : val;
+  return parseInt(localStorage.getItem(key)) || 0;
 }
 
-// =======================
-// 📊 RENDER UI
-// =======================
 function updateUI(){
 
   ['7','8','9','10'].forEach(g => {
 
-    // --- math progress ---
-    let percent = getProgress(g);
+    let p = getProgress(g);
+    document.getElementById('math'+g+'Fill').style.width = p + '%';
+    document.getElementById('math'+g+'Text').innerText = g + ' класс: ' + p + '%';
 
-    let fill = document.getElementById('math'+g+'Fill');
-    let text = document.getElementById('math'+g+'Text');
+    document.getElementById('olymp'+g).innerHTML =
+      '<span style="color:gold;font-weight:bold;">' + getOlymp(g) + '%</span>';
 
-    if(fill) fill.style.width = percent + '%';
-    if(text) text.innerText = g + ' класс: ' + percent + '%';
-
-    // --- olymp ---
-    let olymp = getOlymp(g);
-    let el = document.getElementById('olymp'+g);
-
-    if(el){
-      el.innerHTML =
-        '<span style="color:gold;font-weight:bold;">' +
-        olymp + '%</span>';
-    }
   });
+
 }
 
-// =======================
-// 🔄 AUTO UPDATE (FIXED)
-// =======================
-window.addEventListener('storage', function(){
-  updateUI();
-});
-
-// =======================
-// ▶ FIRST LOAD
-// =======================
 updateUI();
-
-// =======================
-// 🔄 MANUAL REFRESH BUTTON FIX
-// =======================
-function refresh(){
-  updateUI();
+function goLobby(){
+  window.location.href = "lobby.html";
 }
+
 </script>
+<!-- ===== EXIT BUTTON ===== -->
+<div class="exit-wrap">
+  <button class="exit-btn" onclick="goLobby()">
+    🏠 Выйти в лобби HTML
+  </button>
+</div>
 
 </body>
 </html>

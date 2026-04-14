@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Банк - F-Mind</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+/* 💎 контейнер без изменений */
+.container{
+  width:90%;
+  max-width:700px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(15px);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+}
+
+/* 💛 золотой заголовок */
+h1{
+  text-align:center;
+  color:gold;
+  text-shadow:0 0 10px rgba(255,215,0,0.8),
+               0 0 20px rgba(255,215,0,0.4);
+}
+
+/* 🏦 банк карточки */
+.bank{
+  margin-top:20px;
+  padding:15px;
+  border-radius:15px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;
+  transition:0.3s;
+  text-shadow:0 0 6px rgba(255,255,255,0.4);
+}
+
+/* ⚡ hover эффект */
+.bank:hover{
+  border-color:gold;
+  transform:translateY(-3px);
+  box-shadow:0 0 15px rgba(255,215,0,0.3);
+}
+
+/* 🔥 выбранный банк */
+.bank.active{
+  border-color:gold;
+  box-shadow:0 0 20px rgba(255,215,0,0.6);
+}
+
+/* 💳 кнопка оплаты */
+.pay-btn{
+  margin-top:20px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:gold;
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.pay-btn:hover{
+  transform:scale(1.02);
+  box-shadow:0 0 15px rgba(255,215,0,0.5);
+}
+
+/* ⬅ назад */
+.back{
+  margin-top:10px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#6c63ff;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.back:hover{
+  background:#5751d6;
+  box-shadow:0 0 10px rgba(108,99,255,0.5);
+}
+/* 💛 название банка (h3) */
+.bank h3{
+  color:gold;
+  text-shadow:0 0 10px rgba(255,215,0,0.6),
+               0 0 20px rgba(255,215,0,0.3);
+}
+
+/* ⚡ описание банка (p) */
+.bank p{
+  color:white;
+  text-shadow:0 0 8px rgba(255,255,255,0.7),
+               0 0 15px rgba(255,255,255,0.3);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🏦 Выбор банка</h1>
+
+<div class="bank" onclick="selectBank(this, 'paybank')">
+<h3>PayBank</h3>
+<p>Комиссия 0%</p>
+</div>
+
+<div class="bank" onclick="selectBank(this, 'fmoney')">
+<h3>F-Money</h3>
+<p>Мгновенные переводы</p>
+</div>
+
+<div class="bank" onclick="selectBank(this, 'neobank')">
+<h3>NeoBank</h3>
+<p>Международная система</p>
+</div>
+
+<div class="bank" onclick="selectBank(this, 'goldpay')">
+<h3>GoldPay</h3>
+<p>VIP поддержка</p>
+</div>
+
+<button class="pay-btn" onclick="pay()">💳 Оплатить</button>
+<button class="back" onclick="goBack()">⬅ Назад</button>
+
+</div>
+
+<script>
+
+let selectedBank = null;
+
+function selectBank(el, bank){
+  // убрать старый active
+  document.querySelectorAll('.bank').forEach(b => b.classList.remove('active'));
+
+  // добавить новый
+  el.classList.add('active');
+
+  selectedBank = bank;
+}
+
+function pay(){
+  if(!selectedBank){
+    alert("⚠️ Сначала выбери банк!");
+    return;
+  }
+
+  alert("💳 Выбран банк: " + selectedBank + "\nОплата пока недоступна!");
+}
+
+function goBack(){
+  window.location.href = "donate.html";
+}
+
+</script>
+
+</body>
+</html>

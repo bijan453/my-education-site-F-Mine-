@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>О нас - F-Mind</title>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden; /* УБРАЛ СКРОЛЛ */
+}
+
+.container {
+  width:90%;
+  max-width:700px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+  animation:fadeIn 0.8s ease;
+}
+
+h1 {
+  text-align:center;
+  margin-bottom:15px;
+  font-size:2rem;
+}
+
+/* 🔥 ЛОГО F-Mine как в лобби */
+.logo span {
+  font-size:2rem;
+  font-weight:bold;
+  color:white;
+  animation:goldBlink 2s infinite;
+}
+.logo span:nth-child(1){animation-delay:0s;}
+.logo span:nth-child(2){animation-delay:0.2s;}
+.logo span:nth-child(3){animation-delay:0.4s;}
+.logo span:nth-child(4){animation-delay:0.6s;}
+.logo span:nth-child(5){animation-delay:0.8s;}
+.logo span:nth-child(6){animation-delay:1s;}
+
+@keyframes goldBlink {
+  0%,20%,100% { color:white; text-shadow:none; }
+  50% { color:gold; text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4); }
+}
+
+.section {
+  margin-bottom:15px;
+  padding:12px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  font-size:15px;
+
+  transition:0.5s; /* ← добавь это */
+}
+
+h2 {
+  color:gold;
+  margin-bottom:5px;
+  font-size:16px;
+}
+
+p {
+  font-size:14px;
+  line-height:1.4;
+}
+
+button {
+  padding:10px 15px;
+  border:none;
+  border-radius:10px;
+  background:#6c63ff;
+  color:white;
+  cursor:pointer;
+  margin-top:10px;
+  width:100%;
+}
+
+button:hover {
+  transform:translateY(-2px);
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(20px);}
+  to {opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- 🔥 ЛОГО -->
+<div class="logo" style="text-align:center; margin-bottom:10px;">
+  <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
+</div>
+
+<h1>О нас</h1>
+
+<div class="section">
+<h2>📌 О проекте</h2>
+<p>
+F-Mind — образовательная платформа, где можно решать задачи, использовать чат-ботов и прокачивать знания.
+</p>
+</div>
+
+<div class="section">
+<h2>🚀 Наша цель</h2>
+<p>
+Сделать обучение быстрым, удобным и интересным с помощью технологий.
+</p>
+</div>
+
+<div class="section">
+<h2>🤖 Telegram-бот</h2>
+<p>
+У нас есть Telegram-бот для быстрого решения задач.
+</p>
+<p>
+👉 Вставь сюда: <b>"БОТА in futere"</b>
+</p>
+</div>
+
+<div class="section">
+<h2>📞 Контакты</h2>
+<p>📱 Телефон: <b>91-943-34-00</b></p>
+<p>📧 Email: <b>Fmine@gmail.com</b></p>
+</div>
+
+<button onclick="goBack()">⬅ Назад</button>
+
+</div>
+
+<script>
+function goBack(){
+    window.location.href = "lobby.html";
+}
+document.querySelectorAll('.section').forEach((el, i)=>{
+    el.style.opacity = "0";
+    el.style.transform = "translateY(15px)";
+
+    setTimeout(()=>{
+        el.style.transition = "0.5s ease";
+        el.style.opacity = "1";
+        el.style.transform = "translateY(0)";
+    }, i * 150);
+});
+</script>
+
+</body>
+</html>

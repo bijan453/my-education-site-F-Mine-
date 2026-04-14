@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Функции - F-Mind</title>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+}
+
+.container {
+  width:90%;
+  max-width:900px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+}
+
+/* 🔥 ЛОГО */
+.logo span {
+  font-size:2rem;
+  font-weight:bold;
+  color:white;
+  animation:goldBlink 2s infinite;
+}
+.logo span:nth-child(1){animation-delay:0s;}
+.logo span:nth-child(2){animation-delay:0.2s;}
+.logo span:nth-child(3){animation-delay:0.4s;}
+.logo span:nth-child(4){animation-delay:0.6s;}
+.logo span:nth-child(5){animation-delay:0.8s;}
+.logo span:nth-child(6){animation-delay:1s;}
+
+@keyframes goldBlink {
+  0%,20%,100% { color:white; text-shadow:none; }
+  50% { color:gold; text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4); }
+}
+
+h1 {
+  text-align:center;
+  margin:10px 0 20px;
+}
+
+/* 🔥 БЛОКИ */
+.grid {
+  display:flex;
+  gap:20px;
+}
+
+.card {
+  flex:1;
+  padding:20px;
+  border-radius:15px;
+  background:rgba(255,255,255,0.05);
+  transition:0.3s;
+}
+
+.card:hover {
+  transform:translateY(-5px);
+}
+
+/* 💎 платный */
+.premium {
+  border:1px solid gold;
+  box-shadow:0 0 20px rgba(255,215,0,0.2);
+}
+
+h2 {
+  color:gold;
+}
+
+ul {
+  padding-left:15px;
+  line-height:1.6;
+}
+
+button {
+  margin-top:15px;
+  padding:10px;
+  width:100%;
+  border:none;
+  border-radius:10px;
+  background:#6c63ff;
+  color:white;
+  cursor:pointer;
+}
+
+button:hover {
+  transform:translateY(-2px);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo" style="text-align:center;">
+  <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
+</div>
+
+<h1>Функции</h1>
+
+<div class="grid">
+
+<!-- 🆓 БЕСПЛАТНО -->
+<div class="card section">
+<h2>🆓 Бесплатно</h2>
+<ul>
+<li>🤖 Базовый чат-бот</li>
+<li>📚 Решение школьных задач</li>
+<li>🌐 Переводчик</li>
+<li>📊 Простая статистика</li>
+<li>🧠 Базовые объяснения</li>
+</ul>
+</div>
+
+<!-- 💎 ПЛАТНО -->
+<div class="card premium section">
+<h2>💎 Premium (в разработке)</h2>
+<ul>
+<li>🤖 Умный AI-бот (как Wolfram)</li>
+<li>📈 Сложные задачи (олимпиада)</li>
+<li>🧠 Полные пошаговые решения</li>
+<li>⚡ Быстрая обработка</li>
+<li>📊 Расширенная аналитика</li>
+<li>🎯 Персональные задания</li>
+<li>🏆 Достижения и уровни</li>
+</ul>
+</div>
+
+</div>
+
+<button onclick="goBack()">⬅ Назад</button>
+
+</div>
+
+<script>
+
+// назад
+function goBack(){
+  window.location.href = "lobby.html";
+}
+
+// анимация появления
+document.querySelectorAll('.section').forEach((el,i)=>{
+  el.style.opacity="0";
+  el.style.transform="translateY(15px)";
+
+  setTimeout(()=>{
+    el.style.transition="0.5s";
+    el.style.opacity="1";
+    el.style.transform="translateY(0)";
+  }, i*200);
+});
+
+</script>
+
+</body>
+</html>

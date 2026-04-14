@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Донат - F-Mine</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* ❗ КОНТЕЙНЕР НЕ ТРОГАЛ */
+.container{
+  width:90%;
+  max-width:800px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(15px);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+}
+
+/* 💛 ЗОЛОТОЙ ЗАГОЛОВОК */
+h1{
+  text-align:center;
+  color:gold;
+  text-shadow:0 0 10px rgba(255,215,0,0.8),
+               0 0 20px rgba(255,215,0,0.5);
+}
+
+/* ⚡ НЕОНОВЫЙ ТЕКСТ */
+.info{
+  margin-top:15px;
+  font-size:15px;
+  line-height:1.5;
+  opacity:0.95;
+  text-shadow:0 0 8px rgba(255,255,255,0.6);
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+  margin-top:20px;
+}
+
+/* 💎 КАРТОЧКИ С НЕОНОМ */
+.card{
+  padding:15px;
+  border-radius:15px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;
+  transition:0.3s;
+  text-align:center;
+
+  box-shadow:0 0 10px rgba(255,255,255,0.08);
+}
+
+/* ⚡ ХОВЕР ЭФФЕКТ */
+.card:hover{
+  transform:translateY(-5px);
+  border-color:white;
+  box-shadow:0 0 15px rgba(255,255,255,0.7),
+             0 0 35px rgba(255,255,255,0.3);
+}
+
+.card h3{
+  color:gold;
+  text-shadow:0 0 6px rgba(255,215,0,0.6);
+}
+
+/* 🔘 КНОПКА */
+button{
+  margin-top:20px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#6c63ff;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#5751d6;
+  transform:scale(1.02);
+  box-shadow:0 0 15px rgba(108,99,255,0.5);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>💳 Поддержка проекта F-Mine</h1>
+
+  <div class="info">
+    <h4>F-Mine развивается как образовательная платформа. Донаты помогают:</h4>
+
+    <ul>
+      <li>⚡ ускорять работу ботов</li>
+      <li>🤖 развивать AI-решения</li>
+      <li>📚 добавлять новые функции</li>
+      <li>💎 создавать Premium режим</li>
+    </ul>
+
+    <p><b>Выберите банк для оплаты:</b></p>
+  </div>
+
+  <div class="cards">
+    <div class="card" onclick="go('bank.html?bank=paybank')">
+      <h3>🏦 PayBank</h3>
+      <p>Быстрая оплата</p>
+    </div>
+
+    <div class="card" onclick="go('bank.html?bank=fmoney')">
+      <h3>💳 F-Money</h3>
+      <p>Универсальный банк</p>
+    </div>
+
+    <div class="card" onclick="go('bank.html?bank=neobank')">
+      <h3>🏦 NeoBank</h3>
+      <p>Международный</p>
+    </div>
+
+    <div class="card" onclick="go('bank.html?bank=goldpay')">
+      <h3>💎 GoldPay</h3>
+      <p>VIP платежи</p>
+    </div>
+  </div>
+
+  <button onclick="goBack()">⬅ Назад</button>
+
+</div>
+
+<script>
+function go(page){
+  window.location.href = page;
+}
+
+function goBack(){
+  window.location.href = "lobby.html";
+}
+</script>
+
+</body>
+</html>
