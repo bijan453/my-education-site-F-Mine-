@@ -216,30 +216,71 @@ body.light .neon-footer { color:#444; text-shadow:none; }
   background:#5751d6;
   box-shadow:0 0 10px rgba(108,99,255,0.5);
 }
+/* ===== BURGER BUTTON ===== */
 .burger {
   display: none;
-  font-size: 26px;
+  font-size: 28px;
   background: none;
   border: none;
   color: white;
   cursor: pointer;
+  z-index: 1001;
 }
 
-/* 📱 МОБИЛКА */
+/* ===== NAV MENU (DESKTOP) ===== */
+.nav-menu {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
 
+  /* показываем бургер */
   .burger {
     display: block;
+    position: relative;
+    z-index: 1002;
   }
 
+  /* меню по умолчанию скрыто */
   .nav-menu {
     display: none;
     flex-direction: column;
-   
+    position: absolute;
+    top: 80px;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.92);
+    padding: 15px;
+    gap: 10px;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    animation: menuFade 0.25s ease;
   }
 
+  /* когда открыто */
   .nav-menu.active {
     display: flex;
+  }
+
+  /* кнопки внутри меню */
+  .nav-btn {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+/* ===== ANIMATION ===== */
+@keyframes menuFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
