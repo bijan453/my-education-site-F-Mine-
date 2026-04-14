@@ -28,15 +28,19 @@ body {
     padding:40px;
     border-radius:20px;
     box-shadow:0 0 40px rgba(0,0,0,0.3);
-    width:90%;
-    max-width:400px;
+   
+    width:95%;
+    max-width:450px;
     text-align:center;
+     border:1px solid gold;
+     box-shadow:0 0 20px gold
 }
 
 h2 {
     color:gold;
     text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
     margin-bottom:20px;
+    font-size: 35px;
 }
 
 input {
@@ -46,6 +50,7 @@ input {
     border-radius:10px;
     border:none;
     outline:none;
+    
 }
 
 button {
@@ -67,6 +72,10 @@ button:hover {
 @media (max-width:768px){
     h1{ font-size:24px; }
     button{ width:100%; }
+}
+@keyframes goldBlink {
+  0%,20%,100% { color:white; text-shadow:none; }
+  50% { color:gold; text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4); }
 }
 </style>
 
@@ -92,7 +101,7 @@ button:hover {
     let email = document.getElementById("email").value.trim();
     let pass = document.getElementById("pass").value.trim();
 
-    if (!nick||  !pass) {
+    if (!nick||!email||  !pass) {
         alert("Заполни все поля!");
         return;
     }
@@ -156,8 +165,8 @@ function register() {
     let email = document.getElementById("email").value.trim();
     let pass = document.getElementById("pass").value.trim();
 
-    if (!nick || !pass) {
-        alert("Заполни все поля!");
+    if (!nick || !email|| !pass) {
+        alert("⚠️ Заполни все поля!");
         return;
     }
 
@@ -177,7 +186,7 @@ function register() {
     })
     .catch((err) => {
         console.log("EmailJS ошибка:", err);
-        alert("⚠️ Ошибка отправки email или вы создали аккаунт без  email");
+          alert("⚠️ Ошибка отправки email");
     });
 
 }
