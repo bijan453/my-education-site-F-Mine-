@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Chat</title>
+
+<style>
+body{
+  margin:0;
+  background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+  font-family:Segoe UI;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+/* 🔲 */
+.box{
+  width:95%;
+  max-width:600px;
+  height:90vh;
+  display:flex;
+  flex-direction:column;
+
+  background:linear-gradient(135deg,#2a2a45,#23233a);
+  border:2px solid gold;
+  border-radius:20px;
+  box-shadow:0 0 25px gold;
+}
+
+/* HEADER */
+.header{
+  text-align:center;
+  padding:15px;
+  color:gold;
+  font-weight:bold;
+  border-bottom:1px solid rgba(255,215,0,0.3);
+}
+
+/* CHAT */
+.chat{
+  flex:1;
+  overflow-y:auto;
+  padding:10px;
+}
+
+.msg{
+  margin:8px 0;
+  padding:10px;
+  border-radius:12px;
+  max-width:70%;
+}
+
+.me{
+  background:linear-gradient(135deg,#4facfe,#00c6ff);
+  margin-left:auto;
+}
+
+.other{
+  background:rgba(255,255,255,0.1);
+  border:1px solid gold;
+}
+
+/* INPUT */
+.input{
+  display:flex;
+  gap:5px;
+  padding:10px;
+  border-top:1px solid rgba(255,215,0,0.3);
+}
+
+input{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+}
+
+button{
+  background:#00c6ff;
+  border:none;
+  color:white;
+  padding:10px;
+  border-radius:10px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="header" id="title">💬 Чат</div>
+
+<div id="chat" class="chat"></div>
+
+<div class="input">
+  <input id="msg" placeholder="Сообщение...">
+  <button onclick="send()">➤</button>
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCZkyj0wJrqK4RRq23MdReXZUPq0Q_ovs",
+  authDomain: "fmine-898fe.firebaseapp.com",
+  projectId: "fmine-898fe",
+  storageBucket: "fmine-898fe.firebasestorage.app",
+  messagingSenderId: "1085384994979",
+  appId: "1:1085384994979:web:dd3808b69a024286984f16"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let me = localStorage.getItem("currentUser") || "User";
+let withUser = localStorage.getItem("chatWith");
+
+document.getElementById("title").innerText = "💬 Чат с " + withUser;
+
+let chat = document.getElementById("chat");
+
+/* LOAD */
+onSnapshot(collection(db,"messages"), snap=>{
+  chat.innerHTML = "";
+
+  snap.forEach(d=>{
+    let m = d.data();
+
+    if(
+      (m.from === me && m.to === withUser) ||
+      (m.from === withUser && m.to === me)
+    ){
+      chat.innerHTML += 
+        <div class="msg ${m.from===me?'me':'other'}">
+          ${m.text}
+        </div>
+      ;
+    }
+  });
+
+  chat.scrollTop = chat.scrollHeight;
+});
+
+window.send = async function(){
+  let text = document.getElementById("msg").value;
+  if(!text) return;
+
+  await addDoc(collection(db,"messages"),{
+    text,
+    from: me,
+    to: withUser,
+    time: Date.now()
+  });
+
+  document.getElementById("msg").value = "";
+}
+
+</script>
+
+</body>
+</html>

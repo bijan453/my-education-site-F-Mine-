@@ -3,192 +3,222 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F-Mine</title>
+<title>F-Mine | Auth</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
-<script>
-  emailjs.init("Y9LA_RWTTvSW0hk_w");
-</script>
-
 <style>
 body {
+    margin:0;
     font-family:'Segoe UI',sans-serif;
     min-height:100vh;
     background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
-    color:white;
     display:flex;
     justify-content:center;
     align-items:center;
-    margin:0;
-}
-
-.box {
-    background:rgba(255,255,255,0.05);
-    padding:40px;
-    border-radius:20px;
-    box-shadow:0 0 40px rgba(0,0,0,0.3);
-   
-    width:95%;
-    max-width:450px;
-    text-align:center;
-     border:1px solid gold;
-     box-shadow:0 0 20px gold
-}
-
-h2 {
-    color:gold;
-    text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
-    margin-bottom:20px;
-    font-size: 35px;
-}
-
-input {
-    width:80%;
-    padding:10px;
-    margin:10px 0;
-    border-radius:10px;
-    border:none;
-    outline:none;
-    
-}
-
-button {
-    padding:12px 20px;
-    margin:10px;
-    border:none;
-    border-radius:10px;
-    font-weight:bold;
-    cursor:pointer;
-    background:linear-gradient(135deg,#6c63ff,#4a47d1);
     color:white;
 }
 
-button:hover {
-    transform:translateY(-3px);
-    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+.box {
+    width:95%;
+    max-width:420px;
+    padding:35px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(15px);
+    box-shadow:0 0 30px rgba(108,99,255,0.6);
+    text-align:center;
 }
 
-@media (max-width:768px){
-    h1{ font-size:24px; }
-    button{ width:100%; }
+.logo span {
+    font-weight:bold;
+    font-size:28px;
+    animation:goldBlink 2s infinite;
 }
+.logo span:nth-child(2){animation-delay:0.3s;}
+.logo span:nth-child(3){animation-delay:0.6s;}
+.logo span:nth-child(4){animation-delay:0.9s;}
+.logo span:nth-child(5){animation-delay:1.2s;}
+.logo span:nth-child(6){animation-delay:1.5s;}
+
 @keyframes goldBlink {
-  0%,20%,100% { color:white; text-shadow:none; }
-  50% { color:gold; text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4); }
+    0%,100%{color:white;}
+    50%{color:gold;text-shadow:0 0 10px gold;}
 }
-</style>
 
+input {
+    width:85%;
+    padding:12px;
+    margin:10px auto;
+    border-radius:10px;
+    border:none;
+    outline:none;
+    display:block;
+}
+
+button {
+    width:85%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(135deg,#6c63ff,#4a47d1);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.alt {
+    background:#444;
+}
+
+.hidden { display:none; }
+</style>
 </head>
 
 <body>
 
 <div class="box">
 
-<h2>🎮 F-Mine</h2>
+<div class="logo">
+<span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
+</div>
+
+<h2 id="title">Регистрация</h2>
+
+<!-- REGISTER -->
+<div id="register">
 
 <input id="nick" placeholder="Ник">
 <input id="email" placeholder="Email">
-<input id="pass" type="password" placeholder="Пароль">
+<input id="passReg" type="password" placeholder="Пароль">
 
-<button onclick="register()">Регистрация</button>
-<button onclick="login()">Войти</button>
+<button onclick="sendCode()">📩 Получить код</button>
+<button class="alt" onclick="showLogin()">🔵 Войти</button>
+
+<div id="codeBox" class="hidden">
+    <input id="code" type="password" placeholder="Код">
 </div>
+
+<button id="finishBtn" class="hidden" onclick="finishRegister()">Создать аккаунт</button>
+
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="hidden">
+
+<input id="loginNick" placeholder="Ник">
+<input id="loginPass" type="password" placeholder="Пароль">
+
+<button onclick="login()">Войти</button>
+<button class="alt" onclick="back()">Назад</button>
+
+</div>
+
+</div>
+
 <script>
-    function register() {
+
+(function(){
+    emailjs.init("Y9LA_RWTTvSW0hk_w");
+})();
+
+let code = "";
+let temp = null;
+
+// ================= REGISTER =================
+function sendCode(){
 
     let nick = document.getElementById("nick").value.trim();
     let email = document.getElementById("email").value.trim();
-    let pass = document.getElementById("pass").value.trim();
+    let pass = document.getElementById("passReg").value.trim();
 
-    if (!nick||!email||  !pass) {
-        alert("Заполни все поля!");
+    if(!nick ||!email|| !pass){
+        alert("Заполни все поля");
         return;
     }
 
-    // защита от дубля
-    if (localStorage.getItem("user_" + nick)) {
-        alert("Такой пользователь уже есть!");
+    // 🔴 НИК ЗАНЯТ
+    if(localStorage.getItem("user_" + nick)){
+        alert("Этот ник уже занят");
         return;
     }
 
-    // сохраняем аккаунт
-    localStorage.setItem("user_" + nick, JSON.stringify({
-        email: email,
-        password: pass
-    }));
+    code = Math.floor(100000 + Math.random()*900000).toString();
+    temp = {nick,email,pass};
 
-    // запоминаем текущего
-    localStorage.setItem("currentUser", nick);
-
-    alert("Регистрация успешна!");
-
-    // 👉 ПЕРЕХОД В ЛОББИ
-    window.location.href = "lobby.html";
-}
-
-
-// ================= LOGIN =================
-function login() {
-
-    let nick = document.getElementById("nick").value.trim();
-    let pass = document.getElementById("pass").value.trim();
-
-    let data = localStorage.getItem("user_" + nick);
-
-    if (!data) {
-        alert("Пользователь не найден!");
-        return;
-    }
-
-    let user = JSON.parse(data);
-
-    if (user.password !== pass) {
-        alert("Неверный пароль!");
-        return;
-    }
-
-    localStorage.setItem("currentUser", nick);
-
-    alert("Вход успешен!");
-
-    // 👉 ПЕРЕХОД В ЛОББИ
-    window.location.href = "lobby.html";
-}
-
-</script>
-<script>
-
-function register() {
-
-    let nick = document.getElementById("nick").value.trim();
-    let email = document.getElementById("email").value.trim();
-    let pass = document.getElementById("pass").value.trim();
-
-    if (!nick || !email|| !pass) {
-        alert("⚠️ Заполни все поля!");
-        return;
-    }
-
-    // сохраняем пользователя
-    localStorage.setItem("user_" + nick, JSON.stringify({
-        email: email,
-        password: pass
-    }));
-
-    // EMAILJS ОТПРАВКА
-    emailjs.send("service_tj46uwp", "template_aglasg4", {
-        from_name: nick,
-        reply_to: email
+    emailjs.send("service_tj46uwp","template_aglasg4",{
+        from_name:nick,
+        code:code,
+        reply_to:email
     })
-    .then(() => {
-        alert("🎉 Регистрация успешна! Письмо отправлено на почту");
+    .then(()=>{
+        alert("Код отправлен");
+        document.getElementById("codeBox").classList.remove("hidden");
+        document.getElementById("finishBtn").classList.remove("hidden");
     })
-    .catch((err) => {
-        console.log("EmailJS ошибка:", err);
-          alert("⚠️ Ошибка отправки email");
+    .catch(err=>{
+        console.log(err);
+        alert("Ошибка EmailJS");
     });
+}
 
+// ================= FINISH REGISTER =================
+function finishRegister(){
+
+    let inputCode = document.getElementById("code").value.trim();
+
+    if(inputCode !== code){
+        alert("Неверный код");
+        return;
+    }
+
+    localStorage.setItem("user_" + temp.nick, JSON.stringify({
+        password: temp.pass
+    }));
+
+    alert("Аккаунт создан!");
+    showLogin();
+
+    document.getElementById("loginNick").value = temp.nick;
+}
+// ================= LOGIN =================
+function login(){
+
+    let nick = document.getElementById("loginNick").value.trim();
+    let pass = document.getElementById("loginPass").value.trim();
+
+    let user = localStorage.getItem("user_" + nick);
+
+    if(!user){
+        alert("Аккаунт не найден");
+        return;
+    }
+
+    let data = JSON.parse(user);
+
+    if(data.password !== pass){
+        alert("Неверный пароль");
+        return;
+    }
+
+    localStorage.setItem("currentUser", nick);
+
+    alert("Вход выполнен!");
+    window.location.href = "lobby.html";
+}
+
+// ================= SWITCH =================
+function showLogin(){
+    document.getElementById("register").classList.add("hidden");
+    document.getElementById("login").classList.remove("hidden");
+    document.getElementById("title").innerText = "Вход";
+}
+
+function back(){
+    document.getElementById("register").classList.remove("hidden");
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("title").innerText = "Регистрация";
 }
 
 </script>

@@ -291,7 +291,7 @@ body.light .neon-footer { color:#444; text-shadow:none; }
 
 <header class="site-header">
   <div class="logo">
-    <span>F</span><span>m</span><span>i</span><span>n</span><span>e</span>
+    <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
   </div>
   <button class="burger" onclick="toggleMenu()">☰</button>
   <nav class="nav-menu" id="menu">
@@ -313,7 +313,8 @@ body.light .neon-footer { color:#444; text-shadow:none; }
   <div id="avatar-menu" class="avatar-menu">
     <button onclick="goToAccount()">👤 Аккаунт</button>
     <button onclick="changeAvatar()">🖼️ Сменить аватар</button>
-    <button onclick="openSettings()">⚙️ Настройки</button>
+    <button onclick="goToFriends()">💬 Чаты</button>
+
   </div>
 </div>
 
@@ -441,5 +442,9 @@ function openSettings(){
 function toggleMenu() {
   document.getElementById("menu").classList.toggle("active");
 }
+function goToFriends(){
+  window.location.href = "friends.html";
+}
+
 
 </script>
