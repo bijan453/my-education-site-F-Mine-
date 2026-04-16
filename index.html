@@ -73,6 +73,32 @@ button {
 }
 
 .hidden { display:none; }
+#toastBox{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:9999;
+}
+
+.toast{
+    padding:12px 18px;
+    border-radius:10px;
+    color:white;
+    font-weight:bold;
+    animation:slideIn 0.3s ease;
+}
+
+.success{ background:#4caf50; }
+.error{ background:#f44336; }
+.info{ background:#6c63ff; }
+
+@keyframes slideIn{
+    from{opacity:0; transform:translateX(50px);}
+    to{opacity:1; transform:translateX(0);}
+}
 </style>
 </head>
 
@@ -134,13 +160,13 @@ function sendCode(){
     let pass = document.getElementById("passReg").value.trim();
 
     if(!nick ||!email|| !pass){
-        alert("Заполни все поля");
+        showToast("Заполни все поля");
         return;
     }
 
     // 🔴 НИК ЗАНЯТ
     if(localStorage.getItem("user_" + nick)){
-        alert("Этот ник уже занят");
+        showToast("Этот ник уже занят");
         return;
     }
 
@@ -153,13 +179,13 @@ function sendCode(){
         reply_to:email
     })
     .then(()=>{
-        alert("Код отправлен");
+        showToast("Код отправлен" , "success");
         document.getElementById("codeBox").classList.remove("hidden");
         document.getElementById("finishBtn").classList.remove("hidden");
     })
     .catch(err=>{
         console.log(err);
-        alert("Ошибка EmailJS");
+        showToast("Ошибка EmailJS");
     });
 }
 
@@ -169,7 +195,7 @@ function finishRegister(){
     let inputCode = document.getElementById("code").value.trim();
 
     if(inputCode !== code){
-        alert("Неверный код");
+        showToast("Неверный код" , "error");
         return;
     }
 
@@ -177,7 +203,7 @@ function finishRegister(){
         password: temp.pass
     }));
 
-    alert("Аккаунт создан!");
+    showToast("Аккаунт создан!", "success");
     showLogin();
 
     document.getElementById("loginNick").value = temp.nick;
@@ -191,20 +217,20 @@ function login(){
     let user = localStorage.getItem("user_" + nick);
 
     if(!user){
-        alert("Аккаунт не найден");
+        showToast("Аккаунт не найден");
         return;
     }
 
     let data = JSON.parse(user);
 
     if(data.password !== pass){
-        alert("Неверный пароль");
+        showToast("Неверный пароль", "error");
         return;
     }
 
     localStorage.setItem("currentUser", nick);
 
-    alert("Вход выполнен!");
+    showToast("Вход выполнен!");
     window.location.href = "lobby.html";
 }
 
@@ -220,8 +246,23 @@ function back(){
     document.getElementById("login").classList.add("hidden");
     document.getElementById("title").innerText = "Регистрация";
 }
+function showToast(msg, type="info"){
+
+    let box = document.getElementById("toastBox");
+
+    let toast = document.createElement("div");
+    toast.className = "toast " + type;
+    toast.innerText = msg;
+
+    box.appendChild(toast);
+
+    setTimeout(()=>{
+        toast.remove();
+    }, 3000);
+}
 
 </script>
 
 </body>
+<div id="toastBox"></div>
 </html>

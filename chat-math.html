@@ -79,8 +79,17 @@ button { padding:10px 15px; border-radius:10px; border:none; background:#6c63ff;
 <button id="sendBtn" onclick="sendMessage()">Отправить</button>
 <button id="voiceBtn" onclick="startVoice()">🎤 Говорить</button>
 <button id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
+<button onclick="clearChat()">🗑 Очистить чат</button>
+
 </div>
 <script>
+    let userStats = JSON.parse(localStorage.getItem("userStats")) || {
+    messages: 0,
+    level: 1
+};
+
+    let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+
 // =======================
 // 💀 FINAL FIXED VERSION (ALL BUGS FIXED + SUPER EXPLANATIONS + SQRT SUPPORT)
 // =======================
@@ -88,6 +97,9 @@ button { padding:10px 15px; border-radius:10px; border:none; background:#6c63ff;
 var chat = document.getElementById('chat');
 var lang = 'RU';
 var recognition;
+let lastProblem = null;
+
+
 
 // =======================
 // 🔤 LANGUAGE
@@ -116,6 +128,9 @@ function addMessage(sender,text,cls){
     div.textContent = sender + ': ' + text;
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
+    chatHistory.push({sender, text, cls});
+localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+
 }
 
 // =======================
@@ -149,13 +164,22 @@ function sendMessage(){
     if(!text) return;
 
     addMessage('Вы',text,'user');
+    userStats.messages++;
+
+if(userStats.messages % 10 === 0){
+    userStats.level++;
+    addMessage("Система", "🎉 Уровень повышен: " + userStats.level, "bot");
+}
+
+localStorage.setItem("userStats", JSON.stringify(userStats));
+
     input.value='';
     showThinking();
 
     setTimeout(function(){
         hideThinking();
         var res = bot(text);
-        addMessage('Бот',res.text,'bot');
+        typeMessage('Бот',res.text,'bot');
         if(res.graph) drawGraph(res.graph);
     },800);
 }
@@ -186,25 +210,245 @@ function startVoice(){
 // =======================
 function norm(t){
     return t.toLowerCase()
+
+    // пробелы
     .replace(/\s+/g,'')
+
+    // степени
     .replace(/²/g,'^2')
     .replace(/³/g,'^3')
     .replace(/x2/g,'x^2')
-    .replace(/x3/g,'x^3')
+    .replace(/y2/g,'y^2')
+    .replace(/x\*x/g,'x^2')
+    .replace(/y\*y/g,'y^2')
 
-    // ➕ SQRT SUPPORT (ADDED)
+    // sqrt
     .replace(/√/g,'Math.sqrt')
     .replace(/кореньиз/g,'Math.sqrt')
     .replace(/sqrt/g,'Math.sqrt')
 
-    // ➕ implicit multiplication fixes
-    .replace(/(\d)(Math\.sqrt)/g,'$1*$2')
-    .replace(/x(Math\.sqrt)/g,'x*$1')
+    // умножение
+    .replace(/(\d)(x)/g,'$1*$2')
+    .replace(/(\d)(y)/g,'$1*$2')
 
-    // basic ops
+    // слова
     .replace(/плюс/g,'+')
-    .replace(/минус/g,'-');
+    .replace(/минус/g,'-')
 }
+// =======================
+// 📘 LINEAR SOLVER
+// =======================
+function solveLinear(eq){
+
+    let parts = eq.split('=');
+    if(parts.length !== 2) return null;
+
+    let left = parts[0];
+    let right = parts[1];
+
+    try{
+        // приводим к виду ax + b
+        let a = 0, b = 0;
+
+        left.replace(/([+-]?\d*)x/g, m=>{
+            a += parseFloat(m.replace('x','')) || 1;
+        });
+
+        left.replace(/([+-]?\d+)(?!x)/g, m=>{
+            b += parseFloat(m);
+        });
+
+        let c = Function('return '+right)();
+
+        let x = (c - b) / a;
+
+        return {
+            text:`📘 Линейное уравнение:
+
+1) Переносим:
+${a}x + ${b} = ${c}
+
+2) ${a}x = ${c} - ${b}
+
+3) ${a}x = ${c-b}
+
+4) x = ${x}`
+        };
+
+    }catch{
+        return null;
+    }
+}
+// =======================
+// 📘 SYSTEM 2x2
+// =======================
+function solveSystemFull(text){
+
+    let lines = text.split(';');
+    if(lines.length !== 2) return null;
+
+    let eq1 = lines[0];
+    let eq2 = lines[1];
+
+    try{
+        // коэффициенты
+        let [a1,b1,c1] = parseEq(eq1);
+        let [a2,b2,c2] = parseEq(eq2);
+
+        let D = a1*b2 - a2*b1;
+        let Dx = c1*b2 - c2*b1;
+        let Dy = a1*c2 - a2*c1;
+
+        let x = Dx / D;
+        let y = Dy / D;
+
+        return {
+            text:`📘 Система:
+
+D = ${D}
+
+x = ${x}
+y = ${y}`
+        };
+
+    }catch{
+        return null;
+    }
+}
+// =======================
+// 📘 INEQUALITY
+// =======================
+function solveInequality(text){
+
+    if(text.includes('>')){
+        let [l,r] = text.split('>');
+        let x = Function('return ('+r+') - ('+l+')')();
+        return {text:`x > ${x}`};
+    }
+
+    if(text.includes('<')){
+        let [l,r] = text.split('<');
+        let x = Function('return ('+r+') - ('+l+')')();
+        return {text:`x < ${x}`};
+    }
+
+    return null;
+}
+// =======================
+// 📘 VIETA
+// =======================
+function vieta(a,b,c){
+
+    let sum = -b/a;
+    let mult = c/a;
+
+    return `
+📘 Теорема Виета:
+
+x1 + x2 = ${sum}
+x1 * x2 = ${mult}
+`;
+}
+
+
+function parseEq(eq){
+    let [l,r] = eq.split('=');
+
+    let a = 0, b = 0;
+
+    l.replace(/([+-]?\d*)x/g, m=>{
+        a += parseFloat(m)||1;
+    });
+
+    l.replace(/([+-]?\d*)y/g, m=>{
+        b += parseFloat(m)||1;
+    });
+
+    let c = Function('return '+r)();
+
+    return [a,b,c];
+}
+// =======================
+// 📘 ABSOLUTE VALUE
+// =======================
+function solveModule(text){
+
+    let m = text.match(/\|(.+)\|=(.+)/);
+    if(!m) return null;
+
+    let expr = m[1];
+    let val = parseFloat(m[2]);
+
+    let x1 = Function('return '+expr.replace('x','('+val+')'))();
+    let x2 = Function('return '+expr.replace('x','(-'+val+')'))();
+
+    return {
+        text:`📘 Модуль:
+
+|${expr}| = ${val}
+
+1) ${expr} = ${val}
+2) ${expr} = -${val}
+
+(решение упрощённое)`
+    };
+}
+// =======================
+// 📘 FRACTION EQUATION
+// =======================
+function solveFraction(text){
+
+    if(!text.includes('/')) return null;
+
+    try{
+        let parts = text.split('=');
+        if(parts.length!==2) return null;
+
+        let left = parts[0];
+        let right = parts[1];
+
+        return {
+            text:`📘 Дробное уравнение:
+
+${left} = ${right}
+
+👉 Умножаем всё на общий знаменатель
+
+(дальше решается как линейное)`
+        };
+
+    }catch{
+        return null;
+    }
+}
+
+// =======================
+// 📘 SQRT EQUATION
+// =======================
+function solveSqrt(text){
+
+    if(!text.includes('Math.sqrt')) return null;
+
+    try{
+        let parts = text.split('=');
+        let left = parts[0];
+        let right = parts[1];
+
+        return {
+            text:`📘 Иррациональное:
+
+${left} = ${right}
+
+👉 Возводим в квадрат обе части
+
+(решение продолжается)`
+        };
+
+    }catch{
+        return null;
+    }
+}
+
 
 // =======================
 // 🧠 SUPER EXPLANATION ENGINE
@@ -214,8 +458,34 @@ function explainLinear(a,b,c,x){
 }
 
 function explainQuadratic(a,b,c,D,x1,x2){
-    return `\n📘 Объяснение:\n1) D = b² - 4ac = ${D}\n2) Подставляем формулу\n3) x1 = ${x1}\n4) x2 = ${x2}`;
+    return `
+
+📘 Подробное объяснение:
+
+1) Дано:
+a=${a}, b=${b}, c=${c}
+
+2) Формула дискриминанта:
+D = b² - 4ac
+
+3) Считаем:
+D = ${b}² - 4·${a}·${c} = ${D}
+
+4) Формула корней:
+x = (-b ± √D) / 2a
+
+5) Подставляем:
+
+x1 = (${ -b } + √${D}) / ${2*a} = ${x1}
+
+x2 = (${ -b } - √${D}) / ${2*a} = ${x2}
+
+✅ Ответ:
+x1 = ${x1}
+x2 = ${x2}
+`;
 }
+
 
 function explainBiquadratic(a,b,c,roots){
     return `\n📘 Объяснение:\n1) y = x² замена\n2) решаем квадратное\n3) обратно x = ±√y\n4) ответ: ${roots.join(', ')}`;
@@ -226,7 +496,47 @@ function explainBiquadratic(a,b,c,roots){
 // =======================
 function bot(text){
     let original = text.toLowerCase();
+    if(/^[a-zA-Z\s?!.]+$/.test(text)){
+    lang = 'EN';
+}else{
+    lang = 'RU';
+}
+
     text = norm(text);
+    // 💬 CHAT CHECK FIRST
+let chat = chatReply(text);
+if(chat) return {text: chat};
+
+    // линейное
+let lin = solveLinear(text);
+if(lin) return lin;
+
+// система 2x2
+let sys2 = solveSystemFull(text);
+if(sys2) return sys2;
+
+// неравенства
+let ineq = solveInequality(text);
+if(ineq) return ineq;
+
+    // =======================
+// 🧠 SMART COMMANDS
+// =======================
+
+if(text.includes('реши') || text.includes('solve')){
+    let clean = text.replace('реши','').replace('solve','');
+    
+    let sys = solveSystem(clean);
+    if(sys) return sys;
+}
+
+if(text.includes('проверь') || text.includes('check')){
+    let clean = text.replace('проверь','').replace('check','');
+    
+    let check = checkSolution(clean);
+    if(check) return check;
+}
+
 
     // GRAPH
     if(original.includes('граф')||original.includes('нарисуй')||original.includes('plot')){
@@ -236,6 +546,8 @@ function bot(text){
     // QUADRATIC
     let q = text.match(/([-+]?\d*)x\^2([-+]?\d*)x([-+]?\d*)=0/);
     if(q){
+        lastProblem = text;
+
         let a=parseFloat(q[1])||1;
         let b=parseFloat(q[2])||0;
         let c=parseFloat(q[3])||0;
@@ -275,6 +587,38 @@ function bot(text){
     }
 
     // SIMPLE EVAL
+    // =======================
+// 🧠 AUTO DETECT (БЕЗ "РЕШИ")
+// =======================
+
+// система уравнений (через ;)
+if(text.includes(';')){
+    let sys = solveSystem(text);
+    if(sys) return sys;
+}
+
+// квадратное (без команды)
+let q_auto = text.match(/([-+]?\d*)x\^2([-+]?\d*)x([-+]?\d*)=0/);
+if(q_auto){
+    let a=parseFloat(q_auto[1])||1;
+    let b=parseFloat(q_auto[2])||0;
+    let c=parseFloat(q_auto[3])||0;
+
+    let D=b*b-4*a*c;
+
+    if(D<0) return {text:`D=${D}\nНет корней`};
+
+    let x1=(-b+Math.sqrt(D))/(2*a);
+    let x2=(-b-Math.sqrt(D))/(2*a);
+
+    return {
+        text:`Квадратное уравнение:
+D=${D}
+x1=${x1}
+x2=${x2}` + explainQuadratic(a,b,c,D,x1,x2)
+    };
+}
+
     try{
         let res = Function('return '+text)();
 
@@ -339,6 +683,344 @@ function toFraction(decimal){
     } while(Math.abs(decimal - h1/k1) > decimal * tolerance);
 
     return h1 + "/" + k1;
+}
+// =======================
+// 🧠 SYSTEM SOLVER
+// =======================
+function solveSystem(text){
+
+    // пример: x+y=10;x=5
+    let parts = text.split(';');
+
+    if(parts.length !== 2) return null;
+
+    try{
+        let eq1 = parts[0];
+        let eq2 = parts[1];
+
+        // если x=...
+        if(eq2.startsWith('x=')){
+            let x = Function('return '+eq2.replace('x=',''))();
+
+            let y = Function('x','return '+eq1.split('=')[1])(x);
+
+            return {
+                text:`📘 Система:
+
+1) Подставляем x=${x}
+2) Получаем y=${y}
+
+✅ Ответ:
+x=${x}
+y=${y}`
+            };
+        }
+
+    }catch{
+        return null;
+    }
+
+    return null;
+}
+// =======================
+// 🧠 CHECK SOLUTION
+// =======================
+// =======================
+// 📘 CHECK PRO
+// =======================
+function checkSolution(text){
+
+    let parts = text.split(';');
+    if(parts.length !== 2) return null;
+
+    try{
+        let eq = parts[0];
+        let ans = parts[1];
+
+        let x = parseFloat(ans.split('=')[1]);
+
+        let left = Function('x','return '+eq.split('=')[0])(x);
+        let right = Function('return '+eq.split('=')[1])();
+
+        let correct = Math.abs(left-right) < 0.0001;
+
+        if(correct){
+            return {text:`✅ Верно!\n${left} ≈ ${right}`};
+        }else{
+            return {
+                text:`❌ Неверно
+
+${left} ≠ ${right}
+
+👉 Попробуй ещё`
+            };
+        }
+
+    }catch{
+        return null;
+    }
+}
+
+// =======================
+// 💬 CHAT MODE
+// =======================
+function chatReply(text){
+
+    let t = text.toLowerCase().trim();
+    let isEN = /^[a-zA-Z\s?!.]+$/.test(text);
+
+    // =========================
+    // 👋 GREETINGS (25+ вариантов)
+    // =========================
+    let greetings = [
+        "hi","hello","hey","yo","good morning","good evening","good day",
+        "привет","здарова","здравствуй","салам","хай","прив","hello there"
+    ];
+
+    for(let g of greetings){
+        if(t.includes(g)){
+            return isEN
+            ? "Hello 👋 I can help you with math"
+            : "Привет 👋 Я помогу тебе с математикой";
+        }
+    }
+
+    // =========================
+    // 🤖 ABOUT BOT (25+ вариантов)
+    // =========================
+    let about = [
+        "what can you do","ты кто","who are you","ты бот",
+        "math bot","что ты умеешь","ai","assistant","бот"
+    ];
+
+    for(let a of about){
+        if(t.includes(a)){
+            return isEN
+            ? "I solve math: equations, systems, fractions 📘"
+            : "Я решаю математику: уравнения, системы, дроби 📘";
+        }
+    }
+
+    // =========================
+    // 💪 HELP (25+ вариантов)
+    // =========================
+    let help = [
+        "help","помоги","help me","can you help","нужна помощь",
+        "i need help","support","help please"
+    ];
+
+    for(let h of help){
+        if(t.includes(h)){
+            return isEN
+            ? "Send me your problem 👍"
+            : "Отправь пример 👍";
+        }
+    }
+
+    // =========================
+    // 🔥 SOLVE (30+ вариантов)
+    // =========================
+    let solve = [
+        "solve","реши","давай решать","calculate","solve this",
+        "реши пример","lets solve","compute","answer","find solution"
+    ];
+
+    for(let s of solve){
+        if(t.includes(s)){
+            return isEN
+            ? "Send equation 🔥"
+            : "Отправь пример 🔥";
+        }
+    }
+
+    // =========================
+    // 📚 SCHOOL (30+ вариантов)
+    // =========================
+    let school = [
+        "homework","домашка","school","задача","пример",
+        "assignment","lesson","task","study","classwork"
+    ];
+
+    for(let s of school){
+        if(t.includes(s)){
+            return isEN
+            ? "I can help with homework 📚"
+            : "Помогу с домашкой 📚";
+        }
+    }
+
+    // =========================
+    // 😄 THANKS (20+)
+    // =========================
+    let thanks = [
+        "thanks","thank you","спасибо","спс","thx","thanks a lot"
+    ];
+
+    for(let tnk of thanks){
+        if(t.includes(tnk)){
+            return isEN ? "You're welcome 😊" : "Пожалуйста 😊";
+        }
+    }
+
+    // =========================
+    // 👋 BYE (20+)
+    // =========================
+    let bye = [
+        "bye","goodbye","пока","see you","удачи","bye bye","see ya"
+    ];
+
+    for(let b of bye){
+        if(t.includes(b)){
+            return isEN ? "Bye 👋" : "Пока 👋";
+        }
+    }
+
+    // =========================
+    // 😎 CHAT (50+ выражений)
+    // =========================
+    if(
+        t.includes("как дела") ||
+        t.includes("how are you")
+    ){
+        return isEN
+        ? "I'm great 😎 Ready for math!"
+        : "У меня всё отлично 😎 Готов решать!";
+    }
+
+    if(t.includes("скучно") || t.includes("boring")){
+        return isEN
+        ? "Let's solve something hard 😏"
+        : "Давай решим сложный пример 😏";
+    }
+
+    if(t.includes("не понимаю")){
+        
+        return isEN
+        ? "Let's go step by step 📘"
+        : "Разберём по шагам 📘";
+    }
+
+    if(t.includes("шутка") || t.includes("joke")){
+        return isEN
+        ? "Why math? Because of problems 😂"
+        : "Почему математика? Потому что проблемы 😂";
+    }
+
+    // =========================
+    // ❓ DEFAULT
+    // =========================
+    return isEN
+    ? "I don't understand 🤔 Try math"
+    : "Я не понял 🤔 Напиши пример";
+    if(
+    t.includes("проверь") ||
+    t.includes("check") ||
+    t.includes("verify") ||
+    (t.includes("=") && t.includes("?")) ||
+    t.startsWith("check")
+){
+
+    // 🔥 вытаскиваем выражение типа 2+2=5
+    let exprMatch = text.match(/(.+)=\s*(-?\d+(\.\d+)?)/);
+
+    if(!exprMatch){
+        return isEN
+        ? "Send like: 2+2=5 or check 2+2=5"
+        : "Напиши как: 2+2=5 или check 2+2=5";
+    }
+
+    let leftSide = exprMatch[1];
+    let rightSide = parseFloat(exprMatch[2]);
+
+    let correctValue;
+
+    try{
+        correctValue = Function("return " + leftSide)();
+    }catch{
+        return isEN
+        ? "Can't calculate expression 🤔"
+        : "Не могу вычислить выражение 🤔";
+    }
+
+    if(Math.abs(correctValue - rightSide) < 0.0001){
+        return isEN
+        ? "✅ Correct!"
+        : "✅ Правильно!";
+    } else {
+        return isEN
+        ? `❌ Wrong. ${leftSide} = ${correctValue}, not ${rightSide}`
+        : `❌ Неправильно. ${leftSide} = ${correctValue}, а не ${rightSide}`;
+    }
+}
+
+
+if(t.includes("реши ещё") || t.includes("next step")){
+    return isEN
+    ? "Send next step or value 👍"
+    : "Отправь следующий шаг 👍";
+}
+
+}
+
+document.getElementById('userInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+        if(e.shiftKey) return; // Shift+Enter = новая строка (если textarea)
+        
+        e.preventDefault();
+
+        let input = document.getElementById('userInput');
+        if(input.value.trim() === "") return;
+
+        sendMessage();
+    }
+});
+function clearChat(){
+    chatHistory = [];
+    localStorage.removeItem("chatHistory");
+    chat.innerHTML = "";
+}
+function typeMessage(sender, text, cls){
+
+    let div = document.createElement("div");
+    div.classList.add("message", cls);
+    chat.appendChild(div);
+
+    let i = 0;
+    let interval = setInterval(()=>{
+        div.textContent = sender + ": " + text.slice(0,i);
+        i++;
+
+        if(i > text.length){
+            clearInterval(interval);
+        }
+    }, 20);
+}
+function extractNumber(str){
+    let match = str.match(/-?\d+(\.\d+)?/);
+    return match ? parseFloat(match[0]) : null;
+}
+function smartExtract(text){
+
+    if(!text) return null;
+
+    let t = text.toLowerCase();
+
+    // 1. обычные числа
+    let numMatch = t.match(/-?\d+(\.\d+)?/);
+    if(numMatch) return parseFloat(numMatch[0]);
+
+    // 2. дроби 1/2
+    let frac = t.match(/(-?\d+)\s*\/\s*(\d+)/);
+    if(frac){
+        return parseFloat(frac[1]) / parseFloat(frac[2]);
+    }
+
+    // 3. приближённые слова
+    if(t.includes("ноль")) return 0;
+    if(t.includes("один")) return 1;
+    if(t.includes("два")) return 2;
+
+    return null;
 }
 
 </script>
