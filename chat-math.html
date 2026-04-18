@@ -3,1027 +3,1214 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Чат-бот Математика</title>
+<title>Чат-бот Математика 11 класс</title>
 <style>
     @media (max-width: 768px){
-  h1{ font-size:24px; }
-  button{ width:100%; }
-}
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.container {
-  width:90%;
-  max-width:600px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(15px);
-  padding:30px;
-  border-radius:20px;
-  box-shadow:0 0 30px rgba(0,0,0,0.3);
-}
-h1 {
-  text-align:center;
-  font-size:2.5rem;
-  margin-bottom:10px;
-}
-#chat {
-  border:1px solid rgba(255,255,255,0.3);
-  border-radius:12px;
-  padding:10px;
-  height:400px;
-  overflow-y:auto;
-  margin-bottom:15px;
-  background: rgba(0,0,0,0.1);
-}
-.message {
-  margin:5px 0;
-}
-.user { color:#6c63ff; }
-.bot { color:#ffd700; }
-input { width:70%; padding:10px; border-radius:10px; border:none; margin-right:5px; font-size:16px;}
-button { padding:10px 15px; border-radius:10px; border:none; background:#6c63ff; color:white; cursor:pointer; margin:2px;}
-.thinking { display:inline-block; }
-.dot {
-  display:inline-block;
-  width:18px; height:18px;
-  background:gray;
-  border-radius:50%;
-  margin:0 3px;
-  animation:bounce 1s infinite;
-}
-.dot:nth-child(2) { animation-delay:0.2s; }
-.dot:nth-child(3) { animation-delay:0.4s; }
-@keyframes bounce {
-  0%,80%,100% { transform:scale(0); }
-  40% { transform:scale(1); }
-}
-.language-select { margin-bottom:10px;}
+        h1{ font-size:24px; }
+        button{ width:100%; }
+        input{ width:100%; margin-bottom:8px; }
+    }
+
+    body {
+        margin:0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+        color:white;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        min-height:100vh;
+        padding:20px;
+        box-sizing:border-box;
+    }
+
+    .container {
+        width:90%;
+        max-width:620px;
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(15px);
+        padding:30px;
+        border-radius:20px;
+        box-shadow:0 0 30px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+        text-align:center;
+        font-size:2.5rem;
+        margin-bottom:10px;
+    }
+
+    .language-select {
+        display:flex;
+        gap:8px;
+        justify-content:center;
+        flex-wrap:wrap;
+        margin-bottom:10px;
+    }
+
+    #chat {
+        border:1px solid rgba(255,255,255,0.3);
+        border-radius:12px;
+        padding:10px;
+        height:400px;
+        overflow-y:auto;
+        margin-bottom:15px;
+        background: rgba(0,0,0,0.1);
+    }
+
+    .message {
+        margin:5px 0;
+        white-space:pre-wrap;
+    }
+
+    .user { color:#6c63ff; }
+    .bot { color:#ffd700; }
+
+    .controls {
+        display:flex;
+        flex-wrap:wrap;
+        gap:5px;
+    }
+
+    input {
+        flex:1 1 220px;
+        padding:10px;
+        border-radius:10px;
+        border:none;
+        font-size:16px;
+        box-sizing:border-box;
+    }
+
+    button {
+        padding:10px 15px;
+        border-radius:10px;
+        border:none;
+        background:#6c63ff;
+        color:white;
+        cursor:pointer;
+        margin:2px;
+    }
+
+    button:disabled {
+        opacity:0.6;
+        cursor:not-allowed;
+    }
+
+    .thinking {
+        display:inline-block;
+    }
+
+    .dot {
+        display:inline-block;
+        width:18px;
+        height:18px;
+        background:gray;
+        border-radius:50%;
+        margin:0 3px;
+        animation:bounce 1s infinite;
+    }
+
+    .dot:nth-child(2) { animation-delay:0.2s; }
+    .dot:nth-child(3) { animation-delay:0.4s; }
+
+    @keyframes bounce {
+        0%,80%,100% { transform:scale(0); }
+        40% { transform:scale(1); }
+    }
+
+    #graphCanvas {
+        display:none;
+        max-width:100%;
+        margin:15px auto 0;
+        border-radius:12px;
+        background:rgba(255,255,255,0.1);
+        box-shadow:0 0 20px rgba(108,99,255,0.3);
+    }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>🤖 Математика Бот</h1>
-<div class="language-select">
-  <button id="btnRU" onclick="setLang('RU')">RU</button>
-  <button id="btnEN" onclick="setLang('EN')">EN</button>
-</div>
-<div id="chat"></div>
-<input id="userInput" placeholder="Введите вопрос">
-<button id="sendBtn" onclick="sendMessage()">Отправить</button>
-<button id="voiceBtn" onclick="startVoice()">🎤 Говорить</button>
-<button id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
-<button onclick="clearChat()">🗑 Очистить чат</button>
+    <h1>🤖 Математика Бот 11 класс</h1>
 
+    <div class="language-select">
+        <button id="btnRU" onclick="setLang('RU')">RU</button>
+        <button id="btnEN" onclick="setLang('EN')">EN</button>
+    </div>
+
+    <div id="chat"></div>
+    <canvas id="graphCanvas" width="550" height="400"></canvas>
+
+    <div class="controls">
+        <input id="userInput" placeholder="Введите вопрос">
+        <button id="sendBtn" onclick="sendMessage()">Отправить</button>
+        <button id="voiceBtn" onclick="startVoice()">🎤 Говорить</button>
+        <button id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
+        <button onclick="clearChat()">🗑 Очистить чат</button>
+    </div>
 </div>
+
 <script>
-    let userStats = JSON.parse(localStorage.getItem("userStats")) || {
-    messages: 0,
-    level: 1
-};
+    // =========================
+    // STORAGE / STATE
+    // =========================
+    const LS_STATS = "userStats";
+    const LS_CHAT = "chatHistory";
 
-    let chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    let userStats = JSON.parse(localStorage.getItem(LS_STATS)) || { messages: 0, level: 1 };
+    let chatHistory = JSON.parse(localStorage.getItem(LS_CHAT)) || [];
 
-// =======================
-// 💀 FINAL FIXED VERSION (ALL BUGS FIXED + SUPER EXPLANATIONS + SQRT SUPPORT)
-// =======================
+    const chat = document.getElementById("chat");
+    const inputEl = document.getElementById("userInput");
+    const canvasEl = document.getElementById("graphCanvas");
+    const sendBtnEl = document.getElementById("sendBtn");
+    const voiceBtnEl = document.getElementById("voiceBtn");
+    const exitBtnEl = document.getElementById("exitBtn");
 
-var chat = document.getElementById('chat');
-var lang = 'RU';
-var recognition;
-let lastProblem = null;
+    let lang = "RU";
+    let recognition = null;
+    let isBusy = false;
 
+    const placeholders = { RU: "Введите вопрос", EN: "Enter your question" };
+    const sendBtnTexts = { RU: "Отправить", EN: "Send" };
+    const exitBtnTexts = { RU: "⬅ Выйти в лобби", EN: "⬅ Back" };
+    const voiceBtnTexts = { RU: "🎤 Говорить", EN: "🎤 Speak" };
 
-
-// =======================
-// 🔤 LANGUAGE
-// =======================
-var placeholders = {RU:'Введите вопрос', EN:'Enter your question'};
-var sendBtnTexts = {RU:'Отправить', EN:'Send'};
-var exitBtnTexts = {RU:'⬅ Выйти в лобби', EN:'⬅ Back'};
-var voiceBtnTexts = {RU:'🎤 Говорить', EN:'🎤 Speak'};
-
-function setLang(l){
-    lang = l;
-    document.getElementById('userInput').placeholder = placeholders[l];
-    document.getElementById('sendBtn').textContent = sendBtnTexts[l];
-    document.getElementById('exitBtn').textContent = exitBtnTexts[l];
-    document.getElementById('voiceBtn').textContent = voiceBtnTexts[l];
-    addMessage('Система', l==='RU'?'Язык изменён':'Language changed','bot');
-}
-
-function goLobby(){
-    window.location.href='lobby.html';
-}
-
-function addMessage(sender,text,cls){
-    var div=document.createElement('div');
-    div.classList.add('message',cls);
-    div.textContent = sender + ': ' + text;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-    chatHistory.push({sender, text, cls});
-localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
-
-}
-
-// =======================
-// ⏳ THINKING DOTS (RESTORED)
-// =======================
-function showThinking(){
-    var thinking=document.createElement('div');
-    thinking.id='thinking';
-    thinking.classList.add('thinking');
-
-    for(var i=0;i<3;i++){
-        var dot=document.createElement('div');
-        dot.classList.add('dot');
-        thinking.appendChild(dot);
+    function saveState() {
+        localStorage.setItem(LS_STATS, JSON.stringify(userStats));
+        localStorage.setItem(LS_CHAT, JSON.stringify(chatHistory));
     }
 
-    chat.appendChild(thinking);
-}
-
-function hideThinking(){
-    var t=document.getElementById('thinking');
-    if(t) t.remove();
-}
-
-// =======================
-// SEND
-// =======================
-function sendMessage(){
-    var input=document.getElementById('userInput');
-    var text=input.value.trim();
-    if(!text) return;
-
-    addMessage('Вы',text,'user');
-    userStats.messages++;
-
-if(userStats.messages % 10 === 0){
-    userStats.level++;
-    addMessage("Система", "🎉 Уровень повышен: " + userStats.level, "bot");
-}
-
-localStorage.setItem("userStats", JSON.stringify(userStats));
-
-    input.value='';
-    showThinking();
-
-    setTimeout(function(){
-        hideThinking();
-        var res = bot(text);
-        typeMessage('Бот',res.text,'bot');
-        if(res.graph) drawGraph(res.graph);
-    },800);
-}
-
-// =======================
-// VOICE FIXED
-// =======================
-function startVoice(){
-    if(!('webkitSpeechRecognition' in window)){
-        alert('Не поддерживается');
-        return;
+    function setLang(l) {
+        lang = l;
+        inputEl.placeholder = placeholders[l];
+        sendBtnEl.textContent = sendBtnTexts[l];
+        exitBtnEl.textContent = exitBtnTexts[l];
+        voiceBtnEl.textContent = voiceBtnTexts[l];
+        addMessage("Система", l === "RU" ? "Язык изменён" : "Language changed", "bot");
     }
 
-    recognition = new webkitSpeechRecognition();
-    recognition.lang = (lang==='RU'?'ru-RU':'en-US');
+    function goLobby() {
+        window.location.href = "lobby.html";
+    }
 
-    recognition.onresult = function(e){
-        var text = e.results[0][0].transcript;
-        document.getElementById('userInput').value = text;
-        sendMessage();
-    };
+    function renderMessage(sender, text, cls) {
+        const div = document.createElement("div");
+        div.classList.add("message", cls);
+        div.textContent = sender + ": " + text;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
 
-    recognition.start();
-}
+    function addMessage(sender, text, cls) {
+        renderMessage(sender, text, cls);
+        chatHistory.push({ sender, text, cls });
+        saveState();
+    }
 
-// =======================
-// NORMALIZE (🔥 SQRT ADDED)
-// =======================
-function norm(t){
-    return t.toLowerCase()
+    function appendBotMessage(sender, text, cls) {
+        const div = document.createElement("div");
+        div.classList.add("message", cls);
+        chat.appendChild(div);
 
-    // пробелы
-    .replace(/\s+/g,'')
+        const full = sender + ": " + text;
 
-    // степени
-    .replace(/²/g,'^2')
-    .replace(/³/g,'^3')
-    .replace(/x2/g,'x^2')
-    .replace(/y2/g,'y^2')
-    .replace(/x\*x/g,'x^2')
-    .replace(/y\*y/g,'y^2')
+        if (full.length > 220) {
+            div.textContent = full;
+            chat.scrollTop = chat.scrollHeight;
+            chatHistory.push({ sender, text, cls });
+            saveState();
+            return;
+        }
 
-    // sqrt
-    .replace(/√/g,'Math.sqrt')
-    .replace(/кореньиз/g,'Math.sqrt')
-    .replace(/sqrt/g,'Math.sqrt')
+        let i = 0;
+        const timer = setInterval(() => {
+            div.textContent = full.slice(0, i);
+            i += 2;
+            if (i > full.length) {
+                clearInterval(timer);
+                div.textContent = full;
+                chat.scrollTop = chat.scrollHeight;
+                chatHistory.push({ sender, text, cls });
+                saveState();
+            }
+        }, 12);
+    }
 
-    // умножение
-    .replace(/(\d)(x)/g,'$1*$2')
-    .replace(/(\d)(y)/g,'$1*$2')
+    function showThinking() {
+        if (document.getElementById("thinking")) return;
+        const thinking = document.createElement("div");
+        thinking.id = "thinking";
+        thinking.classList.add("thinking");
 
-    // слова
-    .replace(/плюс/g,'+')
-    .replace(/минус/g,'-')
-}
-// =======================
-// 📘 LINEAR SOLVER
-// =======================
-function solveLinear(eq){
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement("div");
+            dot.classList.add("dot");
+            thinking.appendChild(dot);
+        }
+        chat.appendChild(thinking);
+        chat.scrollTop = chat.scrollHeight;
+    }
 
-    let parts = eq.split('=');
-    if(parts.length !== 2) return null;
+    function hideThinking() {
+        const t = document.getElementById("thinking");
+        if (t) t.remove();
+    }
 
-    let left = parts[0];
-    let right = parts[1];
+    function startVoice() {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) {
+            alert(lang === "RU" ? "Голосовой ввод не поддерживается" : "Speech recognition is not supported");
+            return;
+        }
 
-    try{
-        // приводим к виду ax + b
-        let a = 0, b = 0;
+        recognition = new SR();
+        recognition.lang = lang === "RU" ? "ru-RU" : "en-US";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
 
-        left.replace(/([+-]?\d*)x/g, m=>{
-            a += parseFloat(m.replace('x','')) || 1;
-        });
-
-        left.replace(/([+-]?\d+)(?!x)/g, m=>{
-            b += parseFloat(m);
-        });
-
-        let c = Function('return '+right)();
-
-        let x = (c - b) / a;
-
-        return {
-            text:`📘 Линейное уравнение:
-
-1) Переносим:
-${a}x + ${b} = ${c}
-
-2) ${a}x = ${c} - ${b}
-
-3) ${a}x = ${c-b}
-
-4) x = ${x}`
+        recognition.onerror = function () {
+            alert(lang === "RU" ? "Ошибка распознавания речи" : "Speech recognition error");
         };
 
-    }catch{
-        return null;
-    }
-}
-// =======================
-// 📘 SYSTEM 2x2
-// =======================
-function solveSystemFull(text){
-
-    let lines = text.split(';');
-    if(lines.length !== 2) return null;
-
-    let eq1 = lines[0];
-    let eq2 = lines[1];
-
-    try{
-        // коэффициенты
-        let [a1,b1,c1] = parseEq(eq1);
-        let [a2,b2,c2] = parseEq(eq2);
-
-        let D = a1*b2 - a2*b1;
-        let Dx = c1*b2 - c2*b1;
-        let Dy = a1*c2 - a2*c1;
-
-        let x = Dx / D;
-        let y = Dy / D;
-
-        return {
-            text:`📘 Система:
-
-D = ${D}
-
-x = ${x}
-y = ${y}`
+        recognition.onresult = function (e) {
+            const text = e.results[0][0].transcript;
+            inputEl.value = text;
+            sendMessage();
         };
 
-    }catch{
-        return null;
-    }
-}
-// =======================
-// 📘 INEQUALITY
-// =======================
-function solveInequality(text){
-
-    if(text.includes('>')){
-        let [l,r] = text.split('>');
-        let x = Function('return ('+r+') - ('+l+')')();
-        return {text:`x > ${x}`};
+        recognition.start();
     }
 
-    if(text.includes('<')){
-        let [l,r] = text.split('<');
-        let x = Function('return ('+r+') - ('+l+')')();
-        return {text:`x < ${x}`};
+    // =========================
+    // NORMALIZE / PARSING
+    // =========================
+    function norm(t) {
+        return String(t)
+            .toLowerCase()
+            .replace(/[−–—]/g, "-")
+            .replace(/×/g, "*")
+            .replace(/,/g, ".")
+            .replace(/\s+/g, "")
+            .replace(/x²/g, "x^2")
+            .replace(/x³/g, "x^3")
+            .replace(/x⁴/g, "x^4")
+            .replace(/²/g, "^2")
+            .replace(/³/g, "^3")
+            .replace(/⁴/g, "^4")
+            .replace(/умноженноена/g, "*")
+            .replace(/умножитьна/g, "*")
+            .replace(/умножить/g, "*")
+            .replace(/плюс/g, "+")
+            .replace(/минус/g, "-")
+            .replace(/равно/g, "=")
+            .replace(/синус/g, "sin")
+            .replace(/косинус/g, "cos")
+            .replace(/тангенс/g, "tan")
+            .replace(/\blg\b/g, "log10")
+            .replace(/(\d)(x)/g, "$1*$2")
+            .replace(/x(\d)/g, "x*$1")
+            .replace(/(\d)\(/g, "$1*(")
+            .replace(/\)(\d)/g, ")*$1")
+            .replace(/(\d)(sin|cos|tan|log|sqrt|abs|exp)/g, "$1*$2");
     }
 
-    return null;
-}
-// =======================
-// 📘 VIETA
-// =======================
-function vieta(a,b,c){
+    function splitEquation(text) {
+        const parts = text.split("=");
+        return {
+            left: parts[0] || text,
+            right: parts.length > 1 ? parts.slice(1).join("=") : "0"
+        };
+    }
 
-    let sum = -b/a;
-    let mult = c/a;
+    function parsePolynomial(expr) {
+        expr = String(expr).replace(/\s+/g, "").replace(/-/g, "+-");
+        if (expr.startsWith("+")) expr = expr.slice(1);
 
-    return `
-📘 Теорема Виета:
+        const coeffs = { 4: 0, 2: 0, 1: 0, 0: 0 };
+        const terms = expr.split("+").filter(Boolean);
 
-x1 + x2 = ${sum}
-x1 * x2 = ${mult}
-`;
-}
+        for (const term of terms) {
+            let m;
 
+            m = term.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
+            if (m) {
+                let coefRaw = m[1];
+                let power = parseInt(m[2], 10);
+                if (!(power in coeffs)) continue;
 
-function parseEq(eq){
-    let [l,r] = eq.split('=');
+                let coef;
+                if (coefRaw === "" || coefRaw === "+") coef = 1;
+                else if (coefRaw === "-") coef = -1;
+                else coef = parseFloat(coefRaw);
 
-    let a = 0, b = 0;
+                if (!Number.isNaN(coef)) coeffs[power] += coef;
+                continue;
+            }
 
-    l.replace(/([+-]?\d*)x/g, m=>{
-        a += parseFloat(m)||1;
-    });
+            m = term.match(/^([+-]?\d*\.?\d*)\*?x$/);
+            if (m) {
+                let coefRaw = m[1];
+                let coef;
+                if (coefRaw === "" || coefRaw === "+") coef = 1;
+                else if (coefRaw === "-") coef = -1;
+                else coef = parseFloat(coefRaw);
 
-    l.replace(/([+-]?\d*)y/g, m=>{
-        b += parseFloat(m)||1;
-    });
+                if (!Number.isNaN(coef)) coeffs[1] += coef;
+                continue;
+            }
 
-    let c = Function('return '+r)();
+            if (/^[+-]?\d*\.?\d+$/.test(term)) {
+                const val = parseFloat(term);
+                if (!Number.isNaN(val)) coeffs[0] += val;
+            }
+        }
 
-    return [a,b,c];
-}
-// =======================
-// 📘 ABSOLUTE VALUE
-// =======================
-function solveModule(text){
+        return coeffs;
+    }
 
-    let m = text.match(/\|(.+)\|=(.+)/);
-    if(!m) return null;
-
-    let expr = m[1];
-    let val = parseFloat(m[2]);
-
-    let x1 = Function('return '+expr.replace('x','('+val+')'))();
-    let x2 = Function('return '+expr.replace('x','(-'+val+')'))();
-
-    return {
-        text:`📘 Модуль:
-
-|${expr}| = ${val}
-
-1) ${expr} = ${val}
-2) ${expr} = -${val}
-
-(решение упрощённое)`
-    };
-}
-// =======================
-// 📘 FRACTION EQUATION
-// =======================
-function solveFraction(text){
-
-    if(!text.includes('/')) return null;
-
-    try{
-        let parts = text.split('=');
-        if(parts.length!==2) return null;
-
-        let left = parts[0];
-        let right = parts[1];
+    function getQuadraticCoefficients(text) {
+        const { left, right } = splitEquation(text);
+        const leftCoeffs = parsePolynomial(left);
+        const rightCoeffs = parsePolynomial(right);
 
         return {
-            text:`📘 Дробное уравнение:
-
-${left} = ${right}
-
-👉 Умножаем всё на общий знаменатель
-
-(дальше решается как линейное)`
+            a: leftCoeffs[2] - rightCoeffs[2],
+            b: leftCoeffs[1] - rightCoeffs[1],
+            c: leftCoeffs[0] - rightCoeffs[0]
         };
-
-    }catch{
-        return null;
     }
-}
 
-// =======================
-// 📘 SQRT EQUATION
-// =======================
-function solveSqrt(text){
-
-    if(!text.includes('Math.sqrt')) return null;
-
-    try{
-        let parts = text.split('=');
-        let left = parts[0];
-        let right = parts[1];
+    function getBiquadraticCoefficients(text) {
+        const { left, right } = splitEquation(text);
+        const leftCoeffs = parsePolynomial(left);
+        const rightCoeffs = parsePolynomial(right);
 
         return {
-            text:`📘 Иррациональное:
-
-${left} = ${right}
-
-👉 Возводим в квадрат обе части
-
-(решение продолжается)`
+            a: leftCoeffs[4] - rightCoeffs[4],
+            b: leftCoeffs[2] - rightCoeffs[2],
+            c: leftCoeffs[0] - rightCoeffs[0]
         };
+    }
 
-    }catch{
+    function safeSimpleEval(expr) {
+        const cleaned = String(expr).replace(/\s+/g, "").replace(/,/g, ".");
+        if (!/^[0-9+\-*/().]+$/.test(cleaned)) return null;
+        try {
+            return Function('"use strict"; return (' + cleaned + ');')();
+        } catch {
+            return null;
+        }
+    }
+
+    function extractGraphExpr(originalText) {
+        const raw = String(originalText).trim();
+
+        let m = raw.match(/y\s*=\s*([^\n\r]+)/i);
+        if (m) return m[1].trim();
+
+        m = raw.match(/(?:graph|plot|draw|построй|начерти|нарисуй|покажи)\s*(?:the\s*)?(?:graph|chart|график)?\s*[:\-]?\s*y\s*=\s*([^\n\r]+)/i);
+        if (m) return m[1].trim();
+
         return null;
     }
-}
 
+    function normalizeGraphExpr(expr) {
+        return String(expr)
+            .replace(/[−–—]/g, "-")
+            .replace(/×/g, "*")
+            .replace(/,/g, ".")
+            .replace(/\s+/g, "")
+            .replace(/\^/g, "**")
+            .replace(/\bpi\b/gi, "PI")
+            .replace(/\be\b/g, "E")
+            .replace(/\bsin\b/gi, "sin")
+            .replace(/\bcos\b/gi, "cos")
+            .replace(/\btan\b/gi, "tan")
+            .replace(/\basin\b/gi, "asin")
+            .replace(/\bacos\b/gi, "acos")
+            .replace(/\batan\b/gi, "atan")
+            .replace(/\bsqrt\b/gi, "sqrt")
+            .replace(/\blog10\b/gi, "log10")
+            .replace(/\blog\b/gi, "log")
+            .replace(/\babs\b/gi, "abs")
+            .replace(/\bexp\b/gi, "exp")
+            .replace(/(\d)(x)/g, "$1*$2")
+            .replace(/x(\d)/g, "x*$1")
+            .replace(/(\d)\(/g, "$1*(")
+            .replace(/\)(\d)/g, ")*$1")
+            .replace(/(\d)(sin|cos|tan|asin|acos|atan|sqrt|log10|log|abs|exp)/g, "$1*$2")
+            .replace(/x\(/g, "x*(");
+    }
 
-// =======================
-// 🧠 SUPER EXPLANATION ENGINE
-// =======================
-function explainLinear(a,b,c,x){
-    return `\n📘 Объяснение:\n1) Переносим b: ${a}x = ${c} - (${b})\n2) Считаем: ${a}x = ${c-b}\n3) Делим: x = ${x}`;
-}
+    // =========================
+    // EXPLANATIONS
+    // =========================
+    function explainQuadratic(a, b, c, D, x1, x2) {
+        return `
+📘 Подробное объяснение квадратного уравнения:
 
-function explainQuadratic(a,b,c,D,x1,x2){
-    return `
+1) Дано: ax² + bx + c = 0
+   a = ${a}, b = ${b}, c = ${c}
 
-📘 Подробное объяснение:
+2) Дискриминант:
+   D = b² − 4ac = ${D.toFixed(2)}
+
+3) Формула корней:
+   x = (−b ± √D) / (2a)
+
+4) Корни:
+   x₁ = ${Number.isFinite(x1) ? x1.toFixed(4) : "нет"}
+   x₂ = ${Number.isFinite(x2) ? x2.toFixed(4) : "нет"}
+
+✅`;
+    }
+
+    function explainLinear(x) {
+        return `
+📘 Подробное объяснение линейного уравнения:
+
+1) Дано: bx + c = 0
+2) Переносим c:
+   bx = −c
+3) Делим на b:
+   x = −c / b
+
+Ответ: x = ${x.toFixed(4)} ✅`;
+    }
+
+    function explainBiquadratic(a, b, c, roots) {
+        return `
+📘 Подробное объяснение биквадратного уравнения:
+
+1) Дано: ax⁴ + bx² + c = 0
+2) Замена:
+   y = x²
+3) Получаем:
+   ay² + by + c = 0
+4) Решаем квадратное уравнение по y
+5) Возвращаемся к x:
+   x = ±√y, если y ≥ 0
+
+Корни: ${roots.length ? roots.join(", ") : "нет"} ✅`;
+    }
+
+    function explainInequality(a, b, c, sign, solution) {
+        return `
+📘 Подробное объяснение неравенства:
 
 1) Дано:
-a=${a}, b=${b}, c=${c}
+   ax² + bx + c ${sign} 0
+   a = ${a}, b = ${b}, c = ${c}
 
-2) Формула дискриминанта:
-D = b² - 4ac
+2) Находим корни уравнения ax² + bx + c = 0
 
-3) Считаем:
-D = ${b}² - 4·${a}·${c} = ${D}
+3) Парабола открыта ${a > 0 ? "вверх" : "вниз"}
 
-4) Формула корней:
-x = (-b ± √D) / 2a
+4) Ответ:
+   ${solution}
 
-5) Подставляем:
-
-x1 = (${ -b } + √${D}) / ${2*a} = ${x1}
-
-x2 = (${ -b } - √${D}) / ${2*a} = ${x2}
-
-✅ Ответ:
-x1 = ${x1}
-x2 = ${x2}
-`;
-}
-
-
-function explainBiquadratic(a,b,c,roots){
-    return `\n📘 Объяснение:\n1) y = x² замена\n2) решаем квадратное\n3) обратно x = ±√y\n4) ответ: ${roots.join(', ')}`;
-}
-
-// =======================
-// BOT
-// =======================
-function bot(text){
-    let original = text.toLowerCase();
-    if(/^[a-zA-Z\s?!.]+$/.test(text)){
-    lang = 'EN';
-}else{
-    lang = 'RU';
-}
-
-    text = norm(text);
-    // 💬 CHAT CHECK FIRST
-let chat = chatReply(text);
-if(chat) return {text: chat};
-
-    // линейное
-let lin = solveLinear(text);
-if(lin) return lin;
-
-// система 2x2
-let sys2 = solveSystemFull(text);
-if(sys2) return sys2;
-
-// неравенства
-let ineq = solveInequality(text);
-if(ineq) return ineq;
-
-    // =======================
-// 🧠 SMART COMMANDS
-// =======================
-
-if(text.includes('реши') || text.includes('solve')){
-    let clean = text.replace('реши','').replace('solve','');
-    
-    let sys = solveSystem(clean);
-    if(sys) return sys;
-}
-
-if(text.includes('проверь') || text.includes('check')){
-    let clean = text.replace('проверь','').replace('check','');
-    
-    let check = checkSolution(clean);
-    if(check) return check;
-}
-
-
-    // GRAPH
-    if(original.includes('граф')||original.includes('нарисуй')||original.includes('plot')){
-        return {text:'Рисую график...', graph:text.replace('y=','')};
+✅`;
     }
 
-    // QUADRATIC
-    let q = text.match(/([-+]?\d*)x\^2([-+]?\d*)x([-+]?\d*)=0/);
-    if(q){
-        lastProblem = text;
+    function explainExponential(base, rhs, x) {
+        return `
+📘 Подробное объяснение показательного уравнения:
 
-        let a=parseFloat(q[1])||1;
-        let b=parseFloat(q[2])||0;
-        let c=parseFloat(q[3])||0;
-        let D=b*b-4*a*c;
+1) Дано: ${base}^x = ${rhs}
+2) Берём логарифм:
+   x = log(${rhs}) / log(${base})
 
-        if(D<0) return {text:`D=${D}\nНет корней`};
+Ответ: x = ${x.toFixed(4)} ✅`;
+    }
 
-        let x1=(-b+Math.sqrt(D))/(2*a);
-        let x2=(-b-Math.sqrt(D))/(2*a);
+    function explainLogarithmic(base, rhs, x) {
+        return `
+📘 Подробное объяснение логарифмического уравнения:
+
+1) Дано: log_${base}(x) = ${rhs}
+2) По определению логарифма:
+   x = ${base} ^ ${rhs}
+
+Ответ: x = ${x.toFixed(4)} ✅`;
+    }
+
+    function explainTrig(trig, k, general) {
+        const name = trig === "sin" ? "arcsin" : trig === "cos" ? "arccos" : "arctan";
+        return `
+📘 Подробное объяснение тригонометрического уравнения:
+
+1) Дано: ${trig}(x) = ${k}
+2) Находим главный угол:
+   α = ${name}(${k})
+
+3) Общее решение:
+   ${general}
+
+✅`;
+    }
+
+    function explainRoot(x) {
+        return `
+📘 Подробное объяснение уравнения с корнем:
+
+1) Дано: √x = число
+2) Возводим обе части в квадрат
+3) Проверяем ОДЗ
+
+Ответ: x = ${x.toFixed(4)} ✅`;
+    }
+
+    // =========================
+    // INEQUALITIES
+    // =========================
+    function solveLinearInequality(b, c, sign) {
+        if (b === 0) {
+            const val = c;
+            const ok = (
+                (sign === ">"  && 0 > -val) ||
+                (sign === ">=" && 0 >= -val) ||
+                (sign === "<"  && 0 < -val) ||
+                (sign === "<=" && 0 <= -val)
+            );
+            return ok ? "все вещественные числа" : "решений нет";
+        }
+
+        const x0 = -c / b;
+        if (sign === ">")  return b > 0 ? `x > ${x0.toFixed(2)}` : `x < ${x0.toFixed(2)}`;
+        if (sign === ">=") return b > 0 ? `x ≥ ${x0.toFixed(2)}` : `x ≤ ${x0.toFixed(2)}`;
+        if (sign === "<")  return b > 0 ? `x < ${x0.toFixed(2)}` : `x > ${x0.toFixed(2)}`;
+        return b > 0 ? `x ≤ ${x0.toFixed(2)}` : `x ≥ ${x0.toFixed(2)}`;
+    }
+
+    function solveQuadraticInequality(a, b, c, sign) {
+        if (a === 0) {
+            const linear = solveLinearInequality(b, c, sign);
+            return { solution: linear, explain: explainInequality(a, b, c, sign, linear) };
+        }
+
+        const D = b * b - 4 * a * c;
+
+        if (D < 0) {
+            const always =
+                (a > 0 && (sign === ">" || sign === ">=")) ||
+                (a < 0 && (sign === "<" || sign === "<="));
+
+            const res = always ? "все вещественные числа" : "решений нет";
+            return { solution: res, explain: explainInequality(a, b, c, sign, res) };
+        }
+
+        let x1 = (-b - Math.sqrt(D)) / (2 * a);
+        let x2 = (-b + Math.sqrt(D)) / (2 * a);
+        if (x1 > x2) [x1, x2] = [x2, x1];
+
+        let solutionText = "";
+
+        if (a > 0) {
+            if (sign === ">") solutionText = `x < ${x1.toFixed(2)} или x > ${x2.toFixed(2)}`;
+            if (sign === ">=") solutionText = `x ≤ ${x1.toFixed(2)} или x ≥ ${x2.toFixed(2)}`;
+            if (sign === "<") solutionText = `${x1.toFixed(2)} < x < ${x2.toFixed(2)}`;
+            if (sign === "<=") solutionText = `${x1.toFixed(2)} ≤ x ≤ ${x2.toFixed(2)}`;
+        } else {
+            if (sign === ">") solutionText = `${x1.toFixed(2)} < x < ${x2.toFixed(2)}`;
+            if (sign === ">=") solutionText = `${x1.toFixed(2)} ≤ x ≤ ${x2.toFixed(2)}`;
+            if (sign === "<") solutionText = `x < ${x1.toFixed(2)} или x > ${x2.toFixed(2)}`;
+            if (sign === "<=") solutionText = `x ≤ ${x1.toFixed(2)} или x ≥ ${x2.toFixed(2)}`;
+        }
+
+        return { solution: solutionText, explain: explainInequality(a, b, c, sign, solutionText) };
+    }
+
+    // =========================
+    // CHAT REPLIES
+    // =========================
+    function chatReply(text) {
+        const t = String(text).toLowerCase().trim();
+        const mathHint = /[0-9x^=<>√()+\-*/]|sin|cos|tan|log/i.test(t);
+        const isEN = /^[a-zA-Z\s?!.]+$/.test(text);
+
+        const greetings = ["hi", "hello", "hey", "привет", "здарова", "здравствуй"];
+        for (const g of greetings) {
+            if (t.includes(g)) {
+                return isEN
+                    ? "Hello 👋 I explain every step!"
+                    : "Привет 👋 Теперь я объясняю каждую задачу подробно!";
+            }
+        }
+
+        const about = ["who are you", "ты кто", "что ты умеешь"];
+        for (const a of about) {
+            if (t.includes(a)) {
+                return isEN
+                    ? "I solve and explain 11th grade math"
+                    : "Я решаю и подробно объясняю задачи 11 класса 📘";
+            }
+        }
+
+        if (!mathHint) {
+            return isEN
+                ? "Try a math problem"
+                : "Напиши любое уравнение — я решу и объясню шаг за шагом!";
+        }
+
+        return "";
+    }
+
+    // =========================
+    // GRAPH DETECTION
+    // =========================
+    function shouldDrawGraph(text) {
+        const t = String(text).toLowerCase();
+
+        const graphWords = [
+            "график",
+            "начерти график",
+            "построй график",
+            "нарисуй график",
+            "чертить график",
+            "покажи график",
+            "draw graph",
+            "plot graph",
+            "draw the graph",
+            "plot the graph",
+            "graph"
+        ];
+
+        return graphWords.some(word => t.includes(word));
+    }
+
+    // =========================
+    // GRAPHING
+    // =========================
+    function drawGraph(a, b, c) {
+        const canvas = canvasEl;
+        canvas.style.display = "block";
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width;
+        const h = canvas.height;
+
+        ctx.clearRect(0, 0, w, h);
+
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.lineWidth = 1;
+        for (let i = 30; i < w; i += 30) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, h);
+            ctx.stroke();
+        }
+        for (let i = 30; i < h; i += 30) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(w, i);
+            ctx.stroke();
+        }
+
+        ctx.strokeStyle = "#ffd700";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, h / 2);
+        ctx.lineTo(w, h / 2);
+        ctx.moveTo(w / 2, 0);
+        ctx.lineTo(w / 2, h);
+        ctx.stroke();
+
+        ctx.fillStyle = "#fff";
+        ctx.font = "12px Arial";
+        ctx.fillText("x", w - 20, h / 2 - 8);
+        ctx.fillText("y", w / 2 + 8, 20);
+
+        ctx.strokeStyle = "#6c63ff";
+        ctx.lineWidth = 4;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = "#6c63ff";
+
+        ctx.beginPath();
+        const scaleX = w / 20;
+        const scaleY = h / 20;
+        let first = true;
+
+        for (let px = 0; px <= w; px += 3) {
+            const x = (px - w / 2) / scaleX;
+            let y = a * x * x + b * x + c;
+
+            if (!Number.isFinite(y)) continue;
+            if (Math.abs(y) > 200) continue;
+
+            const py = h / 2 - y * scaleY;
+
+            if (first) {
+                ctx.moveTo(px, py);
+                first = false;
+            } else {
+                ctx.lineTo(px, py);
+            }
+        }
+
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "14px Arial";
+        ctx.fillText(`y = ${a}x² + ${b}x + ${c}`, 20, 30);
+    }
+
+    function solveBisection(f, left, right, iterations = 35) {
+        let a = left;
+        let b = right;
+        let fa = f(a);
+        let fb = f(b);
+
+        if (!Number.isFinite(fa) || !Number.isFinite(fb)) return null;
+        if (fa === 0) return a;
+        if (fb === 0) return b;
+        if (fa * fb > 0) return null;
+
+        for (let i = 0; i < iterations; i++) {
+            const mid = (a + b) / 2;
+            const fm = f(mid);
+            if (!Number.isFinite(fm)) return null;
+
+            if (Math.abs(fm) < 1e-8) return mid;
+
+            if (fa * fm <= 0) {
+                b = mid;
+                fb = fm;
+            } else {
+                a = mid;
+                fa = fm;
+            }
+        }
+
+        return (a + b) / 2;
+    }
+
+    function uniqueSorted(arr, eps = 0.06) {
+        const sorted = arr.filter(v => Number.isFinite(v)).sort((a, b) => a - b);
+        const res = [];
+        for (const x of sorted) {
+            if (!res.length || Math.abs(res[res.length - 1] - x) > eps) res.push(x);
+        }
+        return res;
+    }
+
+    function findRootsForFunction(f, minX = -10, maxX = 10, step = 0.25) {
+        const roots = [];
+        let prevX = minX;
+        let prevY = f(prevX);
+
+        for (let x = minX + step; x <= maxX; x += step) {
+            const y = f(x);
+
+            if (Number.isFinite(y) && Math.abs(y) < 1e-7) {
+                roots.push(x);
+            }
+
+            if (Number.isFinite(prevY) && Number.isFinite(y) && prevY * y < 0) {
+                const root = solveBisection(f, prevX, x);
+                if (root !== null) roots.push(root);
+            }
+
+            prevX = x;
+            prevY = y;
+        }
+
+        return uniqueSorted(roots);
+    }
+
+    function drawFunctionPoints(expr, f, scale, w, h, ctx) {
+        ctx.fillStyle = "#ffd700";
+        ctx.strokeStyle = "#ffd700";
+        ctx.lineWidth = 2;
+        ctx.font = "12px Arial";
+
+        try {
+            const y0 = f(0);
+            if (Number.isFinite(y0)) {
+                const px = w / 2;
+                const py = h / 2 - y0 * scale;
+
+                ctx.beginPath();
+                ctx.arc(px, py, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillText(`(0, ${y0.toFixed(2)})`, px + 6, py - 6);
+            }
+        } catch {}
+
+        const roots = findRootsForFunction(f, -10, 10, 0.25);
+        for (const x of roots) {
+            const px = w / 2 + x * scale;
+            const py = h / 2;
+
+            if (px < -20 || px > w + 20) continue;
+
+            ctx.beginPath();
+            ctx.arc(px, py, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillText(`(${x.toFixed(2)}, 0)`, px + 6, py - 6);
+        }
+    }
+
+    function drawGraphFunction(expr) {
+        const canvas = canvasEl;
+        canvas.style.display = "block";
+
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width;
+        const h = canvas.height;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const scale = 30;
+
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.lineWidth = 1;
+        for (let i = 30; i < w; i += 30) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, h);
+            ctx.stroke();
+        }
+        for (let i = 30; i < h; i += 30) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(w, i);
+            ctx.stroke();
+        }
+
+        ctx.strokeStyle = "#ffd700";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, h / 2);
+        ctx.lineTo(w, h / 2);
+        ctx.moveTo(w / 2, 0);
+        ctx.lineTo(w / 2, h);
+        ctx.stroke();
+
+        let fn;
+        try {
+            fn = new Function(
+                "x",
+                "const {sin,cos,tan,asin,acos,atan,log,sqrt,abs,exp,log10,PI,E,pow} = Math;" +
+                "return " + expr + ";"
+            );
+        } catch {
+            return;
+        }
+
+        ctx.strokeStyle = "#6c63ff";
+        ctx.lineWidth = 3;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = "#6c63ff";
+        ctx.beginPath();
+
+        let first = true;
+        for (let px = 0; px <= w; px += 2) {
+            const x = (px - w / 2) / scale;
+            let y;
+
+            try {
+                y = fn(x);
+            } catch {
+                first = true;
+                continue;
+            }
+
+            if (!Number.isFinite(y)) {
+                first = true;
+                continue;
+            }
+
+            const py = h / 2 - y * scale;
+            if (py < -200 || py > h + 200) {
+                first = true;
+                continue;
+            }
+
+            if (first) {
+                ctx.moveTo(px, py);
+                first = false;
+            } else {
+                ctx.lineTo(px, py);
+            }
+        }
+
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        drawFunctionPoints(expr, fn, scale, w, h, ctx);
+
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "14px Arial";
+        ctx.fillText(`y = ${expr}`, 20, 30);
+    }
+
+    // =========================
+    // MAIN BOT
+    // =========================
+    function bot(inputText) {
+        const original = String(inputText);
+        const text = norm(original);
+
+        const chatRes = chatReply(original);
+        if (chatRes) return { text: chatRes };
+
+        // График строим только по команде
+        if (shouldDrawGraph(original)) {
+            const graphExprRaw = extractGraphExpr(original);
+            if (graphExprRaw) {
+                return {
+                    text: lang === "RU" ? "Строю график функции..." : "Drawing the function graph...",
+                    func: normalizeGraphExpr(graphExprRaw)
+                };
+            }
+
+            return {
+                text: lang === "RU"
+                    ? "Напиши функцию вида y = x^2 + 2x, y = sin(x), y = x^3 - x"
+                    : "Write a function like y = x^2 + 2x, y = sin(x), y = x^3 - x"
+            };
+        }
+
+        // 1) БИКВАДРАТНОЕ
+        if (text.includes("x^4")) {
+            const coeffs = getBiquadraticCoefficients(text);
+            if (coeffs.a !== 0) {
+                const { a, b, c } = coeffs;
+                const D = b * b - 4 * a * c;
+
+                if (D < 0) {
+                    return { text: `Биквадратное уравнение\nD = ${D.toFixed(2)}\nНет действительных корней` };
+                }
+
+                const y1 = (-b + Math.sqrt(D)) / (2 * a);
+                const y2 = (-b - Math.sqrt(D)) / (2 * a);
+
+                let roots = [];
+                if (y1 >= 0) roots.push(Math.sqrt(y1).toFixed(4), (-Math.sqrt(y1)).toFixed(4));
+                if (y2 >= 0) roots.push(Math.sqrt(y2).toFixed(4), (-Math.sqrt(y2)).toFixed(4));
+
+                roots = [...new Set(roots)];
+                const fullText =
+                    `Биквадратное уравнение\nКорни: ${roots.length ? roots.join(", ") : "нет"}`
+                    + "\n" + explainBiquadratic(a, b, c, roots);
+
+                return { text: fullText };
+            }
+        }
+
+        // 2) КВАДРАТНОЕ / ЛИНЕЙНОЕ
+        const coeffs = getQuadraticCoefficients(text);
+        if (coeffs.a !== 0 || coeffs.b !== 0) {
+            const { a, b, c } = coeffs;
+
+            if (a !== 0) {
+                const D = b * b - 4 * a * c;
+
+                if (D < 0) {
+                    const txt = `D = ${D.toFixed(2)}\nНет действительных корней\n` + explainQuadratic(a, b, c, D, NaN, NaN);
+                    return { text: txt, coeffs: { a, b, c } };
+                }
+
+                const x1 = (-b + Math.sqrt(D)) / (2 * a);
+                const x2 = (-b - Math.sqrt(D)) / (2 * a);
+
+                const fullText =
+                    `Квадратное уравнение\nD = ${D.toFixed(2)}\nx₁ = ${x1.toFixed(4)}\nx₂ = ${x2.toFixed(4)}`
+                    + explainQuadratic(a, b, c, D, x1, x2);
+
+                return { text: fullText, coeffs: { a, b, c } };
+            } else {
+                if (b === 0) {
+                    return { text: c === 0 ? "Бесконечно много решений" : "Решений нет" };
+                }
+
+                const x = -c / b;
+                const fullText = `Линейное уравнение\nx = ${x.toFixed(4)}` + explainLinear(x);
+                return { text: fullText };
+            }
+        }
+
+        // 3) НЕРАВЕНСТВА
+        let ineqSign = null;
+        if (text.includes(">=")) ineqSign = ">=";
+        else if (text.includes(">")) ineqSign = ">";
+        else if (text.includes("<=")) ineqSign = "<=";
+        else if (text.includes("<")) ineqSign = "<";
+
+        if (ineqSign) {
+            const eqText = text.replace(/[><=]/g, "=");
+            const c = getQuadraticCoefficients(eqText);
+
+            if (c.a !== 0 || c.b !== 0) {
+                const res = solveQuadraticInequality(c.a, c.b, c.c, ineqSign);
+                const fullText = `Неравенство\nРешение: ${res.solution}\n` + res.explain;
+                return { text: fullText, coeffs: { a: c.a, b: c.b, c: c.c } };
+            }
+        }
+
+        // 4) ПОКАЗАТЕЛЬНЫЕ
+        const expMatch = text.match(/(\d+(?:\.\d+)?)\^x\s*=\s*(\d+(?:\.\d+)?)/);
+        if (expMatch) {
+            const base = parseFloat(expMatch[1]);
+            const rhs = parseFloat(expMatch[2]);
+
+            if (base > 0 && base !== 1 && rhs > 0) {
+                const x = Math.log(rhs) / Math.log(base);
+                const fullText = `Показательное уравнение\nx = ${x.toFixed(4)}` + explainExponential(base, rhs, x);
+                return { text: fullText };
+            }
+        }
+
+        // 5) ЛОГАРИФМИЧЕСКИЕ
+        const logMatch = text.match(/log(\d+)\(x\)\s*=\s*(\d+(?:\.\d+)?)/);
+        if (logMatch) {
+            const base = parseFloat(logMatch[1]);
+            const rhs = parseFloat(logMatch[2]);
+            const x = Math.pow(base, rhs);
+            const fullText = `log_${base}(x) = ${rhs}\nx = ${x.toFixed(4)}` + explainLogarithmic(base, rhs, x);
+            return { text: fullText };
+        }
+
+        const lgMatch = text.match(/log10\(x\)\s*=\s*(\d+(?:\.\d+)?)/);
+        if (lgMatch) {
+            const rhs = parseFloat(lgMatch[1]);
+            const x = Math.pow(10, rhs);
+            const fullText = `lg(x) = ${rhs}\nx = ${x.toFixed(4)}` + explainLogarithmic(10, rhs, x);
+            return { text: fullText };
+        }
+
+        // 6) ТРИГОНОМЕТРИЧЕСКИЕ
+        if (text.includes("sin") || text.includes("cos") || text.includes("tan")) {
+            const trig = text.includes("sin") ? "sin" : text.includes("cos") ? "cos" : "tan";
+            const kMatch = text.match(/=\s*([+-]?\d*\.?\d+)/);
+            const k = kMatch ? parseFloat(kMatch[1]) : NaN;
+
+            if (!Number.isNaN(k) && (trig === "tan" || Math.abs(k) <= 1)) {
+                let ans = "";
+
+                if (trig === "sin") {
+                    const a1 = Math.asin(k);
+                    ans = `x = ${a1.toFixed(4)} + 2kπ   или   x = ${(Math.PI - a1).toFixed(4)} + 2kπ`;
+                } else if (trig === "cos") {
+                    const a1 = Math.acos(k);
+                    ans = `x = ±${a1.toFixed(4)} + 2kπ`;
+                } else {
+                    const a1 = Math.atan(k);
+                    ans = `x = ${a1.toFixed(4)} + kπ`;
+                }
+
+                const fullText = `${trig}(x) = ${k}\n${ans}\n` + explainTrig(trig, k, ans);
+                return { text: fullText };
+            }
+        }
+
+        // 7) УРАВНЕНИЯ С КОРНЕМ
+        const simpleSqrt = text.match(/√x\s*=\s*(\d+(?:\.\d+)?)/);
+        if (simpleSqrt) {
+            const k = parseFloat(simpleSqrt[1]);
+            const x = k * k;
+            const fullText = `√x = ${k}\nx = ${x.toFixed(4)}` + explainRoot(x);
+            return { text: fullText };
+        }
+
+        // 8) ПРОСТОЕ ВЫЧИСЛЕНИЕ
+        const simple = safeSimpleEval(text);
+        if (simple !== null && Number.isFinite(simple)) {
+            return { text: `Ответ: ${simple}\n📘 Это простое арифметическое выражение.` };
+        }
 
         return {
-            text:`Квадратное уравнение:\nD=${D}\nx1=${x1}\nx2=${x2}` + explainQuadratic(a,b,c,D,x1,x2)
+            text: lang === "RU"
+                ? "Не понял 😢 Попробуй любое уравнение 11 класса — я решу и объясню подробно!"
+                : "I did not understand 😢 Try a math problem and I will solve it step by step!"
         };
     }
 
-    // BIQUADRATIC
-    let bq = text.match(/([-+]?\d*)x\^4([-+]?\d*)x\^2([-+]?\d*)=0/);
-    if(bq){
-        let a=parseFloat(bq[1])||1;
-        let b=parseFloat(bq[2])||0;
-        let c=parseFloat(bq[3])||0;
+    // =========================
+    // SEND
+    // =========================
+    function sendMessage() {
+        if (isBusy) return;
 
-        let D=b*b-4*a*c;
-        if(D<0) return {text:'Нет корней'};
+        const text = inputEl.value.trim();
+        if (!text) return;
 
-        let y1=(-b+Math.sqrt(D))/(2*a);
-        let y2=(-b-Math.sqrt(D))/(2*a);
+        isBusy = true;
+        sendBtnEl.disabled = true;
+        voiceBtnEl.disabled = true;
 
-        let roots=[];
+        addMessage("Вы", text, "user");
 
-        if(y1>=0){ roots.push(Math.sqrt(y1),-Math.sqrt(y1)); }
-        if(y2>=0){ roots.push(Math.sqrt(y2),-Math.sqrt(y2)); }
+        userStats.messages++;
+        if (userStats.messages % 10 === 0) {
+            userStats.level++;
+            addMessage("Система", "🎉 Уровень повышен: " + userStats.level, "bot");
+        }
+        saveState();
 
-        return {
-            text:'Биквадратное уравнение:\nКорни: '+roots.map(r=>r.toFixed(2)).join(', ') + explainBiquadratic(a,b,c,roots.map(r=>r.toFixed(2)))
-        };
+        inputEl.value = "";
+        showThinking();
+
+        setTimeout(() => {
+            hideThinking();
+
+            const res = bot(text);
+            appendBotMessage("Бот", res.text, "bot");
+
+            if (res.func) {
+                drawGraphFunction(res.func);
+            } else if (res.coeffs) {
+                const wantsGraph = shouldDrawGraph(text);
+                if (wantsGraph && (res.coeffs.a !== 0 || res.coeffs.b !== 0 || res.coeffs.c !== 0)) {
+                    drawGraph(res.coeffs.a, res.coeffs.b, res.coeffs.c);
+                }
+            }
+
+            isBusy = false;
+            sendBtnEl.disabled = false;
+            voiceBtnEl.disabled = false;
+        }, 350);
     }
 
-    // SIMPLE EVAL
-    // =======================
-// 🧠 AUTO DETECT (БЕЗ "РЕШИ")
-// =======================
+    function clearChat() {
+        chatHistory = [];
+        localStorage.removeItem(LS_CHAT);
+        chat.innerHTML = "";
+        canvasEl.style.display = "none";
+    }
 
-// система уравнений (через ;)
-if(text.includes(';')){
-    let sys = solveSystem(text);
-    if(sys) return sys;
-}
+    // =========================
+    // EVENTS / INIT
+    // =========================
+    inputEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") sendMessage();
+    });
 
-// квадратное (без команды)
-let q_auto = text.match(/([-+]?\d*)x\^2([-+]?\d*)x([-+]?\d*)=0/);
-if(q_auto){
-    let a=parseFloat(q_auto[1])||1;
-    let b=parseFloat(q_auto[2])||0;
-    let c=parseFloat(q_auto[3])||0;
-
-    let D=b*b-4*a*c;
-
-    if(D<0) return {text:`D=${D}\nНет корней`};
-
-    let x1=(-b+Math.sqrt(D))/(2*a);
-    let x2=(-b-Math.sqrt(D))/(2*a);
-
-    return {
-        text:`Квадратное уравнение:
-D=${D}
-x1=${x1}
-x2=${x2}` + explainQuadratic(a,b,c,D,x1,x2)
+    window.onload = function () {
+        if (chatHistory.length === 0) {
+            addMessage(
+                "Бот",
+                "Привет! Теперь я решаю задачи 11 класса и даю подробное объяснение шаг за шагом.\n\nПопробуй: x²−5x+6=0, x²−5x+6>0, 2^x=8, sin(x)=0.5\n\nЧтобы построить график, напиши: «построй график y = x^2 + 2x», «начерти график y = sin(x)», «draw graph y = x^3 - x».",
+                "bot"
+            );
+        } else {
+            const frag = document.createDocumentFragment();
+            for (const msg of chatHistory) {
+                const div = document.createElement("div");
+                div.classList.add("message", msg.cls);
+                div.textContent = msg.sender + ": " + msg.text;
+                frag.appendChild(div);
+            }
+            chat.appendChild(frag);
+            chat.scrollTop = chat.scrollHeight;
+        }
     };
-}
 
-    try{
-        let res = Function('return '+text)();
-
-let pretty = res;
-
-// если это число — пробуем сделать дробь
-if(typeof res === 'number' && isFinite(res)){
-    let frac = toFraction(res);
-    if(frac) pretty = frac + " (" + res + ")";
-}
-
-return {text:'Ответ: '+pretty};
-
-    }catch{
-        return {text:'Не понимаю 😢'};
-    }
-}
-
-// =======================
-// GRAPH
-// =======================
-function drawGraph(expr){
-    let old=document.getElementById('graph');
-    if(old) old.remove();
-
-    let canvas=document.createElement('canvas');
-    canvas.id='graph';
-    canvas.width=400;
-    canvas.height=400;
-    chat.appendChild(canvas);
-
-    let ctx=canvas.getContext('2d');
-
-    ctx.beginPath();
-    for(let px=0;px<400;px++){
-        let x=(px-200)/20;
-        let y;
-        try{ y=Function('x','return '+expr)(x); }
-        catch{ continue; }
-        let py=200-y*20;
-        if(px===0) ctx.moveTo(px,py);
-        else ctx.lineTo(px,py);
-    }
-    ctx.stroke();
-}
-
-// =======================
-// ENTER
-// =======================
-document.getElementById('userInput').addEventListener('keydown', function(e){
-    if(e.key==='Enter') sendMessage();
-});
-function toFraction(decimal){
-    const tolerance = 1.0E-10;
-    let h1=1, h2=0, k1=0, k2=1;
-    let b = decimal;
-    do {
-        let a = Math.floor(b);
-        let aux = h1; h1 = a*h1 + h2; h2 = aux;
-        aux = k1; k1 = a*k1 + k2; k2 = aux;
-        b = 1/(b-a);
-    } while(Math.abs(decimal - h1/k1) > decimal * tolerance);
-
-    return h1 + "/" + k1;
-}
-// =======================
-// 🧠 SYSTEM SOLVER
-// =======================
-function solveSystem(text){
-
-    // пример: x+y=10;x=5
-    let parts = text.split(';');
-
-    if(parts.length !== 2) return null;
-
-    try{
-        let eq1 = parts[0];
-        let eq2 = parts[1];
-
-        // если x=...
-        if(eq2.startsWith('x=')){
-            let x = Function('return '+eq2.replace('x=',''))();
-
-            let y = Function('x','return '+eq1.split('=')[1])(x);
-
-            return {
-                text:`📘 Система:
-
-1) Подставляем x=${x}
-2) Получаем y=${y}
-
-✅ Ответ:
-x=${x}
-y=${y}`
-            };
-        }
-
-    }catch{
-        return null;
-    }
-
-    return null;
-}
-// =======================
-// 🧠 CHECK SOLUTION
-// =======================
-// =======================
-// 📘 CHECK PRO
-// =======================
-function checkSolution(text){
-
-    let parts = text.split(';');
-    if(parts.length !== 2) return null;
-
-    try{
-        let eq = parts[0];
-        let ans = parts[1];
-
-        let x = parseFloat(ans.split('=')[1]);
-
-        let left = Function('x','return '+eq.split('=')[0])(x);
-        let right = Function('return '+eq.split('=')[1])();
-
-        let correct = Math.abs(left-right) < 0.0001;
-
-        if(correct){
-            return {text:`✅ Верно!\n${left} ≈ ${right}`};
-        }else{
-            return {
-                text:`❌ Неверно
-
-${left} ≠ ${right}
-
-👉 Попробуй ещё`
-            };
-        }
-
-    }catch{
-        return null;
-    }
-}
-
-// =======================
-// 💬 CHAT MODE
-// =======================
-function chatReply(text){
-
-    let t = text.toLowerCase().trim();
-    let isEN = /^[a-zA-Z\s?!.]+$/.test(text);
-
-    // =========================
-    // 👋 GREETINGS (25+ вариантов)
-    // =========================
-    let greetings = [
-        "hi","hello","hey","yo","good morning","good evening","good day",
-        "привет","здарова","здравствуй","салам","хай","прив","hello there"
-    ];
-
-    for(let g of greetings){
-        if(t.includes(g)){
-            return isEN
-            ? "Hello 👋 I can help you with math"
-            : "Привет 👋 Я помогу тебе с математикой";
-        }
-    }
-
-    // =========================
-    // 🤖 ABOUT BOT (25+ вариантов)
-    // =========================
-    let about = [
-        "what can you do","ты кто","who are you","ты бот",
-        "math bot","что ты умеешь","ai","assistant","бот"
-    ];
-
-    for(let a of about){
-        if(t.includes(a)){
-            return isEN
-            ? "I solve math: equations, systems, fractions 📘"
-            : "Я решаю математику: уравнения, системы, дроби 📘";
-        }
-    }
-
-    // =========================
-    // 💪 HELP (25+ вариантов)
-    // =========================
-    let help = [
-        "help","помоги","help me","can you help","нужна помощь",
-        "i need help","support","help please"
-    ];
-
-    for(let h of help){
-        if(t.includes(h)){
-            return isEN
-            ? "Send me your problem 👍"
-            : "Отправь пример 👍";
-        }
-    }
-
-    // =========================
-    // 🔥 SOLVE (30+ вариантов)
-    // =========================
-    let solve = [
-        "solve","реши","давай решать","calculate","solve this",
-        "реши пример","lets solve","compute","answer","find solution"
-    ];
-
-    for(let s of solve){
-        if(t.includes(s)){
-            return isEN
-            ? "Send equation 🔥"
-            : "Отправь пример 🔥";
-        }
-    }
-
-    // =========================
-    // 📚 SCHOOL (30+ вариантов)
-    // =========================
-    let school = [
-        "homework","домашка","school","задача","пример",
-        "assignment","lesson","task","study","classwork"
-    ];
-
-    for(let s of school){
-        if(t.includes(s)){
-            return isEN
-            ? "I can help with homework 📚"
-            : "Помогу с домашкой 📚";
-        }
-    }
-
-    // =========================
-    // 😄 THANKS (20+)
-    // =========================
-    let thanks = [
-        "thanks","thank you","спасибо","спс","thx","thanks a lot"
-    ];
-
-    for(let tnk of thanks){
-        if(t.includes(tnk)){
-            return isEN ? "You're welcome 😊" : "Пожалуйста 😊";
-        }
-    }
-
-    // =========================
-    // 👋 BYE (20+)
-    // =========================
-    let bye = [
-        "bye","goodbye","пока","see you","удачи","bye bye","see ya"
-    ];
-
-    for(let b of bye){
-        if(t.includes(b)){
-            return isEN ? "Bye 👋" : "Пока 👋";
-        }
-    }
-
-    // =========================
-    // 😎 CHAT (50+ выражений)
-    // =========================
-    if(
-        t.includes("как дела") ||
-        t.includes("how are you")
-    ){
-        return isEN
-        ? "I'm great 😎 Ready for math!"
-        : "У меня всё отлично 😎 Готов решать!";
-    }
-
-    if(t.includes("скучно") || t.includes("boring")){
-        return isEN
-        ? "Let's solve something hard 😏"
-        : "Давай решим сложный пример 😏";
-    }
-
-    if(t.includes("не понимаю")){
-        
-        return isEN
-        ? "Let's go step by step 📘"
-        : "Разберём по шагам 📘";
-    }
-
-    if(t.includes("шутка") || t.includes("joke")){
-        return isEN
-        ? "Why math? Because of problems 😂"
-        : "Почему математика? Потому что проблемы 😂";
-    }
-
-    // =========================
-    // ❓ DEFAULT
-    // =========================
-    return isEN
-    ? "I don't understand 🤔 Try math"
-    : "Я не понял 🤔 Напиши пример";
-    if(
-    t.includes("проверь") ||
-    t.includes("check") ||
-    t.includes("verify") ||
-    (t.includes("=") && t.includes("?")) ||
-    t.startsWith("check")
-){
-
-    // 🔥 вытаскиваем выражение типа 2+2=5
-    let exprMatch = text.match(/(.+)=\s*(-?\d+(\.\d+)?)/);
-
-    if(!exprMatch){
-        return isEN
-        ? "Send like: 2+2=5 or check 2+2=5"
-        : "Напиши как: 2+2=5 или check 2+2=5";
-    }
-
-    let leftSide = exprMatch[1];
-    let rightSide = parseFloat(exprMatch[2]);
-
-    let correctValue;
-
-    try{
-        correctValue = Function("return " + leftSide)();
-    }catch{
-        return isEN
-        ? "Can't calculate expression 🤔"
-        : "Не могу вычислить выражение 🤔";
-    }
-
-    if(Math.abs(correctValue - rightSide) < 0.0001){
-        return isEN
-        ? "✅ Correct!"
-        : "✅ Правильно!";
-    } else {
-        return isEN
-        ? `❌ Wrong. ${leftSide} = ${correctValue}, not ${rightSide}`
-        : `❌ Неправильно. ${leftSide} = ${correctValue}, а не ${rightSide}`;
-    }
-}
-
-
-if(t.includes("реши ещё") || t.includes("next step")){
-    return isEN
-    ? "Send next step or value 👍"
-    : "Отправь следующий шаг 👍";
-}
-
-}
-
-document.getElementById('userInput').addEventListener('keydown', function(e){
-    if(e.key === 'Enter'){
-        if(e.shiftKey) return; // Shift+Enter = новая строка (если textarea)
-        
-        e.preventDefault();
-
-        let input = document.getElementById('userInput');
-        if(input.value.trim() === "") return;
-
-        sendMessage();
-    }
-});
-function clearChat(){
-    chatHistory = [];
-    localStorage.removeItem("chatHistory");
-    chat.innerHTML = "";
-}
-function typeMessage(sender, text, cls){
-
-    let div = document.createElement("div");
-    div.classList.add("message", cls);
-    chat.appendChild(div);
-
-    let i = 0;
-    let interval = setInterval(()=>{
-        div.textContent = sender + ": " + text.slice(0,i);
-        i++;
-
-        if(i > text.length){
-            clearInterval(interval);
-        }
-    }, 20);
-}
-function extractNumber(str){
-    let match = str.match(/-?\d+(\.\d+)?/);
-    return match ? parseFloat(match[0]) : null;
-}
-function smartExtract(text){
-
-    if(!text) return null;
-
-    let t = text.toLowerCase();
-
-    // 1. обычные числа
-    let numMatch = t.match(/-?\d+(\.\d+)?/);
-    if(numMatch) return parseFloat(numMatch[0]);
-
-    // 2. дроби 1/2
-    let frac = t.match(/(-?\d+)\s*\/\s*(\d+)/);
-    if(frac){
-        return parseFloat(frac[1]) / parseFloat(frac[2]);
-    }
-
-    // 3. приближённые слова
-    if(t.includes("ноль")) return 0;
-    if(t.includes("один")) return 1;
-    if(t.includes("два")) return 2;
-
-    return null;
-}
-
+    window.setLang = setLang;
+    window.sendMessage = sendMessage;
+    window.startVoice = startVoice;
+    window.goLobby = goLobby;
+    window.clearChat = clearChat;
 </script>
-
 </body>
 </html>
