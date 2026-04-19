@@ -3,161 +3,827 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💛 Языковой Бот Fmine Улучшенный</title>
+<title>Fmine | Language Bot</title>
 <style>
   @media (max-width: 768px){
-  h1{ font-size:24px; }
-  button{ width:100%; }
-}
-* {margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
-body {height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#1e1e2f,#3a3a6a);color:white;}
-body.light {background:linear-gradient(135deg,#f5f5f5,#d0d0ff);color:#222;}
-.container {width:90%;max-width:600px;background:rgba(255,255,255,0.05);backdrop-filter:blur(15px);padding:30px;border-radius:15px;}
-h1 {text-align:center;margin-bottom:15px;font-size:2.2rem;background:linear-gradient(90deg,gold,#ffd700,gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shine 2s infinite alternate;}
-@keyframes shine {0%{background-position:0%}100%{background-position:100%}}
-#chat {border:1px solid rgba(255,255,255,0.3);border-radius:10px;padding:10px;height:370px;overflow-y:auto;margin-bottom:10px;background:rgba(0,0,0,0.1);}
-.message {margin:5px 0;}
-.user {color:#6c63ff;}
-.bot {color:#ffd700;}
-input {width:65%;padding:10px;border-radius:8px;border:none;margin-right:5px;}
-button {padding:10px 15px;border-radius:8px;border:none;background:#6c63ff;color:white;cursor:pointer;margin:2px;}
-button:hover {opacity:0.9;}
+    h1{ font-size:24px; }
+    button{ width:100%; }
+  }
+
+  * {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+  }
+
+  body {
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+    color:white;
+  }
+
+  body.light {
+    background:linear-gradient(135deg,#f5f5f5,#d0d0ff);
+    color:#222;
+  }
+
+  .container {
+    width:90%;
+    max-width:700px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(15px);
+    padding:24px;
+    border-radius:16px;
+    box-shadow:0 0 30px rgba(0,0,0,0.15);
+  }
+
+  h1 {
+    text-align:center;
+    margin-bottom:12px;
+    font-size:2.1rem;
+    background:linear-gradient(90deg,gold,#ffd700,gold);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:shine 2s infinite alternate;
+  }
+
+  @keyframes shine {
+    0%{background-position:0%}
+    100%{background-position:100%}
+  }
+
+  .topbar {
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+
+  .lang-btn {
+    min-width:74px;
+    padding:10px 14px;
+    border-radius:8px;
+    border:none;
+    background:#444;
+    color:white;
+    cursor:pointer;
+  }
+
+  .lang-btn.active {
+    background:#6c63ff;
+  }
+
+  #chat {
+    border:1px solid rgba(255,255,255,0.3);
+    border-radius:10px;
+    padding:10px;
+    height:380px;
+    overflow-y:auto;
+    margin-bottom:10px;
+    background:rgba(0,0,0,0.1);
+  }
+
+  .message {
+    margin:5px 0;
+    white-space:pre-wrap;
+    line-height:1.35;
+  }
+
+  .user { color:#6c63ff; }
+  .bot { color:#ffd700; }
+
+  .controls {
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+
+  input {
+    flex:1 1 250px;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    outline:none;
+    min-width:180px;
+  }
+
+  button {
+    padding:10px 14px;
+    border-radius:8px;
+    border:none;
+    background:#6c63ff;
+    color:white;
+    cursor:pointer;
+    margin:2px 0;
+  }
+
+  button:hover { opacity:0.92; }
+  .alt { background:#444; }
+
+  #toastBox{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:9999;
+  }
+
+  .toast{
+    padding:12px 18px;
+    border-radius:10px;
+    color:white;
+    font-weight:bold;
+    animation:slideIn 0.3s ease;
+    box-shadow:0 10px 24px rgba(0,0,0,0.18);
+  }
+
+  .success{ background:#4caf50; }
+  .error{ background:#f44336; }
+  .info{ background:#6c63ff; }
+
+  @keyframes slideIn{
+    from{opacity:0; transform:translateX(50px);}
+    to{opacity:1; transform:translateX(0);}
+  }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>💛 Языковой Бот Fmine</h1>
-<div id="chat"></div>
-<input id="userInput" placeholder="Напишите текст или тему для доклада">
-<button onclick="sendMessage()">Отправить</button>
-<button onclick="startVoice()">🎤 Голосовой ввод</button>
-<button onclick="toggleTheme()">🌓 Сменить тему</button>
-<button id="exitBtn" onclick="goLobby()">⬅ Выйти в лобби</button>
+  <h1>💛 Fmine Language Bot</h1>
 
+  <div class="topbar">
+    <button id="btnRU" class="lang-btn active" onclick="setLang('RU')">RU</button>
+    <button id="btnEN" class="lang-btn" onclick="setLang('EN')">EN</button>
+    <button class="lang-btn alt" onclick="toggleTheme()">🌓</button>
+    <button class="lang-btn alt" onclick="clearChat()" id="clearBtn">Очистить чат</button>
+    <button class="lang-btn alt" onclick="goLobby()" id="exitBtn">⬅ Выйти в лобби</button>
+  </div>
 
+  <div id="chat"></div>
+
+  <div class="controls">
+    <input id="userInput" placeholder="Напишите текст или тему для доклада">
+    <button onclick="sendMessage()" id="sendBtn">Отправить</button>
+    <button onclick="startVoice()" id="voiceBtn">🎤 Голосовой ввод</button>
+  </div>
 </div>
+
+<div id="toastBox"></div>
+
 <script>
-  function goLobby(){
-    if(document.referrer){
-        window.history.back();
-    } else {
-        window.location.href = "lobby.html";
-    }
+const LS_CHAT = "fmine_langbot_chatHistory";
+const LS_THEME = "fmine_langbot_theme";
+const LS_LANG = "fmine_langbot_lang";
+const LS_LAST_REPORT = "fmine_langbot_lastReport";
+
+let chat = document.getElementById("chat");
+let lastBotText = "";
+let lastUserText = "";
+let lastReportText = localStorage.getItem(LS_LAST_REPORT) || "";
+let chatHistory = JSON.parse(localStorage.getItem(LS_CHAT)) || [];
+let lang = localStorage.getItem(LS_LANG) || "RU";
+
+const UI = {
+  RU: {
+    title: "💛 Fmine Language Bot",
+    input: "Напишите текст или тему для доклада",
+    send: "Отправить",
+    voice: "🎤 Голосовой ввод",
+    clear: "Очистить чат",
+    exit: "⬅ Выйти в лобби",
+    intro: 'Привет! Используйте "Доклад пчелы", "Проверь рассказ", "Вопрос что такое..." или просто напишите привет.',
+    reportNeedTopic: 'Напиши тему после слова «доклад».\nНапример: Доклад пчелы',
+    reportLoading: "📚 Собираю доклад...",
+    checkNeedText: 'Напиши текст после слова «проверь».\nНапример: Проверь рассказ ...',
+    checkLoading: "🔍 Проверяю текст...",
+    questionNeedText: 'Напиши вопрос после слова «вопрос».\nНапример: Вопрос что такое ...',
+    questionLoading: "🤔 Думаю над вопросом...",
+    reportLabel: "📘 Доклад на тему: ",
+    introLabel: "🔹 Введение:",
+    mainLabel: "🔹 Основная часть:",
+    conclLabel: "🔹 Заключение:",
+    answerPrefix: "Ответ на вопрос:\n",
+    reportNoInfo: "Не удалось найти информацию по этой теме.",
+    reportError: "Ошибка при получении информации.",
+    noContext: "Сначала сделай доклад, потом задай вопрос 🙂",
+    sameText: "Ты уже это писал 🤨",
+    errorsHeader: "Ошибки:",
+    noErrors: "✅ Ошибок не найдено.",
+    checkError: "Ошибка проверки текста.",
+    commandHint: 'Используй команды:\nДоклад пчелы\nПроверь рассказ ...\nВопрос что такое ...',
+    cleared: "Чат очищен.",
+    greet: ["Привет 👋", "Здравствуйте!", "Привет, я на связи 🙂"],
+    bye: ["Пока 👋", "До встречи!", "Увидимся позже 🙂"],
+    how: ["Всё хорошо 😎", "Нормально, готов помогать.", "Отлично, спасибо что спросил 🙂"],
+    thanks: ["Пожалуйста 🙂", "Всегда рад помочь.", "Обращайся ещё 👌"],
+    who: ["Я бот для докладов, текста и вопросов 📚", "Я Fmine Bot — помогаю с текстом и учебой.", "Я умею делать доклады, проверять текст и отвечать на вопросы."],
+    whatCan: ["Я умею: доклад, проверка текста, вопрос по докладу.", "Напиши: Доклад пчелы, Проверь рассказ, Вопрос что такое ..."],
+    help: ["Конечно 🙂 Напиши тему или текст.", "Я рядом, просто отправь запрос.", "Скажи, что нужно сделать."],
+    ok: ["Окей 👍", "Понял.", "Хорошо 🙂"],
+    no: ["Хорошо.", "Понял.", "Ладно 🙂"],
+    yes: ["Отлично 👍", "Понял.", "Хорошо, продолжаем."]
+  },
+  EN: {
+    title: "💛 Fmine Language Bot",
+    input: "Write text or a topic for a report",
+    send: "Send",
+    voice: "🎤 Voice input",
+    clear: "Clear chat",
+    exit: "⬅ Back to lobby",
+    intro: 'Hi! Use "Report bees", "Check story", "Question what is..." or just say hello.',
+    reportNeedTopic: 'Write a topic after the word "report".\nExample: Report bees',
+    reportLoading: "📚 Building the report...",
+    checkNeedText: 'Write text after the word "check".\nExample: Check story ...',
+    checkLoading: "🔍 Checking text...",
+    questionNeedText: 'Write a question after the word "question".\nExample: Question what is ...',
+    questionLoading: "🤔 Thinking about the question...",
+    reportLabel: "📘 Report on: ",
+    introLabel: "🔹 Introduction:",
+    mainLabel: "🔹 Main part:",
+    conclLabel: "🔹 Conclusion:",
+    answerPrefix: "Answer:\n",
+    reportNoInfo: "Could not find information on this topic.",
+    reportError: "Error while fetching information.",
+    noContext: "Make a report first, then ask a question 🙂",
+    sameText: "You already wrote that 🤨",
+    errorsHeader: "Errors:",
+    noErrors: "✅ No errors found.",
+    checkError: "Text check error.",
+    commandHint: 'Use commands:\nReport bees\nCheck story ...\nQuestion what is ...',
+    cleared: "Chat cleared.",
+    greet: ["Hello 👋", "Hi there!", "Hello, I am here 🙂"],
+    bye: ["Bye 👋", "See you!", "Talk later 🙂"],
+    how: ["I am good 😎", "Fine, ready to help.", "Great, thanks for asking 🙂"],
+    thanks: ["You are welcome 🙂", "Glad to help.", "Any time 👌"],
+    who: ["I am a bot for reports, text and questions 📚", "I am Fmine Bot — I help with text and study.", "I can make reports, check text, and answer questions."],
+    whatCan: ["I can do reports, text checking, and report questions.", "Type: Report bees, Check story, Question what is ..."],
+    help: ["Of course 🙂 Write a topic or text.", "I am here, just send your request.", "Tell me what you need."],
+    ok: ["Okay 👍", "Got it.", "Alright 🙂"],
+    no: ["Okay.", "Understood.", "Fine 🙂"],
+    yes: ["Great 👍", "Understood.", "Okay, let’s continue."]
+  }
+};
+
+function t(key){
+  return UI[lang][key];
 }
 
-let chat = document.getElementById('chat');
-let lastBotText = "";
-let chatHistory = [];
+function toast(msg, type="info"){
+  const box = document.getElementById("toastBox");
+  const el = document.createElement("div");
+  el.className = "toast " + type;
+  el.innerText = msg;
+  box.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
 
-function addMessage(sender,text,cls){
-  let div=document.createElement('div');
-  div.classList.add('message',cls);
-  div.textContent = sender+": "+text;
+function saveChat(){
+  localStorage.setItem(LS_CHAT, JSON.stringify(chatHistory));
+}
+
+function saveLastReport(text){
+  lastReportText = text;
+  localStorage.setItem(LS_LAST_REPORT, text);
+}
+
+function setLang(newLang){
+  lang = newLang;
+  localStorage.setItem(LS_LANG, lang);
+
+  document.documentElement.lang = lang === "RU" ? "ru" : "en";
+  document.getElementById("btnRU").classList.toggle("active", lang === "RU");
+  document.getElementById("btnEN").classList.toggle("active", lang === "EN");
+
+  document.getElementById("userInput").placeholder = t("input");
+  document.getElementById("sendBtn").textContent = t("send");
+  document.getElementById("voiceBtn").textContent = t("voice");
+  document.getElementById("clearBtn").textContent = t("clear");
+  document.getElementById("exitBtn").textContent = t("exit");
+  document.querySelector("h1").textContent = UI[lang].title;
+
+  addMessage("Bot", lang === "RU" ? "Язык изменён." : "Language changed.", "bot");
+}
+
+function toggleTheme(){
+  document.body.classList.toggle("light");
+  localStorage.setItem(LS_THEME, document.body.classList.contains("light") ? "light" : "dark");
+}
+
+function goLobby(){
+  if(document.referrer){
+    window.history.back();
+  } else {
+    window.location.href = "lobby.html";
+  }
+}
+
+function addMessage(sender, text, cls, save = true){
+  const div = document.createElement("div");
+  div.classList.add("message", cls);
+  div.textContent = sender + ": " + text;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
-  if(cls==='bot') lastBotText=text;
-  chatHistory.push({sender,text});
+
+  if(cls === "bot") lastBotText = text;
+  if(save){
+    chatHistory.push({ sender, text, cls });
+    saveChat();
+  }
 }
 
-function sendMessage(){
-  let input=document.getElementById('userInput');
-  let text=input.value.trim();
-  if(!text) return;
-  addMessage('Вы',text,'user');
-  input.value='';
-  handleText(text);
+function renderSavedChat(){
+  chat.innerHTML = "";
+  if(chatHistory.length === 0){
+    addMessage("Bot", t("intro"), "bot");
+    return;
+  }
+
+  chatHistory.forEach(msg => {
+    const div = document.createElement("div");
+    div.classList.add("message", msg.cls);
+    div.textContent = msg.sender + ": " + msg.text;
+    chat.appendChild(div);
+  });
+  chat.scrollTop = chat.scrollHeight;
 }
 
-async function handleText(text){
-  // доклад
-  if(/^доклад:/i.test(text) || /^report:/i.test(text)){
-    let topic=text.split(":")[1]?.trim();
-    if(!topic){addMessage('Бот','Укажите тему после двоеточия','bot');return;}
-    addMessage('Бот','Собираю доклад...','bot');
-    let report=await fetchWikiReport(topic);
-    let formatted=formatReport(report);
-    addMessage('Бот',formatted,'bot');
-    return;
+function clearChat(){
+  chatHistory = [];
+  lastBotText = "";
+  lastUserText = "";
+  lastReportText = "";
+  localStorage.removeItem(LS_CHAT);
+  localStorage.removeItem(LS_LAST_REPORT);
+  chat.innerHTML = "";
+  addMessage("Bot", t("cleared"), "bot");
+}
+
+function normalizeText(text){
+  return String(text)
+    .toLowerCase()
+    .replace(/[«»"„“]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeTopic(topic){
+  return String(topic)
+    .trim()
+    .replace(/[?.!,;:]+$/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/^(?:мне\s+)?(?:пожалуйста\s+)?/i, "")
+    .replace(/^(?:про|о|об|about|on|на тему|по теме)\s+/i, "")
+    .trim();
+}
+
+function pickRandom(arr){
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function getSmallTalkReply(text){
+  const ttext = normalizeText(text);
+
+  const rules = [
+    { re: /^(привет|здравствуй|здравствуйте|hello|hi|hey)\b/, key: "greet" },
+    { re: /^(пока|до свидания|бай|bye|goodbye)\b/, key: "bye" },
+    { re: /^(как дела|как ты|как настроение|how are you)\b/, key: "how" },
+    { re: /^(спасибо|благодарю|thank you|thanks)\b/, key: "thanks" },
+    { re: /^(кто ты|ты кто|who are you)\b/, key: "who" },
+    { re: /^(что ты умеешь|что умеешь|помощь|help)\b/, key: "whatCan" },
+    { re: /^(помоги|подскажи|help me)\b/, key: "help" },
+    { re: /^(ок|okay|ладно|понятно)\b/, key: "ok" },
+    { re: /^(нет|no)\b/, key: "no" },
+    { re: /^(да|yes|ага)\b/, key: "yes" }
+  ];
+
+  for(const rule of rules){
+    if(rule.re.test(ttext)) return pickRandom(UI[lang][rule.key]);
   }
-  // проверка текста
-  if(/^проверь текст:/i.test(text) || /^check text:/i.test(text)){
-    let txt=text.split(":")[1]?.trim();
-    if(!txt){addMessage('Бот','Напишите текст после ":"','bot');return;}
-    addMessage('Бот','Проверяю текст...','bot');
-    checkText(txt);
-    return;
+
+  return "";
+}
+
+function expandRussianWord(word){
+  const w = String(word || "").trim().toLowerCase();
+  const out = new Set();
+  if(!w) return [];
+
+  out.add(w);
+
+  if(w.length < 3) return [...out];
+
+  const last = w.slice(-1);
+  const base = w.slice(0, -1);
+
+  if(last === "а"){
+    out.add(base);
+    out.add(base + "ы");
+    out.add(base + "и");
+    out.add(base + "е");
+  } else if(last === "я"){
+    out.add(base);
+    out.add(base + "и");
+    out.add(base + "е");
+  } else if(last === "ы" || last === "и"){
+    out.add(base);
+    out.add(base + "а");
+    out.add(base + "я");
+    out.add(base + "е");
+  } else if(last === "ь"){
+    out.add(base);
+    out.add(base + "я");
+    out.add(base + "и");
+  } else if(/[бвгджзйклмнпрстфхцчшщ]/i.test(last)){
+    out.add(w + "а");
+    out.add(w + "ы");
+    out.add(w + "и");
+    out.add(w + "е");
   }
-  // вопросы к докладу
-  if(/^вопрос:/i.test(text) || /^question:/i.test(text)){
-    let question=text.split(":")[1]?.trim();
-    if(!question){addMessage('Бот','Напишите вопрос после ":"','bot');return;}
-    addMessage('Бот','Обрабатываю вопрос...','bot');
-    answerQuestion(question);
-    return;
+
+  return [...out];
+}
+
+function buildTopicCandidates(topic){
+  const raw = normalizeTopic(topic);
+  const set = new Set();
+
+  if(raw) set.add(raw);
+
+  const words = raw.split(" ").filter(Boolean);
+  if(words.length > 0){
+    const lastWord = words[words.length - 1];
+    const expanded = expandRussianWord(lastWord);
+
+    for(const v of expanded){
+      const candidateWords = [...words.slice(0, -1), v].filter(Boolean);
+      if(candidateWords.length) set.add(candidateWords.join(" "));
+    }
+
+    if(words.length === 1){
+      const w = words[0];
+      for(const v of expandRussianWord(w)) set.add(v);
+    }
   }
-  addMessage('Бот','Напишите "Доклад: тема", "Проверь текст: текст" или "Вопрос: вопрос"','bot');
+
+  return [...set].filter(Boolean);
+}
+
+function scoreWikiResult(title, snippet, query){
+  const t = normalizeText(title);
+  const q = normalizeText(query);
+  const s = normalizeText(String(snippet || "").replace(/<[^>]+>/g, ""));
+  const qTokens = q.split(/\s+/).filter(Boolean);
+  let score = 0;
+
+  if(t === q) score += 120;
+  if(t.startsWith(q)) score += 70;
+  if(t.includes(q)) score += 50;
+
+  let overlap = 0;
+  for(const tok of qTokens){
+    if(t.includes(tok)) overlap++;
+    if(s.includes(tok)) score += 5;
+  }
+  score += overlap * 15;
+
+  if(s.includes(q)) score += 12;
+
+  if(/значения|disambiguation/i.test(title)) score -= 35;
+
+  const bioWords = /(композитор|певец|актёр|актер|политик|футболист|режиссёр|режиссер|писатель|учёный|ученый)/i;
+  if(bioWords.test(title) && qTokens.length <= 2) score -= 15;
+
+  return score;
 }
 
 async function fetchWikiReport(topic){
   try{
-    let url="https://ru.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(topic);
-    let res=await fetch(url);
-    let data=await res.json();
-    if(data.extract){
-      return data.extract;
-    }
-    return 'Не удалось найти информацию по теме.';
-  }catch(e){return 'Ошибка при получении информации.';}
-}
+    const wikiLang = lang === "RU" ? "ru" : "en";
+    const candidates = buildTopicCandidates(topic);
 
-function formatReport(text){
-  let sentences=text.split('.');
-  let intro=sentences[0]+'.';
-  let main=text;
-  return `Введение:\n${intro}\n\nОсновная часть:\n${main}\n\nЗаключение:\nТема важна для изучения.`;
+    let best = null;
+    let bestScore = -Infinity;
+
+    for(const q of candidates){
+      const searchUrl =
+        `https://${wikiLang}.wikipedia.org/w/api.php` +
+        `?action=query` +
+        `&list=search` +
+        `&srsearch=${encodeURIComponent(q)}` +
+        `&srlimit=6` +
+        `&format=json` +
+        `&origin=*`;
+
+      const searchRes = await fetch(searchUrl);
+      const searchData = await searchRes.json();
+      const results = searchData?.query?.search || [];
+
+      for(const item of results){
+        const score = scoreWikiResult(item.title, item.snippet || "", q);
+        if(score > bestScore){
+          bestScore = score;
+          best = item;
+        }
+      }
+
+      if(bestScore >= 100) break;
+    }
+
+    if(!best){
+      return lang === "RU"
+        ? "Не удалось найти информацию по этой теме."
+        : "Could not find information on this topic.";
+    }
+
+    const summaryUrl =
+      `https://${wikiLang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(best.title)}`;
+
+    const summaryRes = await fetch(summaryUrl);
+    const summaryData = await summaryRes.json();
+
+    if(summaryData && summaryData.extract){
+      return summaryData.extract;
+    }
+
+    const snippet = String(best.snippet || "").replace(/<[^>]+>/g, "").trim();
+    if(snippet){
+      return snippet;
+    }
+
+    return lang === "RU"
+      ? `Статья «${best.title}» найдена, но краткое описание недоступно.`
+      : `Found article "${best.title}", but no short summary is available.`;
+
+  }catch(e){
+    return lang === "RU"
+      ? "Ошибка при получении информации."
+      : "Error while fetching information.";
+  }
 }
 
 async function checkText(txt){
   try{
-    let res=await fetch('https://api.languagetool.org/v2/check',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'text='+encodeURIComponent(txt)+'&language=ru'});
-    let data=await res.json();
-    if(data.matches.length===0){addMessage('Бот','Ошибок не найдено.','bot');}
-    else{
-      let out='';
-      data.matches.forEach((m,i)=>{
-        out+=(i+1)+'. '+m.message+'\n';
-        if(m.replacements.length>0){out+='Предложения: '+m.replacements.map(r=>r.value).join(', ')+'\n';}
-      });
-      addMessage('Бот',out,'bot');
+    const checkLang = lang === "RU" ? "ru" : "en";
+    const res = await fetch("https://api.languagetool.org/v2/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "text=" + encodeURIComponent(txt) + "&language=" + checkLang
+    });
+
+    const data = await res.json();
+
+    if(data.matches.length === 0){
+      addMessage("Bot", t("noErrors"), "bot");
+      return;
     }
-  }catch(e){addMessage('Бот','Ошибка проверки текста.','bot');}
+
+    let out = t("errorsHeader") + "\n\n";
+    data.matches.slice(0, 6).forEach((m, i) => {
+      out += (i + 1) + ") " + m.message + "\n";
+      if(m.replacements && m.replacements.length > 0){
+        out += (lang === "RU" ? "Варианты: " : "Suggestions: ") + m.replacements.slice(0, 4).map(r => r.value).join(", ") + "\n";
+      }
+      out += "\n";
+    });
+
+    addMessage("Bot", out.trim(), "bot");
+  }catch(e){
+    addMessage("Bot", t("checkError"), "bot");
+  }
 }
 
 function answerQuestion(q){
-  let lower=q.toLowerCase();
-  if(chatHistory.length>0){
-    let lastDoc=chatHistory.filter(m=>m.sender==='bot').pop()?.text||'';
-    addMessage('Бот','Ответ на вопрос: '+lastDoc,'bot');
-  } else {addMessage('Бот','Нет информации для ответа.','bot');}
+  const context = lastReportText || localStorage.getItem(LS_LAST_REPORT) || "";
+  if(!context){
+    addMessage("Bot", t("noContext"), "bot");
+    return;
+  }
+
+  const sentences = splitSentences(context);
+  const question = q.toLowerCase();
+  let answer = "";
+
+  if(question.includes("что") || question.includes("what") || question.includes("о чем") || question.includes("о чём")){
+    answer = sentences.slice(0, 3).join(" ");
+  } else if(question.includes("когда") || question.includes("when")){
+    answer = (lang === "RU" ? "В этом тексте нет точной даты. " : "There is no exact date in this text. ") + sentences.slice(0, 2).join(" ");
+  } else if(question.includes("почему") || question.includes("why")){
+    const found = sentences.find(s => /потому|поэтому|важн|значит|объясн|because|therefore|important/i.test(s));
+    answer = found || sentences.slice(0, 2).join(" ");
+  } else if(question.includes("кто") || question.includes("who") || question.includes("что такое") || question.includes("what is")){
+    answer = sentences.slice(0, 2).join(" ");
+  } else {
+    answer = sentences.slice(0, 2).join(" ");
+  }
+
+  addMessage("Bot", t("answerPrefix") + answer, "bot");
+}
+
+function splitSentences(text){
+  const cleaned = String(text).replace(/\s+/g, " ").trim();
+  const parts = cleaned.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
+  return parts ? parts.map(s => s.trim()).filter(Boolean) : [cleaned];
+}
+
+function parseReportTopic(text){
+  const raw = text.trim();
+  const patterns = [
+    /^(?:сделай|напиши|составь|подготовь|создай)\s+(?:мне\s+)?(?:доклад|реферат|report|essay)\s*(?:про|о|об|about|on|на тему|по теме)?\s*(.+)$/i,
+    /^(?:доклад|реферат|report|essay)\s*(?:про|о|об|about|on|на тему|по теме)?\s*(.+)$/i,
+    /^(?:сделай|напиши|составь|подготовь|создай)\s+(?:мне\s+)?(?:доклад|реферат)\s*(.+)$/i,
+    /^(?:write|make|create|prepare)\s+(?:me\s+)?(?:a\s+)?(?:report|essay)\s*(?:about|on)?\s*(.+)$/i,
+    /^(?:report)\s+(.+)$/i,
+    /^(?:essay)\s+(.+)$/i,
+    /^(?:доклад)\s+(.+)$/i,
+    /^(?:реферат)\s+(.+)$/i
+  ];
+
+  for (const re of patterns) {
+    const m = raw.match(re);
+    if (m && m[1]) return m[1].trim();
+  }
+
+  if (/^(?:сделай|напиши|составь|подготовь|создай)\s+(?:мне\s+)?(?:доклад|реферат|report|essay)\b/i.test(raw)) return "";
+  return null;
+}
+
+function parseCheckText(text){
+  const raw = text.trim();
+  const patterns = [
+    /^(?:проверь|проверьте|check)\s+(?:текст|стих|рассказ|сочинение|paragraph|story|poem)?\s*(.+)$/i,
+    /^(?:проверь|проверьте|check)\s*(?:текст|стих|рассказ|сочинение|paragraph|story|poem)\s*(.+)$/i,
+    /^(?:проверить|check)\s+(?:текст|стих|рассказ|сочинение|paragraph|story|poem)?\s*(.+)$/i,
+    /^(?:проверь\s+мне)\s+(.+)$/i,
+    /^(?:check\s+my)\s+(.+)$/i,
+    /^(?:check\s+text)\s+(.+)$/i,
+    /^(?:check\s+story)\s+(.+)$/i,
+    /^(?:check\s+poem)\s+(.+)$/i,
+    /^(?:проверь\s+рассказ)\s+(.+)$/i,
+    /^(?:проверь\s+стих)\s+(.+)$/i
+  ];
+
+  for (const re of patterns) {
+    const m = raw.match(re);
+    if (m && m[1]) return m[1].trim();
+  }
+
+  if (/^(?:проверь|проверьте|check|проверить)\b/i.test(raw)) return "";
+  return null;
+}
+
+function parseQuestion(text){
+  const raw = text.trim();
+  const patterns = [
+    /^(?:вопрос|question)\s*(.+)$/i,
+    /^(?:ответь\s+на\s+вопрос)\s*(.+)$/i,
+    /^(?:ответь)\s*(.+)$/i,
+    /^(?:объясни)\s*(.+)$/i,
+    /^(?:что\s+такое)\s*(.+)$/i,
+    /^(?:что\s+это)\s*(.+)$/i,
+    /^(?:what\s+is)\s*(.+)$/i,
+    /^(?:tell\s+me\s+about)\s*(.+)$/i,
+    /^(?:can\s+you\s+explain)\s*(.+)$/i,
+    /^(?:explain)\s*(.+)$/i
+  ];
+
+  for (const re of patterns) {
+    const m = raw.match(re);
+    if (m && m[1]) return m[1].trim();
+  }
+
+  if (/^(?:вопрос|question|ответь|объясни|что\s+такое|what\s+is|explain)\b/i.test(raw)) return "";
+  return null;
 }
 
 function startVoice(){
-  if(!('webkitSpeechRecognition' in window)){alert('Голосовой ввод не поддерживается');return;}
-  let rec=new webkitSpeechRecognition();
-  rec.lang='ru-RU';
-  rec.onresult=e=>{document.getElementById('userInput').value=e.results[0][0].transcript;sendMessage();}
+  if(!("webkitSpeechRecognition" in window)){
+    alert(lang === "RU" ? "Голосовой ввод не поддерживается" : "Voice input is not supported");
+    return;
+  }
+
+  const rec = new webkitSpeechRecognition();
+  rec.lang = lang === "RU" ? "ru-RU" : "en-US";
+  rec.onresult = e => {
+    document.getElementById("userInput").value = e.results[0][0].transcript;
+    sendMessage();
+  };
   rec.start();
 }
 
-function speakLast(){
-  if(!lastBotText) return;
-  let u=new SpeechSynthesisUtterance(lastBotText);
-  speechSynthesis.speak(u);
+async function handleText(text){
+  const smallTalk = getSmallTalkReply(text);
+  if(smallTalk){
+    addMessage("Bot", smallTalk, "bot");
+    return;
+  }
+
+  const reportTopic = parseReportTopic(text);
+  if(reportTopic !== null){
+    if(!reportTopic){
+      addMessage("Bot", t("reportNeedTopic"), "bot");
+      return;
+    }
+
+    addMessage("Bot", t("reportLoading"), "bot");
+    const report = await fetchWikiReport(reportTopic);
+    const formatted = formatReport(reportTopic, report);
+    saveLastReport(formatted);
+    addMessage("Bot", formatted, "bot");
+    return;
+  }
+
+  const checkTarget = parseCheckText(text);
+  if(checkTarget !== null){
+    if(!checkTarget){
+      addMessage("Bot", t("checkNeedText"), "bot");
+      return;
+    }
+
+    addMessage("Bot", t("checkLoading"), "bot");
+    await checkText(checkTarget);
+    return;
+  }
+
+  const question = parseQuestion(text);
+  if(question !== null){
+    if(!question){
+      addMessage("Bot", t("questionNeedText"), "bot");
+      return;
+    }
+
+    addMessage("Bot", t("questionLoading"), "bot");
+    answerQuestion(question);
+    return;
+  }
+
+  addMessage("Bot", t("commandHint"), "bot");
 }
 
-function toggleTheme(){document.body.classList.toggle('light');}
+function formatReport(topic, extract){
+  const sentences = splitSentences(extract);
 
-window.onload=()=>{addMessage('Бот','Привет! Используйте "Доклад: тема", "Проверь текст: текст" или "Вопрос: вопрос"','bot');}
+  const intro = sentences[0] || extract || (lang === "RU" ? "Тема требует дополнительной информации." : "The topic needs more information.");
+  const main = sentences.slice(1, 4).join(" ") || intro;
+  const concl = sentences.slice(4).join(" ") || (lang === "RU" ? "Таким образом, тема важна и её полезно изучать." : "Thus, the topic is important and useful to study.");
+
+  return `${t("reportLabel")}${topic}
+
+${t("introLabel")}
+${intro}
+
+${t("mainLabel")}
+${main}
+
+${t("conclLabel")}
+${concl}`;
+}
+
+function sendMessage(){
+  const input = document.getElementById("userInput");
+  const text = input.value.trim();
+  if(!text) return;
+
+  if(text === lastUserText){
+    addMessage("Bot", t("sameText"), "bot");
+    input.value = "";
+    return;
+  }
+
+  lastUserText = text;
+  addMessage("Вы", text, "user");
+  input.value = "";
+  handleText(text);
+}
+
+function applyThemeFromStorage(){
+  const theme = localStorage.getItem(LS_THEME) || "dark";
+  if(theme === "light") document.body.classList.add("light");
+}
+
+function applyLangFromStorage(){
+  document.documentElement.lang = lang === "RU" ? "ru" : "en";
+  document.getElementById("btnRU").classList.toggle("active", lang === "RU");
+  document.getElementById("btnEN").classList.toggle("active", lang === "EN");
+  document.getElementById("userInput").placeholder = t("input");
+  document.getElementById("sendBtn").textContent = t("send");
+  document.getElementById("voiceBtn").textContent = t("voice");
+  document.getElementById("clearBtn").textContent = t("clear");
+  document.getElementById("exitBtn").textContent = t("exit");
+  document.querySelector("h1").textContent = UI[lang].title;
+}
+
+window.onload = () => {
+  applyThemeFromStorage();
+  applyLangFromStorage();
+  renderSavedChat();
+};
 </script>
 </body>
 </html>

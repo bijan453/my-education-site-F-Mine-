@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -150,9 +151,7 @@
 </div>
 
 <script>
-    // =========================
-    // STORAGE / STATE
-    // =========================
+    
     const LS_STATS = "userStats";
     const LS_CHAT = "chatHistory";
 
@@ -281,9 +280,7 @@
         recognition.start();
     }
 
-    // =========================
-    // NORMALIZE / PARSING
-    // =========================
+ 
     function norm(t) {
         return String(t)
             .toLowerCase()
@@ -442,9 +439,7 @@
             .replace(/x\(/g, "x*(");
     }
 
-    // =========================
-    // EXPLANATIONS
-    // =========================
+   
     function explainQuadratic(a, b, c, D, x1, x2) {
         return `
 📘 Подробное объяснение квадратного уравнения:
@@ -560,9 +555,7 @@
 Ответ: x = ${x.toFixed(4)} ✅`;
     }
 
-    // =========================
-    // INEQUALITIES
-    // =========================
+    
     function solveLinearInequality(b, c, sign) {
         if (b === 0) {
             const val = c;
@@ -620,9 +613,7 @@
         return { solution: solutionText, explain: explainInequality(a, b, c, sign, solutionText) };
     }
 
-    // =========================
-    // CHAT REPLIES
-    // =========================
+ 
     function chatReply(text) {
         const t = String(text).toLowerCase().trim();
         const mathHint = /[0-9x^=<>√()+\-*/]|sin|cos|tan|log/i.test(t);
@@ -655,9 +646,7 @@
         return "";
     }
 
-    // =========================
-    // GRAPH DETECTION
-    // =========================
+    
     function shouldDrawGraph(text) {
         const t = String(text).toLowerCase();
 
@@ -678,9 +667,6 @@
         return graphWords.some(word => t.includes(word));
     }
 
-    // =========================
-    // GRAPHING
-    // =========================
     function drawGraph(a, b, c) {
         const canvas = canvasEl;
         canvas.style.display = "block";
@@ -944,9 +930,7 @@
         ctx.fillText(`y = ${expr}`, 20, 30);
     }
 
-    // =========================
-    // MAIN BOT
-    // =========================
+  
     function bot(inputText) {
         const original = String(inputText);
         const text = norm(original);
@@ -954,7 +938,7 @@
         const chatRes = chatReply(original);
         if (chatRes) return { text: chatRes };
 
-        // График строим только по команде
+        
         if (shouldDrawGraph(original)) {
             const graphExprRaw = extractGraphExpr(original);
             if (graphExprRaw) {
@@ -971,7 +955,7 @@
             };
         }
 
-        // 1) БИКВАДРАТНОЕ
+       
         if (text.includes("x^4")) {
             const coeffs = getBiquadraticCoefficients(text);
             if (coeffs.a !== 0) {
@@ -998,7 +982,6 @@
             }
         }
 
-        // 2) КВАДРАТНОЕ / ЛИНЕЙНОЕ
         const coeffs = getQuadraticCoefficients(text);
         if (coeffs.a !== 0 || coeffs.b !== 0) {
             const { a, b, c } = coeffs;
@@ -1030,7 +1013,6 @@
             }
         }
 
-        // 3) НЕРАВЕНСТВА
         let ineqSign = null;
         if (text.includes(">=")) ineqSign = ">=";
         else if (text.includes(">")) ineqSign = ">";
@@ -1048,7 +1030,6 @@
             }
         }
 
-        // 4) ПОКАЗАТЕЛЬНЫЕ
         const expMatch = text.match(/(\d+(?:\.\d+)?)\^x\s*=\s*(\d+(?:\.\d+)?)/);
         if (expMatch) {
             const base = parseFloat(expMatch[1]);
@@ -1061,7 +1042,6 @@
             }
         }
 
-        // 5) ЛОГАРИФМИЧЕСКИЕ
         const logMatch = text.match(/log(\d+)\(x\)\s*=\s*(\d+(?:\.\d+)?)/);
         if (logMatch) {
             const base = parseFloat(logMatch[1]);
@@ -1079,7 +1059,6 @@
             return { text: fullText };
         }
 
-        // 6) ТРИГОНОМЕТРИЧЕСКИЕ
         if (text.includes("sin") || text.includes("cos") || text.includes("tan")) {
             const trig = text.includes("sin") ? "sin" : text.includes("cos") ? "cos" : "tan";
             const kMatch = text.match(/=\s*([+-]?\d*\.?\d+)/);
@@ -1104,7 +1083,6 @@
             }
         }
 
-        // 7) УРАВНЕНИЯ С КОРНЕМ
         const simpleSqrt = text.match(/√x\s*=\s*(\d+(?:\.\d+)?)/);
         if (simpleSqrt) {
             const k = parseFloat(simpleSqrt[1]);
@@ -1113,7 +1091,6 @@
             return { text: fullText };
         }
 
-        // 8) ПРОСТОЕ ВЫЧИСЛЕНИЕ
         const simple = safeSimpleEval(text);
         if (simple !== null && Number.isFinite(simple)) {
             return { text: `Ответ: ${simple}\n📘 Это простое арифметическое выражение.` };
@@ -1126,9 +1103,7 @@
         };
     }
 
-    // =========================
-    // SEND
-    // =========================
+  
     function sendMessage() {
         if (isBusy) return;
 
@@ -1179,9 +1154,7 @@
         canvasEl.style.display = "none";
     }
 
-    // =========================
-    // EVENTS / INIT
-    // =========================
+  
     inputEl.addEventListener("keydown", (e) => {
         if (e.key === "Enter") sendMessage();
     });

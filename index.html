@@ -54,6 +54,7 @@ input {
     border:none;
     outline:none;
     display:block;
+    box-sizing:border-box;
 }
 
 button {
@@ -73,6 +74,7 @@ button {
 }
 
 .hidden { display:none; }
+
 #toastBox{
     position:fixed;
     bottom:20px;
@@ -99,6 +101,27 @@ button {
     from{opacity:0; transform:translateX(50px);}
     to{opacity:1; transform:translateX(0);}
 }
+
+.small-link {
+    margin-top:10px;
+    cursor:pointer;
+    text-decoration:underline;
+    color:#cfcfff;
+    font-size:14px;
+}
+
+.small-text {
+    font-size:13px;
+    color:#ddd;
+    margin-top:8px;
+    line-height:1.4;
+}
+
+.step-title {
+    margin: 12px 0 6px;
+    font-size: 14px;
+    color: #e8e8ff;
+}
 </style>
 </head>
 
@@ -106,45 +129,74 @@ button {
 
 <div class="box">
 
-<div class="logo">
-<span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
+    <div class="logo">
+        <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
+    </div>
+
+    <h2 id="title">Регистрация</h2>
+
+    <!-- REGISTER -->
+    <div id="register">
+        <input id="nick" placeholder="Ник">
+        <input id="email" placeholder="Email">
+        <input id="passReg" type="password" placeholder="Пароль">
+
+        <button onclick="sendCode()">📩 Получить код</button>
+        <button class="alt" onclick="showLogin()">🔵 Войти</button>
+
+        <div id="codeBox" class="hidden">
+            <div class="step-title">Введите код из письма</div>
+            <input id="code" type="password" placeholder="Код">
+        </div>
+
+        <button id="finishBtn" class="hidden" onclick="finishRegister()">Создать аккаунт</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="login" class="hidden">
+        <input id="loginNick" placeholder="Ник">
+        <input id="loginPass" type="password" placeholder="Пароль">
+
+        <button onclick="login()">Войти</button>
+        <button class="alt" onclick="back()">Назад</button>
+
+        <div class="small-link" onclick="showForgot()">Забыли пароль?</div>
+    </div>
+
+    <!-- FORGOT PASSWORD -->
+    <div id="forgot" class="hidden">
+        <div class="step-title">Шаг 1 — введите никнейм</div>
+        <input id="forgotNick" placeholder="Ник">
+
+        <div class="step-title">Шаг 2 — введите Gmail</div>
+        <input id="forgotEmail" placeholder="Email">
+
+        <button onclick="sendResetCode()">📩 Получить код</button>
+
+        <div id="resetCodeBox" class="hidden">
+            <div class="step-title">Шаг 3 — введите код из письма</div>
+            <input id="resetCode" type="password" placeholder="Код из email">
+            <button onclick="verifyResetCode()">✅ Подтвердить код</button>
+        </div>
+
+        <div id="newPasswordBox" class="hidden">
+            <div class="step-title">Шаг 4 — введите новый пароль</div>
+            <input id="newPassword" type="password" placeholder="Новый пароль">
+            <button onclick="saveNewPassword()">🔐 Сохранить новый пароль</button>
+        </div>
+
+        <button class="alt" onclick="backFromForgot()">Назад</button>
+
+        <div class="small-text">
+            Код отправится только на тот email, который был привязан к этому нику при регистрации.
+        </div>
+    </div>
+
 </div>
 
-<h2 id="title">Регистрация</h2>
-
-<!-- REGISTER -->
-<div id="register">
-
-<input id="nick" placeholder="Ник">
-<input id="email" placeholder="Email">
-<input id="passReg" type="password" placeholder="Пароль">
-
-<button onclick="sendCode()">📩 Получить код</button>
-<button class="alt" onclick="showLogin()">🔵 Войти</button>
-
-<div id="codeBox" class="hidden">
-    <input id="code" type="password" placeholder="Код">
-</div>
-
-<button id="finishBtn" class="hidden" onclick="finishRegister()">Создать аккаунт</button>
-
-</div>
-
-<!-- LOGIN -->
-<div id="login" class="hidden">
-
-<input id="loginNick" placeholder="Ник">
-<input id="loginPass" type="password" placeholder="Пароль">
-
-<button onclick="login()">Войти</button>
-<button class="alt" onclick="back()">Назад</button>
-
-</div>
-
-</div>
+<div id="toastBox"></div>
 
 <script>
-
 (function(){
     emailjs.init("Y9LA_RWTTvSW0hk_w");
 })();
@@ -152,72 +204,160 @@ button {
 let code = "";
 let temp = null;
 
-// ================= REGISTER =================
-function sendCode(){
+let resetNick = "";
+let resetEmail = "";
+let resetCode = "";
+let resetVerified = false;
 
+// =====================
+// HELPERS
+// =====================
+function getUserKey(nick) {
+    return "user_" + nick;
+}
+
+function showToast(msg, type="info"){
+    let box = document.getElementById("toastBox");
+
+    let toast = document.createElement("div");
+    toast.className = "toast " + type;
+    toast.innerText = msg;
+
+    box.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+function showSection(section) {
+    document.getElementById("register").classList.add("hidden");
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("forgot").classList.add("hidden");
+    document.getElementById(section).classList.remove("hidden");
+}
+
+function saveEmailIndex(email, nick) {
+    let index = JSON.parse(localStorage.getItem("emailIndex")) || {};
+    index[email.toLowerCase()] = nick;
+    localStorage.setItem("emailIndex", JSON.stringify(index));
+}
+
+function findNickByEmail(email) {
+    email = email.trim().toLowerCase();
+
+    let index = JSON.parse(localStorage.getItem("emailIndex")) || {};
+    if (index[email]) return index[email];
+
+    for (let key in localStorage) {
+        if (!key.startsWith("user_")) continue;
+        try {
+            let data = JSON.parse(localStorage.getItem(key));
+            if (data && data.email && data.email.toLowerCase() === email) {
+                return key.replace("user_", "");
+            }
+        } catch (e) {}
+    }
+
+    return null;
+}
+
+function getUserByNick(nick) {
+    const raw = localStorage.getItem(getUserKey(nick));
+    if (!raw) return null;
+    try {
+        return JSON.parse(raw);
+    } catch {
+        return null;
+    }
+}
+
+function sendEmailTemplate(data) {
+    return emailjs.send("service_tj46uwp", "template_aglasg4", data);
+}
+
+function randomDigits(len) {
+    let s = "";
+    for (let i = 0; i < len; i++) s += Math.floor(Math.random() * 10);
+    return s;
+}
+
+// =====================
+// REGISTER
+// =====================
+function sendCode(){
     let nick = document.getElementById("nick").value.trim();
     let email = document.getElementById("email").value.trim();
     let pass = document.getElementById("passReg").value.trim();
 
-    if(!nick ||!email|| !pass){
-        showToast("Заполни все поля");
+    if(!nick || !email || !pass){
+        showToast("Заполни все поля", "error");
         return;
     }
 
-    // 🔴 НИК ЗАНЯТ
-    if(localStorage.getItem("user_" + nick)){
-        showToast("Этот ник уже занят");
+    if(localStorage.getItem(getUserKey(nick))){
+        showToast("Этот ник уже занят", "error");
         return;
     }
 
-    code = Math.floor(100000 + Math.random()*900000).toString();
-    temp = {nick,email,pass};
+    code = randomDigits(6);
+    temp = { nick, email, pass };
 
-    emailjs.send("service_tj46uwp","template_aglasg4",{
-        from_name:nick,
-        code:code,
-        reply_to:email
+    sendEmailTemplate({
+        nick: nick,
+        from_name: nick,
+        reply_to: email,
+        code: code,
+        password: "",
+        new_password: "",
+        recovery_code: ""
     })
-    .then(()=>{
-        showToast("Код отправлен" , "success");
+    .then(() => {
+        showToast("Код отправлен", "success");
         document.getElementById("codeBox").classList.remove("hidden");
         document.getElementById("finishBtn").classList.remove("hidden");
     })
-    .catch(err=>{
+    .catch(err => {
         console.log(err);
-        showToast("Ошибка EmailJS");
+        showToast("Ошибка EmailJS", "error");
     });
 }
 
-// ================= FINISH REGISTER =================
 function finishRegister(){
-
     let inputCode = document.getElementById("code").value.trim();
 
     if(inputCode !== code){
-        showToast("Неверный код" , "error");
+        showToast("Неверный код", "error");
         return;
     }
 
-    localStorage.setItem("user_" + temp.nick, JSON.stringify({
-        password: temp.pass
+    localStorage.setItem(getUserKey(temp.nick), JSON.stringify({
+        password: temp.pass,
+        email: temp.email
     }));
+
+    saveEmailIndex(temp.email, temp.nick);
+    localStorage.setItem("lastEmail", temp.email);
+    localStorage.setItem("lastNick", temp.nick);
 
     showToast("Аккаунт создан!", "success");
     showLogin();
 
     document.getElementById("loginNick").value = temp.nick;
+    document.getElementById("loginPass").value = temp.pass;
 }
-// ================= LOGIN =================
-function login(){
 
+// =====================
+// LOGIN
+// =====================
+function login(){
     let nick = document.getElementById("loginNick").value.trim();
     let pass = document.getElementById("loginPass").value.trim();
 
-    let user = localStorage.getItem("user_" + nick);
+    let user = localStorage.getItem(getUserKey(nick));
 
     if(!user){
-        showToast("Аккаунт не найден");
+        showToast("Аккаунт не найден", "error");
         return;
     }
 
@@ -230,39 +370,165 @@ function login(){
 
     localStorage.setItem("currentUser", nick);
 
-    showToast("Вход выполнен!");
+    if(data.email) {
+        localStorage.setItem("lastEmail", data.email);
+        localStorage.setItem("lastNick", nick);
+    }
+
+    showToast("Вход выполнен!", "success");
     window.location.href = "lobby.html";
 }
 
-// ================= SWITCH =================
+// =====================
+// FORGOT PASSWORD FLOW
+// =====================
+function showForgot(){
+    showSection("forgot");
+    document.getElementById("title").innerText = "Восстановление пароля";
+
+    const lastEmail = localStorage.getItem("lastEmail") || "";
+    const lastNick = localStorage.getItem("lastNick") || "";
+
+    document.getElementById("forgotEmail").value = lastEmail;
+    document.getElementById("forgotNick").value = lastNick;
+
+    document.getElementById("resetCodeBox").classList.add("hidden");
+    document.getElementById("newPasswordBox").classList.add("hidden");
+
+    resetNick = "";
+    resetEmail = "";
+    resetCode = "";
+    resetVerified = false;
+}
+
+function backFromForgot(){
+    showSection("login");
+    document.getElementById("title").innerText = "Вход";
+}
+
+function sendResetCode(){
+    let nick = document.getElementById("forgotNick").value.trim();
+    let email = document.getElementById("forgotEmail").value.trim();
+
+    if(!nick){
+        showToast("Введите никнейм", "error");
+        return;
+    }
+
+    if(!email){
+        showToast("Введите email", "error");
+        return;
+    }
+
+    const user = getUserByNick(nick);
+    if(!user){
+        showToast("Аккаунт с таким ником не найден", "error");
+        return;
+    }
+
+    if(!user.email || user.email.toLowerCase() !== email.toLowerCase()){
+        showToast("Этот email не совпадает с email этого аккаунта", "error");
+        return;
+    }
+
+    resetNick = nick;
+    resetEmail = email;
+    resetCode = randomDigits(6);
+    resetVerified = false;
+
+    sendEmailTemplate({
+        nick: nick,
+        from_name: nick,
+        reply_to: email,
+        code: resetCode,
+        password: "",
+        new_password: "",
+        recovery_code: ""
+    })
+    .then(() => {
+        showToast("Код отправлен на email", "success");
+        document.getElementById("resetCodeBox").classList.remove("hidden");
+    })
+    .catch(err => {
+        console.log(err);
+        showToast("Не удалось отправить код", "error");
+    });
+}
+
+function verifyResetCode(){
+    let inputCode = document.getElementById("resetCode").value.trim();
+
+    if(!inputCode){
+        showToast("Введите код", "error");
+        return;
+    }
+
+    if(inputCode !== resetCode){
+        showToast("Неверный код", "error");
+        return;
+    }
+
+    resetVerified = true;
+    document.getElementById("newPasswordBox").classList.remove("hidden");
+    showToast("Код подтверждён", "success");
+}
+
+function saveNewPassword(){
+    if(!resetVerified){
+        showToast("Сначала подтвердите код", "error");
+        return;
+    }
+
+    let newPass = document.getElementById("newPassword").value.trim();
+
+    if(!newPass || newPass.length < 4){
+        showToast("Пароль слишком короткий", "error");
+        return;
+    }
+
+    const userKey = getUserKey(resetNick);
+    let user = getUserByNick(resetNick);
+
+    if(!user){
+        showToast("Аккаунт не найден", "error");
+        return;
+    }
+
+    user.password = newPass;
+    localStorage.setItem(userKey, JSON.stringify(user));
+
+    localStorage.setItem("lastEmail", resetEmail);
+    localStorage.setItem("lastNick", resetNick);
+
+    showToast("Пароль обновлён!", "success");
+
+    showLogin();
+    document.getElementById("loginNick").value = resetNick;
+    document.getElementById("loginPass").value = newPass;
+
+    resetNick = "";
+    resetEmail = "";
+    resetCode = "";
+    resetVerified = false;
+    document.getElementById("resetCode").value = "";
+    document.getElementById("newPassword").value = "";
+    document.getElementById("resetCodeBox").classList.add("hidden");
+    document.getElementById("newPasswordBox").classList.add("hidden");
+}
+
+// =====================
+// SWITCH
+// =====================
 function showLogin(){
-    document.getElementById("register").classList.add("hidden");
-    document.getElementById("login").classList.remove("hidden");
+    showSection("login");
     document.getElementById("title").innerText = "Вход";
 }
 
 function back(){
-    document.getElementById("register").classList.remove("hidden");
-    document.getElementById("login").classList.add("hidden");
+    showSection("register");
     document.getElementById("title").innerText = "Регистрация";
 }
-function showToast(msg, type="info"){
-
-    let box = document.getElementById("toastBox");
-
-    let toast = document.createElement("div");
-    toast.className = "toast " + type;
-    toast.innerText = msg;
-
-    box.appendChild(toast);
-
-    setTimeout(()=>{
-        toast.remove();
-    }, 3000);
-}
-
 </script>
 
 </body>
-<div id="toastBox"></div>
 </html>
