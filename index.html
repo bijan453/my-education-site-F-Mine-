@@ -30,6 +30,11 @@ body {
     text-align:center;
 }
 
+.logo {
+    display:flex;
+    justify-content:center;
+}
+
 .logo span {
     font-weight:bold;
     font-size:28px;
@@ -91,6 +96,7 @@ button {
     color:white;
     font-weight:bold;
     animation:slideIn 0.3s ease;
+    box-shadow:0 10px 24px rgba(0,0,0,0.18);
 }
 
 .success{ background:#4caf50; }
@@ -122,18 +128,32 @@ button {
     font-size: 14px;
     color: #e8e8ff;
 }
+
+.code-box{
+    margin-top:10px;
+    padding:12px;
+    border-radius:12px;
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.14);
+    font-family:monospace;
+    word-break:break-all;
+}
 </style>
 </head>
 
 <body>
 
 <div class="box">
-
     <div class="logo">
         <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
     </div>
 
     <h2 id="title">Регистрация</h2>
+
+    <div class="language-select" style="margin-bottom:10px;">
+      <button id="btnRU" class="alt" onclick="setLang('RU')" style="width:auto;min-width:74px;">RU</button>
+      <button id="btnEN" class="alt" onclick="setLang('EN')" style="width:auto;min-width:74px;">EN</button>
+    </div>
 
     <!-- REGISTER -->
     <div id="register">
@@ -141,12 +161,13 @@ button {
         <input id="email" placeholder="Email">
         <input id="passReg" type="password" placeholder="Пароль">
 
-        <button onclick="sendCode()">📩 Получить код</button>
-        <button class="alt" onclick="showLogin()">🔵 Войти</button>
+        <button onclick="sendCode()" id="registerBtn">📩 Получить код</button>
+        <button class="alt" onclick="showLogin()" id="goLoginBtn">🔵 Войти</button>
 
         <div id="codeBox" class="hidden">
-            <div class="step-title">Введите код из письма</div>
+            <div class="step-title" id="regStepTitle">Введите код из письма</div>
             <input id="code" type="password" placeholder="Код">
+          
         </div>
 
         <button id="finishBtn" class="hidden" onclick="finishRegister()">Создать аккаунт</button>
@@ -157,378 +178,597 @@ button {
         <input id="loginNick" placeholder="Ник">
         <input id="loginPass" type="password" placeholder="Пароль">
 
-        <button onclick="login()">Войти</button>
-        <button class="alt" onclick="back()">Назад</button>
+        <button onclick="login()" id="loginBtn">Войти</button>
+        <button class="alt" onclick="back()" id="backBtn">Назад</button>
 
-        <div class="small-link" onclick="showForgot()">Забыли пароль?</div>
+        <div class="small-link" onclick="showForgot()" id="forgotLink">Забыли пароль?</div>
     </div>
 
     <!-- FORGOT PASSWORD -->
     <div id="forgot" class="hidden">
-        <div class="step-title">Шаг 1 — введите никнейм</div>
+        <div class="step-title" id="fp1">Шаг 1 — введите никнейм</div>
         <input id="forgotNick" placeholder="Ник">
 
-        <div class="step-title">Шаг 2 — введите Gmail</div>
+        <div class="step-title" id="fp2">Шаг 2 — введите Gmail</div>
         <input id="forgotEmail" placeholder="Email">
 
-        <button onclick="sendResetCode()">📩 Получить код</button>
+        <button onclick="sendResetCode()" id="sendResetBtn">📩 Получить код</button>
 
         <div id="resetCodeBox" class="hidden">
-            <div class="step-title">Шаг 3 — введите код из письма</div>
+            <div class="step-title" id="fp3">Шаг 3 — введите код из письма</div>
             <input id="resetCode" type="password" placeholder="Код из email">
-            <button onclick="verifyResetCode()">✅ Подтвердить код</button>
+            <div id="resetCodeHint" class="code-box hidden"></div>
+            <button onclick="verifyResetCode()" id="verifyResetBtn">✅ Подтвердить код</button>
         </div>
 
         <div id="newPasswordBox" class="hidden">
-            <div class="step-title">Шаг 4 — введите новый пароль</div>
+            <div class="step-title" id="fp4">Шаг 4 — введите новый пароль</div>
             <input id="newPassword" type="password" placeholder="Новый пароль">
-            <button onclick="saveNewPassword()">🔐 Сохранить новый пароль</button>
+            <button onclick="saveNewPassword()" id="savePassBtn">🔐 Сохранить новый пароль</button>
         </div>
 
-        <button class="alt" onclick="backFromForgot()">Назад</button>
+        <button class="alt" onclick="backFromForgot()" id="backForgotBtn">Назад</button>
 
-        <div class="small-text">
-            Код отправится только на тот email, который был привязан к этому нику при регистрации.
+        <div class="small-text" id="hintText">
+            Код проверяется в Firebase, а nickname уже не получится создать второй раз.
         </div>
     </div>
-
 </div>
 
 <div id="toastBox"></div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  runTransaction
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+  authDomain: "fmine-auth.firebaseapp.com",
+  projectId: "fmine-auth",
+  storageBucket: "fmine-auth.firebasestorage.app",
+  messagingSenderId: "219769927531",
+  appId: "1:219769927531:web:fbd45a0876f32927d23e2e",
+  measurementId: "G-ETT9HCQRQD"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 (function(){
     emailjs.init("Y9LA_RWTTvSW0hk_w");
 })();
 
-let code = "";
-let temp = null;
+let lang = localStorage.getItem("fmine_lang") || "RU";
 
-let resetNick = "";
-let resetEmail = "";
-let resetCode = "";
-let resetVerified = false;
+let regState = {
+  code: "",
+  nick: "",
+  email: "",
+  password: ""
+};
 
-// =====================
-// HELPERS
-// =====================
-function getUserKey(nick) {
-    return "user_" + nick;
+let resetState = {
+  code: "",
+  nick: "",
+  email: "",
+  verified: false
+};
+
+const UI = {
+  RU: {
+    titleReg: "Регистрация",
+    titleLogin: "Вход",
+    titleForgot: "Восстановление пароля",
+    nick: "Ник",
+    email: "Email",
+    pass: "Пароль",
+    passNew: "Новый пароль",
+    getCode: "📩 Получить код",
+    create: "Создать аккаунт",
+    login: "Войти",
+    back: "Назад",
+    forgot: "Забыли пароль?",
+    regCodeLabel: "Введите код из письма",
+    fp1: "Шаг 1 — введите никнейм",
+    fp2: "Шаг 2 — введите Gmail",
+    fp3: "Шаг 3 — введите код из письма",
+    fp4: "Шаг 4 — введите новый пароль",
+    hint: "Код проверяется в Firebase, а одинаковый nickname создать второй раз нельзя.",
+    regOk: "Код отправлен. Введи его ниже.",
+    regCreated: "Аккаунт создан!",
+    loginOk: "Вход выполнен!",
+    resetOk: "Код отправлен на email.",
+    resetVerified: "Код подтверждён",
+    passOk: "Пароль обновлён!",
+    mismatchEmail: "Email не совпадает с этим ником",
+    error: "Ошибка",
+    fillAll: "Заполни все поля",
+    fillNickEmail: "Заполни ник и email",
+    shortPass: "Пароль слишком короткий",
+    notFound: "Аккаунт не найден",
+    wrongPass: "Неверный пароль",
+    badCode: "Неверный или просроченный код",
+    nickEmailBusy: "Ник или email уже заняты",
+    codeHint: "Код"
+  },
+  EN: {
+    titleReg: "Registration",
+    titleLogin: "Login",
+    titleForgot: "Password recovery",
+    nick: "Nick",
+    email: "Email",
+    pass: "Password",
+    passNew: "New password",
+    getCode: "📩 Get code",
+    create: "Create account",
+    login: "Login",
+    back: "Back",
+    forgot: "Forgot password?",
+    regCodeLabel: "Enter the code from the email",
+    fp1: "Step 1 — enter nickname",
+    fp2: "Step 2 — enter Gmail",
+    fp3: "Step 3 — enter the code from the email",
+    fp4: "Step 4 — enter new password",
+    hint: "The code is checked in Firebase, and the same nickname cannot be created twice.",
+    regOk: "Code sent. Enter it below.",
+    regCreated: "Account created!",
+    loginOk: "Login successful!",
+    resetOk: "Code sent to email.",
+    resetVerified: "Code verified",
+    passOk: "Password updated!",
+    mismatchEmail: "Email does not match this nickname",
+    error: "Error",
+    fillAll: "Fill all fields",
+    fillNickEmail: "Fill nick and email",
+    shortPass: "Password is too short",
+    notFound: "Account not found",
+    wrongPass: "Wrong password",
+    badCode: "Invalid or expired code",
+    nickEmailBusy: "Nickname or email already exists",
+    codeHint: "Code"
+  }
+};
+
+function t(key){ return UI[lang][key]; }
+
+function normalizeNick(nick){
+  return String(nick || "").trim().toLowerCase();
+}
+
+function normalizeEmail(email){
+  return String(email || "").trim().toLowerCase();
+}
+
+function userDocRef(nick){
+  return doc(db, "users", normalizeNick(nick));
+}
+
+function emailDocRef(email){
+  return doc(db, "emailIndex", normalizeEmail(email));
+}
+
+function pendingRegRef(nick){
+  return doc(db, "pendingRegistrations", normalizeNick(nick));
+}
+
+function pendingResetRef(nick){
+  return doc(db, "pendingResets", normalizeNick(nick));
+}
+
+async function hashPassword(text){
+  const bytes = new TextEncoder().encode(String(text));
+  const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function randomDigits(len){
+  let s = "";
+  for(let i = 0; i < len; i++) s += Math.floor(Math.random() * 10);
+  return s;
 }
 
 function showToast(msg, type="info"){
-    let box = document.getElementById("toastBox");
-
-    let toast = document.createElement("div");
-    toast.className = "toast " + type;
-    toast.innerText = msg;
-
-    box.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
+  let box = document.getElementById("toastBox");
+  let toast = document.createElement("div");
+  toast.className = "toast " + type;
+  toast.innerText = msg;
+  box.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
 }
 
-function showSection(section) {
-    document.getElementById("register").classList.add("hidden");
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("forgot").classList.add("hidden");
-    document.getElementById(section).classList.remove("hidden");
+function showSection(section){
+  document.getElementById("register").classList.add("hidden");
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("forgot").classList.add("hidden");
+  document.getElementById(section).classList.remove("hidden");
 }
 
-function saveEmailIndex(email, nick) {
-    let index = JSON.parse(localStorage.getItem("emailIndex")) || {};
-    index[email.toLowerCase()] = nick;
-    localStorage.setItem("emailIndex", JSON.stringify(index));
+function applyLangText(){
+  document.documentElement.lang = lang === "RU" ? "ru" : "en";
+  document.getElementById("btnRU").textContent = "RU";
+  document.getElementById("btnEN").textContent = "EN";
+  document.getElementById("btnRU").classList.toggle("alt", lang !== "RU");
+  document.getElementById("btnEN").classList.toggle("alt", lang !== "EN");
+
+  document.getElementById("nick").placeholder = t("nick");
+  document.getElementById("email").placeholder = t("email");
+  document.getElementById("passReg").placeholder = t("pass");
+  document.getElementById("registerBtn").textContent = t("getCode");
+  document.getElementById("goLoginBtn").textContent = lang === "RU" ? "🔵 Войти" : "🔵 Login";
+  document.getElementById("regStepTitle").textContent = t("regCodeLabel");
+  document.getElementById("code").placeholder = lang === "RU" ? "Код" : "Code";
+  document.getElementById("finishBtn").textContent = t("create");
+
+  document.getElementById("loginNick").placeholder = t("nick");
+  document.getElementById("loginPass").placeholder = t("pass");
+  document.getElementById("loginBtn").textContent = t("login");
+  document.getElementById("backBtn").textContent = t("back");
+  document.getElementById("forgotLink").textContent = t("forgot");
+
+  document.getElementById("fp1").textContent = t("fp1");
+  document.getElementById("fp2").textContent = t("fp2");
+  document.getElementById("fp3").textContent = t("fp3");
+  document.getElementById("fp4").textContent = t("fp4");
+  document.getElementById("forgotNick").placeholder = t("nick");
+  document.getElementById("forgotEmail").placeholder = t("email");
+  document.getElementById("resetCode").placeholder = lang === "RU" ? "Код из email" : "Code from email";
+  document.getElementById("newPassword").placeholder = t("passNew");
+  document.getElementById("sendResetBtn").textContent = t("getCode");
+  document.getElementById("verifyResetBtn").textContent = lang === "RU" ? "✅ Подтвердить код" : "✅ Verify code";
+  document.getElementById("savePassBtn").textContent = lang === "RU" ? "🔐 Сохранить новый пароль" : "🔐 Save new password";
+  document.getElementById("backForgotBtn").textContent = t("back");
+  document.getElementById("hintText").textContent = t("hint");
+
+  document.getElementById("title").textContent =
+    document.getElementById("forgot").classList.contains("hidden")
+      ? (document.getElementById("login").classList.contains("hidden") ? t("titleReg") : t("titleLogin"))
+      : t("titleForgot");
 }
 
-function findNickByEmail(email) {
-    email = email.trim().toLowerCase();
-
-    let index = JSON.parse(localStorage.getItem("emailIndex")) || {};
-    if (index[email]) return index[email];
-
-    for (let key in localStorage) {
-        if (!key.startsWith("user_")) continue;
-        try {
-            let data = JSON.parse(localStorage.getItem(key));
-            if (data && data.email && data.email.toLowerCase() === email) {
-                return key.replace("user_", "");
-            }
-        } catch (e) {}
-    }
-
-    return null;
+async function postJSON(url, body){
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(() => ({}));
+  if(!res.ok || data.ok === false){
+    throw new Error(data.error || t("error"));
+  }
+  return data;
 }
 
-function getUserByNick(nick) {
-    const raw = localStorage.getItem(getUserKey(nick));
-    if (!raw) return null;
-    try {
-        return JSON.parse(raw);
-    } catch {
-        return null;
-    }
-}
-
-function sendEmailTemplate(data) {
-    return emailjs.send("service_tj46uwp", "template_aglasg4", data);
-}
-
-function randomDigits(len) {
-    let s = "";
-    for (let i = 0; i < len; i++) s += Math.floor(Math.random() * 10);
-    return s;
-}
-
-// =====================
-// REGISTER
-// =====================
-function sendCode(){
-    let nick = document.getElementById("nick").value.trim();
-    let email = document.getElementById("email").value.trim();
-    let pass = document.getElementById("passReg").value.trim();
-
-    if(!nick || !email || !pass){
-        showToast("Заполни все поля", "error");
-        return;
-    }
-
-    if(localStorage.getItem(getUserKey(nick))){
-        showToast("Этот ник уже занят", "error");
-        return;
-    }
-
-    code = randomDigits(6);
-    temp = { nick, email, pass };
-
-    sendEmailTemplate({
-        nick: nick,
-        from_name: nick,
-        reply_to: email,
-        code: code,
-        password: "",
-        new_password: "",
-        recovery_code: ""
-    })
-    .then(() => {
-        showToast("Код отправлен", "success");
-        document.getElementById("codeBox").classList.remove("hidden");
-        document.getElementById("finishBtn").classList.remove("hidden");
-    })
-    .catch(err => {
-        console.log(err);
-        showToast("Ошибка EmailJS", "error");
-    });
-}
-
-function finishRegister(){
-    let inputCode = document.getElementById("code").value.trim();
-
-    if(inputCode !== code){
-        showToast("Неверный код", "error");
-        return;
-    }
-
-    localStorage.setItem(getUserKey(temp.nick), JSON.stringify({
-        password: temp.pass,
-        email: temp.email
-    }));
-
-    saveEmailIndex(temp.email, temp.nick);
-    localStorage.setItem("lastEmail", temp.email);
-    localStorage.setItem("lastNick", temp.nick);
-
-    showToast("Аккаунт создан!", "success");
-    showLogin();
-
-    document.getElementById("loginNick").value = temp.nick;
-    document.getElementById("loginPass").value = temp.pass;
-}
-
-// =====================
-// LOGIN
-// =====================
-function login(){
-    let nick = document.getElementById("loginNick").value.trim();
-    let pass = document.getElementById("loginPass").value.trim();
-
-    let user = localStorage.getItem(getUserKey(nick));
-
-    if(!user){
-        showToast("Аккаунт не найден", "error");
-        return;
-    }
-
-    let data = JSON.parse(user);
-
-    if(data.password !== pass){
-        showToast("Неверный пароль", "error");
-        return;
-    }
-
-    localStorage.setItem("currentUser", nick);
-
-    if(data.email) {
-        localStorage.setItem("lastEmail", data.email);
-        localStorage.setItem("lastNick", nick);
-    }
-
-    showToast("Вход выполнен!", "success");
-    window.location.href = "lobby.html";
-}
-
-// =====================
-// FORGOT PASSWORD FLOW
-// =====================
-function showForgot(){
-    showSection("forgot");
-    document.getElementById("title").innerText = "Восстановление пароля";
-
-    const lastEmail = localStorage.getItem("lastEmail") || "";
-    const lastNick = localStorage.getItem("lastNick") || "";
-
-    document.getElementById("forgotEmail").value = lastEmail;
-    document.getElementById("forgotNick").value = lastNick;
-
-    document.getElementById("resetCodeBox").classList.add("hidden");
-    document.getElementById("newPasswordBox").classList.add("hidden");
-
-    resetNick = "";
-    resetEmail = "";
-    resetCode = "";
-    resetVerified = false;
-}
-
-function backFromForgot(){
-    showSection("login");
-    document.getElementById("title").innerText = "Вход";
-}
-
-function sendResetCode(){
-    let nick = document.getElementById("forgotNick").value.trim();
-    let email = document.getElementById("forgotEmail").value.trim();
-
-    if(!nick){
-        showToast("Введите никнейм", "error");
-        return;
-    }
-
-    if(!email){
-        showToast("Введите email", "error");
-        return;
-    }
-
-    const user = getUserByNick(nick);
-    if(!user){
-        showToast("Аккаунт с таким ником не найден", "error");
-        return;
-    }
-
-    if(!user.email || user.email.toLowerCase() !== email.toLowerCase()){
-        showToast("Этот email не совпадает с email этого аккаунта", "error");
-        return;
-    }
-
-    resetNick = nick;
-    resetEmail = email;
-    resetCode = randomDigits(6);
-    resetVerified = false;
-
-    sendEmailTemplate({
-        nick: nick,
-        from_name: nick,
-        reply_to: email,
-        code: resetCode,
-        password: "",
-        new_password: "",
-        recovery_code: ""
-    })
-    .then(() => {
-        showToast("Код отправлен на email", "success");
-        document.getElementById("resetCodeBox").classList.remove("hidden");
-    })
-    .catch(err => {
-        console.log(err);
-        showToast("Не удалось отправить код", "error");
-    });
-}
-
-function verifyResetCode(){
-    let inputCode = document.getElementById("resetCode").value.trim();
-
-    if(!inputCode){
-        showToast("Введите код", "error");
-        return;
-    }
-
-    if(inputCode !== resetCode){
-        showToast("Неверный код", "error");
-        return;
-    }
-
-    resetVerified = true;
-    document.getElementById("newPasswordBox").classList.remove("hidden");
-    showToast("Код подтверждён", "success");
-}
-
-function saveNewPassword(){
-    if(!resetVerified){
-        showToast("Сначала подтвердите код", "error");
-        return;
-    }
-
-    let newPass = document.getElementById("newPassword").value.trim();
-
-    if(!newPass || newPass.length < 4){
-        showToast("Пароль слишком короткий", "error");
-        return;
-    }
-
-    const userKey = getUserKey(resetNick);
-    let user = getUserByNick(resetNick);
-
-    if(!user){
-        showToast("Аккаунт не найден", "error");
-        return;
-    }
-
-    user.password = newPass;
-    localStorage.setItem(userKey, JSON.stringify(user));
-
-    localStorage.setItem("lastEmail", resetEmail);
-    localStorage.setItem("lastNick", resetNick);
-
-    showToast("Пароль обновлён!", "success");
-
-    showLogin();
-    document.getElementById("loginNick").value = resetNick;
-    document.getElementById("loginPass").value = newPass;
-
-    resetNick = "";
-    resetEmail = "";
-    resetCode = "";
-    resetVerified = false;
-    document.getElementById("resetCode").value = "";
-    document.getElementById("newPassword").value = "";
-    document.getElementById("resetCodeBox").classList.add("hidden");
-    document.getElementById("newPasswordBox").classList.add("hidden");
-}
-
-// =====================
-// SWITCH
-// =====================
 function showLogin(){
-    showSection("login");
-    document.getElementById("title").innerText = "Вход";
+  showSection("login");
+  document.getElementById("title").textContent = t("titleLogin");
 }
 
 function back(){
-    showSection("register");
-    document.getElementById("title").innerText = "Регистрация";
+  showSection("register");
+  document.getElementById("title").textContent = t("titleReg");
 }
-</script>
 
+function showForgot(){
+  showSection("forgot");
+  document.getElementById("title").textContent = t("titleForgot");
+  document.getElementById("resetCodeBox").classList.add("hidden");
+  document.getElementById("newPasswordBox").classList.add("hidden");
+  resetState = { code: "", nick: "", email: "", verified: false };
+}
+
+function backFromForgot(){
+  showSection("login");
+  document.getElementById("title").textContent = t("titleLogin");
+}
+
+async function sendCode(){
+  const nick = document.getElementById("nick").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("passReg").value.trim();
+
+  if(!nick || !email || !password){
+    showToast(t("fillAll"), "error");
+    return;
+  }
+
+  const nickNorm = normalizeNick(nick);
+  const emailNorm = normalizeEmail(email);
+  const passwordHash = await hashPassword(password);
+  const code = randomDigits(6);
+
+  try{
+    await runTransaction(db, async (tx) => {
+      const [userSnap, emailSnap, pendingNickSnap] = await Promise.all([
+        tx.get(userDocRef(nickNorm)),
+        tx.get(emailDocRef(emailNorm)),
+        tx.get(pendingRegRef(nickNorm))
+      ]);
+
+      if(userSnap.exists() || emailSnap.exists() || pendingNickSnap.exists()){
+        throw new Error(t("nickEmailBusy"));
+      }
+
+      tx.set(pendingRegRef(nickNorm), {
+        nick,
+        nickNorm,
+        email,
+        emailNorm,
+        passwordHash,
+        code,
+        expiresAtMs: Date.now() + 10 * 60 * 1000
+      });
+    });
+
+    try{
+      await emailjs.send("service_tj46uwp", "template_aglasg4", {
+        from_name: nick,
+        code: code,
+        reply_to: email
+      });
+    }catch(emailErr){
+      await deleteDoc(pendingRegRef(nickNorm));
+      throw emailErr;
+    }
+
+    regState = {
+      code,
+      nick: nickNorm,
+      email: emailNorm,
+      password
+    };
+
+    document.getElementById("codeBox").classList.remove("hidden");
+    document.getElementById("finishBtn").classList.remove("hidden");
+ 
+    showToast(t("regOk"), "success");
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function finishRegister(){
+  const inputCode = document.getElementById("code").value.trim();
+  const nickNorm = regState.nick;
+  const regRef = pendingRegRef(nickNorm);
+  const userRef = userDocRef(nickNorm);
+  const emailRef = emailDocRef(regState.email);
+
+  if(!inputCode){
+    showToast(lang === "RU" ? "Введите код" : "Enter code", "error");
+    return;
+  }
+
+  try{
+    const snap = await getDoc(regRef);
+    if(!snap.exists()){
+      throw new Error(t("badCode"));
+    }
+
+    const data = snap.data();
+    if(data.code !== inputCode || data.expiresAtMs < Date.now()){
+      throw new Error(t("badCode"));
+    }
+
+    await runTransaction(db, async (tx) => {
+      const [userSnap, emailSnap] = await Promise.all([
+        tx.get(userRef),
+        tx.get(emailRef)
+      ]);
+
+      if(userSnap.exists() || emailSnap.exists()){
+        throw new Error(t("nickEmailBusy"));
+      }
+
+      tx.set(userRef, {
+        nick: data.nick,
+        nickNorm: data.nickNorm,
+        email: data.email,
+        emailNorm: data.emailNorm,
+        passwordHash: data.passwordHash,
+        createdAtMs: Date.now()
+      });
+
+      tx.set(emailRef, {
+        nick: data.nick,
+        nickNorm: data.nickNorm
+      });
+
+      tx.delete(regRef);
+    });
+
+    localStorage.setItem("currentUser", data.nickNorm);
+    showToast(t("regCreated"), "success");
+    showLogin();
+    document.getElementById("loginNick").value = data.nick;
+    document.getElementById("loginPass").value = regState.password;
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function login(){
+  const nick = document.getElementById("loginNick").value.trim();
+  const password = document.getElementById("loginPass").value.trim();
+
+  if(!nick || !password){
+    showToast(t("fillAll"), "error");
+    return;
+  }
+
+  try{
+    const nickNorm = normalizeNick(nick);
+    const snap = await getDoc(userDocRef(nickNorm));
+
+    if(!snap.exists()){
+      throw new Error(t("notFound"));
+    }
+
+    const data = snap.data();
+    const passwordHash = await hashPassword(password);
+
+    if(data.passwordHash !== passwordHash){
+      throw new Error(t("wrongPass"));
+    }
+
+    localStorage.setItem("currentUser", data.nickNorm);
+    showToast(t("loginOk"), "success");
+    window.location.href = "lobby.html";
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function sendResetCode(){
+  const nick = document.getElementById("forgotNick").value.trim();
+  const email = document.getElementById("forgotEmail").value.trim();
+
+  if(!nick || !email){
+    showToast(t("fillNickEmail"), "error");
+    return;
+  }
+
+  const nickNorm = normalizeNick(nick);
+  const emailNorm = normalizeEmail(email);
+  const resetRef = pendingResetRef(nickNorm);
+
+  try{
+    const userSnap = await getDoc(userDocRef(nickNorm));
+    if(!userSnap.exists()){
+      throw new Error(t("notFound"));
+    }
+
+    const user = userSnap.data();
+    if(user.emailNorm !== emailNorm){
+      throw new Error(t("mismatchEmail"));
+    }
+
+    const code = randomDigits(6);
+
+    await runTransaction(db, async (tx) => {
+      tx.set(resetRef, {
+        nickNorm,
+        emailNorm,
+        code,
+        expiresAtMs: Date.now() + 10 * 60 * 1000
+      });
+    });
+
+    try{
+      await emailjs.send("service_tj46uwp", "template_aglasg4", {
+        from_name: nick,
+        code: code,
+        reply_to: email
+      });
+    }catch(emailErr){
+      await deleteDoc(resetRef);
+      throw emailErr;
+    }
+
+    resetState = { code, nick: nickNorm, email: emailNorm, verified: false };
+    document.getElementById("resetCodeBox").classList.remove("hidden");
+    document.getElementById("newPasswordBox").classList.add("hidden");
+    document.getElementById("resetCodeHint").classList.remove("hidden");
+    document.getElementById("resetCodeHint").textContent = `${t("codeHint")}: ${code}`;
+    showToast(t("resetOk"), "success");
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function verifyResetCode(){
+  const code = document.getElementById("resetCode").value.trim();
+  const resetRef = pendingResetRef(resetState.nick);
+
+  if(!code){
+    showToast(lang === "RU" ? "Введите код" : "Enter code", "error");
+    return;
+  }
+
+  try{
+    const snap = await getDoc(resetRef);
+    if(!snap.exists()){
+      throw new Error(t("badCode"));
+    }
+
+    const data = snap.data();
+    if(data.code !== code || data.expiresAtMs < Date.now()){
+      throw new Error(t("badCode"));
+    }
+
+    resetState.verified = true;
+    resetState.code = code;
+    document.getElementById("newPasswordBox").classList.remove("hidden");
+    showToast(t("resetVerified"), "success");
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function saveNewPassword(){
+  const newPassword = document.getElementById("newPassword").value.trim();
+
+  if(!resetState.verified){
+    showToast(lang === "RU" ? "Сначала подтвердите код" : "Verify the code first", "error");
+    return;
+  }
+
+  if(!newPassword || newPassword.length < 4){
+    showToast(t("shortPass"), "error");
+    return;
+  }
+
+  try{
+    const userRef = userDocRef(resetState.nick);
+    const resetRef = pendingResetRef(resetState.nick);
+    const newHash = await hashPassword(newPassword);
+
+    const snap = await getDoc(userRef);
+    if(!snap.exists()){
+      throw new Error(t("notFound"));
+    }
+
+    await setDoc(userRef, { passwordHash: newHash }, { merge: true });
+    await deleteDoc(resetRef);
+
+    showToast(t("passOk"), "success");
+    showLogin();
+    document.getElementById("loginNick").value = snap.data().nick || resetState.nick;
+    document.getElementById("loginPass").value = newPassword;
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+window.setLang = (l) => {
+  lang = l;
+  localStorage.setItem("fmine_lang", lang);
+  applyLangText();
+  showToast(lang === "RU" ? "Язык изменён" : "Language changed", "info");
+};
+
+window.sendCode = sendCode;
+window.finishRegister = finishRegister;
+window.login = login;
+window.showLogin = showLogin;
+window.back = back;
+window.showForgot = showForgot;
+window.backFromForgot = backFromForgot;
+window.sendResetCode = sendResetCode;
+window.verifyResetCode = verifyResetCode;
+window.saveNewPassword = saveNewPassword;
+
+applyLangText();
+showSection("register");
+document.getElementById("title").textContent = t("titleReg");
+</script>
 </body>
 </html>
