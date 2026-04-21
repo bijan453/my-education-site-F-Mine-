@@ -1,366 +1,535 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Профиль пользователя</title>
-
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Segoe UI',sans-serif;
-}
-.exit-wrap{
-  margin-top:30px;
-  display:flex;
-  justify-content:center;
-}
-
-.exit-btn{
-  padding:12px 25px;
-  border:none;
-  border-radius:12px;
-  background:linear-gradient(135deg,#6c63ff,#4a47d1);
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  transition:0.3s;
-  box-shadow:0 0 15px rgba(108,99,255,0.3);
-}
-
-.exit-btn:hover{
-  transform:translateY(-3px);
-  box-shadow:0 0 20px gold;
-}
-
-body{
-  background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
-  color:white;
-  text-align:center;
-}
-
-/* ===== LAYOUT ===== */
-.container{
-  max-width:1000px;
-  margin:60px auto;
-  padding:20px;
-}
-
-.layout{
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-
-/* ===== CARDS ===== */
-.card{
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(15px);
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 0 30px rgba(0,0,0,0.4);
-  flex:1;
-  min-width:300px;
-  animation:fadeIn 0.8s ease;
-}
-
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(20px);}
-  to{opacity:1; transform:translateY(0);}
-}
-
-/* ===== LEFT PROFILE ===== */
-.profile-top{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:15px;
-  margin-bottom:15px;
-}
-
-.avatar{
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  border:2px solid gold;
-  cursor:pointer;
-}
-
-.username{
-  font-size:20px;
-  font-weight:bold;
-  text-shadow:0 0 8px gold;
-}
-
-/* bio */
-.bio{
-  width:100%;
-  min-height:80px;
-  padding:10px;
-  border-radius:10px;
-  border:none;
-  outline:none;
-  resize:none;
-  background:rgba(0,0,0,0.25);
-  color:white;
-  margin-top:10px;
-}
-
-/* button */
-button{
-  margin-top:10px;
-  padding:10px 20px;
-  border:none;
-  border-radius:10px;
-  background:linear-gradient(135deg,#6c63ff,#4a47d1);
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-button:hover{
-  box-shadow:0 0 15px gold;
-}
-
-/* ===== PROGRESS ===== */
-.progress-line{
-  width:100%;
-  background:#222;
-  border-radius:12px;
-  height:22px;
-  margin:10px 0;
-  position:relative;
-  overflow:hidden;
-}
-
-.progress-fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#6c63ff,gold);
-  transition:0.6s;
-}
-
-.progress-text{
-  position:absolute;
-  width:100%;
-  top:0;
-  line-height:22px;
-  font-weight:bold;
-}
-
-/* olymp */
-.olymp-item{
-  margin:10px 0;
-  padding:10px;
-  background:rgba(0,0,0,0.2);
-  border-radius:10px;
-}
-
-/* ===== MENU ===== */
-.avatar-menu{
-  position:absolute;
-  display:none;
-  flex-direction:column;
-  gap:8px;
-  padding:10px;
-  background:rgba(0,0,0,0.85);
-  border-radius:12px;
-  margin-top:10px;
-}
-
-.avatar-menu button{
-  background:#6c63ff;
-  border:none;
-  padding:8px;
-  border-radius:8px;
-  color:white;
-  cursor:pointer;
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
+body{min-height:100vh;background:linear-gradient(135deg,#1e1e2f,#3a3a6a);color:#fff;padding:16px}
+body.light{background:linear-gradient(135deg,#f5f5f5,#d0d0ff);color:#222}
+.container{max-width:980px;margin:0 auto}
+.header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.brand{font-size:26px;font-weight:800;background:linear-gradient(90deg,#fff,gold,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+button{border:none;border-radius:12px;padding:12px 14px;background:linear-gradient(135deg,#6c63ff,#4a47d1);color:#fff;font-weight:700;cursor:pointer}
+button.secondary{background:#444}
+button.ghost{background:transparent;border:1px solid rgba(255,255,255,.2)}
+body.light button.secondary{background:#666}
+.layout{display:grid;grid-template-columns:340px 1fr;gap:14px}
+details{background:rgba(255,255,255,.06);backdrop-filter:blur(12px);border-radius:18px;padding:14px 16px;margin-bottom:12px;box-shadow:0 0 24px rgba(0,0,0,.25)}
+summary{list-style:none;cursor:pointer;font-size:18px;font-weight:800}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"▾";float:right;transition:.2s}
+details[open] summary::after{transform:rotate(180deg)}
+.panel{margin-top:12px}
+.class-block{margin-top:12px;padding:12px;border-radius:14px;background:rgba(0,0,0,.18)}
+.avatar{width:84px;height:84px;border-radius:50%;border:2px solid gold;object-fit:cover;cursor:pointer}
+.row{display:flex;gap:12px;align-items:center}
+.username{font-size:22px;font-weight:800}
+.small{font-size:13px;color:#d7dbff;line-height:1.4}
+body.light .small{color:#4a4a63}
+textarea,input,select{width:100%;margin-top:10px;padding:12px;border:none;border-radius:12px;outline:none;background:rgba(0,0,0,.25);color:#fff}
+body.light textarea,body.light input,body.light select{background:rgba(255,255,255,.92);color:#111}
+textarea{min-height:100px;resize:vertical}
+.progress-line{height:20px;background:rgba(0,0,0,.22);border-radius:999px;overflow:hidden;position:relative;margin-top:10px}
+.fill{height:100%;width:0%;background:linear-gradient(90deg,#6c63ff,gold);transition:.5s}
+.ptext{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.grid{display:grid;gap:10px}
+.badge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.badge{padding:12px;border-radius:14px;background:rgba(0,0,0,.18)}
+.badge.on{background:linear-gradient(135deg,rgba(108,99,255,.4),rgba(255,215,0,.15))}
+.badge span{display:block;font-size:12px;opacity:.9;margin-top:3px}
+.list{display:grid;gap:8px;margin-top:10px}
+.item{padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.18);font-size:14px;line-height:1.35}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.actions button{flex:1}
+.exit-wrap{display:flex;justify-content:center;margin-top:12px}
+.exit-btn{background:linear-gradient(135deg,#6c63ff,#4a47d1)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+@media(max-width:600px){
+  .brand{font-size:20px}
+  .username{font-size:18px}
+  .badge-grid{grid-template-columns:1fr}
+  .top-actions button{flex:1}
+  .top-actions{width:100%}
+  button{width:100%}
 }
 </style>
 </head>
-
 <body>
-
 <div class="container">
-
-  <div class="layout">
-
-    <!-- ================= LEFT ================= -->
-    <div class="card">
-
-      <h1>👤 Профиль</h1>
-
-      <div class="profile-top">
-        <img id="profileAvatar"
-             src="https://via.placeholder.com/70"
-             class="avatar"
-             onclick="toggleMenu()">
-
-        <span id="usernameDisplay" class="username"></span>
-      </div>
-
-      <!-- bio -->
-      <textarea id="bio" class="bio" placeholder="Напиши о себе..."></textarea>
-
-      <button onclick="saveBio()">💾 Сохранить</button>
-
-      <!-- menu -->
-      <div id="avatarMenu" class="avatar-menu">
-        <button onclick="changeAvatar()">🖼️ Сменить аватар</button>
-        <button onclick="alert('⚙️ Настройки в разработке')">⚙️ Настройки</button>
-      </div>
-
-      <input type="file" id="avatarInput" style="display:none;" accept="image/*">
-
+  <div class="header">
+    <div class="brand">F-Mine Profile</div>
+    <div class="top-actions">
+      <button class="ghost" onclick="toggleTheme()">🌓 Тема</button>
+      <button class="secondary" onclick="copyNick()">📋 Ник</button>
+      <button class="secondary" onclick="goLobby()">🏠 Лобби</button>
     </div>
-
-    <!-- ================= RIGHT ================= -->
-    <div class="card">
-
-      <h2>📚 Прогресс обучения</h2>
-
-      <div class="progress-line">
-        <div class="progress-fill" id="math7Fill"></div>
-        <div class="progress-text" id="math7Text">7 класс: 0%</div>
-      </div>
-
-      <div class="progress-line">
-        <div class="progress-fill" id="math8Fill"></div>
-        <div class="progress-text" id="math8Text">8 класс: 0%</div>
-      </div>
-
-      <div class="progress-line">
-        <div class="progress-fill" id="math9Fill"></div>
-        <div class="progress-text" id="math9Text">9 класс: 0%</div>
-      </div>
-<div class="progress-line">
-        <div class="progress-fill" id="math10Fill"></div>
-        <div class="progress-text" id="math10Text">10 класс: 0%</div>
-      </div>
-
-      <h2 style="margin-top:20px;">🏆 Олимпиада</h2>
-
-      <div class="olymp-item" id="olymp7">7 класс: 0%</div>
-      <div class="olymp-item" id="olymp8">8 класс: 0%</div>
-      <div class="olymp-item" id="olymp9">9 класс: 0%</div>
-      <div class="olymp-item" id="olymp10">10 класс: 0%</div>
-
-    </div>
-
   </div>
 
+  <div class="layout">
+    <div>
+      <details open>
+        <summary>👤 Профиль</summary>
+        <div class="panel">
+          <div class="row">
+            <div style="position:relative">
+              <img id="avatar" class="avatar" src="https://via.placeholder.com/84" onclick="toggleMenu()" alt="avatar">
+              <div id="menu" style="display:none;position:absolute;left:0;top:100%;margin-top:8px;background:rgba(0,0,0,.9);border-radius:12px;padding:8px;min-width:170px;z-index:10">
+                <button onclick="pickAvatar()">🖼️ Сменить аватар</button>
+                <button class="secondary" onclick="resetAvatar()">♻️ Сбросить</button>
+              </div>
+            </div>
+            <div>
+              <div id="name" class="username"></div>
+              <div class="small" id="hint">Био, заметки, прогресс и цели.</div>
+            </div>
+          </div>
+
+          <textarea id="bio" placeholder="Напиши о себе..."></textarea>
+          <button onclick="saveBio()">💾 Сохранить био</button>
+          <input id="file" type="file" accept="image/*" hidden>
+        </div>
+      </details>
+
+      <details>
+        <summary>⭐ Любимая тема</summary>
+        <div class="panel">
+          <select id="fav"></select>
+          <button onclick="saveFav()">Сохранить</button>
+          <div class="small" id="favText" style="margin-top:8px"></div>
+        </div>
+      </details>
+
+      <details>
+        <summary>🔥 Серия и цель</summary>
+        <div class="panel">
+          <div class="small" id="streakText">Стрик: 0 дней</div>
+          <div class="small" id="goalText" style="margin-top:6px">Цель недели: 0/0</div>
+          <div class="progress-line"><div id="goalFill" class="fill"></div><div id="goalP" class="ptext">0%</div></div>
+          <input id="goalInput" type="number" min="1" max="100" placeholder="Цель недели">
+          <div class="actions">
+            <button onclick="markToday()">✅ Я учился сегодня</button>
+            <button class="secondary" onclick="saveGoal()">🎯 Сохранить цель</button>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>📝 Заметка</summary>
+        <div class="panel">
+          <textarea id="note" placeholder="Личная заметка..."></textarea>
+          <div class="actions">
+            <button onclick="saveNote()">Сохранить</button>
+            <button class="secondary" onclick="clearNote()">Очистить</button>
+          </div>
+        </div>
+      </details>
+
+      <div class="exit-wrap"><button class="exit-btn" onclick="goLobby()">🛑 Выйти</button></div>
+    </div>
+
+    <div>
+      <details open>
+        <summary>📊 Прогресс по классам</summary>
+        <div class="panel grid" id="classes"></div>
+      </details>
+
+      <details>
+        <summary>🏆 Олимпиада</summary>
+        <div class="panel">
+          <div class="progress-line"><div id="o7" class="fill"></div><div class="ptext" id="o7t">7 класс: 0%</div></div>
+          <div class="progress-line"><div id="o8" class="fill"></div><div class="ptext" id="o8t">8 класс: 0%</div></div>
+          <div class="progress-line"><div id="o9" class="fill"></div><div class="ptext" id="o9t">9 класс: 0%</div></div>
+          <div class="progress-line"><div id="o10" class="fill"></div><div class="ptext" id="o10t">10 класс: 0%</div></div>
+        </div>
+      </details>
+
+      <details>
+        <summary>🧩 Детальный прогресс</summary>
+        <div class="panel" id="details"></div>
+      </details>
+
+      <details>
+        <summary>⭐ Достижения</summary>
+        <div class="panel badge-grid" id="badges"></div>
+      </details>
+
+      <details>
+        <summary>🕒 История</summary>
+        <div class="panel list" id="history"></div>
+      </details>
+
+      <details>
+        <summary>▶ Продолжить обучение</summary>
+        <div class="panel">
+          <div class="small" id="resumeText">Последний урок не найден.</div>
+          <button style="margin-top:10px" onclick="continueLearning()">Продолжить</button>
+        </div>
+      </details>
+    </div>
+  </div>
 </div>
 
 <script>
+const user = localStorage.getItem("currentUser") || "guest";
+const pkey = "user_" + user;
+const defAvatar = "https://via.placeholder.com/84";
 
-let user = localStorage.getItem('currentUser') || 'guest';
-document.getElementById('usernameDisplay').innerText = user;
+const T = {
+  7:["integers","linear","fractions","powers","roots","mixed"],
+  8:["linear2","brackets","fractions2","powers2","roots2","mixed2"],
+  9:["quadratic","factor","functions","powers3","roots3","mixed3"],
+  10:["inequalities","quadratic2","trig","logs","exponents","mixed4"]
+};
 
-// ================= LOAD =================
-let data = JSON.parse(localStorage.getItem("user_"+user)) || {};
+const N = {
+  7:{integers:"Числа",linear:"Линейные",fractions:"Дроби",powers:"Степени",roots:"Корни",mixed:"Смешанные"},
+  8:{linear2:"Линейные",brackets:"Скобки",fractions2:"Дроби",powers2:"Степени",roots2:"Корни",mixed2:"Смешанные"},
+  9:{quadratic:"Квадратные",factor:"Разложение",functions:"Функции",powers3:"Степени",roots3:"Корни",mixed3:"Смешанные"},
+  10:{inequalities:"Неравенства",quadratic2:"Квадратные",trig:"Тригонометрия",logs:"Логарифмы",exponents:"Показательные",mixed4:"Смешанные"}
+};
 
-if(data.avatar){
-  document.getElementById("profileAvatar").src = data.avatar;
+const json = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
+const save = o => {
+  localStorage.setItem(pkey, JSON.stringify(o));
+  localStorage.setItem("userData", JSON.stringify({
+    nickname: o.nickname || user,
+    avatar: o.avatar || defAvatar
+  }));
+};
+
+const getProfile = () => {
+  const d = json(pkey) || json("userData") || {};
+  return {
+    nickname: d.nickname || user,
+    avatar: d.avatar || defAvatar,
+    bio: d.bio || "",
+    note: d.note || "",
+    fav: d.fav || "",
+    goal: d.goal || 7
+  };
+};
+
+const setProfile = part => {
+  const d = { ...getProfile(), ...part };
+  save(d);
+  return d;
+};
+
+const topicP = (c, t) => (json(`mathProgress_${user}_${c}_${t}`)?.highestCompleted || 0);
+const classP = c => Math.round(T[c].reduce((s,t)=>s+Math.min(16,topicP(c,t)),0)/(T[c].length*16)*100);
+const getOlymp = c => parseInt(localStorage.getItem(`${user}_olymp_${c}`) || "0", 10) || 0;
+const lastMath = () => json(`${user}_math_last`);
+const study = () => json(`studyMeta_${user}`) || { streak:0, lastDate:"", weeklyCount:0, weekKey:"" };
+
+const keyToday = () => new Date().toISOString().slice(0,10);
+const keyWeek = () => {
+  const d = new Date();
+  const day = d.getDay() || 7;
+  const mon = new Date(d);
+  mon.setDate(d.getDate() - day + 1);
+  mon.setHours(0,0,0,0);
+  return mon.toISOString().slice(0,10);
+};
+
+const profile = getProfile();
+document.getElementById("name").innerText = profile.nickname;
+document.getElementById("avatar").src = profile.avatar;
+document.getElementById("bio").value = profile.bio;
+document.getElementById("note").value = profile.note;
+document.getElementById("goalInput").value = profile.goal || 7;
+document.getElementById("favText").innerText = profile.fav ? ("Любимая: " + profile.fav) : "";
+document.getElementById("fav").innerHTML = Object.entries(N)
+  .map(([c,o]) => Object.entries(o).map(([id,name]) => `<option value="${c}:${id}" ${profile.fav===`${c}:${id}`?"selected":""}>${c} класс — ${name}</option>`).join("")).join("");
+
+function toggleTheme(){
+  document.body.classList.toggle("light");
+  localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
 }
+if((localStorage.getItem("accountTheme") || "dark") === "light") document.body.classList.add("light");
 
-if(data.bio){
-  document.getElementById("bio").value = data.bio;
-}
-
-// ================= SAVE BIO =================
-function saveBio(){
-  let bio = document.getElementById("bio").value;
-
-  let data = JSON.parse(localStorage.getItem("user_"+user)) || {};
-  data.bio = bio;
-
-  localStorage.setItem("user_"+user, JSON.stringify(data));
-
-  alert("💾 Сохранено!");
-}
-
-// ================= MENU =================
 function toggleMenu(){
-  let menu = document.getElementById("avatarMenu");
-  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+  const m = document.getElementById("menu");
+  m.style.display = m.style.display === "flex" ? "none" : "flex";
 }
-
-document.addEventListener("click", function(e){
-  let menu = document.getElementById("avatarMenu");
-  let avatar = document.getElementById("profileAvatar");
-
-  if(menu && !menu.contains(e.target) && e.target !== avatar){
-    menu.style.display = "none";
-  }
+document.addEventListener("click", e => {
+  const m = document.getElementById("menu"), a = document.getElementById("avatar");
+  if(m && !m.contains(e.target) && e.target !== a) m.style.display = "none";
 });
 
-// ================= AVATAR =================
-function changeAvatar(){
-  document.getElementById("avatarInput").click();
+function pickAvatar(){ document.getElementById("file").click(); }
+document.getElementById("file").onchange = function(){
+  const file = this.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById("avatar").src = e.target.result;
+    setProfile({ avatar:e.target.result });
+    addAct("Аватар обновлён.");
+  };
+  r.readAsDataURL(file);
+};
 
-  document.getElementById("avatarInput").onchange = function(){
-    let file = this.files[0];
+function resetAvatar(){
+  document.getElementById("avatar").src = defAvatar;
+  setProfile({ avatar:defAvatar });
+  addAct("Аватар сброшен.");
+}
 
-    if(file){
-      let reader = new FileReader();
+function saveBio(){
+  setProfile({ bio: document.getElementById("bio").value });
+  addAct("Био сохранено.");
+  alert("Сохранено");
+}
 
-      reader.onload = function(e){
-        let src = e.target.result;
+function saveNote(){
+  setProfile({ note: document.getElementById("note").value });
+  addAct("Заметка сохранена.");
+}
 
-        document.getElementById("profileAvatar").src = src;
+function clearNote(){
+  document.getElementById("note").value = "";
+  setProfile({ note:"" });
+  addAct("Заметка очищена.");
+}
 
-        let data = JSON.parse(localStorage.getItem("user_"+user)) || {};
-        data.avatar = src;
+function saveFav(){
+  const v = document.getElementById("fav").value;
+  setProfile({ fav:v });
+  document.getElementById("favText").innerText = "Любимая: " + v;
+  addAct("Любимая тема сохранена.");
+}
 
-        localStorage.setItem("user_"+user, JSON.stringify(data));
-      }
+function markToday(){
+  const today = keyToday();
+  const weekKey = keyWeek();
+  const s = study();
 
-      reader.readAsDataURL(file);
+  if(s.lastDate === today) return alert("Сегодня уже отмечено.");
+
+  if(s.weekKey !== weekKey){
+    s.weekKey = weekKey;
+    s.weeklyCount = 0;
+  }
+
+  s.streak = s.lastDate
+    ? (new Date(today) - new Date(s.lastDate) === 86400000 ? (s.streak || 0) + 1 : 1)
+    : 1;
+
+  s.weeklyCount = (s.weeklyCount || 0) + 1;
+  s.lastDate = today;
+
+  localStorage.setItem(`studyMeta_${user}`, JSON.stringify(s));
+  addAct("Отмечено занятие за сегодня.");
+  render();
+}
+
+function saveGoal(){
+  const g = parseInt(document.getElementById("goalInput").value, 10);
+  if(!g || g < 1) return alert("Введите цель.");
+  setProfile({ goal:g });
+  addAct(`Цель недели: ${g}.`);
+  render();
+}
+
+function copyNick(){
+  navigator.clipboard.writeText(user)
+    .then(() => {
+      alert("Ник скопирован");
+      addAct("Ник скопирован.");
+    })
+    .catch(() => alert("Не удалось скопировать"));
+}
+
+function goLobby(){
+  location.href = "lobby.html";
+}
+
+function continueLearning(){
+  const l = lastMath();
+  if(!l) return alert("Сначала открой математику и пройди уровень.");
+  localStorage.setItem(`${user}_math_resume`, JSON.stringify(l));
+  location.href = "math.html";
+}
+
+function addAct(text){
+  const k = `profileActivity_${user}`;
+  const arr = json(k) || [];
+  arr.unshift({ text, time: new Date().toLocaleString("ru-RU") });
+  localStorage.setItem(k, JSON.stringify(arr.slice(0, 8)));
+  renderHistory();
+}
+
+function renderClasses(){
+  const wrap = document.getElementById("classes");
+  wrap.innerHTML = "";
+
+  ["7","8","9","10"].forEach(c => {
+    const p = classP(c);
+    const done = T[c].filter(t => topicP(c,t) >= 16).length;
+    const lev = T[c].reduce((s,t)=>s+Math.min(16,topicP(c,t)),0);
+
+    wrap.innerHTML += `
+      <div class="class-block">
+        <div class="class-row">
+          <div>${c} класс</div>
+          <div>${p}%</div>
+        </div>
+        <div class="progress-line">
+          <div class="fill" style="width:${p}%"></div>
+          <div class="ptext">${p}%</div>
+        </div>
+        <div class="small">
+          ${lev > 0 ? `Тем: ${done}/${T[c].length} · Уровней: ${lev}` : `Пока нет прогресса в этом классе`}
+        </div>
+      </div>`;
+  });
+}
+
+function renderOlymp(){
+  ["7","8","9","10"].forEach(c => {
+    const p = getOlymp(c);
+    document.getElementById("o" + c).style.width = p + "%";
+    document.getElementById("o" + c + "t").innerText = c + " класс: " + p + "%";
+  });
+}
+
+function renderDetails(){
+  const w = document.getElementById("details");
+  w.innerHTML = "";
+
+  ["7","8","9","10"].forEach(c => {
+    let html = `<div class="class-block"><div class="class-row"><div>${c} класс</div><div>${classP(c)}%</div></div><div class="list">`;
+    let hasData = false;
+
+    T[c].forEach(t => {
+      const p = topicP(c,t);
+      const n = N[c][t] || t;
+      if(p > 0) hasData = true;
+      html += `<div class="item"><b>${n}</b><br><small>${p}/16 уровней</small><span style="float:right;font-weight:800">${Math.round(p/16*100)}%</span></div>`;
+    });
+
+    if(!hasData){
+      html += `<div class="item">Пока нет данных. Начни с первого уровня.</div>`;
     }
+
+    html += `</div></div>`;
+    w.innerHTML += html;
+  });
+}
+
+function totalLevels(){
+  return ["7","8","9","10"].reduce((s,c)=>s+T[c].reduce((a,t)=>a+Math.min(16,topicP(c,t)),0),0);
+}
+
+function totalTopics(){
+  return ["7","8","9","10"].reduce((s,c)=>s+T[c].filter(t=>topicP(c,t)>=16).length,0);
+}
+
+function getAverage(){
+  const arr = ["7","8","9","10"].map(classP);
+  return Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
+}
+
+function getMaxOlymp(){
+  return Math.max(getOlymp("7"), getOlymp("8"), getOlymp("9"), getOlymp("10"));
+}
+
+function renderStats(){
+  const arr = ["7","8","9","10"].map(classP);
+  const s = study();
+  const g = getProfile().goal || 7;
+  const wc = s.weeklyCount || 0;
+  const gp = Math.min(100, Math.round((wc / g) * 100));
+
+  document.getElementById("streakText").innerText = "Стрик: " + (s.streak || 0) + " дней";
+  document.getElementById("goalText").innerText = `Цель недели: ${wc}/${g}`;
+  document.getElementById("goalFill").style.width = gp + "%";
+  document.getElementById("goalP").innerText = gp + "%";
+
+  const lm = lastMath();
+  document.getElementById("resumeText").innerText = lm
+    ? `${lm.classNum} класс · ${(N[lm.classNum] || {})[lm.topic] || lm.topic} · уровень ${lm.level}/16`
+    : "Последний урок не найден.";
+
+  document.getElementById("statLevels").innerText = totalLevels();
+  document.getElementById("statTopics").innerText = totalTopics();
+  document.getElementById("statAverage").innerText = getAverage() + "%";
+  document.getElementById("statBestClass").innerText = ["7","8","9","10"][arr.indexOf(Math.max(...arr))] + " класс";
+}
+
+function renderBadges(){
+  const g = document.getElementById("badges");
+  const o = [getOlymp("7"), getOlymp("8"), getOlymp("9"), getOlymp("10")];
+  const avg = getAverage();
+  const meta = study();
+  const fav = getProfile().fav;
+
+  const badges = [
+    ["Старт","1 уровень", totalLevels() >= 1],
+    ["Первые 10","10 уровней", totalLevels() >= 10],
+    ["Тема закрыта","3 темы", totalTopics() >= 3],
+    ["Отличник","50%+", avg >= 50],
+    ["Мастер","80%+", avg >= 80],
+    ["Олимп","100% олимпиада", Math.max(...o) >= 100],
+    ["Серия","3 дня подряд", (meta.streak || 0) >= 3],
+    ["План недели","цель недели", (meta.weeklyCount || 0) >= (getProfile().goal || 7)],
+    ["Любимая тема","выбрана", !!fav]
+  ];
+
+  g.innerHTML = badges.map(b => `<div class="badge ${b[2] ? 'on' : ''}"><b>${b[0]}</b><span>${b[1]}</span></div>`).join("");
+
+  if(!badges.some(b => b[2])){
+    g.innerHTML = `<div class="badge">Пока достижений нет. Пройди первый уровень.</div>`;
   }
 }
 
-// ================= PROGRESS =================
-function getProgress(classNum){
-  let key = user + '_math' + classNum + '_percent';
-  return parseInt(localStorage.getItem(key)) || 0;
+function renderHistory(){
+  const w = document.getElementById("history");
+  const arr = json(`profileActivity_${user}`) || [];
+  w.innerHTML = arr.length
+    ? arr.map(a => `<div class="item"><b>${a.time}</b><br>${a.text}</div>`).join("")
+    : `<div class="item">Пока действий нет.</div>`;
 }
 
-function getOlymp(classNum){
-  let key = user + '_olymp_' + classNum;
-  return parseInt(localStorage.getItem(key)) || 0;
+function renderFavSelect(){
+  const s = document.getElementById("fav");
+  if(!s.options.length){
+    s.innerHTML = Object.entries(N).map(([c,o]) =>
+      Object.entries(o).map(([id,name]) => `<option value="${c}:${id}">${c} класс — ${name}</option>`).join("")
+    ).join("");
+  }
+  const fav = getProfile().fav;
+  if(fav) s.value = fav;
 }
 
-function updateUI(){
-
-  ['7','8','9','10'].forEach(g => {
-
-    let p = getProgress(g);
-    document.getElementById('math'+g+'Fill').style.width = p + '%';
-    document.getElementById('math'+g+'Text').innerText = g + ' класс: ' + p + '%';
-
-    document.getElementById('olymp'+g).innerHTML =
-      '<span style="color:gold;font-weight:bold;">' + getOlymp(g) + '%</span>';
-
-  });
-
+function render(){
+  renderFavSelect();
+  renderStats();
+  renderClasses();
+  renderOlymp();
+  renderDetails();
+  renderBadges();
+  renderHistory();
+  const f = getProfile().fav;
+  document.getElementById("favText").innerText = f ? "Любимая: " + f : "";
 }
 
-updateUI();
-function goLobby(){
-  window.location.href = "lobby.html";
+function loadTheme(){
+  if((localStorage.getItem("accountTheme") || "dark") === "light"){
+    document.body.classList.add("light");
+  }
 }
 
+document.addEventListener("click", e => {
+  const m = document.getElementById("menu"), a = document.getElementById("avatar");
+  if(m && !m.contains(e.target) && e.target !== a) m.style.display = "none";
+});
+
+loadTheme();
+render();
 </script>
-<!-- ===== EXIT BUTTON ===== -->
-<div class="exit-wrap">
-  <button class="exit-btn" onclick="goLobby()">
-    🏠 Выйти в лобби HTML
-  </button>
-</div>
-
 </body>
 </html>
