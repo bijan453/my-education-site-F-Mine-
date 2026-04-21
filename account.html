@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -18,10 +19,11 @@ button.ghost{background:transparent;border:1px solid rgba(255,255,255,.2)}
 body.light button.secondary{background:#666}
 .layout{display:grid;grid-template-columns:340px 1fr;gap:14px}
 details{background:rgba(255,255,255,.06);backdrop-filter:blur(12px);border-radius:18px;padding:14px 16px;margin-bottom:12px;box-shadow:0 0 24px rgba(0,0,0,.25)}
-summary{list-style:none;cursor:pointer;font-size:18px;font-weight:800}
+summary{list-style:none;cursor:pointer;font-size:18px;font-weight:800;display:flex;justify-content:space-between;gap:10px;align-items:center}
 summary::-webkit-details-marker{display:none}
-summary::after{content:"▾";float:right;transition:.2s}
+summary::after{content:"▾";transition:.2s}
 details[open] summary::after{transform:rotate(180deg)}
+.sum-note{font-size:12px;font-weight:600;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}
 .panel{margin-top:12px}
 .class-block{margin-top:12px;padding:12px;border-radius:14px;background:rgba(0,0,0,.18)}
 .avatar{width:84px;height:84px;border-radius:50%;border:2px solid gold;object-fit:cover;cursor:pointer}
@@ -46,7 +48,7 @@ textarea{min-height:100px;resize:vertical}
 .actions button{flex:1}
 .exit-wrap{display:flex;justify-content:center;margin-top:12px}
 .exit-btn{background:linear-gradient(135deg,#6c63ff,#4a47d1)}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sum-note{max-width:55%}}
 @media(max-width:600px){
   .brand{font-size:20px}
   .username{font-size:18px}
@@ -54,6 +56,7 @@ textarea{min-height:100px;resize:vertical}
   .top-actions button{flex:1}
   .top-actions{width:100%}
   button{width:100%}
+  summary{font-size:17px}
 }
 </style>
 </head>
@@ -64,6 +67,7 @@ textarea{min-height:100px;resize:vertical}
     <div class="top-actions">
       <button class="ghost" onclick="toggleTheme()">🌓 Тема</button>
       <button class="secondary" onclick="copyNick()">📋 Ник</button>
+      <button class="secondary" onclick="goOlymp()">🏆 Олимп</button>
       <button class="secondary" onclick="goLobby()">🏠 Лобби</button>
     </div>
   </div>
@@ -71,7 +75,7 @@ textarea{min-height:100px;resize:vertical}
   <div class="layout">
     <div>
       <details open>
-        <summary>👤 Профиль</summary>
+        <summary><span>👤 Профиль</span><span class="sum-note" id="profNote">Био, заметки, прогресс и цели</span></summary>
         <div class="panel">
           <div class="row">
             <div style="position:relative">
@@ -94,7 +98,7 @@ textarea{min-height:100px;resize:vertical}
       </details>
 
       <details>
-        <summary>⭐ Любимая тема</summary>
+        <summary><span>⭐ Любимая тема</span><span class="sum-note" id="favNote">Пока не выбрана</span></summary>
         <div class="panel">
           <select id="fav"></select>
           <button onclick="saveFav()">Сохранить</button>
@@ -103,7 +107,7 @@ textarea{min-height:100px;resize:vertical}
       </details>
 
       <details>
-        <summary>🔥 Серия и цель</summary>
+        <summary><span>🔥 Серия и цель</span><span class="sum-note" id="streakNote">Пока нет серии</span></summary>
         <div class="panel">
           <div class="small" id="streakText">Стрик: 0 дней</div>
           <div class="small" id="goalText" style="margin-top:6px">Цель недели: 0/0</div>
@@ -117,7 +121,7 @@ textarea{min-height:100px;resize:vertical}
       </details>
 
       <details>
-        <summary>📝 Заметка</summary>
+        <summary><span>📝 Заметка</span><span class="sum-note" id="noteNote">Личная заметка</span></summary>
         <div class="panel">
           <textarea id="note" placeholder="Личная заметка..."></textarea>
           <div class="actions">
@@ -132,12 +136,12 @@ textarea{min-height:100px;resize:vertical}
 
     <div>
       <details open>
-        <summary>📊 Прогресс по классам</summary>
+        <summary><span>📊 Прогресс по классам</span><span class="sum-note" id="classesNote">Пока нет прогресса</span></summary>
         <div class="panel grid" id="classes"></div>
       </details>
 
-      <details>
-        <summary>🏆 Олимпиада</summary>
+      <details open>
+        <summary><span>🏆 Олимпиада</span><span class="sum-note" id="olympNote">0% пока</span></summary>
         <div class="panel">
           <div class="progress-line"><div id="o7" class="fill"></div><div class="ptext" id="o7t">7 класс: 0%</div></div>
           <div class="progress-line"><div id="o8" class="fill"></div><div class="ptext" id="o8t">8 класс: 0%</div></div>
@@ -146,23 +150,23 @@ textarea{min-height:100px;resize:vertical}
         </div>
       </details>
 
-      <details>
-        <summary>🧩 Детальный прогресс</summary>
+      <details open>
+        <summary><span>🧩 Детальный прогресс</span><span class="sum-note" id="detailsNote">Пока нет данных</span></summary>
         <div class="panel" id="details"></div>
       </details>
 
-      <details>
-        <summary>⭐ Достижения</summary>
+      <details open>
+        <summary><span>⭐ Достижения</span><span class="sum-note" id="badgesNote">Пройди первый уровень</span></summary>
         <div class="panel badge-grid" id="badges"></div>
       </details>
 
-      <details>
-        <summary>🕒 История</summary>
+      <details open>
+        <summary><span>🕒 История</span><span class="sum-note" id="historyNote">Нет действий</span></summary>
         <div class="panel list" id="history"></div>
       </details>
 
       <details>
-        <summary>▶ Продолжить обучение</summary>
+        <summary><span>▶ Продолжить обучение</span><span class="sum-note" id="resumeNote">Последний урок</span></summary>
         <div class="panel">
           <div class="small" id="resumeText">Последний урок не найден.</div>
           <button style="margin-top:10px" onclick="continueLearning()">Продолжить</button>
@@ -234,16 +238,6 @@ const keyWeek = () => {
   return mon.toISOString().slice(0,10);
 };
 
-const profile = getProfile();
-document.getElementById("name").innerText = profile.nickname;
-document.getElementById("avatar").src = profile.avatar;
-document.getElementById("bio").value = profile.bio;
-document.getElementById("note").value = profile.note;
-document.getElementById("goalInput").value = profile.goal || 7;
-document.getElementById("favText").innerText = profile.fav ? ("Любимая: " + profile.fav) : "";
-document.getElementById("fav").innerHTML = Object.entries(N)
-  .map(([c,o]) => Object.entries(o).map(([id,name]) => `<option value="${c}:${id}" ${profile.fav===`${c}:${id}`?"selected":""}>${c} класс — ${name}</option>`).join("")).join("");
-
 function toggleTheme(){
   document.body.classList.toggle("light");
   localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
@@ -298,7 +292,7 @@ function clearNote(){
 function saveFav(){
   const v = document.getElementById("fav").value;
   setProfile({ fav:v });
-  document.getElementById("favText").innerText = "Любимая: " + v;
+  document.getElementById("favText").innerText = v ? "Любимая: " + v : "Пока не выбрана";
   addAct("Любимая тема сохранена.");
 }
 
@@ -343,9 +337,8 @@ function copyNick(){
     .catch(() => alert("Не удалось скопировать"));
 }
 
-function goLobby(){
-  location.href = "lobby.html";
-}
+function goLobby(){ location.href = "lobby.html"; }
+function goOlymp(){ location.href = "matholymp.html"; }
 
 function continueLearning(){
   const l = lastMath();
@@ -362,30 +355,32 @@ function addAct(text){
   renderHistory();
 }
 
+function totalLevels(){
+  return ["7","8","9","10"].reduce((s,c)=>s+T[c].reduce((a,t)=>a+Math.min(16,topicP(c,t)),0),0);
+}
+function totalTopics(){
+  return ["7","8","9","10"].reduce((s,c)=>s+T[c].filter(t=>topicP(c,t)>=16).length,0);
+}
+function getAverage(){
+  const arr = ["7","8","9","10"].map(classP);
+  return Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
+}
+
 function renderClasses(){
   const wrap = document.getElementById("classes");
   wrap.innerHTML = "";
-
   ["7","8","9","10"].forEach(c => {
     const p = classP(c);
     const done = T[c].filter(t => topicP(c,t) >= 16).length;
     const lev = T[c].reduce((s,t)=>s+Math.min(16,topicP(c,t)),0);
-
     wrap.innerHTML += `
       <div class="class-block">
-        <div class="class-row">
-          <div>${c} класс</div>
-          <div>${p}%</div>
-        </div>
-        <div class="progress-line">
-          <div class="fill" style="width:${p}%"></div>
-          <div class="ptext">${p}%</div>
-        </div>
-        <div class="small">
-          ${lev > 0 ? `Тем: ${done}/${T[c].length} · Уровней: ${lev}` : `Пока нет прогресса в этом классе`}
-        </div>
+        <div class="class-row"><div>${c} класс</div><div>${p}%</div></div>
+        <div class="progress-line"><div class="fill" style="width:${p}%"></div><div class="ptext">${p}%</div></div>
+        <div class="small">${lev > 0 ? `Тем: ${done}/${T[c].length} · Уровней: ${lev}` : `Пока нет прогресса в этом классе`}</div>
       </div>`;
   });
+  document.getElementById("classesNote").innerText = totalLevels() > 0 ? `${totalTopics()} тем · ${totalLevels()} уровней` : "Пока нет прогресса";
 }
 
 function renderOlymp(){
@@ -394,47 +389,27 @@ function renderOlymp(){
     document.getElementById("o" + c).style.width = p + "%";
     document.getElementById("o" + c + "t").innerText = c + " класс: " + p + "%";
   });
+  const max = Math.max(getOlymp("7"), getOlymp("8"), getOlymp("9"), getOlymp("10"));
+  document.getElementById("olympNote").innerText = max > 0 ? `Лучший класс: ${["7","8","9","10"][["7","8","9","10"].map(getOlymp).indexOf(max)]}` : "0% пока";
 }
 
 function renderDetails(){
   const w = document.getElementById("details");
   w.innerHTML = "";
-
   ["7","8","9","10"].forEach(c => {
     let html = `<div class="class-block"><div class="class-row"><div>${c} класс</div><div>${classP(c)}%</div></div><div class="list">`;
     let hasData = false;
-
     T[c].forEach(t => {
       const p = topicP(c,t);
       const n = N[c][t] || t;
       if(p > 0) hasData = true;
       html += `<div class="item"><b>${n}</b><br><small>${p}/16 уровней</small><span style="float:right;font-weight:800">${Math.round(p/16*100)}%</span></div>`;
     });
-
-    if(!hasData){
-      html += `<div class="item">Пока нет данных. Начни с первого уровня.</div>`;
-    }
-
+    if(!hasData) html += `<div class="item">Пока нет данных. Начни с первого уровня.</div>`;
     html += `</div></div>`;
     w.innerHTML += html;
   });
-}
-
-function totalLevels(){
-  return ["7","8","9","10"].reduce((s,c)=>s+T[c].reduce((a,t)=>a+Math.min(16,topicP(c,t)),0),0);
-}
-
-function totalTopics(){
-  return ["7","8","9","10"].reduce((s,c)=>s+T[c].filter(t=>topicP(c,t)>=16).length,0);
-}
-
-function getAverage(){
-  const arr = ["7","8","9","10"].map(classP);
-  return Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
-}
-
-function getMaxOlymp(){
-  return Math.max(getOlymp("7"), getOlymp("8"), getOlymp("9"), getOlymp("10"));
+  document.getElementById("detailsNote").innerText = totalLevels() > 0 ? "Есть данные по темам" : "Пока нет данных";
 }
 
 function renderStats(){
@@ -443,21 +418,14 @@ function renderStats(){
   const g = getProfile().goal || 7;
   const wc = s.weeklyCount || 0;
   const gp = Math.min(100, Math.round((wc / g) * 100));
-
   document.getElementById("streakText").innerText = "Стрик: " + (s.streak || 0) + " дней";
   document.getElementById("goalText").innerText = `Цель недели: ${wc}/${g}`;
   document.getElementById("goalFill").style.width = gp + "%";
   document.getElementById("goalP").innerText = gp + "%";
-
+  document.getElementById("streakNote").innerText = s.streak > 0 ? `${s.streak} дн.` : "Пока нет серии";
   const lm = lastMath();
-  document.getElementById("resumeText").innerText = lm
-    ? `${lm.classNum} класс · ${(N[lm.classNum] || {})[lm.topic] || lm.topic} · уровень ${lm.level}/16`
-    : "Последний урок не найден.";
-
-  document.getElementById("statLevels").innerText = totalLevels();
-  document.getElementById("statTopics").innerText = totalTopics();
-  document.getElementById("statAverage").innerText = getAverage() + "%";
-  document.getElementById("statBestClass").innerText = ["7","8","9","10"][arr.indexOf(Math.max(...arr))] + " класс";
+  document.getElementById("resumeText").innerText = lm ? `${lm.classNum} класс · ${(N[lm.classNum] || {})[lm.topic] || lm.topic} · уровень ${lm.level}/16` : "Последний урок не найден.";
+  document.getElementById("resumeNote").innerText = lm ? `${lm.classNum} класс · уровень ${lm.level}/16` : "Последний урок";
 }
 
 function renderBadges(){
@@ -466,7 +434,6 @@ function renderBadges(){
   const avg = getAverage();
   const meta = study();
   const fav = getProfile().fav;
-
   const badges = [
     ["Старт","1 уровень", totalLevels() >= 1],
     ["Первые 10","10 уровней", totalLevels() >= 10],
@@ -478,31 +445,29 @@ function renderBadges(){
     ["План недели","цель недели", (meta.weeklyCount || 0) >= (getProfile().goal || 7)],
     ["Любимая тема","выбрана", !!fav]
   ];
-
+  const any = badges.some(b => b[2]);
   g.innerHTML = badges.map(b => `<div class="badge ${b[2] ? 'on' : ''}"><b>${b[0]}</b><span>${b[1]}</span></div>`).join("");
-
-  if(!badges.some(b => b[2])){
-    g.innerHTML = `<div class="badge">Пока достижений нет. Пройди первый уровень.</div>`;
-  }
+  if(!any) g.innerHTML = `<div class="badge">Пока достижений нет. Пройди первый уровень.</div>`;
+  document.getElementById("badgesNote").innerText = any ? "Есть достижения" : "Пройди первый уровень";
 }
 
 function renderHistory(){
   const w = document.getElementById("history");
   const arr = json(`profileActivity_${user}`) || [];
-  w.innerHTML = arr.length
-    ? arr.map(a => `<div class="item"><b>${a.time}</b><br>${a.text}</div>`).join("")
-    : `<div class="item">Пока действий нет.</div>`;
+  w.innerHTML = arr.length ? arr.map(a => `<div class="item"><b>${a.time}</b><br>${a.text}</div>`).join("") : `<div class="item">Пока действий нет.</div>`;
+  document.getElementById("historyNote").innerText = arr.length ? `${arr.length} записей` : "Нет действий";
 }
 
 function renderFavSelect(){
   const s = document.getElementById("fav");
   if(!s.options.length){
-    s.innerHTML = Object.entries(N).map(([c,o]) =>
-      Object.entries(o).map(([id,name]) => `<option value="${c}:${id}">${c} класс — ${name}</option>`).join("")
-    ).join("");
+    s.innerHTML = Object.entries(N).map(([c,o]) => Object.entries(o).map(([id,name]) => `<option value="${c}:${id}">${c} класс — ${name}</option>`).join("")).join("");
   }
   const fav = getProfile().fav;
   if(fav) s.value = fav;
+  document.getElementById("favText").innerText = fav ? "Любимая: " + fav : "Пока не выбрана";
+  document.getElementById("favNote").innerText = fav ? fav : "Пока не выбрана";
+  document.getElementById("profNote").innerText = getProfile().bio ? "Био заполнено" : "Био, заметки, прогресс и цели";
 }
 
 function render(){
@@ -513,14 +478,6 @@ function render(){
   renderDetails();
   renderBadges();
   renderHistory();
-  const f = getProfile().fav;
-  document.getElementById("favText").innerText = f ? "Любимая: " + f : "";
-}
-
-function loadTheme(){
-  if((localStorage.getItem("accountTheme") || "dark") === "light"){
-    document.body.classList.add("light");
-  }
 }
 
 document.addEventListener("click", e => {
@@ -528,7 +485,7 @@ document.addEventListener("click", e => {
   if(m && !m.contains(e.target) && e.target !== a) m.style.display = "none";
 });
 
-loadTheme();
+if((localStorage.getItem("accountTheme") || "dark") === "light") document.body.classList.add("light");
 render();
 </script>
 </body>
