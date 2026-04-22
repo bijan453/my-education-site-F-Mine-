@@ -6,18 +6,7 @@
 <title>F-Mine | Олимпиада</title>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  limit,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
@@ -37,196 +26,319 @@ const profile = JSON.parse(localStorage.getItem("user_" + user) || "{}");
 const nick = profile.nickname || user;
 const avatar = profile.avatar || "https://via.placeholder.com/96";
 
-const CLASS_LABELS = {7:"7 класс", 8:"8 класс", 9:"9 класс", 10:"10 класс"};
+const CLASS_LABELS = { 7: "7 класс", 8: "8 класс", 9: "9 класс", 10: "10 класс" };
 const TOPIC_HINTS = {
-  7:"Быстрые вычисления, дроби и уравнения",
-  8:"Скобки, дроби, корни и уравнения",
-  9:"Квадратные уравнения, функции и степени",
-  10:"Неравенства, логарифмы, тригонометрия"
+  7: "Счёт, дроби, простые уравнения и степени",
+  8: "Скобки, дроби, корни и линейные уравнения",
+  9: "Квадратные уравнения, функции и степени",
+  10: "Логарифмы, тригонометрия, неравенства и степени"
 };
 
 const state = {
   classNum: 7,
+  phase: "idle",
   questions: [],
+  history: [],
   index: 0,
   correct: 0,
   wrong: 0,
   points: 0,
+  combo: 0,
+  bestCombo: 0,
+  hintsUsed: 0,
   currentShownAt: 0,
-  questionLimit: 12,
+  questionLimit: 30,
+  questionTimeLimit: 45,
+  timeLeft: 45,
+  timerId: null,
   leaderboardMode: "total"
 };
 
 const $ = id => document.getElementById(id);
-const json = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
+const json = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
 
-function normalize(s){
+function normalize(s) {
   return String(s)
     .toLowerCase()
-    .replace(/ё/g,"е")
-    .replace(/\s+/g,"")
-    .replace(/×/g,"*")
-    .replace(/·/g,"*")
-    .replace(/,/g,".")
+    .replace(/ё/g, "е")
+    .replace(/\s+/g, "")
+    .replace(/×/g, "*")
+    .replace(/·/g, "*")
+    .replace(/,/g, ".")
     .trim();
 }
-function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b] = [b, a%b]; } return a || 1; }
-function simplifyFrac(n,d){ if(d < 0){ n = -n; d = -d; } const g = gcd(n,d); return [n/g, d/g]; }
-function fracString(n,d){ const [a,b] = simplifyFrac(n,d); return b === 1 ? String(a) : `${a}/${b}`; }
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; }
+function simplifyFrac(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return [n / g, d / g]; }
+function fracString(n, d) { const [a, b] = simplifyFrac(n, d); return b === 1 ? String(a) : `${a}/${b}`; }
+function rnd(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function pick(arr) { return arr[rnd(0, arr.length - 1)]; }
+function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-function parseFracAns(ans){
-  const s = normalize(ans);
-  const m = s.match(/^(-?\d+)(?:\/(-?\d+))?$/);
-  if(!m) return null;
+function parseFracAns(ans) {
+  const m = normalize(ans).match(/^(-?\d+)(?:\/(-?\d+))?$/);
+  if (!m) return null;
   const n = Number(m[1]);
   const d = m[2] ? Number(m[2]) : 1;
-  if(!d) return null;
-  return simplifyFrac(n,d);
+  if (!d) return null;
+  return simplifyFrac(n, d);
 }
-function numberCheck(expected){
+function numberCheck(expected) {
   return v => {
-    const s = normalize(v);
-    const m = s.match(/-?\d+(\.\d+)?/);
-    if(!m) return false;
-    return Math.abs(Number(m[0]) - expected) < 1e-9;
+    const m = normalize(v).match(/-?\d+(\.\d+)?/);
+    return !!m && Math.abs(Number(m[0]) - expected) < 1e-9;
   };
 }
-function fracCheck(expectedN, expectedD){
-  const [en, ed] = simplifyFrac(expectedN, expectedD);
+function fracCheck(n, d) {
+  const [en, ed] = simplifyFrac(n, d);
   return v => {
     const p = parseFracAns(v);
-    if(!p) return false;
-    return p[0] === en && p[1] === ed;
+    return !!p && p[0] === en && p[1] === ed;
   };
 }
-function rootPairCheck(a,b){
-  const ex = [Number(a), Number(b)].sort((x,y)=>x-y);
-  return v => {
-    const s = normalize(v).replace(/x=/g,"").replace(/корни/g,"").replace(/root/g,"");
-    const nums = (s.match(/-?\d+(\.\d+)?/g) || []).map(Number).sort((x,y)=>x-y);
-    if(nums.length < 2) return false;
-    return Math.abs(nums[0]-ex[0]) < 1e-9 && Math.abs(nums[1]-ex[1]) < 1e-9;
-  };
-}
-function textCheck(expected){
+function textCheck(expected) {
   const ex = normalize(expected);
   return v => normalize(v) === ex;
 }
-function question(q, answer, hint, explain, checker){
-  return { q, answer, hint, explain, checker };
+function rootPairCheck(a, b) {
+  const ex = [Number(a), Number(b)].sort((x, y) => x - y);
+  return v => {
+    const nums = (normalize(v).replace(/x=/g, "").match(/-?\d+(\.\d+)?/g) || []).map(Number).sort((x, y) => x - y);
+    if (nums.length < 2) return false;
+    return Math.abs(nums[0] - ex[0]) < 1e-9 && Math.abs(nums[1] - ex[1]) < 1e-9;
+  };
 }
-function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-function pick(arr){ return arr[rnd(0, arr.length-1)]; }
-
-function gen7(){
-  const a = rnd(2,9), b = rnd(1,9), c = rnd(1,9);
-  const set = [
-    question(`${a} + ${b} = ?`, a+b, "Сложи числа.", `Ответ: ${a}+${b}=${a+b}`, numberCheck(a+b)),
-    question(`${a} × ${b} = ?`, a*b, "Умножь числа.", `Ответ: ${a}×${b}=${a*b}`, numberCheck(a*b)),
-    question(`${a}x = ${a*c}`, c, "Раздели обе части на коэффициент.", `x=${c}`, numberCheck(c)),
-    question(`x + ${b} = ${c+b}`, c, "Вычти число справа.", `x=${c}`, numberCheck(c)),
-    question(`${a}/${b} + 1/${b} = ?`, fracString(a+1,b), "Знаменатели одинаковые.", `Сложи числители: ${a+1}/${b}`, fracCheck(a+1,b)),
-    question(`√${c*c} = ?`, c, "Это полный квадрат.", `√${c*c}=${c}`, numberCheck(c)),
-    question(`${a}² = ?`, a*a, "Возведи в квадрат.", `${a}²=${a*a}`, numberCheck(a*a)),
-    question(`${a}³ = ?`, a*a*a, "Возведи в куб.", `${a}³=${a*a*a}`, numberCheck(a*a*a))
-  ];
-  return pick(set);
-}
-function gen8(){
-  const x = rnd(2,9), a = rnd(2,7), b = rnd(1,8);
-  const set = [
-    question(`${a}x + ${b} = ${a*x+b}`, x, "Перенеси число и раздели.", `x=${x}`, numberCheck(x)),
-    question(`${a}(x + ${b}) = ${a*(x+b)}`, x, `Сначала раздели на ${a}.`, `x=${x}`, numberCheck(x)),
-    question(`${a}(x - ${b}) = ${a*(x-b)}`, x, "Сначала раздели, потом перенеси.", `x=${x}`, numberCheck(x)),
-    question(`${a}/${b} + 1/${b} = ?`, fracString(a+1,b), "Одинаковый знаменатель.", `Ответ ${fracString(a+1,b)}`, fracCheck(a+1,b)),
-    question(`√${(a*b)*(a*b)} = ?`, a*b, "Корень из квадрата.", `√${(a*b)*(a*b)}=${a*b}`, numberCheck(a*b)),
-    question(`${a}² + ${b} = ?`, a*a+b, "Сначала квадрат.", `Ответ ${a*a+b}`, numberCheck(a*a+b)),
-    question(`${a}³ - ${b} = ?`, a*a*a-b, "Сначала куб.", `Ответ ${a*a*a-b}`, numberCheck(a*a*a-b)),
-    question(`${a}x - ${b} = ${a*x-b}`, x, `Добавь ${b} и раздели.`, `x=${x}`, numberCheck(x))
-  ];
-  return pick(set);
-}
-function gen9(){
-  const r1 = rnd(1,7), r2 = rnd(1,7), a = rnd(2,6), x = rnd(1,9), b = rnd(1,9);
-  const s = r1 + r2, p = r1*r2;
-  const set = [
-    question(`x² - ${s}x + ${p} = 0`, `${r1}, ${r2}`, "Ищи два числа: сумма и произведение.", `Корни: ${r1} и ${r2}`, rootPairCheck(r1, r2)),
-    question(`f(x)=${a}x+${r1}, f(${x})=?`, a*x+r1, "Подставь x в формулу.", `f(${x})=${a*x+r1}`, numberCheck(a*x+r1)),
-    question(`${a}² × ${a}³ = ?`, a**5, "При умножении степеней складывай показатели.", `${a}^5=${a**5}`, numberCheck(a**5)),
-    question(`x² - ${a*a} = 0`, `${a}, -${a}`, "Разность квадратов.", `x=±${a}`, rootPairCheck(a, -a)),
-    question(`(x + ${r1})(x + ${r2}) = ?`, `x² + ${s}x + ${p}`, "Раскрой скобки.", `Ответ: x² + ${s}x + ${p}`, textCheck(`x² + ${s}x + ${p}`)),
-    question(`√${a*a} + √${r1*r1} = ?`, a + r1, "Найди оба корня.", `Ответ ${a + r1}`, numberCheck(a+r1)),
-    question(`x² - ${a}x + ${b} = 0`, "любые корни", "Тут нужен подбор корней.", `Подбери корни, если возможно.`, v => normalize(v).length > 0),
-    question(`${a}³ - ${r1}² = ?`, a**3 - r1**2, "Сначала степени.", `Ответ ${a**3 - r1**2}`, numberCheck(a**3 - r1**2))
-  ];
-  return pick(set);
-}
-function gen10(){
-  const x = rnd(2,9), a = rnd(2,5), b = rnd(1,6);
-  const set = [
-    question(`2^x = ${2**x}`, x, "Пойми, какая степень нужна.", `x=${x}`, numberCheck(x)),
-    question(`log₂(${2**x}) = ?`, x, "Логарифм — обратная степень.", `Ответ ${x}`, numberCheck(x)),
-    question(`sin 30° = ?`, "1/2", "Запомни базовые значения.", `Ответ 1/2`, fracCheck(1,2)),
-    question(`cos 60° = ?`, "1/2", "Запомни базовые значения.", `Ответ 1/2`, fracCheck(1,2)),
-    question(`x + ${a} > ${a+x}`, `x > ${x}`, "Вычти число слева и справа.", `x > ${x}`, textCheck(`x > ${x}`)),
-    question(`${a}x - ${b} = ${a*x-b}`, x, "Перенеси и раздели.", `x=${x}`, numberCheck(x)),
-    question(`x² - ${2*x}x + ${x*x} = 0`, x, "Это полный квадрат.", `x=${x}`, numberCheck(x)),
-    question(`log₁₀(${10**b}) = ?`, b, "10 в степени равно аргументу.", `Ответ ${b}`, numberCheck(b))
-  ];
-  return pick(set);
+function question(q, answer, hint, explain, checker, category = "") {
+  return { q, answer, hint, explain, checker, category };
 }
 
-function buildQuestion(classNum){
-  if(classNum === 7) return gen7();
-  if(classNum === 8) return gen8();
-  if(classNum === 9) return gen9();
+function gen7() {
+  const a = rnd(2, 18), b = rnd(1, 18), c = rnd(2, 9), d = rnd(2, 9), x = rnd(2, 12), n = rnd(2, 9);
+  return pick([
+    question(`${a} + ${b} = ?`, a + b, "Сложи числа.", `Ответ: ${a + b}.`, numberCheck(a + b), "Сложение"),
+    question(`${a} - ${b} = ?`, a - b, "Вычти числа.", `Ответ: ${a - b}.`, numberCheck(a - b), "Вычитание"),
+    question(`${c} × ${d} = ?`, c * d, "Умножь.", `Ответ: ${c * d}.`, numberCheck(c * d), "Умножение"),
+    question(`${a} : ${c} = ?`, a / c, "Раздели.", `Ответ: ${a / c}.`, numberCheck(a / c), "Деление"),
+    question(`${x}x = ${x * n}`, n, "Раздели обе части на x-коэффициент.", `x = ${n}.`, numberCheck(n), "Уравнение"),
+    question(`x + ${b} = ${a}`, a - b, "Перенеси число.", `x = ${a - b}.`, numberCheck(a - b), "Уравнение"),
+    question(`x - ${b} = ${a}`, a + b, "Прибавь ${b}.", `x = ${a + b}.`, numberCheck(a + b), "Уравнение"),
+    question(`${c}x = ${c * x}`, x, "Раздели на ${c}.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${a}/${c} + ${b}/${c} = ?`, fracString(a + b, c), "Одинаковый знаменатель.", `Ответ: ${fracString(a + b, c)}.`, fracCheck(a + b, c), "Дроби"),
+    question(`${a}/${d} - ${b}/${d} = ?`, fracString(a - b, d), "Знаменатель не меняется.", `Ответ: ${fracString(a - b, d)}.`, fracCheck(a - b, d), "Дроби"),
+    question(`√${n * n} = ?`, n, "Полный квадрат.", `Ответ: ${n}.`, numberCheck(n), "Корень"),
+    question(`${n}² = ?`, n * n, "Возведи в квадрат.", `Ответ: ${n * n}.`, numberCheck(n * n), "Степени"),
+    question(`${n}³ = ?`, n ** 3, "Возведи в куб.", `Ответ: ${n ** 3}.`, numberCheck(n ** 3), "Степени"),
+    question(`2^${n} = ?`, 2 ** n, "Степень двойки.", `Ответ: ${2 ** n}.`, numberCheck(2 ** n), "Степени"),
+    question(`${a} + (${b} - ${c}) = ?`, a + (b - c), "Сначала скобки.", `Ответ: ${a + (b - c)}.`, numberCheck(a + (b - c)), "Порядок действий"),
+    question(`${a} × (${b} + ${c}) = ?`, a * (b + c), "Сначала скобки.", `Ответ: ${a * (b + c)}.`, numberCheck(a * (b + c)), "Порядок действий"),
+    question(`(${a} + ${b}) ÷ ${c} = ?`, (a + b) / c, "Сначала скобки.", `Ответ: ${(a + b) / c}.`, numberCheck((a + b) / c), "Порядок действий"),
+    question(`${a}x + ${b} = ${a * x + b}`, x, "Выдели x.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${a}x - ${b} = ${a * x - b}`, x, "Перенеси ${b}.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${a} + ${b} + ${c} = ?`, a + b + c, "Сложи по очереди.", `Ответ: ${a + b + c}.`, numberCheck(a + b + c), "Сложение")
+  ]);
+}
+
+function gen8() {
+  const a = rnd(2, 9), b = rnd(1, 9), c = rnd(2, 9), x = rnd(2, 11), n = rnd(2, 12), m = rnd(2, 9);
+  return pick([
+    question(`${a}x + ${b} = ${a * x + b}`, x, "Перенеси и раздели.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${a}x - ${b} = ${a * x - b}`, x, "Прибавь и раздели.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${a}(x + ${b}) = ${a * (x + b)}`, x, `Сначала раздели на ${a}.`, `x = ${x}.`, numberCheck(x), "Скобки"),
+    question(`${a}(x - ${b}) = ${a * (x - b)}`, x, `Сначала раздели на ${a}.`, `x = ${x}.`, numberCheck(x), "Скобки"),
+    question(`${a}x + ${b}x = ${a * x + b * x}`, x, "Собери подобные.", `x = ${x}.`, numberCheck(x), "Подобные"),
+    question(`${a}x - ${b}x = ${a * x - b * x}`, x, "Вынеси x.", `x = ${x}.`, numberCheck(x), "Подобные"),
+    question(`${a * x} / ${a} = ?`, x, "Сократи дробь.", `x = ${x}.`, numberCheck(x), "Упрощение"),
+    question(`${a}/${c} + ${b}/${c} = ?`, fracString(a + b, c), "Одинаковый знаменатель.", `Ответ: ${fracString(a + b, c)}.`, fracCheck(a + b, c), "Дроби"),
+    question(`${a}/${c} - ${b}/${c} = ?`, fracString(a - b, c), "Знаменатель не меняется.", `Ответ: ${fracString(a - b, c)}.`, fracCheck(a - b, c), "Дроби"),
+    question(`√${n * n * m * m} = ?`, n * m, "Корень из квадрата.", `Ответ: ${n * m}.`, numberCheck(n * m), "Корень"),
+    question(`${n}² + ${m} = ?`, n * n + m, "Сначала квадрат.", `Ответ: ${n * n + m}.`, numberCheck(n * n + m), "Степени"),
+    question(`${n}³ - ${m} = ?`, n ** 3 - m, "Сначала куб.", `Ответ: ${n ** 3 - m}.`, numberCheck(n ** 3 - m), "Степени"),
+    question(`2(${x} + ${b}) - ${2 * b} = ?`, 2 * x, "Раскрой скобки.", `Ответ: ${2 * x}.`, numberCheck(2 * x), "Скобки"),
+    question(`${a}(x + ${b}) + ${a} = ${a * (x + b) + a}`, x, "Сначала раздели на ${a}.", `x = ${x}.`, numberCheck(x), "Скобки"),
+    question(`(${a}x + ${b}) - ${b} = ?`, a * x, "Сократи одинаковое.", `Ответ: ${a * x}.`, numberCheck(a * x), "Упрощение"),
+    question(`${a}x = ${a * x}`, x, "Подели на ${a}.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${a * x} - ${a * x} = ?`, 0, "Одинаковые числа сокращаются.", `Ответ: 0.`, numberCheck(0), "Упрощение"),
+    question(`${a}x + ${b} = ${a * x + b}`, x, "Перенеси число.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${a}x - ${b} = ${a * x - b}`, x, "Перенеси число.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${a} + ${b} + ${c} = ?`, a + b + c, "Сложи по очереди.", `Ответ: ${a + b + c}.`, numberCheck(a + b + c), "Сложение")
+  ]);
+}
+
+function gen9() {
+  const r1 = rnd(1, 8), r2 = rnd(1, 8), a = rnd(2, 7), x = rnd(1, 9), b = rnd(1, 9), m = rnd(2, 6), n = rnd(2, 6);
+  const s = r1 + r2;
+  const p = r1 * r2;
+  return pick([
+    question(`x² - ${s}x + ${p} = 0`, `${r1}, ${r2}`, "Ищи сумму и произведение.", `Корни: ${r1} и ${r2}.`, rootPairCheck(r1, r2), "Квадратное уравнение"),
+    question(`x² - ${a * a} = 0`, `${a}, -${a}`, "Разность квадратов.", `Корни: ${a} и -${a}.`, rootPairCheck(a, -a), "Квадратное уравнение"),
+    question(`(x + ${r1})(x + ${r2}) = ?`, `x² + ${s}x + ${p}`, "Раскрой скобки.", `Ответ: x² + ${s}x + ${p}.`, textCheck(`x² + ${s}x + ${p}`), "Многочлены"),
+    question(`(x - ${r1})(x - ${r2}) = ?`, `x² - ${s}x + ${p}`, "Раскрой скобки.", `Ответ: x² - ${s}x + ${p}.`, textCheck(`x² - ${s}x + ${p}`), "Многочлены"),
+    question(`f(x) = ${a}x + ${r1}, f(${x}) = ?`, a * x + r1, "Подставь x.", `f(${x}) = ${a * x + r1}.`, numberCheck(a * x + r1), "Функция"),
+    question(`f(x) = x² - ${b}, f(${x}) = ?`, x * x - b, "Сначала подставь значение.", `f(${x}) = ${x * x - b}.`, numberCheck(x * x - b), "Функция"),
+    question(`${m}^${n} × ${m}^${r1} = ?`, m ** (n + r1), "Сложи показатели.", `Ответ: ${m ** (n + r1)}.`, numberCheck(m ** (n + r1)), "Степени"),
+    question(`(${m}^${n})^2 = ?`, m ** (2 * n), "Степень степени.", `Ответ: ${m ** (2 * n)}.`, numberCheck(m ** (2 * n)), "Степени"),
+    question(`${m}² - ${n}² = ?`, m * m - n * n, "Вычисли квадраты.", `Ответ: ${m * m - n * n}.`, numberCheck(m * m - n * n), "Степени"),
+    question(`√${m * m} + √${n * n} = ?`, m + n, "Каждый корень отдельно.", `Ответ: ${m + n}.`, numberCheck(m + n), "Корень"),
+    question(`x² - ${2 * x}x + ${x * x} = 0`, x, "Это полный квадрат.", `x = ${x}.`, numberCheck(x), "Квадратное уравнение"),
+    question(`${a}x + ${b} = ${a * x + b}`, x, "Вырази x.", `x = ${x}.`, numberCheck(x), "Линейное уравнение"),
+    question(`${a}x - ${b} = ${a * x - b}`, x, "Сначала прибавь ${b}.", `x = ${x}.`, numberCheck(x), "Линейное уравнение"),
+    question(`${a}x + ${b}x = ${a * x + b * x}`, x, "Собери подобные.", `x = ${x}.`, numberCheck(x), "Подобные"),
+    question(`(${a}x + ${b}) - ${b} = ?`, a * x, "Сократи одинаковое.", `Ответ: ${a * x}.`, numberCheck(a * x), "Упрощение"),
+    question(`${a}x² + ${b}x = ${a * x * x + b * x}`, x, "Подставь x.", `Ответ: ${a * x * x + b * x}.`, numberCheck(a * x * x + b * x), "Функция"),
+    question(`${a}³ - ${r1}² = ?`, a ** 3 - r1 ** 2, "Сначала степени.", `Ответ: ${a ** 3 - r1 ** 2}.`, numberCheck(a ** 3 - r1 ** 2), "Степени"),
+    question(`x² + ${s}x + ${p} = 0`, `-${r1}, -${r2}`, "Корни с минусом.", `Корни: -${r1} и -${r2}.`, rootPairCheck(-r1, -r2), "Квадратное уравнение"),
+    question(`${a}² + ${b}² = ?`, a * a + b * b, "Возведи каждое число в квадрат.", `Ответ: ${a * a + b * b}.`, numberCheck(a * a + b * b), "Степени"),
+    question(`${m}x - ${m * x} = 0`, x, "Вынеси общий множитель.", `x = ${x}.`, numberCheck(x), "Уравнение")
+  ]);
+}
+
+function gen10() {
+  const x = rnd(2, 9), a = rnd(2, 6), b = rnd(1, 6), c = rnd(2, 6), n = rnd(2, 7);
+  return pick([
+    question(`2^x = ${2 ** x}`, x, "Определи степень.", `x = ${x}.`, numberCheck(x), "Показательная"),
+    question(`log₂(${2 ** x}) = ?`, x, "Логарифм — обратная операция.", `Ответ: ${x}.`, numberCheck(x), "Логарифмы"),
+    question(`log₁₀(${10 ** b}) = ?`, b, "10 в степени.", `Ответ: ${b}.`, numberCheck(b), "Логарифмы"),
+    question(`sin 30° = ?`, "1/2", "Базовое значение.", `sin 30° = 1/2.`, fracCheck(1, 2), "Тригонометрия"),
+    question(`cos 60° = ?`, "1/2", "Базовое значение.", `cos 60° = 1/2.`, fracCheck(1, 2), "Тригонометрия"),
+    question(`tan 45° = ?`, 1, "Базовое значение.", `tan 45° = 1.`, numberCheck(1), "Тригонометрия"),
+    question(`${a}x - ${b} = ${a * x - b}`, x, "Перенеси и раздели.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${a}x + ${b} = ${a * x + b}`, x, "Вырази x.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`x + ${a} > ${x + a}`, `x > ${x}`, "Вычти ${a}.", `Ответ: x > ${x}.`, textCheck(`x > ${x}`), "Неравенство"),
+    question(`x - ${a} < ${x - a}`, `x < ${x}`, "Прибавь ${a}.", `Ответ: x < ${x}.`, textCheck(`x < ${x}`), "Неравенство"),
+    question(`x² - ${2 * x}x + ${x * x} = 0`, x, "Полный квадрат.", `x = ${x}.`, numberCheck(x), "Квадрат"),
+    question(`(${a}^${n})^2 = ?`, a ** (2 * n), "Степень степени.", `Ответ: ${a ** (2 * n)}.`, numberCheck(a ** (2 * n)), "Степени"),
+    question(`${a}^${n} × ${a}^${b} = ?`, a ** (n + b), "Сложи показатели.", `Ответ: ${a ** (n + b)}.`, numberCheck(a ** (n + b)), "Степени"),
+    question(`log${a}(${a ** x}) = ?`, x, "Логарифм и степень взаимно обратны.", `Ответ: ${x}.`, numberCheck(x), "Логарифмы"),
+    question(`2^${x - 1} × 2 = ?`, 2 ** x, "Степени складываются.", `Ответ: ${2 ** x}.`, numberCheck(2 ** x), "Показательная"),
+    question(`√${n * n} + log₂(2) = ?`, n + 1, "Корень и логарифм.", `Ответ: ${n + 1}.`, numberCheck(n + 1), "Смешанное"),
+    question(`${a * x} / ${a} = ?`, x, "Сократи дробь.", `Ответ: ${x}.`, numberCheck(x), "Сокращение"),
+    question(`${a}(x - ${b}) = ${a * (x - b)}`, x, "Сначала раздели на ${a}.", `x = ${x}.`, numberCheck(x), "Скобки"),
+    question(`${a}x + ${b} = ${a * x + b}`, x, "Перенеси число и раздели.", `x = ${x}.`, numberCheck(x), "Уравнение"),
+    question(`${c}x - ${c * x} = 0`, x, "Вынеси x.", `x = ${x}.`, numberCheck(x), "Уравнение")
+  ]);
+}
+
+function buildQuestion(classNum) {
+  if (classNum === 7) return gen7();
+  if (classNum === 8) return gen8();
+  if (classNum === 9) return gen9();
   return gen10();
 }
-function generateRun(classNum){
+
+function generateRun(classNum) {
   const arr = [];
   const used = new Set();
-  while(arr.length < state.questionLimit){
+  let guard = 0;
+  while (arr.length < state.questionLimit && guard < 1200) {
+    guard += 1;
     const q = buildQuestion(classNum);
-    if(used.has(q.q)) continue;
+    if (used.has(q.q)) continue;
     used.add(q.q);
     arr.push(q);
   }
-  return arr;
+  return shuffle(arr);
 }
 
-function safeSetText(id, text){
-  const el = $(id);
-  if(el) el.textContent = text;
-}
+function safeSetText(id, text) { const el = $(id); if (el) el.textContent = text; }
+function formatTime(sec) { const s = Math.max(0, Number(sec) || 0); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
 
-function renderClassCards(){
+function renderClassCards() {
   document.querySelectorAll("[data-class]").forEach(btn => {
     btn.classList.toggle("active", Number(btn.dataset.class) === state.classNum);
+    btn.disabled = state.phase === "quiz";
   });
   safeSetText("topicHint", TOPIC_HINTS[state.classNum]);
   safeSetText("classPill", CLASS_LABELS[state.classNum]);
+  safeSetText("selectedClassText", `Выбран: ${CLASS_LABELS[state.classNum]}`);
+  safeSetText("classNote", state.phase === "quiz" ? "Класс заблокирован во время попытки." : "Класс можно сменить до старта или после завершения.");
 }
 
-function startQuiz(){
-  state.questions = generateRun(state.classNum);
-  state.index = 0;
-  state.correct = 0;
-  state.wrong = 0;
-  state.points = 0;
-  safeSetText("startPanelTitle", "");
-  $("startPanel").classList.add("hidden");
-  $("quizPanel").classList.remove("hidden");
-  $("leaderboardPanel").classList.remove("hidden");
-  $("finishPanel").classList.add("hidden");
-  safeSetText("quizTitle", `${CLASS_LABELS[state.classNum]} — олимпиада`);
-  renderQuestion();
-  refreshLeaderboard().catch(()=>{});
-  addActivity("Начал олимпиаду.");
+function updateStats() {
+  safeSetText("currentScore", `Очки: ${state.points}`);
+  safeSetText("correctCount", `Верно: ${state.correct}`);
+  safeSetText("wrongCount", `Ошибки: ${state.wrong}`);
+  safeSetText("comboCount", `Комбо: ${state.combo}`);
+  safeSetText("hintCount", `Подсказки: ${state.hintsUsed}`);
+  safeSetText("timerText", `⏱ ${formatTime(state.timeLeft)}`);
+  safeSetText("accuracyText", `Точность: ${state.index ? Math.round((state.correct / state.index) * 100) : 0}%`);
 }
 
-function renderQuestion(){
+function stopTimer() { if (state.timerId) { clearInterval(state.timerId); state.timerId = null; } }
+function startTimer() {
+  stopTimer();
+  state.timeLeft = state.questionTimeLimit;
+  updateStats();
+  state.timerId = setInterval(() => {
+    if (state.phase !== "quiz") return;
+    state.timeLeft -= 1;
+    updateStats();
+    if (state.timeLeft <= 0) autoSkipQuestion();
+  }, 1000);
+}
+
+function pushHistory(item) { state.history.push(item); }
+
+function finalizeAnswer(ok, answerText, skipped = false) {
   const q = state.questions[state.index];
-  if(!q){ finishQuiz(); return; }
+  const elapsed = Math.max(0, Math.floor((Date.now() - state.currentShownAt) / 1000));
+  pushHistory({
+    question: q.q,
+    expected: q.answer,
+    userAnswer: answerText || "—",
+    ok,
+    skipped,
+    time: elapsed,
+    category: q.category || ""
+  });
+
+  if (ok) {
+    state.correct += 1;
+    state.combo += 1;
+    state.bestCombo = Math.max(state.bestCombo, state.combo);
+    const timeBonus = Math.max(0, 30 - elapsed);
+    const comboBonus = Math.min(40, state.combo * 4);
+    const totalGain = 100 + timeBonus + comboBonus;
+    state.points += totalGain;
+    safeSetText("result", `✅ Верно! +${totalGain} очков`);
+    safeSetText("explain", q.explain);
+  } else {
+    state.wrong += 1;
+    state.combo = 0;
+    safeSetText("result", skipped ? "⏭ Пропущено" : "❌ Неверно");
+    safeSetText("explain", `Правильный ответ: ${q.answer}. ${q.explain}`);
+  }
+
+  $("submitBtn").disabled = true;
+  $("skipBtn").disabled = true;
+  $("hintBtn").disabled = true;
+  $("nextBtn").classList.remove("hidden");
+  updateStats();
+}
+
+function checkAnswer() {
+  const q = state.questions[state.index];
+  const val = $("answer").value.trim();
+  if (!val) return;
+  stopTimer();
+  finalizeAnswer(q.checker(val), val, false);
+}
+function showHint() {
+  const q = state.questions[state.index];
+  if (!q) return;
+  state.hintsUsed += 1;
+  safeSetText("explain", q.hint);
+  updateStats();
+}
+function autoSkipQuestion() {
+  if (state.phase !== "quiz") return;
+  stopTimer();
+  finalizeAnswer(false, "", true);
+}
+function skipQuestion() { stopTimer(); finalizeAnswer(false, "", true); }
+function nextQuestion() { state.index += 1; if (state.index >= state.questions.length) finishQuiz(); else renderQuestion(); }
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  if (!q) return finishQuiz();
   safeSetText("qNum", `Вопрос ${state.index + 1} / ${state.questions.length}`);
   safeSetText("question", q.q);
   $("answer").value = "";
@@ -239,88 +351,22 @@ function renderQuestion(){
   $("nextBtn").classList.add("hidden");
   $("answer").focus();
   state.currentShownAt = Date.now();
-  safeSetText("currentScore", `Очки: ${state.points}`);
-  safeSetText("correctCount", `Верно: ${state.correct}`);
-  safeSetText("wrongCount", `Ошибки: ${state.wrong}`);
+  startTimer();
+  updateStats();
 }
 
-function checkAnswer(){
-  const q = state.questions[state.index];
-  const val = $("answer").value.trim();
-  if(!val) return;
-  const ok = q.checker(val);
-  const elapsed = Math.max(0, Math.floor((Date.now() - state.currentShownAt) / 1000));
-  if(ok){
-    state.correct += 1;
-    const bonus = Math.max(0, 40 - elapsed * 2);
-    const gain = 100 + bonus;
-    state.points += gain;
-    safeSetText("result", `✅ Верно! +${gain} очков`);
-    safeSetText("explain", q.explain);
-  }else{
-    state.wrong += 1;
-    safeSetText("result", `❌ Неверно`);
-    safeSetText("explain", `Правильный ответ: ${q.answer}. ${q.explain}`);
-  }
-  $("submitBtn").disabled = true;
-  $("skipBtn").disabled = true;
-  $("hintBtn").disabled = true;
-  $("nextBtn").classList.remove("hidden");
-  safeSetText("currentScore", `Очки: ${state.points}`);
-  safeSetText("correctCount", `Верно: ${state.correct}`);
-  safeSetText("wrongCount", `Ошибки: ${state.wrong}`);
-  addActivity(ok ? `Ответил верно на вопрос ${state.index + 1}.` : `Ответил неверно на вопрос ${state.index + 1}.`);
+function renderReview() {
+  const box = $("reviewList");
+  if (!box) return;
+  if (!state.history.length) { box.innerHTML = `<div class="lb-empty">Разбор появится после завершения.</div>`; return; }
+  box.innerHTML = state.history.map((h, i) => {
+    const cls = h.ok ? "ok" : (h.skipped ? "skip" : "bad");
+    const label = h.ok ? "Верно" : (h.skipped ? "Пропуск" : "Ошибка");
+    return `<div class="review-item ${cls}"><div class="review-index">#${i + 1}</div><div class="review-main"><b>${h.question}</b><small>${label}${h.category ? ` • ${h.category}` : ""} • ${h.time}s</small><span>Твой ответ: ${h.userAnswer}</span><span>Правильный ответ: ${h.expected}</span></div></div>`;
+  }).join("");
 }
 
-function showHint(){
-  const q = state.questions[state.index];
-  if(q) safeSetText("explain", q.hint);
-}
-
-function skipQuestion(){
-  state.wrong += 1;
-  const q = state.questions[state.index];
-  safeSetText("result", "⏭ Пропущено");
-  safeSetText("explain", `Ответ: ${q.answer}. ${q.explain}`);
-  $("submitBtn").disabled = true;
-  $("skipBtn").disabled = true;
-  $("hintBtn").disabled = true;
-  $("nextBtn").classList.remove("hidden");
-  safeSetText("currentScore", `Очки: ${state.points}`);
-  safeSetText("correctCount", `Верно: ${state.correct}`);
-  safeSetText("wrongCount", `Ошибки: ${state.wrong}`);
-  addActivity(`Пропустил вопрос ${state.index + 1}.`);
-}
-
-function nextQuestion(){
-  state.index += 1;
-  if(state.index >= state.questions.length){ finishQuiz(); return; }
-  renderQuestion();
-}
-
-function finishQuiz(){
-  $("quizPanel").classList.add("hidden");
-  $("finishPanel").classList.remove("hidden");
-  safeSetText("finishTitle", `${CLASS_LABELS[state.classNum]} завершён`);
-  const percent = Math.round((state.correct / state.questions.length) * 100);
-  safeSetText("finishText", `Точность: ${percent}% • Верно: ${state.correct} • Очки: ${state.points}`);
-  safeSetText("finishScore", `Итог: ${state.points}`);
-  saveLocalOlymp(state.classNum, state.points, percent);
-  saveFirestoreScore(state.classNum, state.points, percent).then(() => refreshLeaderboard()).catch(()=>{});
-  updateAccountKeys();
-  markStudyToday();
-  addActivity(`Завершил олимпиаду: ${state.points} очков, ${percent}%.`);
-}
-
-function saveLocalOlymp(classNum, points, percent){
-  const idx = String(classNum);
-  const prevPoints = Number(localStorage.getItem(`${user}_olymp_${idx}_points`) || "0");
-  const prevPercent = Number(localStorage.getItem(`${user}_olymp_${idx}`) || "0");
-  localStorage.setItem(`${user}_olymp_${idx}_points`, String(Math.max(prevPoints, points)));
-  localStorage.setItem(`${user}_olymp_${idx}`, String(Math.max(prevPercent, percent)));
-}
-
-async function saveFirestoreScore(classNum, points, percent){
+async function saveFirestoreScore(classNum, points, percent) {
   const ref = doc(db, "olympScores", user);
   const snap = await getDoc(ref);
   const old = snap.exists() ? snap.data() : {};
@@ -332,53 +378,39 @@ async function saveFirestoreScore(classNum, points, percent){
   const pct8 = classNum === 8 ? Math.max(Number(old.p8Percent || 0), percent) : Number(old.p8Percent || 0);
   const pct9 = classNum === 9 ? Math.max(Number(old.p9Percent || 0), percent) : Number(old.p9Percent || 0);
   const pct10 = classNum === 10 ? Math.max(Number(old.p10Percent || 0), percent) : Number(old.p10Percent || 0);
-
-  await setDoc(ref, {
-    nick,
-    avatar,
-    p7Points: p7,
-    p8Points: p8,
-    p9Points: p9,
-    p10Points: p10,
-    p7Percent: pct7,
-    p8Percent: pct8,
-    p9Percent: pct9,
-    p10Percent: pct10,
-    totalPoints: p7 + p8 + p9 + p10,
-    updatedAt: serverTimestamp()
-  }, { merge: true });
+  await setDoc(ref, { nick, avatar, p7Points: p7, p8Points: p8, p9Points: p9, p10Points: p10, p7Percent: pct7, p8Percent: pct8, p9Percent: pct9, p10Percent: pct10, totalPoints: p7 + p8 + p9 + p10, updatedAt: serverTimestamp() }, { merge: true });
 }
-
-function updateAccountKeys(){
+function saveLocalOlymp(classNum, points, percent) {
+  const k = String(classNum);
+  localStorage.setItem(`${user}_olymp_${k}_points`, String(Math.max(Number(localStorage.getItem(`${user}_olymp_${k}_points`) || 0), points)));
+  localStorage.setItem(`${user}_olymp_${k}`, String(Math.max(Number(localStorage.getItem(`${user}_olymp_${k}`) || 0), percent)));
+  localStorage.setItem(`${user}_olymp_best_${k}`, String(Math.max(Number(localStorage.getItem(`${user}_olymp_best_${k}`) || 0), points)));
+}
+function updateAccountKeys() {
   const cls = String(state.classNum);
   const percentKey = `${user}_olymp_${cls}`;
   const pointsKey = `${user}_olymp_${cls}_points`;
-  const prevPct = Number(localStorage.getItem(percentKey) || "0");
-  const prevPts = Number(localStorage.getItem(pointsKey) || "0");
-  localStorage.setItem(percentKey, String(Math.max(prevPct, Math.round((state.correct / state.questions.length) * 100))));
-  localStorage.setItem(pointsKey, String(Math.max(prevPts, state.points)));
+  localStorage.setItem(percentKey, String(Math.max(Number(localStorage.getItem(percentKey) || 0), Math.round((state.correct / state.questions.length) * 100))));
+  localStorage.setItem(pointsKey, String(Math.max(Number(localStorage.getItem(pointsKey) || 0), state.points)));
 }
-
-function addActivity(text){
+function addActivity(text) {
   const key = `profileActivity_${user}`;
   const arr = json(key) || [];
   arr.unshift({ text, time: new Date().toLocaleString("ru-RU") });
   localStorage.setItem(key, JSON.stringify(arr.slice(0, 8)));
 }
-
-function markStudyToday(){
+function markStudyToday() {
   const key = `studyMeta_${user}`;
   const meta = json(key) || { streak: 0, lastDate: "", weeklyCount: 0, weekKey: "" };
-  const today = new Date().toISOString().slice(0,10);
+  const today = new Date().toISOString().slice(0, 10);
   const d = new Date();
   const day = d.getDay() || 7;
   const mon = new Date(d);
   mon.setDate(d.getDate() - day + 1);
-  mon.setHours(0,0,0,0);
-  const weekKey = mon.toISOString().slice(0,10);
-
-  if(meta.lastDate !== today){
-    if(meta.weekKey !== weekKey){ meta.weekKey = weekKey; meta.weeklyCount = 0; }
+  mon.setHours(0, 0, 0, 0);
+  const weekKey = mon.toISOString().slice(0, 10);
+  if (meta.lastDate !== today) {
+    if (meta.weekKey !== weekKey) { meta.weekKey = weekKey; meta.weeklyCount = 0; }
     meta.streak = meta.lastDate ? (new Date(today) - new Date(meta.lastDate) === 86400000 ? (meta.streak || 0) + 1 : 1) : 1;
     meta.weeklyCount = (meta.weeklyCount || 0) + 1;
     meta.lastDate = today;
@@ -386,106 +418,98 @@ function markStudyToday(){
   }
 }
 
-async function refreshLeaderboard(){
+async function ensureOlympDoc() {
+  const ref = doc(db, "olympScores", user);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, { nick, avatar, p7Points: 0, p8Points: 0, p9Points: 0, p10Points: 0, p7Percent: 0, p8Percent: 0, p9Percent: 0, p10Percent: 0, totalPoints: 0, updatedAt: serverTimestamp() });
+  }
+}
+async function refreshLeaderboard() {
   const mode = state.leaderboardMode;
   const map = { total: "totalPoints", 7: "p7Points", 8: "p8Points", 9: "p9Points", 10: "p10Points" };
   const field = map[mode];
   safeSetText("lbTitle", mode === "total" ? "Топ общий" : `Топ ${CLASS_LABELS[mode]}`);
-
   const q = query(collection(db, "olympScores"), orderBy(field, "desc"), limit(10));
   const snap = await getDocs(q);
   const rows = [];
   snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
   renderLeaderboardRows(rows, mode);
 }
-
-function renderLeaderboardRows(rows, mode){
+function renderLeaderboardRows(rows, mode) {
   const box = $("leaderboardList");
-  if(!rows.length){
-    box.innerHTML = `<div class="lb-empty">Пока нет результатов. Стань первым.</div>`;
-    return;
-  }
-
+  if (!rows.length) { box.innerHTML = `<div class="lb-empty">Пока нет результатов. Стань первым.</div>`; return; }
   box.innerHTML = rows.map((r, i) => {
     const score = mode === "total" ? (r.totalPoints || 0) : (r[`p${mode}Points`] || 0);
-    const pct = mode === "total"
-      ? `${r.p7Percent || 0}% • ${r.p8Percent || 0}% • ${r.p9Percent || 0}% • ${r.p10Percent || 0}%`
-      : `${r[`p${mode}Percent`] || 0}%`;
-
-    return `<div class="lb-item ${r.id === user ? 'me' : ''}">
-      <div class="rank">#${i + 1}</div>
-      <img src="${r.avatar || avatar}" alt="avatar">
-      <div class="meta">
-        <b>${r.nick || r.id}</b>
-        <small>${pct}</small>
-      </div>
-      <div class="pts">${score}</div>
-    </div>`;
+    const pct = mode === "total" ? `${r.p7Percent || 0}% • ${r.p8Percent || 0}% • ${r.p9Percent || 0}% • ${r.p10Percent || 0}%` : `${r[`p${mode}Percent`] || 0}%`;
+    return `<div class="lb-item ${r.id === user ? 'me' : ''}"><div class="rank">#${i + 1}</div><img src="${r.avatar || avatar}" alt="avatar"><div class="meta"><b>${r.nick || r.id}</b><small>${pct}</small></div><div class="pts">${score}</div></div>`;
   }).join("");
 }
-
-function setLeaderboardMode(m){
-  state.leaderboardMode = m;
-  document.querySelectorAll("[data-lb]").forEach(b => b.classList.toggle("active", b.dataset.lb === m));
-  refreshLeaderboard().catch(()=>{});
+function setLeaderboardMode(m) { state.leaderboardMode = m; document.querySelectorAll("[data-lb]").forEach(b => b.classList.toggle("active", b.dataset.lb === m)); refreshLeaderboard().catch(() => {}); }
+function setClass(c) { if (state.phase === "quiz") return; state.classNum = c; renderClassCards(); }
+function addStartCards() { document.querySelectorAll("[data-class]").forEach(b => b.addEventListener("click", () => setClass(Number(b.dataset.class)))); }
+function setProfileView() { $("avatar").src = avatar; $("nick").textContent = nick; $("nickSmall").textContent = `@${user}`; }
+function goLobby() { location.href = "lobby.html"; }
+function goAccount() { location.href = "account.html"; }
+function toggleTheme() { document.body.classList.toggle("light"); localStorage.setItem("olympTheme", document.body.classList.contains("light") ? "light" : "dark"); }
+async function copySummary() {
+  const text = `${CLASS_LABELS[state.classNum]}: ${state.points} очков, ${Math.round((state.correct / state.questions.length) * 100)}% верных, комбо ${state.bestCombo}`;
+  try { await navigator.clipboard.writeText(text); safeSetText("copyState", "Скопировано"); } catch { safeSetText("copyState", "Не удалось скопировать"); }
 }
 
-function setClass(c){
-  state.classNum = c;
+function startQuiz() {
+  state.phase = "quiz";
+  state.questions = generateRun(state.classNum);
+  state.history = [];
+  state.index = 0;
+  state.correct = 0;
+  state.wrong = 0;
+  state.points = 0;
+  state.combo = 0;
+  state.bestCombo = 0;
+  state.hintsUsed = 0;
+  $("startPanel").classList.add("hidden");
+  $("quizPanel").classList.remove("hidden");
+  $("leaderboardPanel").classList.remove("hidden");
+  $("finishPanel").classList.add("hidden");
+  $("reviewPanel").classList.add("hidden");
+  safeSetText("quizTitle", `${CLASS_LABELS[state.classNum]} — олимпиада`);
   renderClassCards();
+  renderQuestion();
+  refreshLeaderboard().catch(() => {});
+  addActivity(`Начал олимпиаду (${CLASS_LABELS[state.classNum]}).`);
+}
+function finishQuiz() {
+  stopTimer();
+  state.phase = "finished";
+  $("quizPanel").classList.add("hidden");
+  $("finishPanel").classList.remove("hidden");
+  $("reviewPanel").classList.remove("hidden");
+  renderClassCards();
+  const percent = Math.round((state.correct / state.questions.length) * 100);
+  const avgTime = state.history.length ? Math.round(state.history.reduce((s, h) => s + h.time, 0) / state.history.length) : 0;
+  safeSetText("finishTitle", `${CLASS_LABELS[state.classNum]} завершён`);
+  safeSetText("finishText", `Точность: ${percent}% • Верно: ${state.correct} • Ошибки: ${state.wrong} • Среднее время: ${avgTime}s • Комбо: ${state.bestCombo}`);
+  safeSetText("finishScore", `Итог: ${state.points}`);
+  safeSetText("bestText", `Лучший результат: ${Math.max(Number(localStorage.getItem(`${user}_olymp_best_${state.classNum}`) || 0), state.points)}`);
+  saveLocalOlymp(state.classNum, state.points, percent);
+  saveFirestoreScore(state.classNum, state.points, percent).then(() => refreshLeaderboard()).catch(() => {});
+  updateAccountKeys();
+  markStudyToday();
+  renderReview();
+  addActivity(`Завершил олимпиаду: ${state.points} очков, ${percent}%.`);
 }
 
-function addStartCards(){
-  document.querySelectorAll("[data-class]").forEach(b => {
-    b.addEventListener("click", () => setClass(Number(b.dataset.class)));
-  });
-}
-
-function setProfileView(){
-  $("avatar").src = avatar;
-  $("nick").textContent = nick;
-  $("nickSmall").textContent = `@${user}`;
-}
-
-function goLobby(){ location.href = "lobby.html"; }
-function goAccount(){ location.href = "account.html"; }
-
-async function ensureOlympDoc(){
-  const ref = doc(db, "olympScores", user);
-  const snap = await getDoc(ref);
-  if(!snap.exists()){
-    await setDoc(ref, {
-      nick,
-      avatar,
-      p7Points: 0,
-      p8Points: 0,
-      p9Points: 0,
-      p10Points: 0,
-      p7Percent: 0,
-      p8Percent: 0,
-      p9Percent: 0,
-      p10Percent: 0,
-      totalPoints: 0,
-      updatedAt: serverTimestamp()
-    });
-  }
-}
-
-function toggleTheme(){
-  document.body.classList.toggle("light");
-  localStorage.setItem("olympTheme", document.body.classList.contains("light") ? "light" : "dark");
-}
-
-async function init(){
+async function init() {
   setProfileView();
   addStartCards();
   renderClassCards();
+  updateStats();
+  const theme = localStorage.getItem("olympTheme") || "dark";
+  if (theme === "light") document.body.classList.add("light");
   await ensureOlympDoc();
   await refreshLeaderboard();
   addActivity("Opened olymp page.");
-
-  const theme = localStorage.getItem("olympTheme") || "dark";
-  if(theme === "light") document.body.classList.add("light");
 }
 
 $("startBtn").addEventListener("click", startQuiz);
@@ -493,14 +517,9 @@ $("submitBtn").addEventListener("click", checkAnswer);
 $("hintBtn").addEventListener("click", showHint);
 $("skipBtn").addEventListener("click", skipQuestion);
 $("nextBtn").addEventListener("click", nextQuestion);
-$("restartBtn").addEventListener("click", () => {
-  $("finishPanel").classList.add("hidden");
-  $("startPanel").classList.remove("hidden");
-  $("quizPanel").classList.add("hidden");
-});
-$("answer").addEventListener("keydown", e => {
-  if(e.key === "Enter" && !$("submitBtn").disabled) checkAnswer();
-});
+$("restartBtn").addEventListener("click", () => { stopTimer(); state.phase = "idle"; $("finishPanel").classList.add("hidden"); $("quizPanel").classList.add("hidden"); $("reviewPanel").classList.add("hidden"); $("startPanel").classList.remove("hidden"); renderClassCards(); });
+$("copyBtn").addEventListener("click", copySummary);
+$("answer").addEventListener("keydown", e => { if (e.key === "Enter" && !$("submitBtn").disabled) checkAnswer(); });
 $("themeBtn").addEventListener("click", toggleTheme);
 $("lobbyBtn").addEventListener("click", goLobby);
 $("accountBtn").addEventListener("click", goAccount);
@@ -510,7 +529,7 @@ init().catch(err => {
   console.error(err);
   safeSetText("lbTitle", "Ошибка загрузки");
   const box = $("leaderboardList");
-  if(box) box.innerHTML = `<div class="lb-empty">Не удалось загрузить страницу.</div>`;
+  if (box) box.innerHTML = `<div class="lb-empty">Не удалось загрузить страницу.</div>`;
 });
 </script>
 </head>
@@ -519,7 +538,7 @@ init().catch(err => {
   <header class="hero">
     <div>
       <div class="brand">F-Mine Olympiad</div>
-      <div class="small" id="topicHint">Быстрые вычисления, дроби и уравнения</div>
+      <div class="small" id="topicHint">Счёт, дроби, простые уравнения и степени</div>
     </div>
     <div class="top-actions">
       <button class="ghost" id="themeBtn">🌓 Тема</button>
@@ -548,13 +567,15 @@ init().catch(err => {
 
         <div class="pill-row">
           <span class="pill" id="classPill">7 класс</span>
-          <span class="pill">12 вопросов</span>
+          <span class="pill">30 вопросов</span>
+          <span class="pill" id="selectedClassText">Выбран: 7 класс</span>
         </div>
+        <div class="small" id="classNote" style="margin-top:10px">Класс можно сменить до старта или после завершения.</div>
       </div>
 
       <div class="card start-card" id="startPanel">
         <div class="section-title">Готов к старту</div>
-        <p class="small">За правильный ответ ты получаешь очки. Чем быстрее отвечаешь, тем больше бонус.</p>
+        <p class="small">30 случайных примеров. Быстрые и правильные ответы дают больше очков.</p>
         <button id="startBtn">Начать олимпиаду</button>
       </div>
 
@@ -562,15 +583,26 @@ init().catch(err => {
         <div class="section-title" id="finishTitle">Завершено</div>
         <div class="finish-text" id="finishText"></div>
         <div class="big-points" id="finishScore"></div>
-        <button id="restartBtn">Играть ещё раз</button>
+        <div class="small" id="bestText">Лучший результат: 0</div>
+        <div class="pill-row" style="margin-top:12px"><span class="pill" id="copyState">Готово к копированию</span></div>
+        <div class="controls" style="margin-top:14px">
+          <button id="copyBtn" class="ghost">📋 Скопировать итог</button>
+          <button id="restartBtn">Играть ещё раз</button>
+        </div>
       </div>
     </section>
 
     <section class="content-panel">
       <div class="card quiz-card hidden" id="quizPanel">
         <div class="qtop">
-          <div id="qNum" class="qnum">Вопрос 1 / 12</div>
-          <div id="currentScore" class="qscore">Очки: 0</div>
+          <div>
+            <div id="qNum" class="qnum">Вопрос 1 / 30</div>
+            <div class="small" id="quizTitle">Олимпиада</div>
+          </div>
+          <div style="display:grid;gap:6px;text-align:right">
+            <div id="timerText" class="qscore">⏱ 0:45</div>
+            <div id="accuracyText" class="small">Точность: 0%</div>
+          </div>
         </div>
         <div class="bar"><div class="bar-fill" id="progressBar"></div></div>
         <div id="question" class="question">Текст вопроса</div>
@@ -584,8 +616,11 @@ init().catch(err => {
         <div class="result" id="result"></div>
         <div class="explain" id="explain"></div>
         <div class="stats-row">
+          <span id="currentScore">Очки: 0</span>
           <span id="correctCount">Верно: 0</span>
           <span id="wrongCount">Ошибки: 0</span>
+          <span id="comboCount">Комбо: 0</span>
+          <span id="hintCount">Подсказки: 0</span>
         </div>
       </div>
 
@@ -593,7 +628,7 @@ init().catch(err => {
         <div class="lb-header">
           <div>
             <div class="section-title" id="lbTitle">Топ общий</div>
-            <div class="small">Скорее проходи и поднимайся выше в таблице</div>
+            <div class="small">Проходи быстрее и поднимайся выше в таблице</div>
           </div>
           <div class="lb-tabs">
             <button data-lb="total" class="active">All</button>
@@ -605,124 +640,26 @@ init().catch(err => {
         </div>
         <div id="leaderboardList" class="leaderboard"></div>
       </div>
+
+      <div class="card hidden" id="reviewPanel">
+        <div class="section-title">Разбор попытки</div>
+        <div class="small" style="margin-bottom:12px">Здесь сохраняются все ответы, чтобы быстро увидеть ошибки.</div>
+        <div id="reviewList" class="review-list"></div>
+      </div>
     </section>
   </main>
 </div>
 
 <style>
-:root{
-  --bg1:#0f1221;
-  --bg2:#1d2442;
-  --card:rgba(255,255,255,.07);
-  --card2:rgba(255,255,255,.10);
-  --text:#ffffff;
-  --muted:rgba(255,255,255,.75);
-  --line:rgba(255,255,255,.12);
-  --accent:#6c63ff;
-  --accent2:#ffd84d;
-  --shadow:0 18px 45px rgba(0,0,0,.28);
-}
+:root{--bg1:#0f1221;--bg2:#1d2442;--card:rgba(255,255,255,.07);--card2:rgba(255,255,255,.10);--text:#fff;--muted:rgba(255,255,255,.75);--line:rgba(255,255,255,.12);--accent:#6c63ff;--accent2:#ffd84d;--shadow:0 18px 45px rgba(0,0,0,.28)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Segoe UI,Arial,sans-serif}
-body{
-  min-height:100vh;
-  color:var(--text);
-  background:
-    radial-gradient(circle at top left, rgba(108,99,255,.25), transparent 35%),
-    radial-gradient(circle at top right, rgba(255,216,77,.14), transparent 30%),
-    linear-gradient(135deg,var(--bg1),var(--bg2));
-  padding:16px;
-}
-body.light{
-  --bg1:#f7f7fb;
-  --bg2:#dfe5ff;
-  --card:rgba(255,255,255,.74);
-  --card2:rgba(255,255,255,.88);
-  --text:#171717;
-  --muted:rgba(0,0,0,.65);
-  --line:rgba(0,0,0,.08);
-  --shadow:0 18px 45px rgba(25,25,50,.12);
-}
-.page-shell{max-width:1280px;margin:0 auto}
-.hero{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.brand{font-size:30px;font-weight:900;letter-spacing:.3px;background:linear-gradient(90deg,var(--text),var(--accent2),var(--text));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.small{font-size:13px;line-height:1.45;color:var(--muted)}
-.top-actions{display:flex;gap:8px;flex-wrap:wrap}
-button{
-  border:none;border-radius:14px;padding:12px 15px;font-weight:800;cursor:pointer;
-  background:linear-gradient(135deg,var(--accent),#4a47d1);color:#fff;transition:.2s ease;box-shadow:var(--shadow)
-}
-button:hover{transform:translateY(-2px)}
-button:disabled{opacity:.55;cursor:not-allowed;transform:none}
-button.secondary{background:rgba(90,90,90,.9)}
-button.ghost{background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none}
-.layout{display:grid;grid-template-columns:360px 1fr;gap:16px}
-.card{
-  background:linear-gradient(180deg,var(--card),rgba(255,255,255,.04));
-  backdrop-filter:blur(16px);
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:18px;
-  box-shadow:var(--shadow)
-}
-.side-panel,.content-panel{display:grid;gap:16px}
-.profile{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-.profile img{width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--accent2)}
-.name{font-size:22px;font-weight:900}
-.classes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.classes button{width:100%;background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--line);box-shadow:none}
-.classes button.active{outline:2px solid var(--accent2);background:rgba(255,216,77,.14)}
-.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.pill{padding:9px 12px;border-radius:999px;background:rgba(0,0,0,.14);color:var(--text);font-size:12px;font-weight:800;border:1px solid var(--line)}
-.section-title{font-size:22px;font-weight:900;margin-bottom:8px}
-.hidden{display:none}
-.quiz-card{min-height:320px}
-.qtop{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
-.qnum,.qscore{font-weight:900}
-.bar{height:14px;background:rgba(0,0,0,.18);border-radius:999px;overflow:hidden;margin:12px 0 14px;border:1px solid var(--line)}
-.bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.35s}
-.question{font-size:26px;font-weight:900;line-height:1.35;margin:12px 0 12px}
-input[type="text"]{
-  width:100%;margin-top:8px;padding:15px 16px;border:none;border-radius:14px;
-  background:var(--card2);color:var(--text);outline:none;font-size:16px;border:1px solid var(--line)
-}
-.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.controls button{flex:1;min-width:140px}
-.result{margin-top:14px;font-size:18px;font-weight:900}
-.explain{margin-top:8px;color:var(--muted);line-height:1.5}
-.stats-row{display:flex;justify-content:space-between;gap:10px;margin-top:14px;font-weight:800;color:var(--muted)}
-.finish-text{margin:8px 0 6px;font-size:15px;color:var(--muted)}
-.big-points{font-size:38px;font-weight:1000;background:linear-gradient(90deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
-.lb-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-.lb-tabs{display:flex;gap:6px;flex-wrap:wrap}
-.lb-tabs button{padding:10px 12px;border-radius:12px}
-.lb-tabs button.active{outline:2px solid var(--accent2)}
-.leaderboard{display:grid;gap:10px}
-.lb-item{
-  display:grid;grid-template-columns:42px 42px 1fr auto;gap:10px;align-items:center;
-  padding:11px 12px;border-radius:16px;background:rgba(0,0,0,.14);border:1px solid var(--line)
-}
-.lb-item.me{background:linear-gradient(135deg,rgba(108,99,255,.25),rgba(255,216,77,.12))}
-.lb-item .rank{font-weight:1000}
-.lb-item img{width:42px;height:42px;border-radius:50%;object-fit:cover}
-.lb-item .meta b{display:block;font-weight:900}
-.lb-item .meta small{color:var(--muted)}
-.lb-item .pts{font-weight:1000}
-.lb-empty{padding:16px;border-radius:14px;background:rgba(0,0,0,.10);color:var(--muted)}
-@media(max-width:980px){
-  .layout{grid-template-columns:1fr}
-  .classes{grid-template-columns:repeat(4,1fr)}
-}
-@media(max-width:640px){
-  body{padding:12px}
-  .brand{font-size:24px}
-  .classes{grid-template-columns:repeat(2,1fr)}
-  .question{font-size:21px}
-  .controls button{flex:1 1 100%}
-  button{width:100%}
-  .top-actions{width:100%}
-  .top-actions button{flex:1}
-  .lb-item{grid-template-columns:36px 36px 1fr auto}
-}
+body{min-height:100vh;color:var(--text);background:radial-gradient(circle at top left, rgba(108,99,255,.25), transparent 35%),radial-gradient(circle at top right, rgba(255,216,77,.14), transparent 30%),linear-gradient(135deg,var(--bg1),var(--bg2));padding:16px}
+body.light{--bg1:#f7f7fb;--bg2:#dfe5ff;--card:rgba(255,255,255,.74);--card2:rgba(255,255,255,.88);--text:#171717;--muted:rgba(0,0,0,.65);--line:rgba(0,0,0,.08);--shadow:0 18px 45px rgba(25,25,50,.12)}
+.page-shell{max-width:1280px;margin:0 auto}.hero{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.brand{font-size:30px;font-weight:900;letter-spacing:.3px;background:linear-gradient(90deg,var(--text),var(--accent2),var(--text));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.small{font-size:13px;line-height:1.45;color:var(--muted)}.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+button{border:none;border-radius:14px;padding:12px 15px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,var(--accent),#4a47d1);color:#fff;transition:.2s ease;box-shadow:var(--shadow)}button:hover{transform:translateY(-2px)}button:disabled{opacity:.55;cursor:not-allowed;transform:none}button.secondary{background:rgba(90,90,90,.9)}button.ghost{background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none}
+.layout{display:grid;grid-template-columns:360px 1fr;gap:16px}.card{background:linear-gradient(180deg,var(--card),rgba(255,255,255,.04));backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow)}.side-panel,.content-panel{display:grid;gap:16px}.profile{display:flex;align-items:center;gap:14px;margin-bottom:16px}.profile img{width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--accent2)}.name{font-size:22px;font-weight:900}.classes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.classes button{width:100%;background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--line);box-shadow:none}.classes button.active{outline:2px solid var(--accent2);background:rgba(255,216,77,.14)}.classes button:disabled{opacity:.5;transform:none}.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.pill{padding:9px 12px;border-radius:999px;background:rgba(0,0,0,.14);color:var(--text);font-size:12px;font-weight:800;border:1px solid var(--line)}.section-title{font-size:22px;font-weight:900;margin-bottom:8px}.hidden{display:none}.quiz-card{min-height:360px}.qtop{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}.qnum,.qscore{font-weight:900}.bar{height:14px;background:rgba(0,0,0,.18);border-radius:999px;overflow:hidden;margin:12px 0 14px;border:1px solid var(--line)}.bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.35s}.question{font-size:26px;font-weight:900;line-height:1.35;margin:12px 0 12px}input[type="text"]{width:100%;margin-top:8px;padding:15px 16px;border:none;border-radius:14px;background:var(--card2);color:var(--text);outline:none;font-size:16px;border:1px solid var(--line)}.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.controls button{flex:1;min-width:140px}.result{margin-top:14px;font-size:18px;font-weight:900}.explain{margin-top:8px;color:var(--muted);line-height:1.5;min-height:24px}.stats-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;font-weight:800;color:var(--muted)}.finish-text{margin:8px 0 6px;font-size:15px;color:var(--muted)}.big-points{font-size:38px;font-weight:1000;background:linear-gradient(90deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}.lb-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}.lb-tabs{display:flex;gap:6px;flex-wrap:wrap}.lb-tabs button{padding:10px 12px;border-radius:12px}.lb-tabs button.active{outline:2px solid var(--accent2)}.leaderboard{display:grid;gap:10px}.lb-item{display:grid;grid-template-columns:42px 42px 1fr auto;gap:10px;align-items:center;padding:11px 12px;border-radius:16px;background:rgba(0,0,0,.14);border:1px solid var(--line)}.lb-item.me{background:linear-gradient(135deg,rgba(108,99,255,.25),rgba(255,216,77,.12))}.lb-item .rank{font-weight:1000}.lb-item img{width:42px;height:42px;border-radius:50%;object-fit:cover}.lb-item .meta b{display:block;font-weight:900}.lb-item .meta small{color:var(--muted)}.lb-item .pts{font-weight:1000}.lb-empty{padding:16px;border-radius:14px;background:rgba(0,0,0,.10);color:var(--muted)}.review-list{display:grid;gap:10px}.review-item{display:grid;grid-template-columns:50px 1fr;gap:12px;align-items:flex-start;padding:14px;border-radius:18px;border:1px solid var(--line);background:rgba(0,0,0,.10)}.review-item.ok{background:linear-gradient(135deg,rgba(60,200,120,.12),rgba(255,255,255,.04))}.review-item.bad{background:linear-gradient(135deg,rgba(240,80,80,.12),rgba(255,255,255,.04))}.review-item.skip{background:linear-gradient(135deg,rgba(255,216,77,.10),rgba(255,255,255,.04))}.review-index{font-weight:1000;font-size:18px}.review-main{display:grid;gap:4px}.review-main b{font-size:15px}.review-main small,.review-main span{color:var(--muted);font-size:13px;line-height:1.45}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.classes{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:640px){body{padding:12px}.brand{font-size:24px}.classes{grid-template-columns:repeat(2,1fr)}.question{font-size:21px}.controls button{flex:1 1 100%}button{width:100%}.top-actions{width:100%}.top-actions button{flex:1}.lb-item{grid-template-columns:36px 36px 1fr auto}.review-item{grid-template-columns:40px 1fr}}
 </style>
 </body>
 </html>
