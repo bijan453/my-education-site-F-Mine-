@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>История</title>
+<style>
+  :root{
+    --bg1:#1f1b2e;
+    --bg2:#45386d;
+    --card:rgba(255,255,255,0.07);
+    --card2:rgba(255,255,255,0.12);
+    --text:#ffffff;
+    --muted:#d6d2ff;
+    --accent:#c59b4d;
+    --accent2:#a87d2b;
+    --ok:#4caf50;
+    --bad:#f44336;
+    --warn:#ffcc00;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--text);
+    text-align:center;
+    min-height:100vh;
+    transition:0.4s;
+  }
+
+  body.light{
+    background:linear-gradient(135deg,#f7f2e8,#d8d2f0);
+    color:#222;
+  }
+
+  .container{
+    width:min(1100px,100%);
+    margin:0 auto;
+    padding:22px;
+    animation:fadeIn 0.7s ease;
+  }
+
+  @keyframes fadeIn{
+    from{opacity:0; transform:translateY(16px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  h1{
+    font-size:36px;
+    margin:10px 0 18px;
+  }
+
+  .user-info{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:14px;
+    flex-direction:column;
+  }
+
+  .user-info img{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:10px;
+    border:2px solid rgba(255,255,255,0.25);
+    box-shadow:0 0 20px rgba(197,155,77,0.25);
+  }
+
+  .user-info span{
+    font-weight:bold;
+    font-size:20px;
+  }
+
+  .toolbar{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+
+  .screen{
+    margin-top:14px;
+    padding:18px;
+    border-radius:18px;
+    background:var(--card);
+    backdrop-filter:blur(12px);
+    box-shadow:0 0 24px rgba(0,0,0,0.18);
+  }
+
+  .screen-title{
+    margin:4px 0 16px;
+    font-size:26px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:14px;
+    justify-items:stretch;
+    margin-top:10px;
+  }
+
+  .level-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:10px;
+    margin-top:12px;
+  }
+
+  .options-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:10px;
+    margin-top:14px;
+  }
+
+  button{
+    padding:14px 16px;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    background:var(--accent);
+    color:white;
+    font-size:16px;
+    transition:0.25s;
+    width:100%;
+    box-shadow:0 6px 16px rgba(0,0,0,0.18);
+  }
+
+  button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.25);
+    background:var(--accent2);
+  }
+
+  button.secondary{
+    background:#444;
+  }
+
+  button.secondary:hover{
+    background:#5a5a5a;
+  }
+
+  button.ghost{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.22);
+    box-shadow:none;
+  }
+
+  body.light button.secondary{
+    background:#666;
+  }
+
+  .card-btn{
+    text-align:left;
+    padding:16px;
+    white-space:normal;
+    line-height:1.35;
+  }
+
+  .card-btn strong{
+    display:block;
+    font-size:17px;
+    margin-bottom:4px;
+  }
+
+  .card-btn small{
+    display:block;
+    opacity:0.86;
+    font-size:13px;
+  }
+
+  .tiny{
+    display:block;
+    margin-top:6px;
+    font-size:12px;
+    opacity:0.85;
+  }
+
+  .task-box{
+    margin-top:8px;
+  }
+
+  .result{
+    margin-top:14px;
+    font-size:20px;
+    min-height:28px;
+  }
+
+  .solution{
+    margin-top:10px;
+    opacity:0.9;
+    min-height:24px;
+    line-height:1.45;
+  }
+
+  .progress{
+    margin-top:10px;
+    font-weight:bold;
+  }
+
+  .progress-bar{
+    width:min(820px,100%);
+    height:15px;
+    background:#444;
+    margin:12px auto 0;
+    border-radius:10px;
+    overflow:hidden;
+  }
+
+  #progressFill, #taskProgressFill{
+    width:0%;
+    height:100%;
+    background:var(--warn);
+    transition:0.35s;
+  }
+
+  .nav-row{
+    margin-top:18px;
+  }
+
+  .hidden{
+    display:none;
+  }
+
+  .hint-box{
+    margin-top:10px;
+    padding:12px 14px;
+    border-radius:12px;
+    background:var(--card2);
+    text-align:left;
+    line-height:1.45;
+    max-width:820px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  .option-btn{
+    text-align:left;
+    padding:14px 15px;
+    min-height:58px;
+    line-height:1.35;
+  }
+
+  .option-btn.selected{
+    outline:2px solid rgba(255,255,255,0.6);
+    filter:saturate(1.1);
+  }
+
+  .option-btn.correct{
+    background:var(--ok);
+  }
+
+  .option-btn.wrong{
+    background:var(--bad);
+  }
+
+  .footer{
+    margin-top:28px;
+    padding:10px;
+    font-size:15px;
+    opacity:0.8;
+  }
+
+  .footer.dark-glow p{
+    text-shadow:0 0 10px #c59b4d;
+  }
+
+  @media (max-width: 768px){
+    h1{ font-size:24px; }
+    .screen-title{ font-size:22px; }
+    .grid, .options-grid{ grid-template-columns:1fr; gap:12px; }
+    .level-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+    button{ width:100%; max-width:none; font-size:16px; }
+    .container{ padding:14px; }
+  }
+
+  @media (max-width: 480px){
+    .level-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+    .user-info img{ width:68px; height:68px; }
+    .user-info span{ font-size:18px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="user-info">
+      <img id="avatar" src="default-avatar.png" alt="avatar">
+      <span id="nickname">Пользователь</span>
+    </div>
+
+    <h1>📜 История</h1>
+
+    <div class="toolbar">
+      <button onclick="toggleTheme()">🌓 Сменить тему</button>
+      <button id="exitBtn" class="secondary" onclick="goLobby()">⬅ Выйти в лобби</button>
+    </div>
+
+    <div id="classScreen" class="screen">
+      <h2 class="screen-title">Выбери класс</h2>
+      <div id="classGrid" class="grid"></div>
+    </div>
+
+    <div id="topicScreen" class="screen hidden">
+      <h2 class="screen-title" id="topicScreenTitle">Выбери тему</h2>
+      <div id="topicGrid" class="grid"></div>
+      <div class="nav-row">
+        <button class="secondary" onclick="backToClasses()">⬅ Назад</button>
+      </div>
+    </div>
+
+    <div id="levelScreen" class="screen hidden">
+      <h2 class="screen-title" id="levelScreenTitle">Выбери уровень</h2>
+      <div class="progress" id="topicProgress"></div>
+      <div class="progress-bar"><div id="progressFill"></div></div>
+      <div id="levelGrid" class="level-grid"></div>
+      <div class="nav-row">
+        <button class="secondary" onclick="backToTopics()">⬅ Назад</button>
+      </div>
+    </div>
+
+    <div id="taskScreen" class="screen hidden">
+      <h2 class="screen-title" id="taskScreenTitle">Уровень</h2>
+      <div class="progress" id="taskProgress"></div>
+      <div class="progress-bar"><div id="taskProgressFill"></div></div>
+
+      <div class="task-box">
+        <p id="question" style="font-size:22px; line-height:1.45; margin:18px 0 8px;"></p>
+        <div id="optionsGrid" class="options-grid"></div>
+
+        <div class="controls" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:14px;">
+          <button onclick="checkAnswer()">Проверить</button>
+          <button onclick="showHint()">💡 Подсказка</button>
+          <button id="nextBtn" class="hidden" onclick="nextTask()">Далее</button>
+        </div>
+
+        <div class="result" id="result"></div>
+        <div class="solution" id="solution"></div>
+      </div>
+
+      <div class="nav-row">
+        <button class="secondary" onclick="backToLevels()">⬅ К уровням</button>
+      </div>
+    </div>
+
+    <div class="footer dark-glow">
+      <p>Учись по классам, темам и уровням. Каждый уровень содержит 10 случайных вопросов.</p>
+    </div>
+  </div>
+
+<script>
+  function goLobby(){
+    if(document.referrer){
+      window.history.back();
+    } else {
+      window.location.href = "lobby.html";
+    }
+  }
+
+  function toggleTheme(){
+    document.body.classList.toggle("light");
+    localStorage.setItem("historyTheme", document.body.classList.contains("light") ? "light" : "dark");
+  }
+
+  function loadTheme(){
+    const t = localStorage.getItem("historyTheme") || "dark";
+    if(t === "light") document.body.classList.add("light");
+  }
+
+  let user = { nickname:"Пользователь", avatar:"default-avatar.png" };
+  try{
+    const raw = localStorage.getItem("userData");
+    if(raw) user = Object.assign(user, JSON.parse(raw));
+  }catch(e){}
+
+  document.getElementById("nickname").innerText = user.nickname || "Пользователь";
+  document.getElementById("avatar").src = user.avatar || "default-avatar.png";
+
+  const CLASSES = {
+    "7": {
+      title: "7 класс",
+      topics: [
+        { id:"ancientWorld", title:"Древний мир", desc:"Египет, Месопотамия, Китай" },
+        { id:"ancientGreece", title:"Древняя Греция", desc:"Полисы, Олимпийские игры, философы" },
+        { id:"ancientRome", title:"Древний Рим", desc:"Республика, Сенат, легионы" },
+        { id:"mixed7", title:"Смешанные", desc:"Разные вопросы по древней истории" }
+      ]
+    },
+    "8": {
+      title: "8 класс",
+      topics: [
+        { id:"middleAges", title:"Средние века", desc:"Замки, рыцари, крестовые походы" },
+        { id:"oldRus", title:"Древняя Русь", desc:"Киевская Русь, князья, крещение" },
+        { id:"discoveries", title:"Великие открытия", desc:"Колумб, Магеллан, новые морские пути" },
+        { id:"mixed8", title:"Смешанные", desc:"Разные вопросы по эпохе" }
+      ]
+    },
+    "9": {
+      title: "9 класс",
+      topics: [
+        { id:"renaissanceReformation", title:"Возрождение и Реформация", desc:"Леонардо, Лютер, гуманизм" },
+        { id:"empireRussia", title:"Российская империя", desc:"Пётр I, Екатерина II, реформы" },
+        { id:"industrialNapoleonic", title:"Новое время", desc:"Промышленный переворот и Наполеон" },
+        { id:"mixed9", title:"Смешанные", desc:"Разные вопросы по Новому времени" }
+      ]
+    },
+    "10": {
+      title: "10 класс",
+      topics: [
+        { id:"ww1", title:"Первая мировая", desc:"1914 год, фронты, союзники" },
+        { id:"ww2", title:"Вторая мировая", desc:"1939–1945, главные события" },
+        { id:"coldWarModern", title:"Холодная война и современность", desc:"НАТО, космос, ООН" },
+        { id:"mixed10", title:"Смешанные", desc:"Разные вопросы по XX веку" }
+      ]
+    }
+  };
+
+  const TOPIC_GENERATORS = {
+    ancientWorld: genAncientWorld,
+    ancientGreece: genAncientGreece,
+    ancientRome: genAncientRome,
+    middleAges: genMiddleAges,
+    oldRus: genOldRus,
+    discoveries: genDiscoveries,
+    renaissanceReformation: genRenaissanceReformation,
+    empireRussia: genEmpireRussia,
+    industrialNapoleonic: genIndustrialNapoleonic,
+    ww1: genWW1,
+    ww2: genWW2,
+    coldWarModern: genColdWarModern,
+    mixed7: genMixed7,
+    mixed8: genMixed8,
+    mixed9: genMixed9,
+    mixed10: genMixed10
+  };
+
+  let currentClass = "7";
+  let currentTopic = null;
+  let currentLevel = 1;
+  let currentTasks = [];
+  let taskIndex = 0;
+  let selectedOption = null;
+  let optionButtons = [];
+  let checked = false;
+
+  function safeParseJSON(value, fallback){
+    try{
+      return JSON.parse(value);
+    }catch(e){
+      return fallback;
+    }
+  }
+
+  function progressKey(cls, topic){
+    const uid = localStorage.getItem("currentUser") || user.nickname || "guest";
+    return `historyProgress_${uid}_${cls}_${topic}`;
+  }
+
+  function getProgress(cls, topic){
+    return safeParseJSON(localStorage.getItem(progressKey(cls, topic)) || '{"highestCompleted":0}', { highestCompleted:0 });
+  }
+
+  function saveProgress(cls, topic, data){
+    localStorage.setItem(progressKey(cls, topic), JSON.stringify(data));
+  }
+
+  function unlockFor(cls, topic){
+    const p = getProgress(cls, topic);
+    return Math.min(16, (p.highestCompleted || 0) + 1);
+  }
+
+  function shuffle(arr){
+    const a = [...arr];
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function pick(arr){
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function unique(arr){
+    return [...new Set(arr)];
+  }
+
+  function makeChoiceQuestion(q, correct, pool, hint, solution){
+    const wrongs = unique(pool.filter(x => x !== correct));
+    const distractors = shuffle(wrongs).slice(0, 3);
+    const options = shuffle([correct, ...distractors]);
+    return {
+      q,
+      options,
+      answer: options.indexOf(correct),
+      hint,
+      solution
+    };
+  }
+
+  function generateTasksForLevel(cls, topic, level){
+    const gen = TOPIC_GENERATORS[topic];
+    const out = [];
+    for(let i = 0; i < 10; i++){
+      out.push(gen(level, i));
+    }
+    return out;
+  }
+
+  function getTopicMeta(cls, topicId){
+    return CLASSES[cls].topics.find(t => t.id === topicId);
+  }
+
+  function renderClasses(){
+    const grid = document.getElementById("classGrid");
+    grid.innerHTML = "";
+    Object.entries(CLASSES).forEach(([cls, data]) => {
+      const btn = document.createElement("button");
+      btn.className = "card-btn";
+      btn.innerHTML = `<strong>${data.title}</strong><small>Открой темы этого класса</small>`;
+      btn.onclick = () => selectClass(cls);
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderTopics(){
+    const grid = document.getElementById("topicGrid");
+    const data = CLASSES[currentClass];
+    document.getElementById("topicScreenTitle").textContent = data.title + " — выбери тему";
+    grid.innerHTML = "";
+
+    data.topics.forEach(topic => {
+      const p = getProgress(currentClass, topic.id);
+      const btn = document.createElement("button");
+      btn.className = "card-btn";
+      btn.innerHTML = `
+        <strong>${topic.title}</strong>
+        <small>${topic.desc}</small>
+        <span class="tiny">Уровень: ${Math.min(16, (p.highestCompleted || 0) + 1)}/16</span>
+      `;
+      btn.onclick = () => openTopic(topic.id);
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderLevels(){
+    const grid = document.getElementById("levelGrid");
+    const topic = getTopicMeta(currentClass, currentTopic);
+    const prog = getProgress(currentClass, currentTopic);
+    const unlocked = unlockFor(currentClass, currentTopic);
+
+    document.getElementById("levelScreenTitle").textContent = `${topic.title} — уровни`;
+    document.getElementById("topicProgress").textContent = `Прогресс темы: ${Math.min(16, prog.highestCompleted || 0)}/16`;
+    document.getElementById("progressFill").style.width = `${Math.min(100, ((prog.highestCompleted || 0) / 16) * 100)}%`;
+
+    grid.innerHTML = "";
+    for(let level = 1; level <= 16; level++){
+      const btn = document.createElement("button");
+      const done = level <= (prog.highestCompleted || 0);
+      const locked = level > unlocked;
+      btn.textContent = done ? `✓ ${level}` : `${level}`;
+      btn.style.opacity = locked ? "0.45" : "1";
+      btn.disabled = locked;
+      btn.onclick = () => startLevel(level);
+      grid.appendChild(btn);
+    }
+  }
+
+  function selectClass(cls){
+    currentClass = cls;
+    currentTopic = null;
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.remove("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+    renderTopics();
+  }
+
+  function backToClasses(){
+    document.getElementById("classScreen").classList.remove("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+  }
+
+  function openTopic(topicId){
+    currentTopic = topicId;
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.remove("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+    renderLevels();
+  }
+
+  function backToTopics(){
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.remove("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+  }
+
+  function backToLevels(){
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.remove("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+  }
+
+  function startLevel(level){
+    currentLevel = level;
+    currentTasks = generateTasksForLevel(currentClass, currentTopic, level);
+    taskIndex = 0;
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.remove("hidden");
+    document.getElementById("taskScreenTitle").textContent = `${getTopicMeta(currentClass, currentTopic).title} — уровень ${currentLevel}/16`;
+    loadTask();
+  }
+
+  function loadTask(){
+    const t = currentTasks[taskIndex];
+    selectedOption = null;
+    checked = false;
+    optionButtons = [];
+
+    document.getElementById("question").innerText = t.q;
+    document.getElementById("result").innerText = "";
+    document.getElementById("solution").innerText = "";
+    document.getElementById("nextBtn").classList.add("hidden");
+    document.getElementById("taskProgress").innerText = `Вопрос ${taskIndex + 1} / ${currentTasks.length}`;
+    document.getElementById("taskProgressFill").style.width = `${((taskIndex + 1) / currentTasks.length) * 100}%`;
+
+    const grid = document.getElementById("optionsGrid");
+    grid.innerHTML = "";
+
+    t.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn secondary";
+      btn.textContent = opt;
+      btn.onclick = () => selectOption(idx, btn);
+      optionButtons.push(btn);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectOption(index, button){
+    if(checked) return;
+    selectedOption = index;
+    optionButtons.forEach(b => b.classList.remove("selected"));
+    button.classList.add("selected");
+  }
+
+  function checkAnswer(){
+    if(checked) return;
+
+    const task = currentTasks[taskIndex];
+    if(selectedOption === null){
+      document.getElementById("result").innerText = "Выбери вариант ответа.";
+      return;
+    }
+
+    checked = true;
+    optionButtons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if(idx === task.answer){
+        btn.classList.add("correct");
+      }
+      if(idx === selectedOption && selectedOption !== task.answer){
+        btn.classList.add("wrong");
+      }
+    });
+
+    if(selectedOption === task.answer){
+      document.getElementById("result").innerText = "✅ Правильно!";
+      document.getElementById("solution").innerText = "";
+      document.getElementById("nextBtn").classList.remove("hidden");
+    } else {
+      document.getElementById("result").innerText = "❌ Неправильно";
+      document.getElementById("solution").innerText = "Правильный ответ: " + task.options[task.answer] + ". " + task.solution;
+      document.getElementById("nextBtn").classList.remove("hidden");
+    }
+  }
+
+  function showHint(){
+    const task = currentTasks[taskIndex];
+    document.getElementById("solution").innerText = task.hint;
+  }
+
+  function nextTask(){
+    if(taskIndex < currentTasks.length - 1){
+      taskIndex++;
+      loadTask();
+    } else {
+      completeLevel();
+    }
+  }
+
+  function completeLevel(){
+    const p = getProgress(currentClass, currentTopic);
+    if(currentLevel > (p.highestCompleted || 0)){
+      p.highestCompleted = currentLevel;
+    }
+    saveProgress(currentClass, currentTopic, p);
+    alert(`🎉 Уровень ${currentLevel} завершён!`);
+    renderLevels();
+    backToLevels();
+  }
+
+  document.getElementById("answer"); // no input on this page, kept only to avoid confusion from old structure
+
+  function genAncientWorld(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Какая река была главной в Древнем Египте?",
+        "Нил",
+        ["Нил","Тигр","Евфрат","Инд"],
+        "Вспомни Египет.",
+        "Египет возник вдоль Нила."
+      ),
+      () => makeChoiceQuestion(
+        "Как назывался правитель Древнего Египта?",
+        "Фараон",
+        ["Фараон","Царь","Император","Султан"],
+        "Это титул египетского правителя.",
+        "Правителя Египта называли фараоном."
+      ),
+      () => makeChoiceQuestion(
+        "Как называлась древнеегипетская письменность?",
+        "Иероглифы",
+        ["Иероглифы","Кириллица","Алфавит","Руны"],
+        "Это знаки в виде рисунков.",
+        "Древние египтяне писали иероглифами."
+      ),
+      () => makeChoiceQuestion(
+        "Какой материал использовали для письма в Древнем Египте?",
+        "Папирус",
+        ["Папирус","Пергамент","Бумага","Ткань"],
+        "Это делали из растения.",
+        "Папирус был очень важным письменным материалом."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genAncientGreece(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Где особенно развивалась демократия в Древней Греции?",
+        "Афины",
+        ["Афины","Спарта","Коринф","Фивы"],
+        "Это один из главных греческих полисов.",
+        "Афины стали символом древнегреческой демократии."
+      ),
+      () => makeChoiceQuestion(
+        "В честь какого бога проводились Олимпийские игры?",
+        "Зевса",
+        ["Зевса","Посейдона","Аида","Аполлона"],
+        "Это верховный бог греков.",
+        "Олимпийские игры проводились в честь Зевса."
+      ),
+      () => makeChoiceQuestion(
+        "Как называли воинов Спарты?",
+        "Спартанцы",
+        ["Спартанцы","Римляне","Фараоны","Персы"],
+        "Это связано с городом-государством Спарта.",
+        "Воинов Спарты называли спартанцами."
+      ),
+      () => makeChoiceQuestion(
+        "Кто был известным философом Древней Греции?",
+        "Сократ",
+        ["Сократ","Цезарь","Карл Великий","Колумб"],
+        "Он учил рассуждать и задавать вопросы.",
+        "Сократ — один из самых известных греческих философов."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genAncientRome(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как назывался совет в Древнем Риме?",
+        "Сенат",
+        ["Сенат","Дума","Парламент","Совет старейшин"],
+        "Это важный орган власти в Риме.",
+        "Сенат играл большую роль в Римской республике."
+      ),
+      () => makeChoiceQuestion(
+        "Как назывались римские воины?",
+        "Легионеры",
+        ["Легионеры","Самураи","Рыцари","Гусары"],
+        "Они служили в легионах.",
+        "Армия Рима состояла из легионеров."
+      ),
+      () => makeChoiceQuestion(
+        "Как назывался большой амфитеатр в Риме?",
+        "Колизей",
+        ["Колизей","Акрополь","Пантеон","Парфенон"],
+        "Это известное римское сооружение.",
+        "Колизей — символ Древнего Рима."
+      ),
+      () => makeChoiceQuestion(
+        "Кто был знаменитым римским полководцем и политиком?",
+        "Юлий Цезарь",
+        ["Юлий Цезарь","Зевс","Леонардо да Винчи","Наполеон"],
+        "Он связан с концом Римской республики.",
+        "Юлий Цезарь — один из самых известных римских деятелей."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genMiddleAges(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называли воина Средневековья на коне?",
+        "Рыцарь",
+        ["Рыцарь","Легионер","Казак","Мушкетёр"],
+        "Это бронированный всадник.",
+        "Рыцари были характерны для Средних веков."
+      ),
+      () => makeChoiceQuestion(
+        "Что строили для защиты в Средние века?",
+        "Замки",
+        ["Замки","Пирамиды","Виллы","Храмы"],
+        "Это укреплённые здания.",
+        "Замки защищали феодалов и их земли."
+      ),
+      () => makeChoiceQuestion(
+        "Как назывались военные походы европейцев на Восток?",
+        "Крестовые походы",
+        ["Крестовые походы","Морские походы","Торговые войны","Колонизация"],
+        "Они были связаны с религией.",
+        "Крестовые походы происходили в Средние века."
+      ),
+      () => makeChoiceQuestion(
+        "Как назывался порядок, когда земля принадлежала феодалу?",
+        "Феодализм",
+        ["Феодализм","Коммунизм","Капитализм","Республика"],
+        "Это общественный строй Средневековья.",
+        "Феодализм был основой средневекового общества."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genOldRus(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Какой город считался центром Киевской Руси?",
+        "Киев",
+        ["Киев","Новгород","Москва","Полоцк"],
+        "Это название столицы древнего государства.",
+        "Киев был главным городом Киевской Руси."
+      ),
+      () => makeChoiceQuestion(
+        "Как называли правителя на Руси?",
+        "Князь",
+        ["Князь","Фараон","Цезарь","Шах"],
+        "Это титул древнерусского правителя.",
+        "Правителя на Руси называли князем."
+      ),
+      () => makeChoiceQuestion(
+        "Кто крестил Русь?",
+        "Владимир",
+        ["Владимир","Иван Грозный","Пётр I","Ярослав"],
+        "Это имя связано с крещением Руси.",
+        "Крещение Руси связано с князем Владимиром."
+      ),
+      () => makeChoiceQuestion(
+        "Как назывался торговый и политический центр на севере Руси?",
+        "Новгород",
+        ["Новгород","Суздаль","Тверь","Рязань"],
+        "Это крупный древнерусский город.",
+        "Новгород был важным центром Древней Руси."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genDiscoveries(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Кто открыл путь в Америку для европейцев?",
+        "Христофор Колумб",
+        ["Христофор Колумб","Фернан Магеллан","Васко да Гама","Марко Поло"],
+        "Он достиг берегов Нового Света в 1492 году.",
+        "Колумб совершил плавание, связанное с открытием Америки для европейцев."
+      ),
+      () => makeChoiceQuestion(
+        "Кто первым совершил кругосветное плавание?",
+        "Экспедиция Магеллана",
+        ["Экспедиция Магеллана","Экспедиция Колумба","Экспедиция Кортеса","Экспедиция Лютера"],
+        "Это связано с именем Магеллана.",
+        "Кругосветное плавание завершила экспедиция Магеллана."
+      ),
+      () => makeChoiceQuestion(
+        "Какой путь искали европейцы в эпоху открытий?",
+        "Морской путь в Индию",
+        ["Морской путь в Индию","Путь в Японию","Путь в Америку","Путь в Африку"],
+        "Нужны были пряности и торговля.",
+        "Европейцы искали новые пути в Индию."
+      ),
+      () => makeChoiceQuestion(
+        "Какие земли для европейцев стали «Новым Светом»?",
+        "Америка",
+        ["Америка","Австралия","Антарктида","Сибирь"],
+        "Это континент, куда отправился Колумб.",
+        "Америку европейцы называли Новым Светом."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genRenaissanceReformation(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называлась эпоха Леонардо да Винчи и Микеланджело?",
+        "Возрождение",
+        ["Возрождение","Просвещение","Средневековье","Индустриализация"],
+        "Это эпоха расцвета искусства и науки.",
+        "Возрождение — период развития искусства, науки и гуманизма."
+      ),
+      () => makeChoiceQuestion(
+        "Кто выступил с идеями Реформации в Германии?",
+        "Мартин Лютер",
+        ["Мартин Лютер","Христофор Колумб","Юлий Цезарь","Пётр I"],
+        "Он выступил против продажи индульгенций.",
+        "Мартин Лютер стал одним из главных деятелей Реформации."
+      ),
+      () => makeChoiceQuestion(
+        "Как называлось движение за обновление церкви в XVI веке?",
+        "Реформация",
+        ["Реформация","Колонизация","Революция","Реконкиста"],
+        "Это связано с религиозными изменениями.",
+        "Реформация изменила западноевропейскую церковь."
+      ),
+      () => makeChoiceQuestion(
+        "Что стало важным изобретением эпохи Возрождения?",
+        "Книгопечатание",
+        ["Книгопечатание","Телефон","Паровой двигатель","Радио"],
+        "Это помогло быстро распространять книги.",
+        "Книгопечатание ускорило распространение знаний."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genEmpireRussia(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Кто основал Санкт-Петербург?",
+        "Пётр I",
+        ["Пётр I","Иван Грозный","Александр II","Николай II"],
+        "Это первый российский император.",
+        "Санкт-Петербург был основан Петром I."
+      ),
+      () => makeChoiceQuestion(
+        "Кто был известен как Екатерина Великая?",
+        "Екатерина II",
+        ["Екатерина II","Екатерина I","Анна Иоанновна","Мария Фёдоровна"],
+        "Это российская императрица XVIII века.",
+        "Екатерина II вошла в историю как Екатерина Великая."
+      ),
+      () => makeChoiceQuestion(
+        "Как назывались реформы Петра I по изменению страны?",
+        "Петровские реформы",
+        ["Петровские реформы","Судебники","Хартия","Указы Сената"],
+        "Они связаны с модернизацией России.",
+        "Пётр I провёл крупные реформы государства."
+      ),
+      () => makeChoiceQuestion(
+        "Как назывался новый российский город, построенный на Неве?",
+        "Санкт-Петербург",
+        ["Санкт-Петербург","Москва","Казань","Новгород"],
+        "Он стал новой столицей.",
+        "Санкт-Петербург был построен как новая столица."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genIndustrialNapoleonic(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Что стало символом промышленного переворота?",
+        "Паровой двигатель",
+        ["Паровой двигатель","Парусник","Колесо","Мельница"],
+        "Это связано с именем Джеймса Уатта.",
+        "Паровой двигатель стал важнейшим изобретением промышленного переворота."
+      ),
+      () => makeChoiceQuestion(
+        "Кто был французским императором?",
+        "Наполеон Бонапарт",
+        ["Наполеон Бонапарт","Людовик XIV","Пётр I","Гитлер"],
+        "Он правил Францией в начале XIX века.",
+        "Наполеон Бонапарт стал императором Франции."
+      ),
+      () => makeChoiceQuestion(
+        "Как называется знаменитое сражение Наполеона 1805 года?",
+        "Аустерлиц",
+        ["Аустерлиц","Ватерлоо","Бородино","Трафальгар"],
+        "Это его крупная победа.",
+        "Битва при Аустерлице — одна из главных побед Наполеона."
+      ),
+      () => makeChoiceQuestion(
+        "Как назывался свод законов Наполеона?",
+        "Кодекс Наполеона",
+        ["Кодекс Наполеона","Свод Юстиниана","Русская правда","Магна Карта"],
+        "Это связано с законами Франции.",
+        "Кодекс Наполеона упорядочил французское право."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genWW1(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "В каком году началась Первая мировая война?",
+        "1914",
+        ["1914","1918","1939","1905"],
+        "Это начало XX века.",
+        "Первая мировая война началась в 1914 году."
+      ),
+      () => makeChoiceQuestion(
+        "Какое событие стало поводом к началу войны?",
+        "Убийство эрцгерцога Франца Фердинанда",
+        ["Убийство эрцгерцога Франца Фердинанда","Подписание ООН","Падение Берлина","Крушение Рима"],
+        "Это произошло в Сараево.",
+        "Убийство Франца Фердинанда в Сараево стало поводом к войне."
+      ),
+      () => makeChoiceQuestion(
+        "Какая линия фронта была характерна для войны?",
+        "Окопы",
+        ["Окопы","Пирамиды","Замки","Рвы"],
+        "Солдаты долго находились в земле.",
+        "Окопная война стала символом Первой мировой."
+      ),
+      () => makeChoiceQuestion(
+        "Какие союзы участвовали в войне?",
+        "Антанта и Тройственный союз",
+        ["Антанта и Тройственный союз","ООН и НАТО","Рим и Карфаген","Восток и Запад"],
+        "Это два главных блока стран.",
+        "В Первой мировой воевали Антанта и Тройственный союз."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genWW2(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "В каком году началась Вторая мировая война?",
+        "1939",
+        ["1939","1941","1914","1945"],
+        "Это конец 1930-х годов.",
+        "Вторая мировая война началась в 1939 году."
+      ),
+      () => makeChoiceQuestion(
+        "Какое событие произошло в 1941 году в СССР?",
+        "Нападение Германии на СССР",
+        ["Нападение Германии на СССР","Подписание Версальского договора","Создание ЕС","Открытие Америки"],
+        "Это было летом.",
+        "В 1941 году Германия напала на СССР."
+      ),
+      () => makeChoiceQuestion(
+        "Какое сражение стало одним из ключевых в войне?",
+        "Сталинградская битва",
+        ["Сталинградская битва","Аустерлиц","Куликовская битва","Грюнвальдская битва"],
+        "Это очень известная битва на Волге.",
+        "Сталинградская битва стала переломным моментом войны."
+      ),
+      () => makeChoiceQuestion(
+        "Как называлась высадка союзников в Нормандии?",
+        "День Д",
+        ["День Д","Ночь длинных ножей","Блицкриг","Марш миллионов"],
+        "Это крупная операция 1944 года.",
+        "Высадка в Нормандии получила название День Д."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genColdWarModern(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как назывался военный союз западных стран?",
+        "НАТО",
+        ["НАТО","ООН","ЕС","КПСС"],
+        "Он был создан в 1949 году.",
+        "НАТО — важный союз периода Холодной войны."
+      ),
+      () => makeChoiceQuestion(
+        "Какой объект разделял Берлин?",
+        "Берлинская стена",
+        ["Берлинская стена","Китайская стена","Афинская стена","Римский вал"],
+        "Это был символ разделения мира.",
+        "Берлинская стена стала символом Холодной войны."
+      ),
+      () => makeChoiceQuestion(
+        "Что обозначает ООН?",
+        "Организация Объединённых Наций",
+        ["Организация Объединённых Наций","Объединённые Острова Нила","Общество Новых Народов","Орден Народной Надежды"],
+        "Это международная организация.",
+        "ООН — Организация Объединённых Наций."
+      ),
+      () => makeChoiceQuestion(
+        "Как называлось соперничество СССР и США в космосе и политике?",
+        "Холодная война",
+        ["Холодная война","Столетняя война","Крестовый поход","Тридцатилетняя война"],
+        "Вооружённого прямого столкновения почти не было.",
+        "Соперничество сверхдержав получило название Холодная война."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genMixed7(level, i){
+    return pick([genAncientWorld, genAncientGreece, genAncientRome])(level, i);
+  }
+
+  function genMixed8(level, i){
+    return pick([genMiddleAges, genOldRus, genDiscoveries])(level, i);
+  }
+
+  function genMixed9(level, i){
+    return pick([genRenaissanceReformation, genEmpireRussia, genIndustrialNapoleonic])(level, i);
+  }
+
+  function genMixed10(level, i){
+    return pick([genWW1, genWW2, genColdWarModern])(level, i);
+  }
+
+  function renderQuestionState(){
+    const task = currentTasks[taskIndex];
+    const grid = document.getElementById("optionsGrid");
+    grid.innerHTML = "";
+    optionButtons = [];
+
+    task.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn secondary";
+      btn.textContent = opt;
+      btn.onclick = () => selectOption(idx, btn);
+      optionButtons.push(btn);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectOption(index, button){
+    if(checked) return;
+    selectedOption = index;
+    optionButtons.forEach(b => b.classList.remove("selected"));
+    button.classList.add("selected");
+  }
+
+  function loadTask(){
+    const t = currentTasks[taskIndex];
+    selectedOption = null;
+    checked = false;
+
+    document.getElementById("question").innerText = t.q;
+    document.getElementById("result").innerText = "";
+    document.getElementById("solution").innerText = "";
+    document.getElementById("nextBtn").classList.add("hidden");
+    document.getElementById("taskProgress").innerText = `Вопрос ${taskIndex + 1} / ${currentTasks.length}`;
+    document.getElementById("taskProgressFill").style.width = `${((taskIndex + 1) / currentTasks.length) * 100}%`;
+    renderQuestionState();
+  }
+
+  function checkAnswer(){
+    if(checked) return;
+
+    const task = currentTasks[taskIndex];
+    if(selectedOption === null){
+      document.getElementById("result").innerText = "Выбери вариант ответа.";
+      return;
+    }
+
+    checked = true;
+    optionButtons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if(idx === task.answer) btn.classList.add("correct");
+      if(idx === selectedOption && selectedOption !== task.answer) btn.classList.add("wrong");
+    });
+
+    if(selectedOption === task.answer){
+      document.getElementById("result").innerText = "✅ Правильно!";
+      document.getElementById("solution").innerText = "";
+    } else {
+      document.getElementById("result").innerText = "❌ Неправильно";
+      document.getElementById("solution").innerText = "Правильный ответ: " + task.options[task.answer] + ". " + task.solution;
+    }
+
+    document.getElementById("nextBtn").classList.remove("hidden");
+  }
+
+  function showHint(){
+    const task = currentTasks[taskIndex];
+    document.getElementById("solution").innerText = task.hint;
+  }
+
+  function nextTask(){
+    if(taskIndex < currentTasks.length - 1){
+      taskIndex++;
+      loadTask();
+    } else {
+      completeLevel();
+    }
+  }
+
+  function completeLevel(){
+    const p = getProgress(currentClass, currentTopic);
+    if(currentLevel > (p.highestCompleted || 0)){
+      p.highestCompleted = currentLevel;
+    }
+    saveProgress(currentClass, currentTopic, p);
+    alert(`🎉 Уровень ${currentLevel} завершён!`);
+    renderLevels();
+    backToLevels();
+  }
+
+  function init(){
+    loadTheme();
+    renderClasses();
+  }
+
+  init();
+</script>
+</body>
+</html>

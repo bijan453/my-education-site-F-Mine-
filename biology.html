@@ -1,0 +1,1144 @@
+<!-- biology.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Биология</title>
+<style>
+  :root{
+    --bg1:#12231b;
+    --bg2:#355b42;
+    --card:rgba(255,255,255,0.07);
+    --card2:rgba(255,255,255,0.12);
+    --text:#ffffff;
+    --muted:#d6ffd8;
+    --accent:#5bbf7a;
+    --accent2:#3f9e60;
+    --ok:#4caf50;
+    --bad:#f44336;
+    --warn:#ffcc00;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--text);
+    text-align:center;
+    min-height:100vh;
+    transition:0.4s;
+  }
+  body.light{
+    background:linear-gradient(135deg,#f4fbf5,#d7eadb);
+    color:#222;
+  }
+  .container{
+    width:min(1100px,100%);
+    margin:0 auto;
+    padding:22px;
+    animation:fadeIn 0.7s ease;
+  }
+  @keyframes fadeIn{
+    from{opacity:0; transform:translateY(16px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  h1{ font-size:36px; margin:10px 0 18px; }
+  .user-info{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:14px;
+    flex-direction:column;
+  }
+  .user-info img{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:10px;
+    border:2px solid rgba(255,255,255,0.25);
+    box-shadow:0 0 20px rgba(91,191,122,0.25);
+  }
+  .user-info span{ font-weight:bold; font-size:20px; }
+  .toolbar{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+  .screen{
+    margin-top:14px;
+    padding:18px;
+    border-radius:18px;
+    background:var(--card);
+    backdrop-filter:blur(12px);
+    box-shadow:0 0 24px rgba(0,0,0,0.18);
+  }
+  .screen-title{ margin:4px 0 16px; font-size:26px; }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:14px;
+    margin-top:10px;
+  }
+  .level-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:10px;
+    margin-top:12px;
+  }
+  .options-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:10px;
+    margin-top:14px;
+  }
+  button{
+    padding:14px 16px;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    background:var(--accent);
+    color:white;
+    font-size:16px;
+    transition:0.25s;
+    width:100%;
+    box-shadow:0 6px 16px rgba(0,0,0,0.18);
+  }
+  button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.25);
+    background:var(--accent2);
+  }
+  button.secondary{ background:#444; }
+  button.secondary:hover{ background:#5a5a5a; }
+  body.light button.secondary{ background:#666; }
+  .card-btn{
+    text-align:left;
+    padding:16px;
+    white-space:normal;
+    line-height:1.35;
+  }
+  .card-btn strong{
+    display:block;
+    font-size:17px;
+    margin-bottom:4px;
+  }
+  .card-btn small{
+    display:block;
+    opacity:0.86;
+    font-size:13px;
+  }
+  .tiny{
+    display:block;
+    margin-top:6px;
+    font-size:12px;
+    opacity:0.85;
+  }
+  .task-box{ margin-top:8px; }
+  .result{
+    margin-top:14px;
+    font-size:20px;
+    min-height:28px;
+  }
+  .solution{
+    margin-top:10px;
+    opacity:0.9;
+    min-height:24px;
+    line-height:1.45;
+  }
+  .progress{
+    margin-top:10px;
+    font-weight:bold;
+  }
+  .progress-bar{
+    width:min(820px,100%);
+    height:15px;
+    background:#444;
+    margin:12px auto 0;
+    border-radius:10px;
+    overflow:hidden;
+  }
+  #progressFill, #taskProgressFill{
+    width:0%;
+    height:100%;
+    background:var(--warn);
+    transition:0.35s;
+  }
+  .nav-row{ margin-top:18px; }
+  .hidden{ display:none; }
+  .option-btn{
+    text-align:left;
+    padding:14px 15px;
+    min-height:58px;
+    line-height:1.35;
+    background:#3f5c46;
+  }
+  .option-btn.selected{
+    outline:2px solid rgba(255,255,255,0.6);
+  }
+  .option-btn.correct{ background:var(--ok); }
+  .option-btn.wrong{ background:var(--bad); }
+  .footer{
+    margin-top:28px;
+    padding:10px;
+    font-size:15px;
+    opacity:0.8;
+  }
+  .footer.dark-glow p{ text-shadow:0 0 10px #5bbf7a; }
+  @media (max-width: 768px){
+    h1{ font-size:24px; }
+    .screen-title{ font-size:22px; }
+    .grid, .options-grid{ grid-template-columns:1fr; gap:12px; }
+    .level-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+    button{ width:100%; font-size:16px; }
+    .container{ padding:14px; }
+  }
+  @media (max-width: 480px){
+    .level-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+    .user-info img{ width:68px; height:68px; }
+    .user-info span{ font-size:18px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="user-info">
+    <img id="avatar" src="default-avatar.png" alt="avatar">
+    <span id="nickname">Пользователь</span>
+  </div>
+
+  <h1>🌿 Биология</h1>
+
+  <div class="toolbar">
+    <button onclick="toggleTheme()">🌓 Сменить тему</button>
+    <button class="secondary" onclick="goLobby()">⬅ Выйти в лобби</button>
+  </div>
+
+  <div id="classScreen" class="screen">
+    <h2 class="screen-title">Выбери класс</h2>
+    <div id="classGrid" class="grid"></div>
+  </div>
+
+  <div id="topicScreen" class="screen hidden">
+    <h2 class="screen-title" id="topicScreenTitle">Выбери тему</h2>
+    <div id="topicGrid" class="grid"></div>
+    <div class="nav-row">
+      <button class="secondary" onclick="backToClasses()">⬅ Назад</button>
+    </div>
+  </div>
+
+  <div id="levelScreen" class="screen hidden">
+    <h2 class="screen-title" id="levelScreenTitle">Выбери уровень</h2>
+    <div class="progress" id="topicProgress"></div>
+    <div class="progress-bar"><div id="progressFill"></div></div>
+    <div id="levelGrid" class="level-grid"></div>
+    <div class="nav-row">
+      <button class="secondary" onclick="backToTopics()">⬅ Назад</button>
+    </div>
+  </div>
+
+  <div id="taskScreen" class="screen hidden">
+    <h2 class="screen-title" id="taskScreenTitle">Уровень</h2>
+    <div class="progress" id="taskProgress"></div>
+    <div class="progress-bar"><div id="taskProgressFill"></div></div>
+
+    <div class="task-box">
+      <p id="question" style="font-size:22px; line-height:1.45; margin:18px 0 8px;"></p>
+      <div id="optionsGrid" class="options-grid"></div>
+
+      <div class="controls" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:14px;">
+        <button onclick="checkAnswer()">Проверить</button>
+        <button onclick="showHint()">💡 Подсказка</button>
+        <button id="nextBtn" class="hidden" onclick="nextTask()">Далее</button>
+      </div>
+
+      <div class="result" id="result"></div>
+      <div class="solution" id="solution"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="secondary" onclick="backToLevels()">⬅ К уровням</button>
+    </div>
+  </div>
+
+  <div class="footer dark-glow">
+    <p>Учись по классам, темам и уровням. Каждый уровень содержит 10 случайных вопросов.</p>
+  </div>
+</div>
+
+<script>
+  function goLobby(){
+    if(document.referrer) window.history.back();
+    else window.location.href = "lobby.html";
+  }
+
+  function toggleTheme(){
+    document.body.classList.toggle("light");
+    localStorage.setItem("biologyTheme", document.body.classList.contains("light") ? "light" : "dark");
+  }
+
+  function loadTheme(){
+    const t = localStorage.getItem("biologyTheme") || "dark";
+    if(t === "light") document.body.classList.add("light");
+  }
+
+  let user = { nickname:"Пользователь", avatar:"default-avatar.png" };
+  try{
+    const raw = localStorage.getItem("userData");
+    if(raw) user = Object.assign(user, JSON.parse(raw));
+  }catch(e){}
+
+  document.getElementById("nickname").innerText = user.nickname || "Пользователь";
+  document.getElementById("avatar").src = user.avatar || "default-avatar.png";
+
+  const CLASSES = {
+    "7": {
+      title: "7 класс",
+      topics: [
+        { id:"cell", title:"Клетка", desc:"Органоиды и строение клетки" },
+        { id:"plants", title:"Растения", desc:"Части растения, фотосинтез" },
+        { id:"animals", title:"Животные", desc:"Группы животных и признаки" },
+        { id:"mixed7", title:"Смешанные", desc:"Разные вопросы по биологии" }
+      ]
+    },
+    "8": {
+      title: "8 класс",
+      topics: [
+        { id:"humanBody", title:"Человек", desc:"Органы и системы органов" },
+        { id:"digestion", title:"Пищеварение", desc:"Питание и обмен веществ" },
+        { id:"breathing", title:"Дыхание", desc:"Лёгкие и газообмен" },
+        { id:"mixed8", title:"Смешанные", desc:"Разные вопросы по человеку" }
+      ]
+    },
+    "9": {
+      title: "9 класс",
+      topics: [
+        { id:"genetics", title:"Генетика", desc:"Наследственность и признаки" },
+        { id:"ecology", title:"Экология", desc:"Экосистемы и цепи питания" },
+        { id:"evolution", title:"Эволюция", desc:"Развитие живого мира" },
+        { id:"mixed9", title:"Смешанные", desc:"Разные вопросы" }
+      ]
+    },
+    "10": {
+      title: "10 класс",
+      topics: [
+        { id:"microbiology", title:"Микробиология", desc:"Бактерии, грибы, вирусы" },
+        { id:"cellProcesses", title:"Процессы клетки", desc:"Деление, обмен веществ" },
+        { id:"biosphere", title:"Биосфера", desc:"Природные связи и круговорот" },
+        { id:"mixed10", title:"Смешанные", desc:"Разные вопросы" }
+      ]
+    }
+  };
+
+  const TOPIC_GENERATORS = {
+    cell: genCell,
+    plants: genPlants,
+    animals: genAnimals,
+    humanBody: genHumanBody,
+    digestion: genDigestion,
+    breathing: genBreathing,
+    genetics: genGenetics,
+    ecology: genEcology,
+    evolution: genEvolution,
+    microbiology: genMicrobiology,
+    cellProcesses: genCellProcesses,
+    biosphere: genBiosphere,
+    mixed7: genMixed7,
+    mixed8: genMixed8,
+    mixed9: genMixed9,
+    mixed10: genMixed10
+  };
+
+  let currentClass = "7";
+  let currentTopic = null;
+  let currentLevel = 1;
+  let currentTasks = [];
+  let taskIndex = 0;
+  let selectedOption = null;
+  let optionButtons = [];
+  let checked = false;
+
+  function safeParseJSON(value, fallback){
+    try{ return JSON.parse(value); }
+    catch(e){ return fallback; }
+  }
+
+  function progressKey(cls, topic){
+    const uid = localStorage.getItem("currentUser") || user.nickname || "guest";
+    return `biologyProgress_${uid}_${cls}_${topic}`;
+  }
+
+  function getProgress(cls, topic){
+    return safeParseJSON(localStorage.getItem(progressKey(cls, topic)) || '{"highestCompleted":0}', { highestCompleted:0 });
+  }
+
+  function saveProgress(cls, topic, data){
+    localStorage.setItem(progressKey(cls, topic), JSON.stringify(data));
+  }
+
+  function unlockFor(cls, topic){
+    const p = getProgress(cls, topic);
+    return Math.min(16, (p.highestCompleted || 0) + 1);
+  }
+
+  function shuffle(arr){
+    const a = [...arr];
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function pick(arr){
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function unique(arr){
+    return [...new Set(arr)];
+  }
+
+  function makeChoiceQuestion(q, correct, pool, hint, solution){
+    const wrongs = unique(pool.filter(x => x !== correct));
+    const distractors = shuffle(wrongs).slice(0, 3);
+    const options = shuffle([correct, ...distractors]);
+    return {
+      q,
+      options,
+      answer: options.indexOf(correct),
+      hint,
+      solution
+    };
+  }
+
+  function generateTasksForLevel(cls, topic, level){
+    const gen = TOPIC_GENERATORS[topic];
+    const out = [];
+    for(let i = 0; i < 10; i++) out.push(gen(level, i));
+    return out;
+  }
+
+  function getTopicMeta(cls, topicId){
+    return CLASSES[cls].topics.find(t => t.id === topicId);
+  }
+
+  function renderClasses(){
+    const grid = document.getElementById("classGrid");
+    grid.innerHTML = "";
+    Object.entries(CLASSES).forEach(([cls, data]) => {
+      const btn = document.createElement("button");
+      btn.className = "card-btn";
+      btn.innerHTML = `<strong>${data.title}</strong><small>Открой темы этого класса</small>`;
+      btn.onclick = () => selectClass(cls);
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderTopics(){
+    const grid = document.getElementById("topicGrid");
+    const data = CLASSES[currentClass];
+    document.getElementById("topicScreenTitle").textContent = data.title + " — выбери тему";
+    grid.innerHTML = "";
+    data.topics.forEach(topic => {
+      const p = getProgress(currentClass, topic.id);
+      const btn = document.createElement("button");
+      btn.className = "card-btn";
+      btn.innerHTML = `
+        <strong>${topic.title}</strong>
+        <small>${topic.desc}</small>
+        <span class="tiny">Уровень: ${Math.min(16, (p.highestCompleted || 0) + 1)}/16</span>
+      `;
+      btn.onclick = () => openTopic(topic.id);
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderLevels(){
+    const grid = document.getElementById("levelGrid");
+    const topic = getTopicMeta(currentClass, currentTopic);
+    const prog = getProgress(currentClass, currentTopic);
+    const unlocked = unlockFor(currentClass, currentTopic);
+
+    document.getElementById("levelScreenTitle").textContent = `${topic.title} — уровни`;
+    document.getElementById("topicProgress").textContent = `Прогресс темы: ${Math.min(16, prog.highestCompleted || 0)}/16`;
+    document.getElementById("progressFill").style.width = `${Math.min(100, ((prog.highestCompleted || 0) / 16) * 100)}%`;
+
+    grid.innerHTML = "";
+    for(let level = 1; level <= 16; level++){
+      const btn = document.createElement("button");
+      const done = level <= (prog.highestCompleted || 0);
+      const locked = level > unlocked;
+      btn.textContent = done ? `✓ ${level}` : `${level}`;
+      btn.style.opacity = locked ? "0.45" : "1";
+      btn.disabled = locked;
+      btn.onclick = () => startLevel(level);
+      grid.appendChild(btn);
+    }
+  }
+
+  function selectClass(cls){
+    currentClass = cls;
+    currentTopic = null;
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.remove("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+    renderTopics();
+  }
+
+  function backToClasses(){
+    document.getElementById("classScreen").classList.remove("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+  }
+
+  function openTopic(topicId){
+    currentTopic = topicId;
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.remove("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+    renderLevels();
+  }
+
+  function backToTopics(){
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.remove("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+  }
+
+  function backToLevels(){
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.remove("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+  }
+
+  function startLevel(level){
+    currentLevel = level;
+    currentTasks = generateTasksForLevel(currentClass, currentTopic, level);
+    taskIndex = 0;
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.remove("hidden");
+    document.getElementById("taskScreenTitle").textContent = `${getTopicMeta(currentClass, currentTopic).title} — уровень ${currentLevel}/16`;
+    loadTask();
+  }
+
+  function loadTask(){
+    const t = currentTasks[taskIndex];
+    selectedOption = null;
+    checked = false;
+    optionButtons = [];
+
+    document.getElementById("question").innerText = t.q;
+    document.getElementById("result").innerText = "";
+    document.getElementById("solution").innerText = "";
+    document.getElementById("nextBtn").classList.add("hidden");
+    document.getElementById("taskProgress").innerText = `Вопрос ${taskIndex + 1} / ${currentTasks.length}`;
+    document.getElementById("taskProgressFill").style.width = `${((taskIndex + 1) / currentTasks.length) * 100}%`;
+
+    const grid = document.getElementById("optionsGrid");
+    grid.innerHTML = "";
+    t.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn secondary";
+      btn.textContent = opt;
+      btn.onclick = () => selectOption(idx, btn);
+      optionButtons.push(btn);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectOption(index, button){
+    if(checked) return;
+    selectedOption = index;
+    optionButtons.forEach(b => b.classList.remove("selected"));
+    button.classList.add("selected");
+  }
+
+  function checkAnswer(){
+    if(checked) return;
+    const task = currentTasks[taskIndex];
+    if(selectedOption === null){
+      document.getElementById("result").innerText = "Выбери вариант ответа.";
+      return;
+    }
+
+    checked = true;
+    optionButtons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if(idx === task.answer) btn.classList.add("correct");
+      if(idx === selectedOption && selectedOption !== task.answer) btn.classList.add("wrong");
+    });
+
+    if(selectedOption === task.answer){
+      document.getElementById("result").innerText = "✅ Правильно!";
+      document.getElementById("solution").innerText = "";
+    } else {
+      document.getElementById("result").innerText = "❌ Неправильно";
+      document.getElementById("solution").innerText = "Правильный ответ: " + task.options[task.answer] + ". " + task.solution;
+    }
+    document.getElementById("nextBtn").classList.remove("hidden");
+  }
+
+  function showHint(){
+    const task = currentTasks[taskIndex];
+    document.getElementById("solution").innerText = task.hint;
+  }
+
+  function nextTask(){
+    if(taskIndex < currentTasks.length - 1) taskIndex++;
+    else return completeLevel();
+    loadTask();
+  }
+
+  function completeLevel(){
+    const p = getProgress(currentClass, currentTopic);
+    if(currentLevel > (p.highestCompleted || 0)) p.highestCompleted = currentLevel;
+    saveProgress(currentClass, currentTopic, p);
+    alert(`🎉 Уровень ${currentLevel} завершён!`);
+    renderLevels();
+    backToLevels();
+  }
+
+  function genCell(level, i){
+    const pool = [
+      "ядро","митохондрия","рибосомы","цитоплазма","клеточная мембрана","хлоропласт","вакуоль","клеточная стенка"
+    ];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Что хранит наследственную информацию в клетке?",
+        "Ядро",
+        pool,
+        "Это центр управления клеткой.",
+        "Ядро содержит ДНК и управляет процессами клетки."
+      ),
+      () => makeChoiceQuestion(
+        "Какой органоид отвечает за получение энергии?",
+        "Митохондрия",
+        pool,
+        "Его называют энергетической станцией клетки.",
+        "Митохондрии участвуют в получении энергии."
+      ),
+      () => makeChoiceQuestion(
+        "Где у растений происходит фотосинтез?",
+        "Хлоропласт",
+        pool,
+        "Этот органоид зелёного цвета.",
+        "Фотосинтез происходит в хлоропластах."
+      ),
+      () => makeChoiceQuestion(
+        "Какая часть клетки регулирует, что входит и выходит?",
+        "Клеточная мембрана",
+        pool,
+        "Она отделяет клетку от внешней среды.",
+        "Клеточная мембрана контролирует обмен веществ."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genPlants(level, i){
+    const pool = ["корень","стебель","лист","цветок","плод","семя","фотосинтез","испарение"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Какая часть растения закрепляет его в почве и поглощает воду?",
+        "Корень",
+        pool,
+        "Она находится под землёй.",
+        "Корень удерживает растение и всасывает воду."
+      ),
+      () => makeChoiceQuestion(
+        "Что образуется в результате фотосинтеза?",
+        "Органические вещества",
+        pool,
+        "Это связано с питанием растения.",
+        "В результате фотосинтеза растение создаёт органические вещества."
+      ),
+      () => makeChoiceQuestion(
+        "Какой орган растения чаще всего испаряет воду?",
+        "Лист",
+        pool,
+        "В нём есть устьица.",
+        "Лист помогает испарять воду и участвует в фотосинтезе."
+      ),
+      () => makeChoiceQuestion(
+        "Из чего развивается новое растение?",
+        "Семя",
+        pool,
+        "Это начальная стадия развития.",
+        "Из семени может вырасти новое растение."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genAnimals(level, i){
+    const pool = ["рыбы","земноводные","пресмыкающиеся","птицы","млекопитающие","насекомые","паукообразные","моллюски"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Какая группа животных вскармливает детёнышей молоком?",
+        "Млекопитающие",
+        pool,
+        "К этой группе относится человек.",
+        "Млекопитающие выкармливают детёнышей молоком."
+      ),
+      () => makeChoiceQuestion(
+        "Какая группа животных имеет перья?",
+        "Птицы",
+        pool,
+        "У них есть крылья и клюв.",
+        "Птицы покрыты перьями."
+      ),
+      () => makeChoiceQuestion(
+        "Какая группа животных обычно живёт и в воде, и на суше?",
+        "Земноводные",
+        pool,
+        "Лягушка — пример такой группы.",
+        "Земноводные связаны и с водой, и с сушей."
+      ),
+      () => makeChoiceQuestion(
+        "К какой группе относится бабочка?",
+        "Насекомые",
+        pool,
+        "У них 6 ног.",
+        "Бабочка относится к насекомым."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genHumanBody(level, i){
+    const pool = ["сердце","лёгкие","желудок","печень","мозг","кишечник","почки","кровь"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Какой орган перекачивает кровь?",
+        "Сердце",
+        pool,
+        "Он работает как насос.",
+        "Сердце перекачивает кровь по организму."
+      ),
+      () => makeChoiceQuestion(
+        "Какой орган отвечает за мышление и управление телом?",
+        "Мозг",
+        pool,
+        "Он находится в голове.",
+        "Мозг управляет многими функциями организма."
+      ),
+      () => makeChoiceQuestion(
+        "Какой орган нужен для дыхания?",
+        "Лёгкие",
+        pool,
+        "Их два.",
+        "Лёгкие участвуют в газообмене."
+      ),
+      () => makeChoiceQuestion(
+        "Какой орган участвует в переваривании пищи и накапливает питательные вещества?",
+        "Печень",
+        pool,
+        "Он находится справа под рёбрами.",
+        "Печень выполняет много важных функций, включая участие в обмене веществ."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genDigestion(level, i){
+    const pool = ["рот","пищевод","желудок","тонкий кишечник","толстый кишечник","печень","поджелудочная железа","ферменты"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Где начинается пищеварение?",
+        "Рот",
+        pool,
+        "Там работают зубы и слюна.",
+        "Пищеварение начинается в ротовой полости."
+      ),
+      () => makeChoiceQuestion(
+        "Что помогает расщеплять пищу?",
+        "Ферменты",
+        pool,
+        "Это особые вещества.",
+        "Ферменты ускоряют расщепление пищи."
+      ),
+      () => makeChoiceQuestion(
+        "Где происходит основное всасывание питательных веществ?",
+        "Тонкий кишечник",
+        pool,
+        "Он длинный и извилистый.",
+        "Основное всасывание питательных веществ идёт в тонком кишечнике."
+      ),
+      () => makeChoiceQuestion(
+        "Какой орган производит желчь?",
+        "Печень",
+        pool,
+        "Он связан с обменом веществ.",
+        "Печень вырабатывает желчь."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genBreathing(level, i){
+    const pool = ["трахея","бронхи","лёгкие","альвеолы","диафрагма","кислород","углекислый газ","газообмен"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называется процесс обмена кислорода и углекислого газа?",
+        "Газообмен",
+        pool,
+        "Он происходит в лёгких.",
+        "Газообмен — это обмен газов между организмом и средой."
+      ),
+      () => makeChoiceQuestion(
+        "Как называются маленькие пузырьки в лёгких, где идёт газообмен?",
+        "Альвеолы",
+        pool,
+        "Их очень много.",
+        "Газообмен происходит в альвеолах."
+      ),
+      () => makeChoiceQuestion(
+        "Какая мышца помогает дыханию?",
+        "Диафрагма",
+        pool,
+        "Она расположена под лёгкими.",
+        "Диафрагма участвует в дыхательных движениях."
+      ),
+      () => makeChoiceQuestion(
+        "Какой газ нужен организму для дыхания?",
+        "Кислород",
+        pool,
+        "Он поступает из воздуха.",
+        "Организм использует кислород для дыхания."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genGenetics(level, i){
+    const pool = ["ген","аллель","признак","хромосома","наследственность","ДНК","рецессивный","доминирующий"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называется участок ДНК, отвечающий за признак?",
+        "Ген",
+        pool,
+        "Это единица наследственности.",
+        "Ген несёт информацию о признаке."
+      ),
+      () => makeChoiceQuestion(
+        "Как называется передача признаков от родителей к детям?",
+        "Наследственность",
+        pool,
+        "Это связано с потомством.",
+        "Наследственность — передача признаков."
+      ),
+      () => makeChoiceQuestion(
+        "Какой признак может быть доминирующим?",
+        "Проявляющийся при наличии хотя бы одного соответствующего аллеля",
+        [
+          "Проявляющийся при наличии хотя бы одного соответствующего аллеля",
+          "Всегда скрытый признак",
+          "Признак только у растений",
+          "Признак без ДНК"
+        ],
+        "Он обычно проявляется чаще.",
+        "Доминирующий признак проявляется при наличии хотя бы одного доминантного аллеля."
+      ),
+      () => makeChoiceQuestion(
+        "Что хранит наследственную информацию?",
+        "ДНК",
+        pool,
+        "Это молекула наследственности.",
+        "ДНК хранит наследственную информацию."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genEcology(level, i){
+    const pool = ["экосистема","цепь питания","производители","потребители","разрушители","среда обитания","биосфера","популяция"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называется система живых организмов и среды их обитания?",
+        "Экосистема",
+        pool,
+        "Это природное сообщество.",
+        "Экосистема включает живые организмы и неживую среду."
+      ),
+      () => makeChoiceQuestion(
+        "Кто создаёт органические вещества в экосистеме?",
+        "Производители",
+        pool,
+        "Чаще всего это растения.",
+        "Производители создают органические вещества."
+      ),
+      () => makeChoiceQuestion(
+        "Как называется последовательность питания организмов?",
+        "Цепь питания",
+        pool,
+        "Она показывает, кто кого ест.",
+        "Цепь питания показывает передачу энергии."
+      ),
+      () => makeChoiceQuestion(
+        "Кто разлагает мёртвые остатки?",
+        "Разрушители",
+        pool,
+        "Это бактерии и грибы.",
+        "Разрушители разлагают органические остатки."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genEvolution(level, i){
+    const pool = ["естественный отбор","изменчивость","наследственность","адаптация","видообразование","борьба за существование","эволюция","приспособленность"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называется развитие живых организмов во времени?",
+        "Эволюция",
+        pool,
+        "Это длительный исторический процесс.",
+        "Эволюция — историческое развитие живой природы."
+      ),
+      () => makeChoiceQuestion(
+        "Кто связан с теорией естественного отбора?",
+        "Чарльз Дарвин",
+        [
+          "Чарльз Дарвин",
+          "Исаак Ньютон",
+          "Михаил Ломоносов",
+          "Александр Попов"
+        ],
+        "Он изучал виды и приспособления.",
+        "Дарвин предложил идею естественного отбора."
+      ),
+      () => makeChoiceQuestion(
+        "Как называется приспособление организма к условиям среды?",
+        "Адаптация",
+        pool,
+        "Это полезное изменение для выживания.",
+        "Адаптация помогает выживать в среде."
+      ),
+      () => makeChoiceQuestion(
+        "Что помогает выживанию сильнее приспособленных особей?",
+        "Естественный отбор",
+        pool,
+        "Это один из главных механизмов эволюции.",
+        "Естественный отбор сохраняет лучше приспособленных."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genMicrobiology(level, i){
+    const pool = ["бактерии","вирусы","грибы","микроскоп","антибиотики","споры","клеточная стенка","плесень"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Какие организмы не имеют клеточного строения?",
+        "Вирусы",
+        pool,
+        "Они очень маленькие.",
+        "Вирусы не имеют клеточного строения."
+      ),
+      () => makeChoiceQuestion(
+        "Что используют для изучения микроорганизмов?",
+        "Микроскоп",
+        pool,
+        "Он увеличивает изображение.",
+        "Микроскоп нужен для наблюдения за микроорганизмами."
+      ),
+      () => makeChoiceQuestion(
+        "Что помогает бороться с бактериальными инфекциями?",
+        "Антибиотики",
+        pool,
+        "Это лекарства, но не от всех болезней.",
+        "Антибиотики действуют против бактерий."
+      ),
+      () => makeChoiceQuestion(
+        "Что может быть примером гриба?",
+        "Плесень",
+        pool,
+        "Она часто появляется на хлебе.",
+        "Плесень относится к грибам."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genCellProcesses(level, i){
+    const pool = ["митоз","обмен веществ","деление клетки","рост","синтез белка","энергия","ДНК","наследственность"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называется деление соматической клетки?",
+        "Митоз",
+        pool,
+        "Это обычное деление клетки.",
+        "Митоз — способ деления клетки."
+      ),
+      () => makeChoiceQuestion(
+        "Как называется совокупность всех реакций в организме?",
+        "Обмен веществ",
+        pool,
+        "Это питание, дыхание и другие процессы.",
+        "Обмен веществ — важнейший процесс в клетке и организме."
+      ),
+      () => makeChoiceQuestion(
+        "Что происходит в клетке при синтезе белка?",
+        "Образование белков",
+        [
+          "Образование белков",
+          "Только разрушение клеток",
+          "Испарение воды",
+          "Увеличение температуры"
+        ],
+        "Это создание сложных молекул.",
+        "При синтезе белка клетка создаёт белковые молекулы."
+      ),
+      () => makeChoiceQuestion(
+        "Что нужно клетке для получения энергии?",
+        "Органические вещества",
+        pool,
+        "Они расщепляются в процессе дыхания.",
+        "Клетка получает энергию из органических веществ."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genBiosphere(level, i){
+    const pool = ["биосфера","круговорот веществ","атмосфера","гидросфера","литосфера","экология","экосистема","среда"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называется оболочка Земли, где существует жизнь?",
+        "Биосфера",
+        pool,
+        "Это область распространения жизни.",
+        "Биосфера — часть Земли, где существует жизнь."
+      ),
+      () => makeChoiceQuestion(
+        "Как называется перемещение веществ в природе?",
+        "Круговорот веществ",
+        pool,
+        "Вода, углерод и другие вещества постоянно переходят из одной формы в другую.",
+        "Круговорот веществ поддерживает жизнь на Земле."
+      ),
+      () => makeChoiceQuestion(
+        "Какая оболочка Земли состоит из воздуха?",
+        "Атмосфера",
+        pool,
+        "Она окружает планету.",
+        "Атмосфера — воздушная оболочка Земли."
+      ),
+      () => makeChoiceQuestion(
+        "Какая оболочка Земли включает все воды?",
+        "Гидросфера",
+        pool,
+        "Это связано с водой.",
+        "Гидросфера — водная оболочка Земли."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genMixed7(level, i){ return pick([genCell, genPlants, genAnimals])(level, i); }
+  function genMixed8(level, i){ return pick([genHumanBody, genDigestion, genBreathing])(level, i); }
+  function genMixed9(level, i){ return pick([genGenetics, genEcology, genEvolution])(level, i); }
+  function genMixed10(level, i){ return pick([genMicrobiology, genCellProcesses, genBiosphere])(level, i); }
+
+  function renderQuestionState(){
+    const task = currentTasks[taskIndex];
+    const grid = document.getElementById("optionsGrid");
+    grid.innerHTML = "";
+    optionButtons = [];
+    task.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn secondary";
+      btn.textContent = opt;
+      btn.onclick = () => selectOption(idx, btn);
+      optionButtons.push(btn);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectOption(index, button){
+    if(checked) return;
+    selectedOption = index;
+    optionButtons.forEach(b => b.classList.remove("selected"));
+    button.classList.add("selected");
+  }
+
+  function loadTask(){
+    const t = currentTasks[taskIndex];
+    selectedOption = null;
+    checked = false;
+
+    document.getElementById("question").innerText = t.q;
+    document.getElementById("result").innerText = "";
+    document.getElementById("solution").innerText = "";
+    document.getElementById("nextBtn").classList.add("hidden");
+    document.getElementById("taskProgress").innerText = `Вопрос ${taskIndex + 1} / ${currentTasks.length}`;
+    document.getElementById("taskProgressFill").style.width = `${((taskIndex + 1) / currentTasks.length) * 100}%`;
+    renderQuestionState();
+  }
+
+  function checkAnswer(){
+    if(checked) return;
+    const task = currentTasks[taskIndex];
+    if(selectedOption === null){
+      document.getElementById("result").innerText = "Выбери вариант ответа.";
+      return;
+    }
+
+    checked = true;
+    optionButtons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if(idx === task.answer) btn.classList.add("correct");
+      if(idx === selectedOption && selectedOption !== task.answer) btn.classList.add("wrong");
+    });
+
+    if(selectedOption === task.answer){
+      document.getElementById("result").innerText = "✅ Правильно!";
+      document.getElementById("solution").innerText = "";
+    } else {
+      document.getElementById("result").innerText = "❌ Неправильно";
+      document.getElementById("solution").innerText = "Правильный ответ: " + task.options[task.answer] + ". " + task.solution;
+    }
+    document.getElementById("nextBtn").classList.remove("hidden");
+  }
+
+  function showHint(){
+    document.getElementById("solution").innerText = currentTasks[taskIndex].hint;
+  }
+
+  function nextTask(){
+    if(taskIndex < currentTasks.length - 1){
+      taskIndex++;
+      loadTask();
+    } else {
+      completeLevel();
+    }
+  }
+
+  function completeLevel(){
+    const p = getProgress(currentClass, currentTopic);
+    if(currentLevel > (p.highestCompleted || 0)) p.highestCompleted = currentLevel;
+    saveProgress(currentClass, currentTopic, p);
+    alert(`🎉 Уровень ${currentLevel} завершён!`);
+    renderLevels();
+    backToLevels();
+  }
+
+  function init(){
+    loadTheme();
+    renderClasses();
+  }
+
+  init();
+</script>
+</body>
+</html>

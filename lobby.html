@@ -6,284 +6,351 @@
 <title>Study Hub - F-Mind</title>
 <style>
   @media (max-width: 768px){
-  h1{ font-size:24px; }
-  button{ width:100%; }
-}
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
-body {
-  min-height:100vh;
-  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
-  color:white;
-  padding-top:80px;
-}
-body.light { background: linear-gradient(135deg,#f5f5f5,#d0d0ff); color:#222; }
+    h1{ font-size:24px; }
+    button{ width:100%; }
+  }
 
-.site-header {
-  width:100%;
-  height:80px;
-  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:100;
-  box-shadow:0 4px 15px rgba(0,0,0,0.4);
-  padding:0 20px;
-}
-body.light .site-header { background: linear-gradient(135deg,#f5f5f5,#d0d0ff); }
+  * {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+  }
 
-.logo span {
-  font-size:1.8rem;
-  font-weight:bold;
-  color:white;
-  transition:0.5s;
-}
-@keyframes goldBlink {
-  0%,20%,100% { color:white; text-shadow:none; }
-  50% { color:gold; text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4); }
-}
-.logo span:nth-child(1){ animation:goldBlink 2s infinite; }
-.logo span:nth-child(2){ animation:goldBlink 2s infinite 0.4s; }
-.logo span:nth-child(3){ animation:goldBlink 2s infinite 0.8s; }
-.logo span:nth-child(4){ animation:goldBlink 2s infinite 1.2s; }
-.logo span:nth-child(5){ animation:goldBlink 2s infinite 1.6s; }
+  body {
+    min-height:100vh;
+    background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+    color:white;
+    padding-top:80px;
+  }
 
-.nav-menu { display:flex; gap:15px; }
-.nav-btn {
-  padding:10px 15px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  font-size:0.9rem;
-  cursor:pointer;
-  background: linear-gradient(135deg,#6c63ff,#4a47d1);
-  color:white;
-  transition:0.3s;
-  position:relative;
-}
-.nav-btn:hover { transform:translateY(-3px); box-shadow:0 5px 15px rgba(0,0,0,0.3); }
-.nav-btn::after {
-  content:'';
-  position:absolute;
-  top:-2px; left:-2px; right:-2px; bottom:-2px;
-  border-radius:10px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,0,0.5), rgba(255,255,255,0.3));
-  opacity:0;
-  z-index:-1;
-  transition:opacity 0.3s;
-}
-.nav-btn:hover::after{ opacity:1; animation: glowBtn 1s linear infinite; }
-@keyframes glowBtn { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+  body.light {
+    background: linear-gradient(135deg,#f5f5f5,#d0d0ff);
+    color:#222;
+  }
 
-.user-profile {
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.user-profile img {
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  border:2px solid gold;
-  object-fit:cover;
-  cursor:pointer;
-}
-.user-profile span {
-  font-weight:bold;
-  color:gold;
-  text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
-  cursor:pointer;
-}
+  .site-header {
+    width:100%;
+    height:80px;
+    background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:100;
+    box-shadow:0 4px 15px rgba(0,0,0,0.4);
+    padding:0 20px;
+  }
 
-.container {
-  text-align:center;
-  padding:40px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(15px);
-  box-shadow:0 0 40px rgba(0,0,0,0.3);
-  width:90%;
-  max-width:700px;
-  margin:20px auto 0 auto;
-  opacity:0;
-  animation:fadeInContent 1s ease forwards, bgPulse 6s infinite alternate;
-  transition:0.5s;
-}
-body.light .container { background:rgba(255,255,255,0.8); color:#222; }
+  body.light .site-header {
+    background: linear-gradient(135deg,#f5f5f5,#d0d0ff);
+  }
 
-p.gold-text {
-  margin-bottom:15px;
-  font-size:1.2rem;
-  font-weight:bold;
-  opacity:0.9;
-  color: gold;
-  text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
-}
+  .logo span {
+    font-size:1.8rem;
+    font-weight:bold;
+    color:white;
+    transition:0.5s;
+  }
 
-.menu {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:15px;
-  margin-top:10px;
-  opacity:0;
-  transform:translateY(20px);
-  animation:fadeUp 0.8s forwards;
-}
-.menu:nth-child(1){animation-delay:0.2s;}
-.menu:nth-child(2){animation-delay:0.4s;}
-.menu:nth-child(3){animation-delay:0.6s;}
-.menu:nth-child(4){animation-delay:0.8s;}
+  @keyframes goldBlink {
+    0%,20%,100% { color:white; text-shadow:none; }
+    50% { color:gold; text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4); }
+  }
 
-button.main-btn {
-  padding:15px;
-  border:none;
-  border-radius:12px;
-  font-size:1rem;
-  cursor:pointer;
-  background: linear-gradient(135deg,#6c63ff,#4a47d1);
-  color:white;
-  font-weight:bold;
-  position:relative;
-  transition:0.3s;
-}
-button.main-btn:hover { transform:translateY(-5px); box-shadow:0 10px 20px rgba(0,0,0,0.3); }
-button.main-btn:active { animation:clickAnim 0.2s forwards; }
-@keyframes clickAnim { 0%{transform:scale(1);} 50%{transform:scale(0.95);} 100%{transform:scale(1);} }
-.smart-choice {
-  margin:20px auto;
-  padding:12px 15px;
-  width:250px;
-  border-radius:15px;
-  background:rgba(255,215,0,0.1);
-  border:1px solid gold;
-  font-weight:bold;
-  font-size:1rem;
-  opacity:0;
-  transform:translateY(-10px);
-  animation:fadeUp 0.8s forwards;
-  animation-delay:0.1s;
-}
+  .logo span:nth-child(1){ animation:goldBlink 2s infinite; }
+  .logo span:nth-child(2){ animation:goldBlink 2s infinite 0.4s; }
+  .logo span:nth-child(3){ animation:goldBlink 2s infinite 0.8s; }
+  .logo span:nth-child(4){ animation:goldBlink 2s infinite 1.2s; }
+  .logo span:nth-child(5){ animation:goldBlink 2s infinite 1.6s; }
 
-.footer {
-  margin-top:25px;
-  font-size:0.9rem;
-  opacity:0.8;
-  transition:0.5s;
-}
-.footer:hover { color:gold; text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4); }
-.neon-footer {
-  color:#fff;
-  text-shadow:0 0 3px #6c63ff,0 0 5px #6c63ff,0 0 10px #6c63ff,0 0 15px #a394ff;
-  animation:neonGlow 1.5s infinite alternate;
-  font-weight:bold;
-}
-body.light .neon-footer { color:#444; text-shadow:none; }
-
-@keyframes neonGlow { 0%{text-shadow:0 0 2px #6c63ff,0 0 5px #6c63ff,0 0 8px #6c63ff,0 0 12px #a394ff;} 50%{text-shadow:0 0 4px #6c63ff,0 0 10px #6c63ff,0 0 15px #6c63ff,0 0 25px #a394ff;} 100%{text-shadow:0 0 2px #6c63ff,0 0 5px #6c63ff,0 0 8px #6c63ff,0 0 12px #a394ff;} }
-
-@keyframes fadeInContent { 0%{opacity:0; transform:translateY(20px);} 100%{opacity:1; transform:translateY(0);} }
-@keyframes fadeUp { 0%{opacity:0; transform:translateY(20px);} 100%{opacity:1; transform:translateY(0);} }
-@keyframes bgPulse { 0%{background-color:rgba(255,255,255,0.05);} 50%{background-color:rgba(255,255,255,0.1);} 100%{background-color:rgba(255,255,255,0.05);} }
-.avatar-menu{
-  position:absolute;
-  top:60px;
-  right:0;
-  display:none;
-  flex-direction:column;
-  gap:8px;
-  background:rgba(0,0,0,0.85);
-  padding:10px;
-  border-radius:12px;
-  min-width:180px;
-  backdrop-filter:blur(10px);
-  box-shadow:0 0 20px rgba(0,0,0,0.6);
-  z-index:999;
-}
-
-.avatar-menu button{
-  padding:8px;
-  border:none;
-  border-radius:8px;
-  background:#6c63ff;
-  color:white;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.avatar-menu button:hover{
-  background:#5751d6;
-  box-shadow:0 0 10px rgba(108,99,255,0.5);
-}
-/* ===== BURGER BUTTON ===== */
-.burger {
-  display: none;
-  font-size: 28px;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-/* ===== NAV MENU (DESKTOP) ===== */
-.nav-menu {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-
-  /* показываем бургер */
   .burger {
-    display: block;
-    position: relative;
-    z-index: 1002;
-  }
-
-  /* меню по умолчанию скрыто */
-  .nav-menu {
     display: none;
-    flex-direction: column;
-    position: absolute;
-    top: 80px;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.92);
-    padding: 15px;
-    gap: 10px;
-    z-index: 1000;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    animation: menuFade 0.25s ease;
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    z-index: 1001;
   }
 
-  /* когда открыто */
-  .nav-menu.active {
+  .nav-menu {
     display: flex;
+    gap: 15px;
+    align-items: center;
   }
 
-  /* кнопки внутри меню */
   .nav-btn {
-    width: 100%;
-    text-align: left;
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    font-size:0.9rem;
+    cursor:pointer;
+    background: linear-gradient(135deg,#6c63ff,#4a47d1);
+    color:white;
+    transition:0.3s;
+    position:relative;
   }
-}
 
-/* ===== ANIMATION ===== */
-@keyframes menuFade {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
+  .nav-btn:hover {
+    transform:translateY(-3px);
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
+  .user-profile {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    position:relative;
+  }
+
+  .user-profile img {
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:2px solid gold;
+    object-fit:cover;
+    cursor:pointer;
+  }
+
+  .user-profile span {
+    font-weight:bold;
+    color:gold;
+    text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
+    cursor:pointer;
+  }
+
+  .avatar-menu{
+    position:absolute;
+    top:60px;
+    right:0;
+    display:none;
+    flex-direction:column;
+    gap:8px;
+    background:rgba(0,0,0,0.85);
+    padding:10px;
+    border-radius:12px;
+    min-width:180px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 20px rgba(0,0,0,0.6);
+    z-index:999;
+  }
+
+  .avatar-menu button{
+    padding:8px;
+    border:none;
+    border-radius:8px;
+    background:#6c63ff;
+    color:white;
+    cursor:pointer;
+    transition:0.2s;
+  }
+
+  .avatar-menu button:hover{
+    background:#5751d6;
+    box-shadow:0 0 10px rgba(108,99,255,0.5);
+  }
+
+  .container {
+    text-align:center;
+    padding:40px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(15px);
+    box-shadow:0 0 40px rgba(0,0,0,0.3);
+    width:90%;
+    max-width:900px;
+    margin:20px auto 0 auto;
+    opacity:0;
+    animation:fadeInContent 1s ease forwards, bgPulse 6s infinite alternate;
+    transition:0.5s;
+  }
+
+  body.light .container {
+    background:rgba(255,255,255,0.8);
+    color:#222;
+  }
+
+  p.gold-text {
+    margin-bottom:15px;
+    font-size:1.2rem;
+    font-weight:bold;
+    opacity:0.9;
+    color: gold;
+    text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
+  }
+
+  .menu {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:15px;
+    margin-top:10px;
+    opacity:0;
+    transform:translateY(20px);
+    animation:fadeUp 0.8s forwards;
+  }
+
+  .menu:nth-child(1){animation-delay:0.2s;}
+  .menu:nth-child(2){animation-delay:0.4s;}
+  .menu:nth-child(3){animation-delay:0.6s;}
+  .menu:nth-child(4){animation-delay:0.8s;}
+
+  button.main-btn {
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    font-size:1rem;
+    cursor:pointer;
+    background: linear-gradient(135deg,#6c63ff,#4a47d1);
+    color:white;
+    font-weight:bold;
+    position:relative;
+    transition:0.3s;
+  }
+
+  button.main-btn:hover {
+    transform:translateY(-5px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.3);
+  }
+
+  .smart-choice {
+    margin:20px auto;
+    padding:12px 15px;
+    width:280px;
+    border-radius:15px;
+    background:rgba(255,215,0,0.1);
+    border:1px solid gold;
+    font-weight:bold;
+    font-size:1rem;
+    opacity:0;
+    transform:translateY(-10px);
+    animation:fadeUp 0.8s forwards;
+    animation-delay:0.1s;
+  }
+
+  .footer {
+    margin-top:25px;
+    font-size:0.9rem;
+    opacity:0.8;
+    transition:0.5s;
+  }
+
+  .footer:hover {
+    color:gold;
+    text-shadow:0 0 5px gold,0 0 10px rgba(255,215,0,0.4);
+  }
+
+  .neon-footer {
+    color:#fff;
+    text-shadow:0 0 3px #6c63ff,0 0 5px #6c63ff,0 0 10px #6c63ff,0 0 15px #a394ff;
+    animation:neonGlow 1.5s infinite alternate;
+    font-weight:bold;
+  }
+
+  body.light .neon-footer {
+    color:#444;
+    text-shadow:none;
+  }
+
+  @keyframes neonGlow {
+    0%{text-shadow:0 0 2px #6c63ff,0 0 5px #6c63ff,0 0 8px #6c63ff,0 0 12px #a394ff;}
+    50%{text-shadow:0 0 4px #6c63ff,0 0 10px #6c63ff,0 0 15px #6c63ff,0 0 25px #a394ff;}
+    100%{text-shadow:0 0 2px #6c63ff,0 0 5px #6c63ff,0 0 8px #6c63ff,0 0 12px #a394ff;}
+  }
+
+  @keyframes fadeInContent {
+    0%{opacity:0; transform:translateY(20px);}
+    100%{opacity:1; transform:translateY(0);}
+  }
+
+  @keyframes fadeUp {
+    0%{opacity:0; transform:translateY(20px);}
+    100%{opacity:1; transform:translateY(0);}
+  }
+
+  @keyframes bgPulse {
+    0%{background-color:rgba(255,255,255,0.05);}
+    50%{background-color:rgba(255,255,255,0.1);}
+    100%{background-color:rgba(255,255,255,0.05);}
+  }
+
+  .section-title{
+    color:gold;
+    margin-top:24px;
+    margin-bottom:10px;
+  }
+
+  .info-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+    margin-top:10px;
+  }
+
+  .info-card{
+    padding:16px;
+    border-radius:16px;
+    background:rgba(0,0,0,0.18);
+    text-align:left;
+    box-shadow:0 0 18px rgba(0,0,0,0.15);
+  }
+
+  .info-card h3{
+    margin-bottom:8px;
+    color:gold;
+    font-size:1rem;
+  }
+
+  .info-card p{
+    font-size:0.95rem;
+    line-height:1.45;
+    opacity:0.95;
+  }
+
+  .resume-btn{
+    margin-top:10px;
+    width:100%;
+  }
+
+  @media (max-width: 768px) {
+    .burger {
+      display: block;
+      position: relative;
+      z-index: 1002;
+    }
+
+    .nav-menu {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 80px;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.92);
+      padding: 15px;
+      gap: 10px;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      animation: menuFade 0.25s ease;
+    }
+
+    .nav-menu.active {
+      display: flex;
+    }
+
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  @keyframes menuFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
 </head>
 
@@ -293,47 +360,47 @@ body.light .neon-footer { color:#444; text-shadow:none; }
   <div class="logo">
     <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
   </div>
-  <button class="burger" onclick="toggleMenu()">☰</button>
-  <nav class="nav-menu" id="menu">
-    
 
-    <button onclick="goTo('about.html')" class="nav-btn">">О нас</button>
+  <button class="burger" onclick="toggleMenu()">☰</button>
+
+  <nav class="nav-menu" id="menu">
+    <button onclick="goTo('about.html')" class="nav-btn">О нас</button>
     <button onclick="goTo('function.html')" class="nav-btn">Функции</button>
     <button onclick="goTo('donate.html')" class="nav-btn">Донатная часть</button>
     <button onclick="goTo('help.html')" class="nav-btn">Помощь</button>
     <button onclick="goTo('news.html')" class="nav-btn">Новости</button>
   </nav>
+
   <div class="user-profile">
-  <img id="profile-avatar" src="https://via.placeholder.com/40" alt="Avatar" onclick="toggleAvatarMenu()">
-  <span id="profile-nick">NIK</span>
+    <img id="profile-avatar" src="https://via.placeholder.com/40" alt="Avatar" onclick="toggleAvatarMenu()">
+    <span id="profile-nick">NIK</span>
 
-  <input type="file" id="avatar-input" style="display:none;" accept="image/*">
+    <input type="file" id="avatar-input" style="display:none;" accept="image/*">
 
-  <!-- 📋 МЕНЮ -->
-  <div id="avatar-menu" class="avatar-menu">
-    <button onclick="goToAccount()">👤 Аккаунт</button>
-    <button onclick="changeAvatar()">🖼️ Сменить аватар</button>
-    <button onclick="goToFriends()">💬 Чаты</button>
-
+    <div id="avatar-menu" class="avatar-menu">
+      <button onclick="goToAccount()">👤 Аккаунт</button>
+      <button onclick="changeAvatar()">🖼️ Сменить аватар</button>
+      <button onclick="goToFriends()">💬 Чаты</button>
+    </div>
   </div>
-</div>
-
 </header>
 
-<!-- === Лобби: предметы, чат-боты, переводчик + экзамен === -->
 <div class="container">
-  <p>Привет, <span id="nick-text">никнейм</span>! Выбери раздел и начинай обучение</p>
+  <p class="gold-text">Привет, <span id="nick-text">никнейм</span>! Выбери раздел и начинай обучение</p>
 
-  <!-- === Предметы === -->
-  <h2 style="color:gold; margin-top:20px;">📚 Предметы</h2>
+  <div class="smart-choice" id="smartChoice">🎯 Сегодняшний фокус: 1 тема + 1 уровень</div>
+
+  <h2 class="section-title">📚 Предметы</h2>
   <div class="menu">
     <button onclick="goTo('math.html')" class="main-btn">📚 Математика</button>
-    <button onclick="goTo('math-olymp.html')" class="main-btn">📚 Математика (Olympiad)</button>
+    <button onclick="goTo('biology.html')" class="main-btn">🌿 Биология</button>
+    <button onclick="goTo('physics.html')" class="main-btn">⚛️ Физика</button>
+    <button onclick="goTo('history.html')" class="main-btn">📜 История</button>
+   
     <button onclick="goTo('geo.html')" class="main-btn">🌍 География</button>
   </div>
 
-  <!-- === Чат-боты === -->
-  <h2 style="color:gold; margin-top:20px;">🤖 Чат-боты</h2>
+  <h2 class="section-title">🤖 Чат-боты</h2>
   <div class="menu">
     <button onclick="goTo('chat-math.html')" class="main-btn">Чат-бот (Математика)</button>
     <button onclick="goTo('chat-lang.html')" class="main-btn">Чат-бот (Языки)</button>
@@ -342,91 +409,114 @@ body.light .neon-footer { color:#444; text-shadow:none; }
     <button onclick="goTo('doctor.html')" class="main-btn">Научный Бот</button>
   </div>
 
-  <!-- === Переводчик === -->
-  <h2 style="color:gold; margin-top:20px;">🌐 Языковой переводчик</h2>
+  <h2 class="section-title">🌐 Языковой переводчик</h2>
   <div class="menu">
     <button onclick="goTo('translator.html')" class="main-btn">Переводчик</button>
   </div>
 
-  <!-- === Экзамен === -->
-  <h2 style="color:gold; margin-top:20px;">📋 Умный выбор / Экзамен</h2>
+  <h2 class="section-title">📋 Умный выбор / Экзамен</h2>
   <div class="menu">
     <button onclick="goTo('exam.html')" class="main-btn">📋 Начать экзамен</button>
+     <button onclick="goTo('math-olymp.html')" class="main-btn">🏆 Математика (Olympiad)</button>
   </div>
 
-  <!-- === Смена темы === -->
-  <button onclick="toggleTheme()" style="margin-top:15px; padding:10px 20px; border:none; border-radius:10px; cursor:pointer; background:#6c63ff; color:white; font-weight:bold;">🌓 Сменить тему</button>
+  <h2 class="section-title">⚡ Быстрый доступ</h2>
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>Продолжить урок</h3>
+      <p id="resumeText">Последний урок не найден.</p>
+      <button class="main-btn resume-btn" onclick="continueLastLesson()">Продолжить</button>
+    </div>
+    <div class="info-card">
+      <h3>Аккаунт</h3>
+      <p>Открой профиль, аватар, прогресс и достижения.</p>
+      <button class="main-btn resume-btn" onclick="goToAccount()">Открыть аккаунт</button>
+    </div>
+    <div class="info-card">
+      <h3>Чаты</h3>
+      <p>Перейти к диалогам и учебным помощникам.</p>
+      <button class="main-btn resume-btn" onclick="goToFriends()">Открыть чаты</button>
+    </div>
+  </div>
+
+  <h2 class="section-title">📈 Краткий прогресс</h2>
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>Математика</h3>
+      <p id="mathProg">Прогресс не найден.</p>
+    </div>
+    <div class="info-card">
+      <h3>Биология</h3>
+      <p id="bioProg">Прогресс не найден.</p>
+    </div>
+    <div class="info-card">
+      <h3>Физика</h3>
+      <p id="phyProg">Прогресс не найден.</p>
+    </div>
+    <div class="info-card">
+      <h3>История</h3>
+      <p id="hisProg">Прогресс не найден.</p>
+    </div>
+  </div>
+
+  <button onclick="toggleTheme()" style="margin-top:18px; padding:10px 20px; border:none; border-radius:10px; cursor:pointer; background:#6c63ff; color:white; font-weight:bold;">🌓 Сменить тему</button>
 
   <div class="footer neon-footer">Сделано для олимпиады 💪</div>
 </div>
 
 <script>
 function goTo(page){ window.location.href = page; }
-function toggleTheme(){ document.body.classList.toggle('light'); }
 
-// Никнейм и аватарка
-let currentUser = localStorage.getItem("currentUser");
-if(currentUser){
-    let userData = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
-    document.getElementById("nick-text").innerText = currentUser;
-    document.getElementById("profile-nick").innerText = currentUser;
-    if(userData.avatar) document.getElementById("profile-avatar").src = userData.avatar;
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
 }
 
-// Смена аватарки
-function changeAvatar(){
-    const fileInput = document.getElementById("avatar-input");
-    fileInput.click();
-    fileInput.onchange = function(){
-        const file = fileInput.files[0];
-        if(file){
-            const reader = new FileReader();
-            reader.onload = function(e){
-                const src = e.target.result;
-                document.getElementById("profile-avatar").src = src;
-                if(currentUser){
-                    let data = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
-                    data.avatar = src;
-                    localStorage.setItem("user_"+currentUser, JSON.stringify(data));
-                }
-            }
-            reader.readAsDataURL(file);
-        }
-    }
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("active");
 }
+
 function toggleAvatarMenu(){
   const menu = document.getElementById("avatar-menu");
   menu.style.display = menu.style.display === "flex" ? "none" : "flex";
 }
 
-// закрытие меню при клике вне
 document.addEventListener("click", function(e){
   const menu = document.getElementById("avatar-menu");
   const avatar = document.getElementById("profile-avatar");
-
   if(menu && !menu.contains(e.target) && e.target !== avatar){
     menu.style.display = "none";
   }
 });
 
-function goToAccount(){
-  window.location.href = "account.html";
+if((localStorage.getItem("accountTheme") || "dark") === "light"){
+  document.body.classList.add("light");
 }
 
+// user data
+let currentUser = localStorage.getItem("currentUser");
+if(currentUser){
+  const userData = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
+  document.getElementById("nick-text").innerText = currentUser;
+  document.getElementById("profile-nick").innerText = currentUser;
+  if(userData.avatar) document.getElementById("profile-avatar").src = userData.avatar;
+  document.getElementById("resumeText").innerText = "Открой аккаунт, чтобы посмотреть последний урок и прогресс.";
+}
+
+// avatar change
 function changeAvatar(){
   const fileInput = document.getElementById("avatar-input");
   fileInput.click();
-
   fileInput.onchange = function(){
     const file = fileInput.files[0];
     if(file){
       const reader = new FileReader();
       reader.onload = function(e){
-        document.getElementById("profile-avatar").src = e.target.result;
-
+        const src = e.target.result;
+        document.getElementById("profile-avatar").src = src;
         if(currentUser){
           let data = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
-          data.avatar = e.target.result;
+          data.avatar = src;
           localStorage.setItem("user_"+currentUser, JSON.stringify(data));
         }
       }
@@ -435,16 +525,65 @@ function changeAvatar(){
   }
 }
 
-function openSettings(){
-  alert("⚙️ Настройки пока в разработке");
+function goToAccount(){
+  window.location.href = "account.html";
 }
 
-function toggleMenu() {
-  document.getElementById("menu").classList.toggle("active");
-}
 function goToFriends(){
   window.location.href = "friends.html";
 }
 
+function continueLastLesson(){
+  const lastMath = JSON.parse(localStorage.getItem(`${currentUser}_math_last`) || "null");
+  const lastBio = JSON.parse(localStorage.getItem(`${currentUser}_biology_last`) || "null");
+  const lastPhy = JSON.parse(localStorage.getItem(`${currentUser}_physics_last`) || "null");
+  const lastHis = JSON.parse(localStorage.getItem(`${currentUser}_history_last`) || "null");
 
+  const all = [
+    { key:"math", data:lastMath, page:"math.html", name:"Математика" },
+    { key:"biology", data:lastBio, page:"biology.html", name:"Биология" },
+    { key:"physics", data:lastPhy, page:"physics.html", name:"Физика" },
+    { key:"history", data:lastHis, page:"history.html", name:"История" }
+  ].filter(x => x.data);
+
+  if(all.length === 0){
+    alert("Сначала открой любой урок, чтобы появилось продолжение.");
+    return;
+  }
+
+  all.sort((a,b) => (b.data.time || 0) - (a.data.time || 0));
+  window.location.href = all[0].page;
+}
+
+// Прогресс по предметам
+function getSubjectProgress(prefix){
+  const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix + "_"));
+  let total = 0;
+  let max = 0;
+
+  keys.forEach(k => {
+    try{
+      const p = JSON.parse(localStorage.getItem(k));
+      if(p && typeof p.highestCompleted === "number"){
+        total += p.highestCompleted;
+        max += 16;
+      }
+    }catch(e){}
+  });
+
+  if(max === 0) return "Прогресс не найден.";
+  const percent = Math.round((total / max) * 100);
+  return `Пройдено: ${percent}%`;
+}
+
+function renderProgress(){
+  document.getElementById("mathProg").innerText = getSubjectProgress("mathProgress");
+  document.getElementById("bioProg").innerText = getSubjectProgress("biologyProgress");
+  document.getElementById("phyProg").innerText = getSubjectProgress("physicsProgress");
+  document.getElementById("hisProg").innerText = getSubjectProgress("historyProgress");
+}
+
+renderProgress();
 </script>
+</body>
+</html>

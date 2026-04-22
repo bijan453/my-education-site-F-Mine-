@@ -1,0 +1,1137 @@
+<!-- physics.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Физика</title>
+<style>
+  :root{
+    --bg1:#132030;
+    --bg2:#2f4d73;
+    --card:rgba(255,255,255,0.07);
+    --card2:rgba(255,255,255,0.12);
+    --text:#ffffff;
+    --muted:#dbe7ff;
+    --accent:#4d8cff;
+    --accent2:#2f6edf;
+    --ok:#4caf50;
+    --bad:#f44336;
+    --warn:#ffcc00;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--text);
+    text-align:center;
+    min-height:100vh;
+    transition:0.4s;
+  }
+  body.light{
+    background:linear-gradient(135deg,#f4f8ff,#d7e6ff);
+    color:#222;
+  }
+  .container{
+    width:min(1100px,100%);
+    margin:0 auto;
+    padding:22px;
+    animation:fadeIn 0.7s ease;
+  }
+  @keyframes fadeIn{
+    from{opacity:0; transform:translateY(16px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  h1{ font-size:36px; margin:10px 0 18px; }
+  .user-info{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:14px;
+    flex-direction:column;
+  }
+  .user-info img{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:10px;
+    border:2px solid rgba(255,255,255,0.25);
+    box-shadow:0 0 20px rgba(77,140,255,0.25);
+  }
+  .user-info span{ font-weight:bold; font-size:20px; }
+  .toolbar{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+  .screen{
+    margin-top:14px;
+    padding:18px;
+    border-radius:18px;
+    background:var(--card);
+    backdrop-filter:blur(12px);
+    box-shadow:0 0 24px rgba(0,0,0,0.18);
+  }
+  .screen-title{ margin:4px 0 16px; font-size:26px; }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:14px;
+    margin-top:10px;
+  }
+  .level-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:10px;
+    margin-top:12px;
+  }
+  .options-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:10px;
+    margin-top:14px;
+  }
+  button{
+    padding:14px 16px;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    background:var(--accent);
+    color:white;
+    font-size:16px;
+    transition:0.25s;
+    width:100%;
+    box-shadow:0 6px 16px rgba(0,0,0,0.18);
+  }
+  button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.25);
+    background:var(--accent2);
+  }
+  button.secondary{ background:#444; }
+  button.secondary:hover{ background:#5a5a5a; }
+  body.light button.secondary{ background:#666; }
+  .card-btn{
+    text-align:left;
+    padding:16px;
+    white-space:normal;
+    line-height:1.35;
+  }
+  .card-btn strong{
+    display:block;
+    font-size:17px;
+    margin-bottom:4px;
+  }
+  .card-btn small{
+    display:block;
+    opacity:0.86;
+    font-size:13px;
+  }
+  .tiny{
+    display:block;
+    margin-top:6px;
+    font-size:12px;
+    opacity:0.85;
+  }
+  .task-box{ margin-top:8px; }
+  .result{
+    margin-top:14px;
+    font-size:20px;
+    min-height:28px;
+  }
+  .solution{
+    margin-top:10px;
+    opacity:0.9;
+    min-height:24px;
+    line-height:1.45;
+  }
+  .progress{
+    margin-top:10px;
+    font-weight:bold;
+  }
+  .progress-bar{
+    width:min(820px,100%);
+    height:15px;
+    background:#444;
+    margin:12px auto 0;
+    border-radius:10px;
+    overflow:hidden;
+  }
+  #progressFill, #taskProgressFill{
+    width:0%;
+    height:100%;
+    background:var(--warn);
+    transition:0.35s;
+  }
+  .nav-row{ margin-top:18px; }
+  .hidden{ display:none; }
+  .option-btn{
+    text-align:left;
+    padding:14px 15px;
+    min-height:58px;
+    line-height:1.35;
+    background:#33547f;
+  }
+  .option-btn.selected{
+    outline:2px solid rgba(255,255,255,0.6);
+  }
+  .option-btn.correct{ background:var(--ok); }
+  .option-btn.wrong{ background:var(--bad); }
+  .footer{
+    margin-top:28px;
+    padding:10px;
+    font-size:15px;
+    opacity:0.8;
+  }
+  .footer.dark-glow p{ text-shadow:0 0 10px #4d8cff; }
+  @media (max-width: 768px){
+    h1{ font-size:24px; }
+    .screen-title{ font-size:22px; }
+    .grid, .options-grid{ grid-template-columns:1fr; gap:12px; }
+    .level-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+    button{ width:100%; font-size:16px; }
+    .container{ padding:14px; }
+  }
+  @media (max-width: 480px){
+    .level-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+    .user-info img{ width:68px; height:68px; }
+    .user-info span{ font-size:18px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="user-info">
+    <img id="avatar" src="default-avatar.png" alt="avatar">
+    <span id="nickname">Пользователь</span>
+  </div>
+
+  <h1>⚛️ Физика</h1>
+
+  <div class="toolbar">
+    <button onclick="toggleTheme()">🌓 Сменить тему</button>
+    <button class="secondary" onclick="goLobby()">⬅ Выйти в лобби</button>
+  </div>
+
+  <div id="classScreen" class="screen">
+    <h2 class="screen-title">Выбери класс</h2>
+    <div id="classGrid" class="grid"></div>
+  </div>
+
+  <div id="topicScreen" class="screen hidden">
+    <h2 class="screen-title" id="topicScreenTitle">Выбери тему</h2>
+    <div id="topicGrid" class="grid"></div>
+    <div class="nav-row">
+      <button class="secondary" onclick="backToClasses()">⬅ Назад</button>
+    </div>
+  </div>
+
+  <div id="levelScreen" class="screen hidden">
+    <h2 class="screen-title" id="levelScreenTitle">Выбери уровень</h2>
+    <div class="progress" id="topicProgress"></div>
+    <div class="progress-bar"><div id="progressFill"></div></div>
+    <div id="levelGrid" class="level-grid"></div>
+    <div class="nav-row">
+      <button class="secondary" onclick="backToTopics()">⬅ Назад</button>
+    </div>
+  </div>
+
+  <div id="taskScreen" class="screen hidden">
+    <h2 class="screen-title" id="taskScreenTitle">Уровень</h2>
+    <div class="progress" id="taskProgress"></div>
+    <div class="progress-bar"><div id="taskProgressFill"></div></div>
+
+    <div class="task-box">
+      <p id="question" style="font-size:22px; line-height:1.45; margin:18px 0 8px;"></p>
+      <div id="optionsGrid" class="options-grid"></div>
+
+      <div class="controls" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:14px;">
+        <button onclick="checkAnswer()">Проверить</button>
+        <button onclick="showHint()">💡 Подсказка</button>
+        <button id="nextBtn" class="hidden" onclick="nextTask()">Далее</button>
+      </div>
+
+      <div class="result" id="result"></div>
+      <div class="solution" id="solution"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="secondary" onclick="backToLevels()">⬅ К уровням</button>
+    </div>
+  </div>
+
+  <div class="footer dark-glow">
+    <p>Физика с теорией и задачами. Внутри есть вычисления, формулы и обычные вопросы.</p>
+  </div>
+</div>
+
+<script>
+  function goLobby(){
+    if(document.referrer) window.history.back();
+    else window.location.href = "lobby.html";
+  }
+
+  function toggleTheme(){
+    document.body.classList.toggle("light");
+    localStorage.setItem("physicsTheme", document.body.classList.contains("light") ? "light" : "dark");
+  }
+
+  function loadTheme(){
+    const t = localStorage.getItem("physicsTheme") || "dark";
+    if(t === "light") document.body.classList.add("light");
+  }
+
+  let user = { nickname:"Пользователь", avatar:"default-avatar.png" };
+  try{
+    const raw = localStorage.getItem("userData");
+    if(raw) user = Object.assign(user, JSON.parse(raw));
+  }catch(e){}
+
+  document.getElementById("nickname").innerText = user.nickname || "Пользователь";
+  document.getElementById("avatar").src = user.avatar || "default-avatar.png";
+
+  const CLASSES = {
+    "7": {
+      title: "7 класс",
+      topics: [
+        { id:"motion", title:"Движение", desc:"Путь, время, скорость" },
+        { id:"density", title:"Плотность", desc:"Масса и объём" },
+        { id:"force", title:"Сила", desc:"Сила, масса, ускорение" },
+        { id:"mixed7", title:"Смешанные", desc:"Разные задачи" }
+      ]
+    },
+    "8": {
+      title: "8 класс",
+      topics: [
+        { id:"pressure", title:"Давление", desc:"Давление в жидкости и твёрдых телах" },
+        { id:"work", title:"Работа и мощность", desc:"Работа, мощность, энергия" },
+        { id:"heat", title:"Теплота", desc:"Нагревание и теплообмен" },
+        { id:"mixed8", title:"Смешанные", desc:"Разные задачи" }
+      ]
+    },
+    "9": {
+      title: "9 класс",
+      topics: [
+        { id:"electricity", title:"Электричество", desc:"Ток, напряжение, сопротивление" },
+        { id:"circuits", title:"Цепи", desc:"Последовательное и параллельное соединение" },
+        { id:"optics", title:"Оптика", desc:"Свет, отражение, линзы" },
+        { id:"mixed9", title:"Смешанные", desc:"Разные задачи" }
+      ]
+    },
+    "10": {
+      title: "10 класс",
+      topics: [
+        { id:"mechanics", title:"Механика", desc:"Скорость, сила, энергия" },
+        { id:"electricAdvanced", title:"Электричество", desc:"Задачи посложнее" },
+        { id:"waves", title:"Волны", desc:"Частота, длина волны" },
+        { id:"mixed10", title:"Смешанные", desc:"Разные задачи" }
+      ]
+    }
+  };
+
+  const TOPIC_GENERATORS = {
+    motion: genMotion,
+    density: genDensity,
+    force: genForce,
+    pressure: genPressure,
+    work: genWork,
+    heat: genHeat,
+    electricity: genElectricity,
+    circuits: genCircuits,
+    optics: genOptics,
+    mechanics: genMechanics,
+    electricAdvanced: genElectricAdvanced,
+    waves: genWaves,
+    mixed7: genMixed7,
+    mixed8: genMixed8,
+    mixed9: genMixed9,
+    mixed10: genMixed10
+  };
+
+  let currentClass = "7";
+  let currentTopic = null;
+  let currentLevel = 1;
+  let currentTasks = [];
+  let taskIndex = 0;
+  let selectedOption = null;
+  let optionButtons = [];
+  let checked = false;
+
+  function safeParseJSON(value, fallback){
+    try{ return JSON.parse(value); }
+    catch(e){ return fallback; }
+  }
+
+  function progressKey(cls, topic){
+    const uid = localStorage.getItem("currentUser") || user.nickname || "guest";
+    return `physicsProgress_${uid}_${cls}_${topic}`;
+  }
+
+  function getProgress(cls, topic){
+    return safeParseJSON(localStorage.getItem(progressKey(cls, topic)) || '{"highestCompleted":0}', { highestCompleted:0 });
+  }
+
+  function saveProgress(cls, topic, data){
+    localStorage.setItem(progressKey(cls, topic), JSON.stringify(data));
+  }
+
+  function unlockFor(cls, topic){
+    const p = getProgress(cls, topic);
+    return Math.min(16, (p.highestCompleted || 0) + 1);
+  }
+
+  function shuffle(arr){
+    const a = [...arr];
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function pick(arr){
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function unique(arr){
+    return [...new Set(arr)];
+  }
+
+  function makeChoiceQuestion(q, correct, pool, hint, solution){
+    const wrongs = unique(pool.filter(x => x !== correct));
+    const distractors = shuffle(wrongs).slice(0, 3);
+    const options = shuffle([correct, ...distractors]);
+    return {
+      q,
+      options,
+      answer: options.indexOf(correct),
+      hint,
+      solution
+    };
+  }
+
+  function numOption(value, unit){
+    return `${value}${unit ? " " + unit : ""}`;
+  }
+
+  function makeNumericQuestion(q, correct, wrongs, hint, solution, unit=""){
+    const options = shuffle(unique([numOption(correct, unit), ...wrongs.map(w => numOption(w, unit))]));
+    return {
+      q,
+      options,
+      answer: options.indexOf(numOption(correct, unit)),
+      hint,
+      solution
+    };
+  }
+
+  function generateTasksForLevel(cls, topic, level){
+    const gen = TOPIC_GENERATORS[topic];
+    const out = [];
+    for(let i = 0; i < 10; i++) out.push(gen(level, i));
+    return out;
+  }
+
+  function getTopicMeta(cls, topicId){
+    return CLASSES[cls].topics.find(t => t.id === topicId);
+  }
+
+  function renderClasses(){
+    const grid = document.getElementById("classGrid");
+    grid.innerHTML = "";
+    Object.entries(CLASSES).forEach(([cls, data]) => {
+      const btn = document.createElement("button");
+      btn.className = "card-btn";
+      btn.innerHTML = `<strong>${data.title}</strong><small>Открой темы этого класса</small>`;
+      btn.onclick = () => selectClass(cls);
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderTopics(){
+    const grid = document.getElementById("topicGrid");
+    const data = CLASSES[currentClass];
+    document.getElementById("topicScreenTitle").textContent = data.title + " — выбери тему";
+    grid.innerHTML = "";
+    data.topics.forEach(topic => {
+      const p = getProgress(currentClass, topic.id);
+      const btn = document.createElement("button");
+      btn.className = "card-btn";
+      btn.innerHTML = `
+        <strong>${topic.title}</strong>
+        <small>${topic.desc}</small>
+        <span class="tiny">Уровень: ${Math.min(16, (p.highestCompleted || 0) + 1)}/16</span>
+      `;
+      btn.onclick = () => openTopic(topic.id);
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderLevels(){
+    const grid = document.getElementById("levelGrid");
+    const topic = getTopicMeta(currentClass, currentTopic);
+    const prog = getProgress(currentClass, currentTopic);
+    const unlocked = unlockFor(currentClass, currentTopic);
+
+    document.getElementById("levelScreenTitle").textContent = `${topic.title} — уровни`;
+    document.getElementById("topicProgress").textContent = `Прогресс темы: ${Math.min(16, prog.highestCompleted || 0)}/16`;
+    document.getElementById("progressFill").style.width = `${Math.min(100, ((prog.highestCompleted || 0) / 16) * 100)}%`;
+
+    grid.innerHTML = "";
+    for(let level = 1; level <= 16; level++){
+      const btn = document.createElement("button");
+      const done = level <= (prog.highestCompleted || 0);
+      const locked = level > unlocked;
+      btn.textContent = done ? `✓ ${level}` : `${level}`;
+      btn.style.opacity = locked ? "0.45" : "1";
+      btn.disabled = locked;
+      btn.onclick = () => startLevel(level);
+      grid.appendChild(btn);
+    }
+  }
+
+  function selectClass(cls){
+    currentClass = cls;
+    currentTopic = null;
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.remove("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+    renderTopics();
+  }
+
+  function backToClasses(){
+    document.getElementById("classScreen").classList.remove("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+  }
+
+  function openTopic(topicId){
+    currentTopic = topicId;
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.remove("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+    renderLevels();
+  }
+
+  function backToTopics(){
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.remove("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+  }
+
+  function backToLevels(){
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.remove("hidden");
+    document.getElementById("taskScreen").classList.add("hidden");
+  }
+
+  function startLevel(level){
+    currentLevel = level;
+    currentTasks = generateTasksForLevel(currentClass, currentTopic, level);
+    taskIndex = 0;
+    document.getElementById("classScreen").classList.add("hidden");
+    document.getElementById("topicScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("taskScreen").classList.remove("hidden");
+    document.getElementById("taskScreenTitle").textContent = `${getTopicMeta(currentClass, currentTopic).title} — уровень ${currentLevel}/16`;
+    loadTask();
+  }
+
+  function loadTask(){
+    const t = currentTasks[taskIndex];
+    selectedOption = null;
+    checked = false;
+    optionButtons = [];
+
+    document.getElementById("question").innerText = t.q;
+    document.getElementById("result").innerText = "";
+    document.getElementById("solution").innerText = "";
+    document.getElementById("nextBtn").classList.add("hidden");
+    document.getElementById("taskProgress").innerText = `Вопрос ${taskIndex + 1} / ${currentTasks.length}`;
+    document.getElementById("taskProgressFill").style.width = `${((taskIndex + 1) / currentTasks.length) * 100}%`;
+
+    const grid = document.getElementById("optionsGrid");
+    grid.innerHTML = "";
+    t.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn secondary";
+      btn.textContent = opt;
+      btn.onclick = () => selectOption(idx, btn);
+      optionButtons.push(btn);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectOption(index, button){
+    if(checked) return;
+    selectedOption = index;
+    optionButtons.forEach(b => b.classList.remove("selected"));
+    button.classList.add("selected");
+  }
+
+  function checkAnswer(){
+    if(checked) return;
+    const task = currentTasks[taskIndex];
+    if(selectedOption === null){
+      document.getElementById("result").innerText = "Выбери вариант ответа.";
+      return;
+    }
+
+    checked = true;
+    optionButtons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if(idx === task.answer) btn.classList.add("correct");
+      if(idx === selectedOption && selectedOption !== task.answer) btn.classList.add("wrong");
+    });
+
+    if(selectedOption === task.answer){
+      document.getElementById("result").innerText = "✅ Правильно!";
+      document.getElementById("solution").innerText = "";
+    } else {
+      document.getElementById("result").innerText = "❌ Неправильно";
+      document.getElementById("solution").innerText = "Правильный ответ: " + task.options[task.answer] + ". " + task.solution;
+    }
+    document.getElementById("nextBtn").classList.remove("hidden");
+  }
+
+  function showHint(){
+    document.getElementById("solution").innerText = currentTasks[taskIndex].hint;
+  }
+
+  function nextTask(){
+    if(taskIndex < currentTasks.length - 1){
+      taskIndex++;
+      loadTask();
+    } else {
+      completeLevel();
+    }
+  }
+
+  function completeLevel(){
+    const p = getProgress(currentClass, currentTopic);
+    if(currentLevel > (p.highestCompleted || 0)) p.highestCompleted = currentLevel;
+    saveProgress(currentClass, currentTopic, p);
+    alert(`🎉 Уровень ${currentLevel} завершён!`);
+    renderLevels();
+    backToLevels();
+  }
+
+  function shuffleUniqueNumbers(arr){
+    return shuffle(unique(arr));
+  }
+
+  function genMotion(level, i){
+    const templates = [
+      () => {
+        const s = 60 + Math.floor(Math.random() * 141);
+        const t = 2 + Math.floor(Math.random() * 5);
+        const v = s / t;
+        return makeNumericQuestion(
+          `Тело прошло ${s} м за ${t} с. Чему равна скорость?`,
+          v,
+          [v + 5, v + 10, v - 3],
+          "Используй формулу v = s / t.",
+          `Скорость равна ${s} / ${t} = ${v}.`,
+          "м/с"
+        );
+      },
+      () => {
+        const v = 10 + Math.floor(Math.random() * 31);
+        const t = 2 + Math.floor(Math.random() * 6);
+        const s = v * t;
+        return makeNumericQuestion(
+          `Скорость тела ${v} м/с, время ${t} с. Какой путь оно пройдет?`,
+          s,
+          [s + 10, s - 10, s + 20],
+          "Используй s = v × t.",
+          `Путь равен ${v} × ${t} = ${s}.`,
+          "м"
+        );
+      },
+      () => makeChoiceQuestion(
+        "Какая величина показывает, как быстро движется тело?",
+        "Скорость",
+        ["Скорость","Масса","Температура","Сила"],
+        "Это одна из главных характеристик движения.",
+        "Скорость показывает, как быстро движется тело."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genDensity(level, i){
+    const templates = [
+      () => {
+        const m = 200 + Math.floor(Math.random() * 801);
+        const V = 100 + Math.floor(Math.random() * 401);
+        const rho = Math.round(m / V * 10) / 10;
+        return makeNumericQuestion(
+          `Масса тела ${m} г, объём ${V} см³. Чему равна плотность?`,
+          rho,
+          [rho + 0.5, rho + 1, rho - 0.5].map(x => Math.round(x * 10) / 10),
+          "Используй формулу ρ = m / V.",
+          `ρ = ${m} / ${V} = ${rho}.`,
+          "г/см³"
+        );
+      },
+      () => {
+        const rho = [0.8, 1, 2, 2.5, 7.8][Math.floor(Math.random() * 5)];
+        const V = 50 + Math.floor(Math.random() * 151);
+        const m = Math.round(rho * V);
+        return makeNumericQuestion(
+          `Плотность вещества ${rho} г/см³, объём ${V} см³. Найди массу.`,
+          m,
+          [m + 50, m - 30, m + 20],
+          "Используй m = ρ × V.",
+          `Масса равна ${rho} × ${V} = ${m}.`,
+          "г"
+        );
+      },
+      () => makeChoiceQuestion(
+        "Какая формула правильная для плотности?",
+        "ρ = m / V",
+        ["ρ = m / V","ρ = V / m","ρ = m × V","ρ = m + V"],
+        "Плотность — масса в единице объёма.",
+        "Плотность равна массе, делённой на объём."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genForce(level, i){
+    const templates = [
+      () => {
+        const m = 2 + Math.floor(Math.random() * 9);
+        const a = 1 + Math.floor(Math.random() * 6);
+        const F = m * a;
+        return makeNumericQuestion(
+          `Масса тела ${m} кг, ускорение ${a} м/с². Чему равна сила?`,
+          F,
+          [F + 2, F + 4, Math.max(1, F - 2)],
+          "Используй F = m × a.",
+          `F = ${m} × ${a} = ${F}.`,
+          "Н"
+        );
+      },
+      () => makeChoiceQuestion(
+        "Какая формула выражает второй закон Ньютона?",
+        "F = m × a",
+        ["F = m × a","F = m / a","F = a / m","F = m + a"],
+        "Сила зависит от массы и ускорения.",
+        "Второй закон Ньютона: F = m × a."
+      ),
+      () => makeChoiceQuestion(
+        "Что измеряют в ньютонах?",
+        "Силу",
+        ["Силу","Массу","Объём","Плотность"],
+        "Это единица силы.",
+        "Сила измеряется в ньютонах."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genPressure(level, i){
+    const templates = [
+      () => {
+        const F = 100 + Math.floor(Math.random() * 401);
+        const S = 10 + Math.floor(Math.random() * 91);
+        const p = Math.round(F / S * 10) / 10;
+        return makeNumericQuestion(
+          `Сила ${F} Н действует на площадь ${S} см². Чему равно давление?`,
+          p,
+          [p + 2, p + 5, Math.max(1, p - 2)].map(x => Math.round(x * 10) / 10),
+          "Используй p = F / S.",
+          `p = ${F} / ${S} = ${p}.`,
+          "Н/см²"
+        );
+      },
+      () => makeChoiceQuestion(
+        "Какой прибор измеряет давление?",
+        "Барометр",
+        ["Барометр","Термометр","Амперметр","Линейка"],
+        "Он связан с атмосферным давлением.",
+        "Барометр измеряет давление."
+      ),
+      () => makeChoiceQuestion(
+        "Какая формула давления правильная?",
+        "p = F / S",
+        ["p = F / S","p = F × S","p = S / F","p = F + S"],
+        "Давление зависит от силы и площади.",
+        "Давление равно силе, делённой на площадь."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genWork(level, i){
+    const templates = [
+      () => {
+        const F = 10 + Math.floor(Math.random() * 41);
+        const s = 2 + Math.floor(Math.random() * 18);
+        const A = F * s;
+        return makeNumericQuestion(
+          `Сила ${F} Н, путь ${s} м. Чему равна работа?`,
+          A,
+          [A + 20, A - 10, A + 40],
+          "Используй A = F × s.",
+          `A = ${F} × ${s} = ${A}.`,
+          "Дж"
+        );
+      },
+      () => {
+        const A = 100 + Math.floor(Math.random() * 401);
+        const t = 2 + Math.floor(Math.random() * 9);
+        const P = Math.round(A / t * 10) / 10;
+        return makeNumericQuestion(
+          `Работа ${A} Дж, время ${t} с. Чему равна мощность?`,
+          P,
+          [P + 5, P - 3, P + 8].map(x => Math.round(x * 10) / 10),
+          "Используй P = A / t.",
+          `P = ${A} / ${t} = ${P}.`,
+          "Вт"
+        );
+      },
+      () => makeChoiceQuestion(
+        "Что измеряют в ваттах?",
+        "Мощность",
+        ["Мощность","Работу","Силу","Температуру"],
+        "Это связано со скоростью выполнения работы.",
+        "Мощность измеряют в ваттах."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genHeat(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называется передача тепла при соприкосновении тел?",
+        "Теплопроводность",
+        ["Теплопроводность","Испарение","Конвекция","Ионизация"],
+        "Это перенос тепла через вещество.",
+        "Теплопроводность — передача тепла при контакте."
+      ),
+      () => makeChoiceQuestion(
+        "Какой вид передачи тепла связан с движением жидкости или газа?",
+        "Конвекция",
+        ["Конвекция","Плавление","Замерзание","Трение"],
+        "Тепло переносится потоком вещества.",
+        "Конвекция связана с движением жидкости и газа."
+      ),
+      () => {
+        const m = 2 + Math.floor(Math.random() * 9);
+        const c = 4200;
+        const dt = 5 + Math.floor(Math.random() * 16);
+        const Q = m * c * dt;
+        return makeNumericQuestion(
+          `Найди количество теплоты: m = ${m} кг, c = ${c} Дж/(кг·°C), Δt = ${dt}°C.`,
+          Q,
+          [Q + 4200, Q - 4200, Q + 8400],
+          "Используй Q = c × m × Δt.",
+          `Q = ${c} × ${m} × ${dt} = ${Q}.`,
+          "Дж"
+        );
+      }
+    ];
+    return pick(templates)();
+  }
+
+  function genElectricity(level, i){
+    const templates = [
+      () => {
+        const I = 1 + Math.floor(Math.random() * 9);
+        const t = 2 + Math.floor(Math.random() * 6);
+        const q = I * t;
+        return makeNumericQuestion(
+          `Сила тока ${I} А, время ${t} с. Чему равен заряд?`,
+          q,
+          [q + 2, q + 4, Math.max(1, q - 2)],
+          "Используй q = I × t.",
+          `q = ${I} × ${t} = ${q}.`,
+          "Кл"
+        );
+      },
+      () => makeNumericQuestion(
+        `Напряжение ${12} В, сопротивление ${3} Ом. Чему равна сила тока?`,
+        4,
+        [3, 5, 6],
+        "Используй закон Ома: I = U / R.",
+        "I = 12 / 3 = 4.",
+        "А"
+      ),
+      () => makeChoiceQuestion(
+        "Как называется прибор для измерения силы тока?",
+        "Амперметр",
+        ["Амперметр","Вольтметр","Барометр","Термометр"],
+        "Он включается в цепь последовательно.",
+        "Амперметр измеряет силу тока."
+      ),
+      () => makeChoiceQuestion(
+        "Какая формула закона Ома правильная?",
+        "I = U / R",
+        ["I = U / R","I = U × R","I = R / U","I = U + R"],
+        "Ток зависит от напряжения и сопротивления.",
+        "Закон Ома: I = U / R."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genCircuits(level, i){
+    const pool = ["последовательное соединение","параллельное соединение","разветвление","сила тока","напряжение","сопротивление","цепь","источник тока"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "При каком соединении ток одинаков во всех участках?",
+        "Последовательное соединение",
+        pool,
+        "В такой цепи элементы идут один за другим.",
+        "При последовательном соединении сила тока одинакова."
+      ),
+      () => makeChoiceQuestion(
+        "При каком соединении напряжение одинаково на ветвях?",
+        "Параллельное соединение",
+        pool,
+        "Там есть несколько ветвей.",
+        "При параллельном соединении напряжение одинаково на ветвях."
+      ),
+      () => {
+        const I1 = 1 + Math.floor(Math.random() * 4);
+        const I2 = 1 + Math.floor(Math.random() * 4);
+        return makeNumericQuestion(
+          `При параллельном соединении токи по ветвям равны ${I1} А и ${I2} А. Чему равен общий ток?`,
+          I1 + I2,
+          [I1 + I2 + 1, Math.max(1, I1 + I2 - 1), I1 * I2],
+          "Общий ток равен сумме токов по ветвям.",
+          `I = ${I1} + ${I2} = ${I1 + I2}.`,
+          "А"
+        );
+      }
+    ];
+    return pick(templates)();
+  }
+
+  function genOptics(level, i){
+    const pool = ["отражение","преломление","линза","зеркало","фокус","тень","луч","свет"];
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называется изменение направления света при попадании на зеркало?",
+        "Отражение",
+        pool,
+        "Это связано с зеркалом.",
+        "Свет от зеркала отражается."
+      ),
+      () => makeChoiceQuestion(
+        "Как называется прибор, который собирает или рассеивает свет?",
+        "Линза",
+        pool,
+        "Она может быть выпуклой или вогнутой.",
+        "Линза изменяет ход световых лучей."
+      ),
+      () => makeChoiceQuestion(
+        "Как называется точка, где собираются лучи после линзы?",
+        "Фокус",
+        pool,
+        "Это место схождения лучей.",
+        "Фокус — точка, где собираются лучи."
+      )
+    ];
+    return pick(templates)();
+  }
+
+  function genMechanics(level, i){
+    const templates = [
+      () => {
+        const s = 100 + Math.floor(Math.random() * 301);
+        const t = 2 + Math.floor(Math.random() * 8);
+        const v = s / t;
+        return makeNumericQuestion(
+          `Тело прошло ${s} м за ${t} с. Найди скорость.`,
+          v,
+          [v + 2, v + 5, v - 3],
+          "v = s / t.",
+          `v = ${s} / ${t} = ${v}.`,
+          "м/с"
+        );
+      },
+      () => {
+        const m = 1 + Math.floor(Math.random() * 9);
+        const a = 1 + Math.floor(Math.random() * 6);
+        const F = m * a;
+        return makeNumericQuestion(
+          `Масса ${m} кг, ускорение ${a} м/с². Чему равна сила?`,
+          F,
+          [F + 2, F + 4, Math.max(1, F - 2)],
+          "F = m × a.",
+          `F = ${m} × ${a} = ${F}.`,
+          "Н"
+        );
+      }
+    ];
+    return pick(templates)();
+  }
+
+  function genElectricAdvanced(level, i){
+    const templates = [
+      () => {
+        const U = 6 + Math.floor(Math.random() * 19);
+        const R = 2 + Math.floor(Math.random() * 7);
+        const I = Math.round(U / R * 10) / 10;
+        return makeNumericQuestion(
+          `Напряжение ${U} В, сопротивление ${R} Ом. Найди ток.`,
+          I,
+          [I + 0.5, Math.max(0.1, I - 0.5), I + 1].map(x => Math.round(x * 10) / 10),
+          "Используй закон Ома.",
+          `I = ${U} / ${R} = ${I}.`,
+          "А"
+        );
+      },
+      () => {
+        const I = 1 + Math.floor(Math.random() * 8);
+        const R = 2 + Math.floor(Math.random() * 9);
+        const U = I * R;
+        return makeNumericQuestion(
+          `Сила тока ${I} А, сопротивление ${R} Ом. Найди напряжение.`,
+          U,
+          [U + 3, U + 6, Math.max(1, U - 3)],
+          "U = I × R.",
+          `U = ${I} × ${R} = ${U}.`,
+          "В"
+        );
+      }
+    ];
+    return pick(templates)();
+  }
+
+  function genWaves(level, i){
+    const templates = [
+      () => makeChoiceQuestion(
+        "Как называется число колебаний в секунду?",
+        "Частота",
+        ["Частота","Амплитуда","Скорость","Масса"],
+        "Её измеряют в герцах.",
+        "Частота показывает число колебаний в секунду."
+      ),
+      () => {
+        const v = 300;
+        const f = 50 + Math.floor(Math.random() * 51);
+        const lambda = Math.round((v / f) * 10) / 10;
+        return makeNumericQuestion(
+          `Скорость волны ${v} м/с, частота ${f} Гц. Найди длину волны.`,
+          lambda,
+          [lambda + 0.5, Math.max(0.1, lambda - 0.5), lambda + 1].map(x => Math.round(x * 10) / 10),
+          "Используй λ = v / f.",
+          `λ = ${v} / ${f} = ${lambda}.`,
+          "м"
+        );
+      }
+    ];
+    return pick(templates)();
+  }
+
+  function genMixed7(level, i){ return pick([genMotion, genDensity, genForce])(level, i); }
+  function genMixed8(level, i){ return pick([genPressure, genWork, genHeat])(level, i); }
+  function genMixed9(level, i){ return pick([genElectricity, genCircuits, genOptics])(level, i); }
+  function genMixed10(level, i){ return pick([genMechanics, genElectricAdvanced, genWaves])(level, i); }
+
+  function renderQuestionState(){
+    const task = currentTasks[taskIndex];
+    const grid = document.getElementById("optionsGrid");
+    grid.innerHTML = "";
+    optionButtons = [];
+    task.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn secondary";
+      btn.textContent = opt;
+      btn.onclick = () => selectOption(idx, btn);
+      optionButtons.push(btn);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectOption(index, button){
+    if(checked) return;
+    selectedOption = index;
+    optionButtons.forEach(b => b.classList.remove("selected"));
+    button.classList.add("selected");
+  }
+
+  function loadTask(){
+    const t = currentTasks[taskIndex];
+    selectedOption = null;
+    checked = false;
+
+    document.getElementById("question").innerText = t.q;
+    document.getElementById("result").innerText = "";
+    document.getElementById("solution").innerText = "";
+    document.getElementById("nextBtn").classList.add("hidden");
+    document.getElementById("taskProgress").innerText = `Вопрос ${taskIndex + 1} / ${currentTasks.length}`;
+    document.getElementById("taskProgressFill").style.width = `${((taskIndex + 1) / currentTasks.length) * 100}%`;
+    renderQuestionState();
+  }
+
+  function checkAnswer(){
+    if(checked) return;
+    const task = currentTasks[taskIndex];
+    if(selectedOption === null){
+      document.getElementById("result").innerText = "Выбери вариант ответа.";
+      return;
+    }
+
+    checked = true;
+    optionButtons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if(idx === task.answer) btn.classList.add("correct");
+      if(idx === selectedOption && selectedOption !== task.answer) btn.classList.add("wrong");
+    });
+
+    if(selectedOption === task.answer){
+      document.getElementById("result").innerText = "✅ Правильно!";
+      document.getElementById("solution").innerText = "";
+    } else {
+      document.getElementById("result").innerText = "❌ Неправильно";
+      document.getElementById("solution").innerText = "Правильный ответ: " + task.options[task.answer] + ". " + task.solution;
+    }
+    document.getElementById("nextBtn").classList.remove("hidden");
+  }
+
+  function showHint(){
+    document.getElementById("solution").innerText = currentTasks[taskIndex].hint;
+  }
+
+  function nextTask(){
+    if(taskIndex < currentTasks.length - 1){
+      taskIndex++;
+      loadTask();
+    } else {
+      completeLevel();
+    }
+  }
+
+  function completeLevel(){
+    const p = getProgress(currentClass, currentTopic);
+    if(currentLevel > (p.highestCompleted || 0)) p.highestCompleted = currentLevel;
+    saveProgress(currentClass, currentTopic, p);
+    alert(`🎉 Уровень ${currentLevel} завершён!`);
+    renderLevels();
+    backToLevels();
+  }
+
+  function init(){
+    loadTheme();
+    renderClasses();
+  }
+
+  init();
+</script>
+</body>
+</html>
