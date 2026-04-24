@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Калькулятор</title>
+<style>
+:root{
+  --bg1:#101827;
+  --bg2:#2d4f77;
+  --card:rgba(255,255,255,.08);
+  --card2:rgba(255,255,255,.12);
+  --text:#fff;
+  --muted:rgba(255,255,255,.76);
+  --ok:#37c96d;
+  --bad:#ff5d5d;
+  --warn:#ffcc00;
+  --shadow:0 18px 40px rgba(0,0,0,.22);
+  --btn:#6c63ff;
+  --btn2:#444;
+  --fx:#7c3aed;
+  --ans:#0ea5e9;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--text);
+}
+body.light{
+  background:linear-gradient(135deg,#f4f8ff,#d8e5ff);
+  color:#1d2333;
+}
+.container{
+  width:min(1180px,100%);
+  margin:0 auto;
+  padding:18px;
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.brand h1{
+  margin:0;
+  font-size:28px;
+  line-height:1.1;
+}
+.brand p{
+  margin:0;
+  font-size:13px;
+  opacity:.78;
+}
+.toolbar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+button{
+  border:none;
+  border-radius:14px;
+  padding:12px 14px;
+  background:linear-gradient(135deg,var(--btn),#4a47d1);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  transition:.18s ease;
+  box-shadow:0 8px 20px rgba(0,0,0,.18);
+}
+button:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.05);
+}
+button.secondary{background:var(--btn2)}
+button.ghost{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:none;
+}
+button.fx{
+  background:linear-gradient(135deg,var(--fx),#5b21b6);
+}
+button.ans{
+  background:linear-gradient(135deg,var(--ans),#0284c7);
+}
+button.equal{
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+}
+button.clear{
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+}
+button.small{
+  padding:10px 12px;
+  font-size:14px;
+}
+body.light button.secondary{
+  background:#666;
+}
+.card{
+  margin-top:14px;
+  padding:18px;
+  border-radius:22px;
+  background:var(--card);
+  backdrop-filter:blur(14px);
+  box-shadow:var(--shadow);
+}
+.layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);
+  gap:14px;
+}
+.display{
+  background:var(--card2);
+  border-radius:18px;
+  padding:16px;
+  min-height:138px;
+}
+.expr{
+  font-size:18px;
+  opacity:.9;
+  min-height:30px;
+  word-break:break-word;
+  line-height:1.4;
+}
+.result{
+  font-size:36px;
+  font-weight:800;
+  margin-top:8px;
+  word-break:break-word;
+}
+.subline{
+  margin-top:8px;
+  font-size:13px;
+  opacity:.78;
+}
+.calc-wrap{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 120px;
+  gap:10px;
+  margin-top:14px;
+}
+.num-pad{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+}
+.op-pad{
+  display:grid;
+  grid-template-rows:repeat(4,minmax(0,1fr));
+  gap:10px;
+  align-content:start;
+}
+.num-pad button,
+.op-pad button{
+  min-height:56px;
+  font-size:18px;
+}
+.num-pad .wide{
+  grid-column:span 2;
+}
+.fx-panel{
+  display:none;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:10px;
+}
+.panel{
+  background:var(--card2);
+  border-radius:18px;
+  padding:16px;
+}
+.panel h2{
+  margin:0 0 8px;
+  font-size:18px;
+}
+.smalltext{
+  font-size:13px;
+  opacity:.82;
+  line-height:1.45;
+}
+.history{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:10px;
+  max-height:340px;
+  overflow:auto;
+}
+.item{
+  background:rgba(0,0,0,.15);
+  border-radius:14px;
+  padding:12px 14px;
+  font-size:14px;
+  line-height:1.45;
+}
+.item b{
+  display:block;
+  margin-bottom:4px;
+}
+.kbdrow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+kbd{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.12);
+  border-bottom-color:rgba(255,255,255,.2);
+  border-radius:6px;
+  padding:2px 6px;
+  font-size:12px;
+}
+.mem-row{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px;
+}
+.equal-row{
+  margin-top:10px;
+}
+.equal-row button{
+  width:100%;
+  min-height:56px;
+  font-size:18px;
+}
+@media (max-width:960px){
+  .layout{grid-template-columns:1fr}
+}
+@media (max-width:768px){
+  .brand h1{font-size:22px}
+  button{width:100%}
+  .num-pad button,
+  .op-pad button{min-height:52px}
+  .calc-wrap{
+    grid-template-columns:1fr;
+  }
+  .op-pad{
+    grid-template-rows:none;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+  .fx-panel{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .mem-row{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="brand">
+      <h1>🧮 Калькулятор</h1>
+      <p>+, −, ×, ÷, %, ^, sqrt, sin, cos, tan, log, ln, abs</p>
+    </div>
+    <div class="toolbar">
+      <button class="ghost small" type="button" onclick="toggleTheme()">🌓 Тема</button>
+      <button class="secondary small" type="button" onclick="goLobby()">⬅ Лобби</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="card">
+      <div class="display">
+        <div class="expr" id="expr">0</div>
+        <div class="result" id="res">0</div>
+        <div class="subline" id="sub">Нажми FUNC, чтобы открыть функции</div>
+      </div>
+
+      <div class="mem-row">
+        <button class="ans" type="button" onclick="insertAns()">ANS</button>
+        <button class="secondary" type="button" onclick="memoryAdd()">M+</button>
+        <button class="secondary" type="button" onclick="memoryClear()">MC</button>
+      </div>
+
+      <div class="calc-wrap">
+        <div class="num-pad">
+          <button class="clear" type="button" onclick="clearAll()">C</button>
+          <button type="button" onclick="press('7')">7</button>
+          <button type="button" onclick="press('8')">8</button>
+          <button type="button" onclick="press('9')">9</button>
+
+          <button type="button" onclick="press('4')">4</button>
+          <button type="button" onclick="press('5')">5</button>
+          <button type="button" onclick="press('6')">6</button>
+          <button type="button" onclick="press('1')">1</button>
+
+          <button type="button" onclick="press('2')">2</button>
+          <button type="button" onclick="press('3')">3</button>
+          <button class="wide" type="button" onclick="press('0')">0</button>
+          <button type="button" onclick="press('.')">.</button>
+
+          <button type="button" onclick="press('(')">(</button>
+          <button type="button" onclick="press(')')">)</button>
+          <button type="button" onclick="appendSquare()">x²</button>
+        </div>
+
+        <div class="op-pad">
+          <button class="fx" type="button" onclick="toggleFx()">FUNC</button>
+          <button type="button" onclick="backspace()">⌫</button>
+          <button type="button" onclick="press('/')">÷</button>
+          <button type="button" onclick="press('*')">×</button>
+
+          <button type="button" onclick="press('-')">−</button>
+          <button type="button" onclick="press('+')">+</button>
+          <button type="button" onclick="press('%')">%</button>
+          <button type="button" onclick="press('^')">^</button>
+        </div>
+      </div>
+
+      <div class="equal-row">
+        <button class="equal" type="button" onclick="calculate()">=</button>
+      </div>
+
+      <div id="fxPanel" class="fx-panel">
+        <button type="button" onclick="press('sqrt(')">√</button>
+        <button type="button" onclick="press('sin(')">sin</button>
+        <button type="button" onclick="press('cos(')">cos</button>
+        <button type="button" onclick="press('tan(')">tan</button>
+        <button type="button" onclick="press('log(')">log</button>
+        <button type="button" onclick="press('ln(')">ln</button>
+        <button type="button" onclick="press('abs(')">abs</button>
+        <button type="button" onclick="press('pi')">π</button>
+        <button type="button" onclick="press('e')">e</button>
+      </div>
+    </div>
+
+    <div class="card panel">
+      <h2>Подсказка</h2>
+      <div class="smalltext">
+        Тригонометрия считается в градусах.
+        <br><br>
+        <div class="kbdrow">
+          <kbd>2+3*4</kbd>
+          <kbd>sqrt(81)</kbd>
+          <kbd>sin(30)</kbd>
+          <kbd>cos(60)</kbd>
+          <kbd>tan(45)</kbd>
+          <kbd>log(100)</kbd>
+          <kbd>ln(e)</kbd>
+          <kbd>5^2</kbd>
+          <kbd>(2+3)*(4+1)</kbd>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <h2>История</h2>
+        <div class="history" id="history"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const exprEl = document.getElementById("expr");
+const resEl = document.getElementById("res");
+const subEl = document.getElementById("sub");
+const historyEl = document.getElementById("history");
+const fxPanel = document.getElementById("fxPanel");
+
+let expr = "";
+let ans = 0;
+let mem = Number(localStorage.getItem("calcMemory") || "0");
+let history = JSON.parse(localStorage.getItem("calcHistory") || "[]");
+
+function toggleTheme(){
+  document.body.classList.toggle("light");
+  localStorage.setItem("calcTheme", document.body.classList.contains("light") ? "light" : "dark");
+}
+if((localStorage.getItem("calcTheme") || "dark") === "light") document.body.classList.add("light");
+
+function goLobby(){
+  location.href = "lobby.html";
+}
+
+function toggleFx(){
+  fxPanel.style.display = (fxPanel.style.display === "grid") ? "none" : "grid";
+}
+
+function press(v){
+  if(expr === "0" && /[\d.]/.test(v)) expr = "";
+  expr += v;
+  render();
+}
+
+function insertAns(){
+  if(!expr) {
+    expr = String(ans);
+  } else {
+    const last = expr[expr.length - 1];
+    if(/[\d)]/.test(last)) expr += "*";
+    expr += String(ans);
+  }
+  render();
+}
+
+function memoryAdd(){
+  mem = safePreview(expr);
+  localStorage.setItem("calcMemory", String(mem));
+  subEl.textContent = "Память: " + formatNumber(mem);
+  render();
+}
+
+function memoryClear(){
+  mem = 0;
+  localStorage.setItem("calcMemory", "0");
+  subEl.textContent = "Память очищена";
+  render();
+}
+
+function clearAll(){
+  expr = "";
+  render();
+}
+
+function backspace(){
+  expr = expr.slice(0, -1);
+  render();
+}
+
+function appendSquare(){
+  if(!expr) return;
+  expr += "^2";
+  render();
+}
+
+function saveHistory(e, r){
+  history.unshift({ e, r, t: new Date().toLocaleString("ru-RU") });
+  history = history.slice(0, 12);
+  localStorage.setItem("calcHistory", JSON.stringify(history));
+}
+
+function calculate(){
+  try{
+    if(!expr.trim()) return;
+    const value = evaluateExpression(expr);
+    if(!isFinite(value)) throw new Error("bad");
+    ans = value;
+    const result = formatNumber(value);
+    saveHistory(expr, "= " + result);
+    expr = result;
+    render();
+  }catch(err){
+    resEl.textContent = "Ошибка";
+  }
+}
+
+function safePreview(exprText){
+  try{
+    if(!String(exprText).trim()) return 0;
+    const v = evaluateExpression(exprText);
+    return isFinite(v) ? v : 0;
+  }catch(e){
+    return 0;
+  }
+}
+
+function formatNumber(n){
+  if(!isFinite(n)) return "Ошибка";
+  if(Math.abs(n - Math.round(n)) < 1e-12) return String(Math.round(n));
+  return String(Math.round(n * 1e12) / 1e12).replace(/\.?0+$/,"");
+}
+
+function evaluateExpression(input){
+  let s = String(input).replace(/\s+/g, "");
+  s = s.replace(/×/g, "*").replace(/÷/g, "/");
+  s = s.replace(/π/g, "pi");
+  s = s.replace(/sqrt\(/g, "sqrt(");
+  s = s.replace(/sin\(/g, "sin(");
+  s = s.replace(/cos\(/g, "cos(");
+  s = s.replace(/tan\(/g, "tan(");
+  s = s.replace(/log\(/g, "log(");
+  s = s.replace(/ln\(/g, "ln(");
+  s = s.replace(/abs\(/g, "abs(");
+
+  const tokens = tokenize(s);
+  const rpn = toRPN(tokens);
+  return evalRPN(rpn);
+}
+
+function tokenize(s){
+  const tokens = [];
+  let i = 0;
+
+  while(i < s.length){
+    const ch = s[i];
+
+    if(/\d|\./.test(ch)){
+      let num = ch;
+      i++;
+      while(i < s.length && /[\d.]/.test(s[i])) num += s[i++];
+      tokens.push({ type:"number", value: parseFloat(num) });
+      continue;
+    }
+
+    if(/[a-z]/i.test(ch)){
+      let name = ch;
+      i++;
+      while(i < s.length && /[a-z]/i.test(s[i])) name += s[i++];
+      if(name === "pi") tokens.push({ type:"number", value: Math.PI });
+      else if(name === "e") tokens.push({ type:"number", value: Math.E });
+      else tokens.push({ type:"func", value: name });
+      continue;
+    }
+
+    if("+-*/%^(),".includes(ch)){
+      tokens.push({ type:"op", value: ch });
+      i++;
+      continue;
+    }
+
+    throw new Error("Invalid character");
+  }
+
+  return insertUnary(tokens);
+}
+
+function insertUnary(tokens){
+  const out = [];
+  for(let i=0;i<tokens.length;i++){
+    const t = tokens[i];
+    if(t.type === "op" && t.value === "-"){
+      const prev = out[out.length - 1];
+      const unary = !prev || (prev.type === "op" && prev.value !== ")") || prev.type === "func";
+      if(unary){
+        out.push({ type:"func", value:"neg" });
+        continue;
+      }
+    }
+    out.push(t);
+  }
+  return out;
+}
+
+const prec = { "+":1, "-":1, "*":2, "/":2, "%":2, "^":3 };
+function rightAssoc(op){ return op === "^"; }
+
+function toRPN(tokens){
+  const output = [];
+  const stack = [];
+
+  for(const t of tokens){
+    if(t.type === "number"){
+      output.push(t);
+      continue;
+    }
+
+    if(t.type === "func"){
+      stack.push(t);
+      continue;
+    }
+
+    if(t.type === "op"){
+      if(t.value === ",") continue;
+
+      if(t.value === "("){
+        stack.push(t);
+        continue;
+      }
+
+      if(t.value === ")"){
+        while(stack.length && stack[stack.length - 1].value !== "("){
+          output.push(stack.pop());
+        }
+        if(!stack.length) throw new Error("Mismatched parentheses");
+        stack.pop();
+        if(stack.length && stack[stack.length - 1].type === "func"){
+          output.push(stack.pop());
+        }
+        continue;
+      }
+
+      while(stack.length){
+        const top = stack[stack.length - 1];
+        if(top.type === "func"){
+          output.push(stack.pop());
+          continue;
+        }
+        if(top.type === "op" && top.value !== "("){
+          const p1 = prec[t.value] || 0;
+          const p2 = prec[top.value] || 0;
+          const popIt = rightAssoc(t.value) ? (p1 < p2) : (p1 <= p2);
+          if(popIt){
+            output.push(stack.pop());
+            continue;
+          }
+        }
+        break;
+      }
+      stack.push(t);
+    }
+  }
+
+  while(stack.length){
+    const top = stack.pop();
+    if(top.value === "(" || top.value === ")") throw new Error("Mismatched parentheses");
+    output.push(top);
+  }
+
+  return output;
+}
+
+function evalRPN(rpn){
+  const st = [];
+
+  for(const t of rpn){
+    if(t.type === "number"){
+      st.push(t.value);
+      continue;
+    }
+
+    if(t.type === "func"){
+      if(t.value === "neg"){
+        if(st.length < 1) throw new Error("Bad expression");
+        st.push(-st.pop());
+        continue;
+      }
+
+      if(st.length < 1) throw new Error("Bad expression");
+      const a = st.pop();
+
+      switch(t.value){
+        case "sqrt": st.push(Math.sqrt(a)); break;
+        case "sin": st.push(Math.sin(a * Math.PI / 180)); break;
+        case "cos": st.push(Math.cos(a * Math.PI / 180)); break;
+        case "tan": st.push(Math.tan(a * Math.PI / 180)); break;
+        case "log": st.push(Math.log10(a)); break;
+        case "ln": st.push(Math.log(a)); break;
+        case "abs": st.push(Math.abs(a)); break;
+        default: throw new Error("Unknown function");
+      }
+      continue;
+    }
+
+    if(t.type === "op"){
+      if(st.length < 2) throw new Error("Bad expression");
+      const b = st.pop();
+      const a = st.pop();
+
+      switch(t.value){
+        case "+": st.push(a + b); break;
+        case "-": st.push(a - b); break;
+        case "*": st.push(a * b); break;
+        case "/": st.push(a / b); break;
+        case "%": st.push(a % b); break;
+        case "^": st.push(Math.pow(a, b)); break;
+        default: throw new Error("Bad operator");
+      }
+    }
+  }
+
+  if(st.length !== 1) throw new Error("Bad expression");
+  return st[0];
+}
+
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){
+    calculate();
+  }else if(e.key === "Backspace"){
+    backspace();
+  }else if(e.key === "Escape"){
+    clearAll();
+  }else if("0123456789+-*/%^().".includes(e.key)){
+    press(e.key);
+  }
+});
+
+function render(){
+  exprEl.textContent = expr || "0";
+  resEl.textContent = safePreview(expr) ? formatNumber(safePreview(expr)) : "0";
+  subEl.textContent = "Память: " + formatNumber(mem) + " · ANS: " + formatNumber(ans);
+
+  historyEl.innerHTML = history.length
+    ? history.map(item => `<div class="item"><b>${item.e}</b>${item.r}<div style="opacity:.7;font-size:12px;margin-top:4px;">${item.t}</div></div>`).join("")
+    : `<div class="item">Пока нет истории.</div>`;
+}
+
+render();
+</script>
+</body>
+</html>
