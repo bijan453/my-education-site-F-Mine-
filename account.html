@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -51,6 +52,7 @@ textarea{min-height:100px;resize:vertical}
 .subject-card{padding:12px;border-radius:14px;background:rgba(0,0,0,.18)}
 .subject-card b{display:block;font-size:16px}
 .subject-card span{display:block;font-size:12px;opacity:.9;margin-top:4px}
+.hero-progress{margin-top:10px}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.sum-note{max-width:55%}}
 @media(max-width:600px){
   .brand{font-size:20px}
@@ -70,7 +72,6 @@ textarea{min-height:100px;resize:vertical}
     <div class="top-actions">
       <button class="ghost" onclick="toggleTheme()">🌓 Тема</button>
       <button class="secondary" onclick="copyNick()">📋 Ник</button>
-      <button class="secondary" onclick="goOlymp()">🏆 Олимп</button>
       <button class="secondary" onclick="goLobby()">🏠 Лобби</button>
     </div>
   </div>
@@ -139,13 +140,17 @@ textarea{min-height:100px;resize:vertical}
 
     <div>
       <details open>
-        <summary><span>📚 Прогресс по предметам</span><span class="sum-note" id="subjectsNote">Пока нет прогресса</span></summary>
-        <div class="panel subject-grid" id="subjects"></div>
+        <summary><span>📈 Общий прогресс</span><span class="sum-note" id="overallNote">0 / 640</span></summary>
+        <div class="panel">
+          <div class="small" id="overallText">Пройдено: 0 / 640</div>
+          <div class="progress-line hero-progress"><div id="overallFill" class="fill"></div><div id="overallP" class="ptext">0%</div></div>
+          <div class="small" id="lastResultText" style="margin-top:8px">Последний результат не найден.</div>
+        </div>
       </details>
 
       <details open>
-        <summary><span>📊 Прогресс по математике</span><span class="sum-note" id="classesNote">Пока нет прогресса</span></summary>
-        <div class="panel grid" id="classes"></div>
+        <summary><span>📚 Прогресс по предметам</span><span class="sum-note" id="subjectsNote">Пока нет прогресса</span></summary>
+        <div class="panel subject-grid" id="subjects"></div>
       </details>
 
       <details open>
@@ -162,28 +167,37 @@ textarea{min-height:100px;resize:vertical}
         <summary><span>🕒 История</span><span class="sum-note" id="historyNote">Нет действий</span></summary>
         <div class="panel list" id="history"></div>
       </details>
-
-      <details>
-        <summary><span>▶ Продолжить обучение</span><span class="sum-note" id="resumeNote">Последний урок</span></summary>
-        <div class="panel">
-          <div class="small" id="resumeText">Последний урок не найден.</div>
-          <button style="margin-top:10px" onclick="continueLearning()">Продолжить</button>
-        </div>
-      </details>
     </div>
   </div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+  authDomain: "fmine-auth.firebaseapp.com",
+  projectId: "fmine-auth",
+  storageBucket: "fmine-auth.firebasestorage.app",
+  messagingSenderId: "219769927531",
+  appId: "1:219769927531:web:fbd45a0876f32927d23e2e",
+  measurementId: "G-ETT9HCQRQD"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const user = localStorage.getItem("currentUser") || "guest";
 const pkey = "user_" + user;
 const defAvatar = "https://via.placeholder.com/84";
+const userRef = doc(db, "users", user);
+const TOTAL_PROGRESS_UNITS = 640;
 
 const SUBJECTS = {
   math: {
     label: "Математика",
     prefix: "mathProgress",
-    page: "math.html",
     classes: {
       7:["integers","linear","fractions","powers","roots","mixed"],
       8:["linear2","brackets","fractions2","powers2","roots2","mixed2"],
@@ -251,6 +265,7 @@ const SUBJECT_KEYS = ["math", "biology", "physics", "history"];
 const CLASS_KEYS = ["7", "8", "9", "10"];
 
 const json = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
+
 const save = o => {
   localStorage.setItem(pkey, JSON.stringify(o));
   localStorage.setItem("userData", JSON.stringify({
@@ -259,7 +274,7 @@ const save = o => {
   }));
 };
 
-const getProfile = () => {
+const legacyProfile = () => {
   const d = json(pkey) || json("userData") || {};
   return {
     nickname: d.nickname || user,
@@ -271,51 +286,158 @@ const getProfile = () => {
   };
 };
 
-const setProfile = part => {
-  const d = { ...getProfile(), ...part };
-  save(d);
-  return d;
+const defaultFirestoreDoc = {
+  profile: legacyProfile(),
+  studyMeta: json(`studyMeta_${user}`) || {
+    streak: 0,
+    lastDate: "",
+    weeklyCount: 0,
+    weekKey: "",
+    completedUnits: 0
+  },
+  progress: {
+    math: {},
+    biology: {},
+    physics: {},
+    history: {}
+  },
+  activities: json(`profileActivity_${user}`) || [],
+  lastResults: {}
 };
 
-function topicP(subjectKey, c, t){
-  return json(`${SUBJECTS[subjectKey].prefix}_${user}_${c}_${t}`)?.highestCompleted || 0;
+let firestoreData = null;
+
+async function loadFirestoreUser() {
+  try {
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      await setDoc(userRef, defaultFirestoreDoc);
+      firestoreData = JSON.parse(JSON.stringify(defaultFirestoreDoc));
+      return firestoreData;
+    }
+
+    const data = snap.data() || {};
+    firestoreData = {
+      profile: { ...defaultFirestoreDoc.profile, ...(data.profile || {}) },
+      studyMeta: { ...defaultFirestoreDoc.studyMeta, ...(data.studyMeta || {}) },
+      progress: {
+        math: { ...(data.progress?.math || {}) },
+        biology: { ...(data.progress?.biology || {}) },
+        physics: { ...(data.progress?.physics || {}) },
+        history: { ...(data.progress?.history || {}) }
+      },
+      activities: Array.isArray(data.activities) ? data.activities : [],
+      lastResults: data.lastResults || {}
+    };
+    return firestoreData;
+  } catch (e) {
+    firestoreData = JSON.parse(JSON.stringify(defaultFirestoreDoc));
+    return firestoreData;
+  }
 }
 
-function classP(subjectKey, c){
+async function patchUser(payload) {
+  try {
+    await updateDoc(userRef, payload);
+    const snap = await getDoc(userRef);
+    if (snap.exists()) firestoreData = snap.data() || firestoreData || defaultFirestoreDoc;
+  } catch (e) {
+    firestoreData = firestoreData || JSON.parse(JSON.stringify(defaultFirestoreDoc));
+  }
+}
+
+function getProfile() {
+  const d = firestoreData || {};
+  const p = d.profile || legacyProfile();
+  return {
+    nickname: p.nickname || user,
+    avatar: p.avatar || defAvatar,
+    bio: p.bio || "",
+    note: p.note || "",
+    fav: p.fav || "",
+    goal: p.goal || 7
+  };
+}
+
+async function setProfile(part) {
+  const next = { ...getProfile(), ...part };
+  save(next);
+  await patchUser({ profile: next });
+  return next;
+}
+
+function topicP(subjectKey, c, t) {
+  const firebaseValue = firestoreData?.progress?.[subjectKey]?.[c]?.[t]?.highestCompleted;
+  if (typeof firebaseValue === "number") return firebaseValue;
+
+  const legacy = json(`${SUBJECTS[subjectKey].prefix}_${user}_${c}_${t}`);
+  return legacy?.highestCompleted || 0;
+}
+
+function maxFor(subjectKey, c, t) {
+  return subjectKey === "math" ? 16 : 320;
+}
+
+function classCompletedTopics(subjectKey, c) {
   const topics = SUBJECTS[subjectKey].classes[c] || [];
-  const total = topics.reduce((s, t) => s + Math.min(16, topicP(subjectKey, c, t)), 0);
-  return topics.length ? Math.round(total / (topics.length * 16) * 100) : 0;
+  const max = maxFor(subjectKey, c);
+  return topics.filter(t => topicP(subjectKey, c, t) >= max).length;
 }
 
-function subjectProgress(subjectKey){
+function classTotalLevels(subjectKey, c) {
+  const topics = SUBJECTS[subjectKey].classes[c] || [];
+  return topics.reduce((s, t) => s + Math.min(maxFor(subjectKey, c, t), topicP(subjectKey, c, t)), 0);
+}
+
+function classP(subjectKey, c) {
+  const topics = SUBJECTS[subjectKey].classes[c] || [];
+  const max = maxFor(subjectKey, c);
+  const total = topics.reduce((s, t) => s + Math.min(max, topicP(subjectKey, c, t)), 0);
+  return topics.length ? Math.round(total / (topics.length * max) * 100) : 0;
+}
+
+function subjectProgress(subjectKey) {
   const classes = CLASS_KEYS.map(c => classP(subjectKey, c));
   return classes.length ? Math.round(classes.reduce((a, b) => a + b, 0) / classes.length) : 0;
 }
 
-function subjectLevels(subjectKey){
-  return CLASS_KEYS.reduce((s, c) => s + (SUBJECTS[subjectKey].classes[c] || []).reduce((a, t) => a + Math.min(16, topicP(subjectKey, c, t)), 0), 0);
+function subjectLevels(subjectKey) {
+  return CLASS_KEYS.reduce((s, c) => s + (SUBJECTS[subjectKey].classes[c] || []).reduce((a, t) => a + Math.min(maxFor(subjectKey, c, t), topicP(subjectKey, c, t)), 0), 0);
 }
 
-function subjectTopics(subjectKey){
-  return CLASS_KEYS.reduce((s, c) => s + (SUBJECTS[subjectKey].classes[c] || []).filter(t => topicP(subjectKey, c, t) >= 16).length, 0);
+function subjectTopics(subjectKey) {
+  return CLASS_KEYS.reduce((s, c) => {
+    const max = maxFor(subjectKey, c);
+    return s + (SUBJECTS[subjectKey].classes[c] || []).filter(t => topicP(subjectKey, c, t) >= max).length;
+  }, 0);
 }
 
-function totalLevels(){
+function totalLevels() {
   return SUBJECT_KEYS.reduce((s, sk) => s + subjectLevels(sk), 0);
 }
 
-function totalTopics(){
+function totalTopics() {
   return SUBJECT_KEYS.reduce((s, sk) => s + subjectTopics(sk), 0);
 }
 
-function getAverage(){
+function getAverage() {
   const arr = SUBJECT_KEYS.map(subjectProgress);
   return Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
 }
 
 const getOlymp = c => parseInt(localStorage.getItem(`${user}_olymp_${c}`) || "0", 10) || 0;
 const lastMath = () => json(`${user}_math_last`);
-const study = () => json(`studyMeta_${user}`) || { streak:0, lastDate:"", weeklyCount:0, weekKey:"" };
+const lastResultAny = () => {
+  const all = firestoreData?.lastResults || {};
+  const items = Object.entries(all)
+    .filter(([, v]) => v && typeof v === "object")
+    .map(([subject, value]) => ({ subject, ...value }));
+  if (!items.length) return null;
+  items.sort((a, b) => (b.time || 0) - (a.time || 0));
+  return items[0];
+};
+const subjectLabel = key => SUBJECTS[key]?.label || key;
+const study = () => firestoreData?.studyMeta || json(`studyMeta_${user}`) || { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 };
 
 const keyToday = () => new Date().toISOString().slice(0,10);
 const keyWeek = () => {
@@ -327,78 +449,60 @@ const keyWeek = () => {
   return mon.toISOString().slice(0,10);
 };
 
-function toggleTheme(){
+function toggleTheme() {
   document.body.classList.toggle("light");
   localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
 }
-if((localStorage.getItem("accountTheme") || "dark") === "light") document.body.classList.add("light");
 
-function toggleMenu(){
+function toggleMenu() {
   const m = document.getElementById("menu");
   m.style.display = m.style.display === "flex" ? "none" : "flex";
 }
 document.addEventListener("click", e => {
   const m = document.getElementById("menu"), a = document.getElementById("avatar");
-  if(m && !m.contains(e.target) && e.target !== a) m.style.display = "none";
+  if (m && !m.contains(e.target) && e.target !== a) m.style.display = "none";
 });
 
-function pickAvatar(){ document.getElementById("file").click(); }
-document.getElementById("file").onchange = function(){
-  const file = this.files[0];
-  if(!file) return;
-  const r = new FileReader();
-  r.onload = e => {
-    document.getElementById("avatar").src = e.target.result;
-    setProfile({ avatar:e.target.result });
-    addAct("Аватар обновлён.");
-    render();
-  };
-  r.readAsDataURL(file);
-};
+function pickAvatar() { document.getElementById("file").click(); }
 
-function resetAvatar(){
+async function resetAvatar() {
   document.getElementById("avatar").src = defAvatar;
-  setProfile({ avatar:defAvatar });
+  await setProfile({ avatar:defAvatar });
   addAct("Аватар сброшен.");
   render();
 }
-
-function saveBio(){
-  setProfile({ bio: document.getElementById("bio").value });
+async function saveBio() {
+  await setProfile({ bio: document.getElementById("bio").value });
   addAct("Био сохранено.");
   alert("Сохранено");
   render();
 }
-
-function saveNote(){
-  setProfile({ note: document.getElementById("note").value });
+async function saveNote() {
+  await setProfile({ note: document.getElementById("note").value });
   addAct("Заметка сохранена.");
   render();
 }
-
-function clearNote(){
+async function clearNote() {
   document.getElementById("note").value = "";
-  setProfile({ note:"" });
+  await setProfile({ note:"" });
   addAct("Заметка очищена.");
   render();
 }
-
-function saveFav(){
+async function saveFav() {
   const v = document.getElementById("fav").value;
-  setProfile({ fav:v });
+  await setProfile({ fav:v });
   document.getElementById("favText").innerText = v ? "Любимая: " + v : "Пока не выбрана";
   addAct("Любимая тема сохранена.");
   render();
 }
-
-function markToday(){
+async function markToday() {
   const today = keyToday();
   const weekKey = keyWeek();
-  const s = study();
+  const s = { ...study() };
 
-  if(s.lastDate === today) return alert("Сегодня уже отмечено.");
+  if (s.lastDate === today) return alert("Сегодня уже отмечено.");
 
-  if(s.weekKey !== weekKey){
+  if (s.weekKey !== weekKey) {
     s.weekKey = weekKey;
     s.weeklyCount = 0;
   }
@@ -411,120 +515,86 @@ function markToday(){
   s.lastDate = today;
 
   localStorage.setItem(`studyMeta_${user}`, JSON.stringify(s));
+  await patchUser({ studyMeta: s });
   addAct("Отмечено занятие за сегодня.");
   render();
 }
-
-function saveGoal(){
+async function saveGoal() {
   const g = parseInt(document.getElementById("goalInput").value, 10);
-  if(!g || g < 1) return alert("Введите цель.");
-  setProfile({ goal:g });
+  if (!g || g < 1) return alert("Введите цель.");
+  await setProfile({ goal:g });
   addAct(`Цель недели: ${g}.`);
   render();
 }
-
-function copyNick(){
+function copyNick() {
   navigator.clipboard.writeText(user)
-    .then(() => {
-      alert("Ник скопирован");
-      addAct("Ник скопирован.");
-    })
+    .then(() => { alert("Ник скопирован"); addAct("Ник скопирован."); })
     .catch(() => alert("Не удалось скопировать"));
 }
+function goLobby() { location.href = "lobby.html"; }
 
-function goLobby(){ location.href = "lobby.html"; }
-function goOlymp(){ location.href = "matholymp.html"; }
-
-function continueLearning(){
-  const l = lastMath();
-  if(!l) return alert("Сначала открой математику и пройди уровень.");
-  localStorage.setItem(`${user}_math_resume`, JSON.stringify(l));
-  location.href = "math.html";
-}
-
-function addAct(text){
-  const k = `profileActivity_${user}`;
-  const arr = json(k) || [];
-  arr.unshift({ text, time: new Date().toLocaleString("ru-RU") });
-  localStorage.setItem(k, JSON.stringify(arr.slice(0, 8)));
+async function addAct(text) {
+  const entry = { text, time: new Date().toLocaleString("ru-RU") };
+  const arr = [...(firestoreData?.activities || []), entry].slice(0, 8);
+  localStorage.setItem(`profileActivity_${user}`, JSON.stringify(arr));
+  await patchUser({ activities: arr });
   renderHistory();
 }
 
-function renderSubjectSummary(){
+function renderSubjectSummary() {
   const w = document.getElementById("subjects");
   w.innerHTML = "";
   SUBJECT_KEYS.forEach(sk => {
     const subj = SUBJECTS[sk];
-    const p = subjectProgress(sk);
-    const done = subjectTopics(sk);
-    const levels = subjectLevels(sk);
+    const doneTopics = CLASS_KEYS.reduce((sum, c) => sum + classCompletedTopics(sk, c), 0);
+    const totalTopicsCount = CLASS_KEYS.reduce((sum, c) => sum + (SUBJECTS[sk].classes[c] || []).length, 0);
+    const totalLevelsCount = subjectLevels(sk);
+
     w.innerHTML += `
       <div class="subject-card">
         <b>${subj.label}</b>
-        <div class="progress-line"><div class="fill" style="width:${p}%"></div><div class="ptext">${p}%</div></div>
-        <span>Тем закрыто: ${done} · Уровней: ${levels}</span>
+        <div class="progress-line"><div class="fill" style="width:${Math.min(100, totalTopicsCount ? (doneTopics / totalTopicsCount) * 100 : 0)}%"></div><div class="ptext">${doneTopics}/${totalTopicsCount}</div></div>
+        <span>Тем закрыто: ${doneTopics}/${totalTopicsCount} · Уровней: ${totalLevelsCount}</span>
       </div>`;
   });
+
   const any = SUBJECT_KEYS.some(sk => subjectLevels(sk) > 0);
   document.getElementById("subjectsNote").innerText = any ? `${totalTopics()} тем · ${totalLevels()} уровней` : "Пока нет прогресса";
 }
 
-function renderClasses(){
-  const wrap = document.getElementById("classes");
-  wrap.innerHTML = "";
-  CLASS_KEYS.forEach(c => {
-    const p = classP("math", c);
-    const done = SUBJECTS.math.classes[c].filter(t => topicP("math", c, t) >= 16).length;
-    const lev = SUBJECTS.math.classes[c].reduce((s, t) => s + Math.min(16, topicP("math", c, t)), 0);
-    wrap.innerHTML += `
-      <div class="class-block">
-        <div class="row" style="justify-content:space-between"><div>${c} класс</div><div>${p}%</div></div>
-        <div class="progress-line"><div class="fill" style="width:${p}%"></div><div class="ptext">${p}%</div></div>
-        <div class="small">${lev > 0 ? `Тем: ${done}/${SUBJECTS.math.classes[c].length} · Уровней: ${lev}` : `Пока нет прогресса в этом классе`}</div>
-      </div>`;
-  });
-  document.getElementById("classesNote").innerText = totalLevels() > 0 ? `${subjectTopics("math")} тем · ${subjectLevels("math")} уровней` : "Пока нет прогресса";
-}
-
-function renderOlymp(){
-  ["7","8","9","10"].forEach(c => {
-    const p = getOlymp(c);
-    document.getElementById("o" + c).style.width = p + "%";
-    document.getElementById("o" + c + "t").innerText = c + " класс: " + p + "%";
-  });
-  const vals = [getOlymp("7"), getOlymp("8"), getOlymp("9"), getOlymp("10")];
-  const max = Math.max(...vals);
-  document.getElementById("olympNote").innerText = max > 0 ? `Лучший класс: ${["7","8","9","10"][vals.indexOf(max)]}` : "0% пока";
-}
-
-function renderDetails(){
+function renderDetails() {
   const w = document.getElementById("details");
   w.innerHTML = "";
   SUBJECT_KEYS.forEach(sk => {
     const subj = SUBJECTS[sk];
-    let html = `<div class="class-block"><div class="row" style="justify-content:space-between"><div>${subj.label}</div><div>${subjectProgress(sk)}%</div></div><div class="list">`;
+    let html = `<div class="class-block"><div class="row" style="justify-content:space-between"><div>${subj.label}</div><div>${subjectTopics(sk)} тем</div></div><div class="list">`;
     let hasData = false;
+
     CLASS_KEYS.forEach(c => {
-      const p = classP(sk, c);
       const topics = subj.classes[c] || [];
-      const totalLevelsInClass = topics.reduce((s, t) => s + Math.min(16, topicP(sk, c, t)), 0);
-      const doneTopics = topics.filter(t => topicP(sk, c, t) >= 16).length;
-      if(topics.some(t => topicP(sk, c, t) > 0)) hasData = true;
-      html += `<div class="item"><b>${c} класс</b><br><small>${doneTopics}/${topics.length} тем · ${totalLevelsInClass}/16 уровней на тему в среднем</small><span style="float:right;font-weight:800">${p}%</span></div>`;
+      const max = maxFor(sk, c);
+      const totalLevelsInClass = topics.reduce((s, t) => s + Math.min(max, topicP(sk, c, t)), 0);
+      const doneTopics = topics.filter(t => topicP(sk, c, t) >= max).length;
+      if (topics.some(t => topicP(sk, c, t) > 0)) hasData = true;
+
+      html += `<div class="item"><b>${c} класс</b><br><small>${doneTopics}/${topics.length} тем · ${totalLevelsInClass} уровней</small></div>`;
+
       topics.forEach(t => {
         const tp = topicP(sk, c, t);
         const n = subj.names[c]?.[t] || t;
-        html += `<div class="item" style="margin-left:8px"><b>${n}</b><br><small>${tp}/16 уровней</small><span style="float:right;font-weight:800">${Math.round(tp/16*100)}%</span></div>`;
+        html += `<div class="item" style="margin-left:8px"><b>${n}</b><br><small>${tp}/${max} уровней</small><span style="float:right;font-weight:800">${Math.round((tp/max)*100)}%</span></div>`;
       });
     });
-    if(!hasData) html += `<div class="item">Пока нет данных. Начни с первого уровня.</div>`;
+
+    if (!hasData) html += `<div class="item">Пока нет данных. Начни с первого уровня.</div>`;
     html += `</div></div>`;
     w.innerHTML += html;
   });
+
   document.getElementById("detailsNote").innerText = totalLevels() > 0 ? "Есть данные по предметам" : "Пока нет данных";
 }
 
-function renderBadges(){
+function renderBadges() {
   const g = document.getElementById("badges");
   const avg = getAverage();
   const meta = study();
@@ -541,20 +611,20 @@ function renderBadges(){
   ];
   const any = badges.some(b => b[2]);
   g.innerHTML = badges.map(b => `<div class="badge ${b[2] ? 'on' : ''}"><b>${b[0]}</b><span>${b[1]}</span></div>`).join("");
-  if(!any) g.innerHTML = `<div class="badge">Пока достижений нет. Пройди первый уровень.</div>`;
+  if (!any) g.innerHTML = `<div class="badge">Пока достижений нет. Пройди первый уровень.</div>`;
   document.getElementById("badgesNote").innerText = any ? "Есть достижения" : "Пройди первый уровень";
 }
 
-function renderHistory(){
+function renderHistory() {
   const w = document.getElementById("history");
-  const arr = json(`profileActivity_${user}`) || [];
+  const arr = firestoreData?.activities || json(`profileActivity_${user}`) || [];
   w.innerHTML = arr.length ? arr.map(a => `<div class="item"><b>${a.time}</b><br>${a.text}</div>`).join("") : `<div class="item">Пока действий нет.</div>`;
   document.getElementById("historyNote").innerText = arr.length ? `${arr.length} записей` : "Нет действий";
 }
 
-function renderFavSelect(){
+function renderFavSelect() {
   const s = document.getElementById("fav");
-  if(!s.options.length){
+  if (!s.options.length) {
     let html = "";
     SUBJECT_KEYS.forEach(sk => {
       const subj = SUBJECTS[sk];
@@ -568,28 +638,46 @@ function renderFavSelect(){
     s.innerHTML = html;
   }
   const fav = getProfile().fav;
-  if(fav) s.value = fav;
+  if (fav) s.value = fav;
   document.getElementById("favText").innerText = fav ? "Любимая: " + fav : "Пока не выбрана";
   document.getElementById("favNote").innerText = fav ? fav : "Пока не выбрана";
   document.getElementById("profNote").innerText = getProfile().bio ? "Био заполнено" : "Био, заметки, прогресс и цели";
 }
 
-function renderStats(){
+function renderStats() {
   const s = study();
   const g = getProfile().goal || 7;
   const wc = s.weeklyCount || 0;
   const gp = Math.min(100, Math.round((wc / g) * 100));
+  const completed = s.completedUnits || 0;
+
   document.getElementById("streakText").innerText = "Стрик: " + (s.streak || 0) + " дней";
   document.getElementById("goalText").innerText = `Цель недели: ${wc}/${g}`;
   document.getElementById("goalFill").style.width = gp + "%";
   document.getElementById("goalP").innerText = gp + "%";
   document.getElementById("streakNote").innerText = s.streak > 0 ? `${s.streak} дн.` : "Пока нет серии";
+
+  document.getElementById("overallText").innerText = `Пройдено: ${completed} / ${TOTAL_PROGRESS_UNITS}`;
+  document.getElementById("overallFill").style.width = Math.min(100, Math.round((completed / TOTAL_PROGRESS_UNITS) * 100)) + "%";
+  document.getElementById("overallP").innerText = Math.min(100, Math.round((completed / TOTAL_PROGRESS_UNITS) * 100)) + "%";
+  document.getElementById("overallNote").innerText = `${completed} / ${TOTAL_PROGRESS_UNITS}`;
+
+  const lr = lastResultAny();
   const lm = lastMath();
-  document.getElementById("resumeText").innerText = lm ? `${lm.classNum} класс · ${(SUBJECTS.math.names[lm.classNum] || {})[lm.topic] || lm.topic} · уровень ${lm.level}/16` : "Последний урок не найден.";
-  document.getElementById("resumeNote").innerText = lm ? `${lm.classNum} класс · уровень ${lm.level}/16` : "Последний урок";
+  const last = lr || (lm ? { subject: "math", ...lm } : null);
+  if (last) {
+    const title = subjectLabel(last.subject);
+    const topicName = SUBJECTS[last.subject]?.names?.[last.classNum]?.[last.topic] || last.topic || "";
+    const max = maxFor(last.subject || "math", last.classNum, last.topic);
+    document.getElementById("lastResultText").innerText = `Последний результат: ${title} · ${last.classNum} класс · ${topicName} · уровень ${last.level}/${max}`;
+    document.getElementById("hint").innerText = `Последний уровень: ${title} · ${last.classNum} класс · ${last.level}/${max}`;
+  } else {
+    document.getElementById("lastResultText").innerText = "Последний результат не найден.";
+    document.getElementById("hint").innerText = "Био, заметки, прогресс и цели.";
+  }
 }
 
-function render(){
+function render() {
   const profile = getProfile();
   document.getElementById("name").innerText = profile.nickname || user;
   document.getElementById("avatar").src = profile.avatar || defAvatar;
@@ -599,14 +687,46 @@ function render(){
   renderFavSelect();
   renderSubjectSummary();
   renderStats();
-  renderClasses();
-  renderOlymp();
   renderDetails();
   renderBadges();
   renderHistory();
 }
 
-render();
+document.getElementById("file").onchange = function() {
+  const file = this.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById("avatar").src = e.target.result;
+    setProfile({ avatar:e.target.result }).then(() => {
+      addAct("Аватар обновлён.");
+      render();
+    });
+  };
+  r.readAsDataURL(file);
+};
+
+if ((localStorage.getItem("accountTheme") || "dark") === "light") document.body.classList.add("light");
+
+async function init() {
+  await loadFirestoreUser();
+  render();
+}
+
+window.toggleTheme = toggleTheme;
+window.toggleMenu = toggleMenu;
+window.pickAvatar = pickAvatar;
+window.resetAvatar = resetAvatar;
+window.saveBio = saveBio;
+window.saveNote = saveNote;
+window.clearNote = clearNote;
+window.saveFav = saveFav;
+window.markToday = markToday;
+window.saveGoal = saveGoal;
+window.copyNick = copyNick;
+window.goLobby = goLobby;
+
+init();
 </script>
 </body>
 </html>

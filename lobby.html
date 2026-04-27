@@ -494,7 +494,6 @@ if((localStorage.getItem("accountTheme") || "dark") === "light"){
   document.body.classList.add("light");
 }
 
-// user data
 let currentUser = localStorage.getItem("currentUser");
 if(currentUser){
   const userData = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
@@ -504,7 +503,6 @@ if(currentUser){
   document.getElementById("resumeText").innerText = "Открой аккаунт, чтобы посмотреть последний урок и прогресс.";
 }
 
-// avatar change
 function changeAvatar(){
   const fileInput = document.getElementById("avatar-input");
   fileInput.click();
@@ -556,7 +554,7 @@ function continueLastLesson(){
   window.location.href = all[0].page;
 }
 
-// Прогресс по предметам
+
 function getSubjectProgress(prefix){
   const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix + "_"));
   let total = 0;

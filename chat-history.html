@@ -131,7 +131,6 @@ async function sendMessage(){
     addMessage('Бот',lang==='RU'?'Не удалось найти ответ':'Could not find an answer','bot');
   }
 }
-// --- Голосовой ввод ---
 function startVoice(){
   if(!('webkitSpeechRecognition' in window)){
     alert('Ваш браузер не поддерживает голосовой ввод');
@@ -147,13 +146,10 @@ function startVoice(){
   recognition.start();
 }
 
-// --- Получение ответа из Википедии ---
 async function getWikiAnswer(query){
-  // Выделяем ключевые слова: убираем "когда","что","где" и знаки
   let cleanQuery=query.replace(/когда|что|где|как|\/|\?|\!/gi,'').trim();
   if(lang==='EN') cleanQuery=query.replace(/when|what|where|how|\/|\?|\!/gi,'').trim();
 
-  // Поиск через MediaWiki API
   const searchUrl=`https://${lang==='RU'?'ru':'en'}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json&origin=*`;
   const searchResp=await fetch(searchUrl);
   const searchData=await searchResp.json();
@@ -161,7 +157,6 @@ async function getWikiAnswer(query){
 
   const pageTitle=searchData.query.search[0].title;
 
-  // Получаем содержимое страницы
   const pageUrl=`https://${lang==='RU'?'ru':'en'}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(pageTitle)}&format=json&origin=*`;
   const pageResp=await fetch(pageUrl);
   const pageData=await pageResp.json();

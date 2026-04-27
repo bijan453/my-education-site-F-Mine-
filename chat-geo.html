@@ -139,7 +139,6 @@ function sendMessage(){
     });
   },1000+Math.random()*1000);
 }
-// --- Голосовой ввод ---
 function startVoice(){
   if(!('webkitSpeechRecognition' in window)){
     alert('Ваш браузер не поддерживает голосовой ввод');
@@ -155,7 +154,6 @@ function startVoice(){
   recognition.start();
 }
 
-// --- География Бот: получение ответа с Wikipedia API ---
 async function getWikiAnswer(query){
   try{
     var searchUrl='https://'+(lang==='RU'?'ru':'en')+'.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch='+encodeURIComponent(query)+'&origin=*';

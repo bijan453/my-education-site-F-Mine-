@@ -150,10 +150,10 @@ h1{
 let selectedBank = null;
 
 function selectBank(el, bank){
-  // убрать старый active
+
   document.querySelectorAll('.bank').forEach(b => b.classList.remove('active'));
 
-  // добавить новый
+
   el.classList.add('active');
 
   selectedBank = bank;

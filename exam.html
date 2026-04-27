@@ -111,7 +111,6 @@ input.answer-input{padding:8px 12px;border-radius:8px;border:none;width:60%;font
 </div>
 
 <script>
-// --- Пользователь ---
 let currentUser = localStorage.getItem("currentUser");
 if(currentUser){
     let userData = JSON.parse(localStorage.getItem("user_"+currentUser)) || {};
@@ -120,7 +119,6 @@ if(currentUser){
     if(userData.avatar) document.getElementById("profile-avatar").src = userData.avatar;
 }
 
-// Смена аватарки
 function changeAvatar(){
     const fileInput=document.getElementById("avatar-input");
     fileInput.click();
@@ -142,12 +140,10 @@ function changeAvatar(){
     }
 }
 
-// Навигация
 function goTo(page){window.location.href=page;}
 function goToAccount(){window.location.href="account.html";}
 function toggleTheme(){document.body.classList.toggle('light');}
 
-// --- Экзамен ---
 let examData=[];
 let currentClass=7;
 let startTime;
@@ -225,7 +221,6 @@ function checkExam(){
     showSmartChoice(percent);
 }
 
-// --- Умный выбор ---
 function showSmartChoice(percent){
     const area=document.getElementById('smartChoiceArea');
     area.innerHTML='';

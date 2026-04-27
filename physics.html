@@ -1,220 +1,106 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Study Hub</title>
+<title>Физика</title>
 <style>
 :root{
-  --bg1:#101827;
-  --bg2:#2d4f77;
+  --bg1:#07111f;
+  --bg2:#111b35;
+  --bg3:#1c2f5b;
   --card:rgba(255,255,255,.08);
   --card2:rgba(255,255,255,.12);
   --text:#fff;
-  --muted:rgba(255,255,255,.76);
+  --muted:rgba(255,255,255,.78);
   --ok:#37c96d;
   --bad:#ff5d5d;
   --warn:#ffcc00;
-  --shadow:0 18px 40px rgba(0,0,0,.22);
+  --accent:#6c63ff;
+  --accent2:#4a47d1;
+  --glow:0 0 18px rgba(108,99,255,.28), 0 0 30px rgba(0,212,255,.16);
+  --glow2:0 0 12px rgba(108,99,255,.45), 0 0 24px rgba(0,212,255,.28);
+  --shadow:0 18px 40px rgba(0,0,0,.28);
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
-  margin:0;
-  min-height:100vh;
-  font-family:Arial,sans-serif;
-  background:linear-gradient(135deg,var(--bg1),var(--bg2));
-  color:var(--text);
+  margin:0;min-height:100vh;font-family:Arial,sans-serif;color:var(--text);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(108,99,255,.18), transparent 26%),
+    radial-gradient(circle at 90% 18%, rgba(0,212,255,.12), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(255,215,0,.08), transparent 26%),
+    linear-gradient(135deg,var(--bg1),var(--bg2) 45%,var(--bg3));
+  transition:.25s ease;
 }
 body.light{
-  background:linear-gradient(135deg,#f4f8ff,#d8e5ff);
-  color:#1d2333;
+  --card:rgba(255,255,255,.68);
+  --card2:rgba(255,255,255,.84);
+  --text:#172033;
+  --muted:#33415f;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(108,99,255,.10), transparent 26%),
+    radial-gradient(circle at 90% 18%, rgba(0,212,255,.08), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(255,215,0,.08), transparent 26%),
+    linear-gradient(135deg,#edf4ff,#dfe9ff 45%,#d1ddff);
 }
-.container{
-  width:min(1140px,100%);
-  margin:0 auto;
-  padding:18px;
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,.03), transparent 35%),radial-gradient(circle at 50% 0%, rgba(255,255,255,.08), transparent 34%);
+  opacity:.35;
 }
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-bottom:14px;
-}
-.brand{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-.brand h1{
-  margin:0;
-  font-size:28px;
-  line-height:1.1;
-}
-.brand p{
-  margin:0;
-  font-size:13px;
-  opacity:.78;
-}
-.toolbar{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
+.container{width:min(1180px,100%);margin:0 auto;padding:18px}
+.header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.brand{display:flex;flex-direction:column;gap:4px}
+.brand h1{margin:0;font-size:28px;line-height:1.1;text-shadow:0 0 10px rgba(108,99,255,.25), 0 0 16px rgba(0,212,255,.14)}
+.brand p{margin:0;font-size:13px;color:var(--muted);opacity:.9}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
 button{
-  border:none;
-  border-radius:14px;
-  padding:12px 14px;
-  background:linear-gradient(135deg,#6c63ff,#4a47d1);
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
-  transition:.18s ease;
-  box-shadow:0 8px 20px rgba(0,0,0,.18);
+  border:none;border-radius:14px;padding:12px 14px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-weight:700;cursor:pointer;transition:.18s ease;box-shadow:var(--shadow), var(--glow);position:relative;overflow:hidden
 }
-button:hover{
-  transform:translateY(-1px);
-  filter:brightness(1.05);
-}
-button.secondary{
-  background:#444;
-}
-button.ghost{
-  background:transparent;
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:none;
-}
-body.light button.secondary{
-  background:#666;
-}
-.card{
-  margin-top:14px;
-  padding:18px;
-  border-radius:22px;
-  background:var(--card);
-  backdrop-filter:blur(14px);
-  box-shadow:var(--shadow);
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-.level-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:10px;
-}
-.option-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-}
-.card-btn{
-  text-align:left;
-  padding:16px;
-  white-space:normal;
-  line-height:1.35;
-}
-.card-btn strong{
-  display:block;
-  font-size:17px;
-  margin-bottom:4px;
-}
-.card-btn small{
-  display:block;
-  opacity:.86;
-  font-size:13px;
-}
+button::after{content:"";position:absolute;inset:-1px;background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,.22) 40%, transparent 60%);transform:translateX(-120%);transition:transform .55s ease}
+button:hover::after{transform:translateX(120%)}
+button:hover{transform:translateY(-2px);box-shadow:var(--shadow), var(--glow2);filter:brightness(1.04)}
+button:active{transform:translateY(0) scale(.99)}
+button.secondary{background:linear-gradient(135deg,#444,#2f2f44)}
+button.ghost{background:transparent;border:1px solid rgba(255,255,255,.18);box-shadow:none}
+body.light button.secondary{background:linear-gradient(135deg,#6b7280,#555c70)}
+button.card-btn{text-align:left;padding:16px;white-space:normal;line-height:1.35;border:1px solid rgba(255,255,255,.08)}
+button.card-btn.active{outline:2px solid rgba(255,255,255,.35);transform:translateY(-1px)}
+.card{margin-top:14px;padding:18px;border-radius:22px;background:var(--card);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.10);box-shadow:var(--shadow)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.level-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.option-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card-btn strong{display:block;font-size:17px;margin-bottom:4px;text-shadow:0 0 10px rgba(108,99,255,.12)}
+.card-btn small{display:block;opacity:.86;font-size:13px;color:var(--muted)}
 .hidden{display:none}
-.small{
-  font-size:13px;
-  opacity:.88;
-  line-height:1.45;
-}
-.progress{
-  margin-top:10px;
-  font-weight:700;
-}
-.bar{
-  width:min(820px,100%);
-  height:14px;
-  background:#444;
-  border-radius:999px;
-  margin:10px auto 0;
-  overflow:hidden;
-}
-.fill{
-  width:0%;
-  height:100%;
-  background:var(--warn);
-  transition:.3s;
-}
-.q{
-  font-size:22px;
-  line-height:1.5;
-  margin:18px 0 10px;
-}
-.option-btn{
-  text-align:left;
-  min-height:58px;
-}
-.option-btn.selected{
-  outline:2px solid rgba(255,255,255,.55);
-}
-.option-btn.correct{
-  background:var(--ok);
-}
-.option-btn.wrong{
-  background:var(--bad);
-}
-.result{
-  margin-top:14px;
-  font-size:20px;
-  min-height:28px;
-}
-.solution{
-  margin-top:10px;
-  min-height:24px;
-  line-height:1.45;
-  opacity:.92;
-}
-.nav-row{
-  margin-top:16px;
-}
-.footer{
-  margin-top:24px;
-  opacity:.82;
-  text-align:center;
-  font-size:14px;
-}
-.top-stats{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;
-  margin-top:14px;
-}
-.stat{
-  padding:14px 16px;
-  border-radius:18px;
-  background:var(--card2);
-}
-.stat b{
-  display:block;
-  font-size:18px;
-  margin-bottom:4px;
-}
-.stat span{
-  font-size:13px;
-  opacity:.85;
-}
-.loading{
-  text-align:center;
-  padding:20px 10px;
-  font-size:18px;
-  opacity:.9;
-}
+.small{font-size:13px;opacity:.88;line-height:1.45;color:var(--muted)}
+.progress{margin-top:10px;font-weight:700}
+.bar{width:min(820px,100%);height:14px;background:rgba(0,0,0,.28);border-radius:999px;margin:10px auto 0;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.fill{width:0%;height:100%;background:linear-gradient(90deg,var(--accent),gold);box-shadow:0 0 12px rgba(108,99,255,.35);transition:.3s}
+.q{font-size:22px;line-height:1.5;margin:18px 0 10px;text-shadow:0 0 10px rgba(255,255,255,.08), 0 0 16px rgba(108,99,255,.10)}
+.option-btn{min-height:58px;text-align:left}
+.option-btn.selected{outline:2px solid rgba(255,255,255,.55)}
+.option-btn.correct{background:var(--ok)}
+.option-btn.wrong{background:var(--bad)}
+.result{margin-top:14px;font-size:20px;min-height:28px}
+.solution{margin-top:10px;min-height:24px;line-height:1.45;opacity:.92}
+.nav-row{margin-top:16px}
+.footer{margin-top:24px;opacity:.82;text-align:center;font-size:14px;color:var(--muted)}
+.top-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.stat{padding:14px 16px;border-radius:18px;background:var(--card2);border:1px solid rgba(255,255,255,.08)}
+.stat b{display:block;font-size:18px;margin-bottom:4px}
+.stat span{font-size:13px;opacity:.85;color:var(--muted)}
+.loading{text-align:center;padding:20px 10px;font-size:18px;opacity:.9}
+.lang-btn{min-width:84px}
+.hero{margin-top:14px;padding:18px;border-radius:22px;background:linear-gradient(135deg, rgba(108,99,255,.18), rgba(0,212,255,.08));border:1px solid rgba(255,255,255,.10);box-shadow:var(--shadow)}
+.hero-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.hero h2{margin:0 0 8px;font-size:22px}
+.hero p{margin:0;color:var(--muted);line-height:1.5}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pill{padding:8px 10px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.08);font-size:12px;color:var(--muted)}
 @media (max-width:768px){
   .grid,.option-grid,.top-stats{grid-template-columns:1fr}
   .level-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -231,23 +117,43 @@ body.light button.secondary{
 <div class="container">
   <div class="header">
     <div class="brand">
-      <h1 id="pageTitle">📚</h1>
-      <p id="pageSubtitle">Гибридные вопросы для biology / history, математика для physics</p>
+      <h1 id="pageTitle">Физика</h1>
+      <p id="pageSubtitle">Русский / English интерфейс. Вопросы берутся из API и не повторяются каждый уровень.</p>
     </div>
     <div class="toolbar">
-      <button class="ghost" type="button" onclick="toggleTheme()">🌓 Тема</button>
+      <button class="ghost" id="themeBtn" type="button" onclick="toggleTheme()">🌓 <span id="themeLabel">Тема</span></button>
+      <button class="ghost lang-btn" id="langBtn" type="button" onclick="toggleLang()">🌐 RU</button>
       <button class="secondary" type="button" onclick="goLobby()">⬅ Лобби</button>
     </div>
   </div>
 
+  <div class="hero">
+    <div class="hero-row">
+      <div>
+        <h2 id="heroTitle">Учись быстрее и красивее</h2>
+        <p id="heroText">Выбирай класс, тему и уровень. Прогресс сохраняется автоматически.</p>
+      </div>
+      <div style="min-width:220px;flex:1;max-width:320px">
+        <div class="small" id="heroProgressText">Загружается прогресс...</div>
+        <div class="bar"><div id="heroFill" class="fill"></div></div>
+      </div>
+    </div>
+    <div class="badge-row">
+      <span class="pill" id="pillClass">4 класса</span>
+      <span class="pill" id="pillTopic">0 тем</span>
+      <span class="pill" id="pillLevel">16 уровней</span>
+      <span class="pill" id="pillUser">guest</span>
+    </div>
+  </div>
+
   <div class="top-stats">
-    <div class="stat"><b id="statClass">4</b><span>класса</span></div>
-    <div class="stat"><b id="statTopic">0</b><span>тем</span></div>
-    <div class="stat"><b id="statLevel">16</b><span>уровней</span></div>
+    <div class="stat"><b id="statClass">4</b><span id="statClassText">класса</span></div>
+    <div class="stat"><b id="statTopic">0</b><span id="statTopicText">тем</span></div>
+    <div class="stat"><b id="statLevel">16</b><span id="statLevelText">уровней</span></div>
   </div>
 
   <div class="card" id="screen-class">
-    <h2>Выбери класс</h2>
+    <h2 id="classTitle">Выбери класс</h2>
     <div id="classGrid" class="grid" style="margin-top:12px;"></div>
   </div>
 
@@ -273,8 +179,8 @@ body.light button.secondary{
       <p class="q" id="question"></p>
       <div id="optionGrid" class="option-grid"></div>
       <div class="nav-row" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px;">
-        <button type="button" onclick="checkAnswer()">Проверить</button>
-        <button type="button" onclick="showHint()">💡 Подсказка</button>
+        <button type="button" onclick="checkAnswer()" id="checkBtn">Проверить</button>
+        <button type="button" onclick="showHint()" id="hintBtn">💡 Подсказка</button>
         <button id="nextBtn" class="hidden" type="button" onclick="nextTask()">Далее</button>
       </div>
       <div id="result" class="result"></div>
@@ -283,159 +189,35 @@ body.light button.secondary{
     <div class="nav-row"><button class="secondary" type="button" onclick="backToLevels()">⬅ К уровням</button></div>
   </div>
 
-  <div class="footer">Кнопка уровня теперь открывает экран сразу, а вопросы подгружаются после этого.</div>
+  <div class="footer" id="footerText">Кнопка уровня открывает экран сразу, а вопросы подгружаются после этого.</div>
 </div>
+<script type="module">
 
-<script>
-const fileName = (location.pathname.split("/").pop() || "").toLowerCase();
-const SUBJECT = fileName.includes("biology") ? "biology" : fileName.includes("history") ? "history" : "physics";
-const THEME_KEY = SUBJECT + "_theme";
-const currentUser = localStorage.getItem("currentUser") || "guest";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-const APP = {
-  biology: {
-    title: "🌿 Биология",
-    subtitle: "Часть вопросов берётся из бесплатного API OpenTDB",
-    classes: {
-      "7": ["cell","plants","animals","mixed7"],
-      "8": ["humanBody","digestion","breathing","mixed8"],
-      "9": ["genetics","ecology","evolution","mixed9"],
-      "10": ["microbiology","cellProcesses","biosphere","mixed10"]
-    },
-    meta: {
-      "7":{
-        cell:{title:"Клетка",desc:"Органоиды и строение клетки"},
-        plants:{title:"Растения",desc:"Части растения, фотосинтез"},
-        animals:{title:"Животные",desc:"Группы животных и признаки"},
-        mixed7:{title:"Смешанные",desc:"Разные вопросы"}
-      },
-      "8":{
-        humanBody:{title:"Человек",desc:"Органы и системы органов"},
-        digestion:{title:"Пищеварение",desc:"Питание и обмен веществ"},
-        breathing:{title:"Дыхание",desc:"Лёгкие и газообмен"},
-        mixed8:{title:"Смешанные",desc:"Разные вопросы"}
-      },
-      "9":{
-        genetics:{title:"Генетика",desc:"Наследственность и признаки"},
-        ecology:{title:"Экология",desc:"Экосистемы и цепи питания"},
-        evolution:{title:"Эволюция",desc:"Развитие живого мира"},
-        mixed9:{title:"Смешанные",desc:"Разные вопросы"}
-      },
-      "10":{
-        microbiology:{title:"Микробиология",desc:"Бактерии, грибы, вирусы"},
-        cellProcesses:{title:"Процессы клетки",desc:"Деление, обмен веществ"},
-        biosphere:{title:"Биосфера",desc:"Природные связи и круговорот"},
-        mixed10:{title:"Смешанные",desc:"Разные вопросы"}
-      }
-    },
-    local:[
-      {q:"Что изучает биология?", c:"Живые организмы", w:["Только камни","Только звёзды","Только машины"], h:"Это наука о жизни.", s:"Биология изучает живые организмы."},
-      {q:"Как называется основная единица живого?", c:"Клетка", w:["Атом","Камень","Планета"], h:"Это очень маленькая живая структура.", s:"Основная единица живого — клетка."},
-      {q:"Какой органоид даёт энергию клетке?", c:"Митохондрия", w:["Хлоропласт","Ядро","Рибосома"], h:"Его называют энергетической станцией.", s:"Митохондрии участвуют в получении энергии."},
-      {q:"Как называется зелёный пигмент растений?", c:"Хлорофилл", w:["Меланин","Гемоглобин","Кератин"], h:"Он помогает ловить свет.", s:"Хлорофилл нужен для фотосинтеза."},
-      {q:"Какая часть растения закрепляет его в почве?", c:"Корень", w:["Лист","Цветок","Плод"], h:"Она обычно под землёй.", s:"Корень удерживает растение и всасывает воду."},
-      {q:"Какой орган перекачивает кровь?", c:"Сердце", w:["Лёгкие","Печень","Желудок"], h:"Он работает как насос.", s:"Сердце перекачивает кровь."},
-      {q:"Где начинается пищеварение?", c:"Рот", w:["Желудок","Кишечник","Печень"], h:"Там работают зубы и слюна.", s:"Пищеварение начинается в ротовой полости."},
-      {q:"Как называется обмен кислорода и углекислого газа?", c:"Газообмен", w:["Плавление","Кипение","Фотосинтез"], h:"Он происходит в лёгких.", s:"Газообмен — обмен газов между организмом и средой."},
-      {q:"Как называется участок ДНК, отвечающий за признак?", c:"Ген", w:["Хромосома","Орган","Ткань"], h:"Это единица наследственности.", s:"Ген несёт информацию о признаке."},
-      {q:"Как называется оболочка Земли, где есть жизнь?", c:"Биосфера", w:["Атмосфера","Литосфера","Мантия"], h:"Это область жизни.", s:"Биосфера — часть Земли, где существует жизнь."}
-    ]
-  },
-
-  history: {
-    title: "📜 История",
-    subtitle: "Часть вопросов берётся из бесплатного API OpenTDB",
-    classes: {
-      "7": ["ancientWorld","ancientGreece","ancientRome","mixed7"],
-      "8": ["middleAges","oldRus","discoveries","mixed8"],
-      "9": ["renaissanceReformation","empireRussia","industrialNapoleonic","mixed9"],
-      "10": ["ww1","ww2","coldWarModern","mixed10"]
-    },
-    meta: {
-      "7":{
-        ancientWorld:{title:"Древний мир",desc:"Египет, Месопотамия, Индия, Китай"},
-        ancientGreece:{title:"Древняя Греция",desc:"Полисы, Спарта, Афины"},
-        ancientRome:{title:"Древний Рим",desc:"Республика, Сенат, Колизей"},
-        mixed7:{title:"Смешанные",desc:"Случайные вопросы по древности"}
-      },
-      "8":{
-        middleAges:{title:"Средние века",desc:"Феодалы, рыцари, города"},
-        oldRus:{title:"Древняя Русь",desc:"Киевская Русь, князья, крещение"},
-        discoveries:{title:"Великие открытия",desc:"Колумб, Магеллан, новые пути"},
-        mixed8:{title:"Смешанные",desc:"Случайные вопросы"}
-      },
-      "9":{
-        renaissanceReformation:{title:"Возрождение и Реформация",desc:"Лютер, гуманизм, печать"},
-        empireRussia:{title:"Российская империя",desc:"Пётр I, Екатерина II, реформы"},
-        industrialNapoleonic:{title:"Новое время",desc:"Наполеон, революции, индустрия"},
-        mixed9:{title:"Смешанные",desc:"Случайные вопросы"}
-      },
-      "10":{
-        ww1:{title:"Первая мировая",desc:"1914 год, блоки, фронты"},
-        ww2:{title:"Вторая мировая",desc:"1939–1945, ключевые события"},
-        coldWarModern:{title:"Холодная война и современность",desc:"ООН, НАТО, Берлинская стена"},
-        mixed10:{title:"Смешанные",desc:"Случайные вопросы"}
-      }
-    },
-    local:[
-      {q:"В каком году началась Первая мировая война?", c:"1914", w:["1918","1939","1905"], h:"Это начало XX века.", s:"Первая мировая война началась в 1914 году."},
-      {q:"Как назывался правитель Древнего Египта?", c:"Фараон", w:["Князь","Император","Султан"], h:"Это египетский титул.", s:"Правителя Древнего Египта называли фараоном."},
-      {q:"Какой город был центром Киевской Руси?", c:"Киев", w:["Новгород","Москва","Полоцк"], h:"Это столица древнего государства.", s:"Центром Киевской Руси был Киев."},
-      {q:"Кто открыл путь в Америку для европейцев?", c:"Христофор Колумб", w:["Магеллан","Ньютон","Лютер"], h:"Он совершил плавание в 1492 году.", s:"Христофор Колумб связан с открытием Америки."},
-      {q:"Как назывался большой средневековый укреплённый дом?", c:"Замок", w:["Акрополь","Колизей","Пантеон"], h:"Это защитное строение.", s:"В Средние века строили замки."},
-      {q:"Кто выступил с идеями Реформации в Германии?", c:"Мартин Лютер", w:["Цезарь","Колумб","Пётр I"], h:"Это религиозный деятель.", s:"Мартин Лютер был одним из лидеров Реформации."},
-      {q:"Как назывался французский император начала XIX века?", c:"Наполеон Бонапарт", w:["Людовик XIV","Пётр I","Бисмарк"], h:"Он связан с Аустерлицем.", s:"Французским императором был Наполеон Бонапарт."},
-      {q:"Как называлась высадка союзников в Нормандии?", c:"День Д", w:["Кодекс Наполеона","Версаль","Индустриализация"], h:"Это 1944 год.", s:"Высадка в Нормандии называлась День Д."},
-      {q:"Как называется международная организация после Второй мировой?", c:"ООН", w:["НАТО","ЕС","Римский сенат"], h:"Это Организация Объединённых Наций.", s:"ООН — Организация Объединённых Наций."},
-      {q:"Как называется соперничество СССР и США?", c:"Холодная война", w:["Крестовый поход","Тридцатилетняя война","Столетняя война"], h:"Это конфликт сверхдержав без прямой войны.", s:"Соперничество СССР и США называют Холодной войной."}
-    ]
-  },
-
-  physics: {
-    title: "⚛️ Физика",
-    subtitle: "Только математика и физические задачи",
-    classes: {
-      "7": ["motion","density","force","mixed7"],
-      "8": ["pressure","work","heat","mixed8"],
-      "9": ["electricity","circuits","optics","mixed9"],
-      "10": ["mechanics","electricAdvanced","waves","mixed10"]
-    },
-    meta: {
-      "7":{
-        motion:{title:"Движение",desc:"Путь, время, скорость"},
-        density:{title:"Плотность",desc:"Масса и объём"},
-        force:{title:"Сила",desc:"Сила, масса, ускорение"},
-        mixed7:{title:"Смешанные",desc:"Разные задачи"}
-      },
-      "8":{
-        pressure:{title:"Давление",desc:"Давление в жидкости и твёрдых телах"},
-        work:{title:"Работа и мощность",desc:"Работа, мощность, энергия"},
-        heat:{title:"Теплота",desc:"Нагревание и теплообмен"},
-        mixed8:{title:"Смешанные",desc:"Разные задачи"}
-      },
-      "9":{
-        electricity:{title:"Электричество",desc:"Ток, напряжение, сопротивление"},
-        circuits:{title:"Цепи",desc:"Последовательное и параллельное соединение"},
-        optics:{title:"Оптика",desc:"Свет, отражение, линзы"},
-        mixed9:{title:"Смешанные",desc:"Разные задачи"}
-      },
-      "10":{
-        mechanics:{title:"Механика",desc:"Скорость, сила, энергия"},
-        electricAdvanced:{title:"Электричество",desc:"Задачи посложнее"},
-        waves:{title:"Волны",desc:"Частота, длина волны"},
-        mixed10:{title:"Смешанные",desc:"Разные задачи"}
-      }
-    }
-  }
+const firebaseConfig = {
+  apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+  authDomain: "fmine-auth.firebaseapp.com",
+  projectId: "fmine-auth",
+  storageBucket: "fmine-auth.firebasestorage.app",
+  messagingSenderId: "219769927531",
+  appId: "1:219769927531:web:fbd45a0876f32927d23e2e",
+  measurementId: "G-ETT9HCQRQD"
 };
 
-const SPEC = APP[SUBJECT];
-document.getElementById("pageTitle").textContent = SPEC.title;
-document.getElementById("pageSubtitle").textContent = SPEC.subtitle;
-document.getElementById("statClass").textContent = Object.keys(SPEC.classes).length;
-document.getElementById("statTopic").textContent = Object.values(SPEC.classes).reduce((a,b)=>a+b.length,0);
-document.getElementById("statLevel").textContent = "16";
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
+const SUBJECT = "physics";
+const SUBJECT_TITLE = "Физика";
+const THEME_KEY = SUBJECT + "_theme";
+const TOKEN_KEY = SUBJECT + "_opentdb_token";
+const currentUser = localStorage.getItem("currentUser") || "guest";
+const userRef = doc(db, "users", currentUser);
+const LAST_RESULT_KEY = currentUser + "_" + SUBJECT + "_lastResult";
+
+let uiLang = localStorage.getItem(SUBJECT + "_lang") || "ru";
 let currentClass = "7";
 let currentTopic = null;
 let currentLevel = 1;
@@ -444,497 +226,184 @@ let taskIndex = 0;
 let selectedOption = null;
 let optionButtons = [];
 let checked = false;
+let correctCount = 0;
+let firestoreData = null;
 
-function goLobby(){ location.href = "lobby.html"; }
-function toggleTheme(){
-  document.body.classList.toggle("light");
-  localStorage.setItem(THEME_KEY, document.body.classList.contains("light") ? "light" : "dark");
-}
-function loadTheme(){
-  if((localStorage.getItem(THEME_KEY) || "dark") === "light") document.body.classList.add("light");
-}
-loadTheme();
-
-function showScreen(name){
-  ["screen-class","screen-topic","screen-level","screen-task"].forEach(id => {
-    document.getElementById(id).classList.toggle("hidden", id !== name);
-  });
-}
-
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
+const UI = {
+  ru: {
+    pageTitle: "Физика",
+    pageSubtitle: "Русский / English интерфейс. Вопросы берутся из API и не повторяются каждый уровень.",
+    heroTitle: "Учись быстрее и красивее",
+    heroText: "Выбирай класс, тему и уровень. Прогресс сохраняется автоматически.",
+    statClassText: "класса",
+    statTopicText: "тем",
+    statLevelText: "уровней",
+    classTitle: "Выбери класс",
+    topicTitle: "Выбери тему",
+    levelTitle: "Выбери уровень",
+    back: "⬅ Назад",
+    backLevels: "⬅ К уровням",
+    check: "Проверить",
+    hint: "💡 Подсказка",
+    next: "Далее",
+    chooseAnswer: "Выбери вариант ответа.",
+    correct: "✅ Правильно!",
+    wrong: "❌ Неправильно",
+    pass: c => `🎉 Отлично! У тебя ${c}/10. Результат засчитан.`,
+    fail: c => `⚠️ У тебя ${c}/10. Результат не засчитан.`,
+    lobby: "⬅ Лобби",
+    theme: "Тема",
+    lang: "EN",
+    footer: "Кнопка уровня открывает экран сразу, а вопросы подгружаются после этого.",
+    loading: "Загрузка...",
+    loadingQuestions: "Загрузка вопросов...",
+    chooseClassHint: "Открой темы этого класса",
+    chooseTopicHint: "Открой темы и уровни",
+    levelPrefix: "Уровень",
+    progress: "Прогресс темы:",
+    question: "Вопрос",
+    topicProgress: "Прогресс темы",
+    levelWord: "уровень",
+    classWord: "класс",
+    classes: "класса",
+    topics: "тем",
+    levels: "уровней",
+    doneTopics: "тем закрыто",
+    noData: "Пока нет данных. Начни с первого уровня.",
+    loadText: "Готово к работе",
+    hintText: "Подумай по теме и выбери самый точный вариант.",
+    correctAnswerPrefix: "Правильный ответ: "
+  },
+  en: {
+    pageTitle: "Physics",
+    pageSubtitle: "Русский / English интерфейс. Вопросы берутся из API и не повторяются каждый уровень.",
+    heroTitle: "Study faster and cleaner",
+    heroText: "Choose a class, a topic, and a level. Your progress is saved automatically.",
+    statClassText: "classes",
+    statTopicText: "topics",
+    statLevelText: "levels",
+    classTitle: "Choose a class",
+    topicTitle: "Choose a topic",
+    levelTitle: "Choose a level",
+    back: "⬅ Back",
+    backLevels: "⬅ Levels",
+    check: "Check",
+    hint: "💡 Hint",
+    next: "Next",
+    chooseAnswer: "Choose an answer.",
+    correct: "✅ Correct!",
+    wrong: "❌ Wrong",
+    pass: c => `🎉 Great job! You got ${c}/10. Result counted.`,
+    fail: c => `⚠️ You got ${c}/10. Result will not be counted.`,
+    lobby: "⬅ Lobby",
+    theme: "Theme",
+    lang: "RU",
+    footer: "The level button opens the screen first, then the questions load.",
+    loading: "Loading...",
+    loadingQuestions: "Loading questions...",
+    chooseClassHint: "Open topics in this class",
+    chooseTopicHint: "Open topics and levels",
+    levelPrefix: "Level",
+    progress: "Topic progress:",
+    question: "Question",
+    topicProgress: "Topic progress",
+    levelWord: "level",
+    classWord: "class",
+    classes: "classes",
+    topics: "topics",
+    levels: "levels",
+    doneTopics: "topics done",
+    noData: "No data yet. Start from the first level.",
+    loadText: "Ready to go",
+    hintText: "Think about the topic and choose the most accurate option.",
+    correctAnswerPrefix: "Correct answer: "
   }
-  return a;
-}
+};
+
+const SPEC = {
+  classes: {"7": ["motion", "density", "force", "mixed7"], "8": ["pressure", "work", "heat", "mixed8"], "9": ["electricity", "circuits", "optics", "mixed9"], "10": ["mechanics", "electricAdvanced", "waves", "mixed10"]},
+  meta: {"7": {"motion": {"title": "Движение", "desc": "Скорость, путь и время"}, "density": {"title": "Плотность", "desc": "Масса, объём и плотность"}, "force": {"title": "Сила", "desc": "Силы и их действие"}, "mixed7": {"title": "Смешанные", "desc": "Разные вопросы"}}, "8": {"pressure": {"title": "Давление", "desc": "Давление в жидкостях и газах"}, "work": {"title": "Работа и мощность", "desc": "Механическая работа"}, "heat": {"title": "Теплота", "desc": "Тепловые явления"}, "mixed8": {"title": "Смешанные", "desc": "Разные вопросы"}}, "9": {"electricity": {"title": "Электричество", "desc": "Заряд, ток, напряжение"}, "circuits": {"title": "Цепи", "desc": "Последовательные и параллельные цепи"}, "optics": {"title": "Оптика", "desc": "Свет и изображение"}, "mixed9": {"title": "Смешанные", "desc": "Разные вопросы"}}, "10": {"mechanics": {"title": "Механика", "desc": "Законы движения"}, "electricAdvanced": {"title": "Электричество", "desc": "Сложные электрические темы"}, "waves": {"title": "Волны", "desc": "Колебания и волновые процессы"}, "mixed10": {"title": "Смешанные", "desc": "Разные вопросы"}}},
+  local: [{"q": "Что изучает физика?", "c": "Явления природы", "w": ["Только растения", "Только звёзды", "Только людей"], "h": "Это наука о природе и её законах.", "s": "Физика изучает природные явления."}, {"q": "Какая величина измеряется в метрах?", "c": "Длина", "w": ["Масса", "Сила", "Время"], "h": "Это расстояние между точками.", "s": "Длина измеряется в метрах."}, {"q": "Какая величина измеряется в секундах?", "c": "Время", "w": ["Длина", "Температура", "Объём"], "h": "Это то, что идёт и длится.", "s": "Время измеряется в секундах."}, {"q": "Что такое сила?", "c": "Действие одного тела на другое", "w": ["Только скорость", "Только масса", "Только плотность"], "h": "Она может менять движение тела.", "s": "Сила — это действие одного тела на другое."}, {"q": "Как называется прибор для измерения температуры?", "c": "Термометр", "w": ["Барометр", "Спидометр", "Амперметр"], "h": "Он показывает градусы.", "s": "Температуру измеряют термометром."}, {"q": "Как называется явление изменения направления света при переходе?", "c": "Преломление", "w": ["Испарение", "Трение", "Сопротивление"], "h": "Луч меняет направление на границе сред.", "s": "Это преломление света."}, {"q": "Какое тело имеет большую массу: 1 кг или 500 г?", "c": "1 кг", "w": ["500 г", "Одинаково", "Нельзя сравнить"], "h": "Сравни единицы.", "s": "1 кг больше, чем 500 г."}, {"q": "Как называется путь, который проходит тело?", "c": "Расстояние", "w": ["Сила", "Масса", "Давление"], "h": "Это длина движения.", "s": "Путь тела называют расстоянием."}, {"q": "Что вызывает трение?", "c": "Контакт поверхностей", "w": ["Только свет", "Только звук", "Только тепло"], "h": "Оно возникает при соприкосновении тел.", "s": "Трение возникает между соприкасающимися поверхностями."}, {"q": "Какой прибор измеряет силу тока?", "c": "Амперметр", "w": ["Термометр", "Линейка", "Часы"], "h": "Он связан с электрическим током.", "s": "Силу тока измеряет амперметр."}]
+};
+
+function T(){ return UI[uiLang]; }
+function decodeHtml(str){ const ta = document.createElement("textarea"); ta.innerHTML = str; return ta.value; }
+function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
 function unique(arr){ return Array.from(new Set(arr)); }
-function normalize(text){
-  return String(text).toLowerCase()
-    .replace(/ё/g,"е")
-    .replace(/[–−]/g,"-")
-    .replace(/\s+/g," ")
-    .trim();
-}
+function normalize(text){ return String(text).toLowerCase().replace(/ё/g,"е").replace(/[–−]/g,"-").replace(/\s+/g," ").trim(); }
 function questionKey(task){ return normalize(task.q || ""); }
-function decodeHtml(str){
-  const ta = document.createElement("textarea");
-  ta.innerHTML = str;
-  return ta.value;
-}
-function makeMCQ(q, correct, wrongs, hint, solution){
-  const options = shuffle([correct].concat(wrongs));
-  return { q, options, answer: options.indexOf(correct), hint, solution };
-}
-function makeNumericMCQ(q, correctValue, wrongValues, unit, hint, solution){
-  const correctText = unit ? (String(correctValue) + " " + unit) : String(correctValue);
-  const wrongTexts = wrongValues.map(v => unit ? (String(v) + " " + unit) : String(v));
-  const options = shuffle(unique([correctText].concat(wrongTexts)));
-  return { q, options, answer: options.indexOf(correctText), hint, solution };
-}
+function makeMCQ(q, correct, wrongs, hint, solution){ const options = shuffle([correct].concat(wrongs)); return { q, options, answer: options.indexOf(correct), hint, solution }; }
+function progressKey(cls, topic){ return SUBJECT + "Progress_" + currentUser + "_" + cls + "_" + topic; }
+function getProgress(cls, topic){ try { return JSON.parse(localStorage.getItem(progressKey(cls, topic)) || '{"highestCompleted":0}'); } catch(e){ return { highestCompleted:0 }; } }
+function saveProgress(cls, topic, data){ localStorage.setItem(progressKey(cls, topic), JSON.stringify(data)); }
+function unlockFor(cls, topic){ const p = getProgress(cls, topic); return Math.min(16, (p.highestCompleted || 0) + 1); }
+function getRecentKeys(){ try { return JSON.parse(localStorage.getItem(SUBJECT + "_recent_" + currentUser) || "[]"); } catch(e){ return []; } }
+function rememberKeyBulk(tasks){ const arr = getRecentKeys(); for(const t of tasks){ const k = questionKey(t); if(!arr.includes(k)) arr.unshift(k); } localStorage.setItem(SUBJECT + "_recent_" + currentUser, JSON.stringify(arr.slice(0,180))); }
+async function fetchWithTimeout(url, ms){ const controller = new AbortController(); const id = setTimeout(() => controller.abort(), ms); try{ const res = await fetch(url, { signal: controller.signal }); return await res.json(); } finally { clearTimeout(id); } }
+async function getOpenTDBToken(){ const saved = localStorage.getItem(TOKEN_KEY); if(saved) return saved; try{ const data = await fetchWithTimeout("https://opentdb.com/api_token.php?command=request", 4000); if(data && data.token){ localStorage.setItem(TOKEN_KEY, data.token); return data.token; } }catch(e){} return null; }
+async function translateEnRu(text){ try{ const url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=en|ru"; const data = await fetchWithTimeout(url, 4500); const out = data?.responseData?.translatedText; if(out && typeof out === "string") return decodeHtml(out); }catch(e){} return text; }
+async function localizeQuestion(q){ const ruQ = await translateEnRu(q.q); const ruOptions = []; for(const opt of q.options) ruOptions.push(await translateEnRu(opt)); let answer = ruOptions[typeof q.answer === "number" ? q.answer : 0]; const out = { q: ruQ, options: shuffle(unique(ruOptions)), hint: T().hintText, solution: "" }; out.answer = out.options.findIndex(v => normalize(v) === normalize(answer)); if(out.answer < 0) out.answer = 0; out.solution = T().correctAnswerPrefix + out.options[out.answer] + "."; return out; }
+async function fetchOpenTDBQuestions(count){ const token = await getOpenTDBToken(); const category = 17; const reqs = Array.from({length: count}, async () => { const url = token ? `https://opentdb.com/api.php?amount=1&type=multiple&category=${category}&token=${token}` : `https://opentdb.com/api.php?amount=1&type=multiple&category=${category}`; try{ const data = await fetchWithTimeout(url, 5000); if(!data || !data.results || !data.results.length) return null; if(data.response_code === 3 || data.response_code === 4) localStorage.removeItem(TOKEN_KEY); const r = data.results[0]; const raw = { q: decodeHtml(r.question), options: [decodeHtml(r.correct_answer)].concat((r.incorrect_answers || []).map(decodeHtml)), answer: 0 }; return await localizeQuestion(raw); }catch(e){ return null; } }); return (await Promise.all(reqs)).filter(Boolean); }
 
-function progressKey(cls, topic){
-  return SUBJECT + "_progress_" + currentUser + "_" + cls + "_" + topic;
-}
-function getProgress(cls, topic){
-  try{
-    return JSON.parse(localStorage.getItem(progressKey(cls, topic)) || '{"highestCompleted":0}');
-  }catch(e){
-    return { highestCompleted:0 };
-  }
-}
-function saveProgress(cls, topic, data){
-  localStorage.setItem(progressKey(cls, topic), JSON.stringify(data));
-}
-function unlockFor(cls, topic){
-  const p = getProgress(cls, topic);
-  return Math.min(16, (p.highestCompleted || 0) + 1);
-}
-function setLastLesson(payload){
-  localStorage.setItem(currentUser + "_" + SUBJECT + "_last", JSON.stringify({
-    classNum: payload.classNum,
-    topic: payload.topic,
-    level: payload.level,
-    time: Date.now()
-  }));
-}
-function getRecentKeys(){
-  try{
-    return JSON.parse(localStorage.getItem(SUBJECT + "_recent_" + currentUser) || "[]");
-  }catch(e){
-    return [];
-  }
-}
-function rememberKey(k){
-  const arr = getRecentKeys();
-  arr.unshift(k);
-  localStorage.setItem(SUBJECT + "_recent_" + currentUser, JSON.stringify(unique(arr).slice(0,180)));
+function firebaseTopicP(cls, topic){ return firestoreData?.progress?.physics?.[cls]?.[topic]?.highestCompleted || 0; }
+function classFirebaseProgress(cls){ const topics = SPEC.classes[cls] || []; const total = topics.reduce((s, t) => s + Math.min(16, firebaseTopicP(cls, t)), 0); return topics.length ? Math.round(total / (topics.length * 16) * 100) : 0; }
+function subjectFirebaseProgress(){ const vals = Object.keys(SPEC.classes).map(classFirebaseProgress); return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; }
+function subjectTopicCount(){ return Object.keys(SPEC.classes).reduce((sum, cls) => sum + (SPEC.classes[cls] || []).filter(t => firebaseTopicP(cls, t) >= 16).length, 0); }
+function totalLevelsNow(){ return Object.keys(SPEC.classes).reduce((sum, cls) => sum + (SPEC.classes[cls] || []).reduce((acc, t) => acc + Math.min(16, firebaseTopicP(cls, t)), 0), 0); }
+function anyData(){ return totalLevelsNow() > 0; }
+
+async function saveFirebaseProgress(cls, topic, data){
+  const payload = { [`progress.physics.${cls}.${topic}`]: data };
+  await updateDoc(userRef, payload);
+  firestoreData = firestoreData || {};
+  firestoreData.progress = firestoreData.progress || {};
+  firestoreData.progress.physics = firestoreData.progress.physics || {};
+  firestoreData.progress.physics[cls] = firestoreData.progress.physics[cls] || {};
+  firestoreData.progress.physics[cls][topic] = data;
 }
 
-async function fetchWithTimeout(url, ms){
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), ms);
-  try{
-    const res = await fetch(url, { signal: controller.signal });
-    return await res.json();
-  }finally{
-    clearTimeout(id);
-  }
-}
-
-async function fetchOpenTDBQuestions(count){
-  if(SUBJECT === "physics") return [];
-  const category = SUBJECT === "history" ? 23 : 17;
-  const reqs = Array.from({length: count}, () => fetchWithTimeout(
-    "https://opentdb.com/api.php?amount=1&type=multiple&category=" + category,
-    3500
-  ).then(data => {
-    if(!data.results || !data.results.length) return null;
-    const r = data.results[0];
-    const correct = decodeHtml(r.correct_answer);
-    const wrongs = r.incorrect_answers.map(decodeHtml);
-    const options = shuffle([correct].concat(wrongs));
-    return {
-      q: decodeHtml(r.question),
-      options,
-      answer: options.indexOf(correct),
-      hint: "Подумай по теме и выбери самый точный вариант.",
-      solution: "Правильный ответ: " + correct + "."
-    };
-  }).catch(() => null));
-
-  const res = await Promise.all(reqs);
-  return res.filter(Boolean);
-}
-
-function genPhysicsTask(topic, level, i){
-  if(topic === "motion"){
-    if(i % 2 === 0){
-      const s = 60 + ((level * 17 + i * 7) % 150);
-      const t = 2 + ((level + i) % 6);
-      const v = Math.round((s / t) * 10) / 10;
-      return makeNumericMCQ(
-        "Тело прошло " + s + " м за " + t + " с. Чему равна скорость?",
-        v,
-        [Math.round((v + 1.5) * 10) / 10, Math.round((v + 3) * 10) / 10, Math.max(0.1, Math.round((v - 1) * 10) / 10)],
-        "м/с",
-        "Используй формулу v = s / t.",
-        "v = " + s + " / " + t + " = " + v + " м/с."
-      );
-    }
-    const v = 10 + ((level * 3 + i) % 30);
-    const t = 2 + ((level + i) % 6);
-    const s = v * t;
-    return makeNumericMCQ(
-      "Скорость тела " + v + " м/с, время " + t + " с. Какой путь оно пройдет?",
-      s,
-      [s + 10, Math.max(1, s - 10), s + 20],
-      "м",
-      "Используй s = v × t.",
-      "s = " + v + " × " + t + " = " + s + " м."
-    );
-  }
-
-  if(topic === "density"){
-    if(i % 2 === 0){
-      const m = 200 + ((level * 19 + i * 13) % 700);
-      const V = 50 + ((level * 11 + i * 9) % 350);
-      const rho = Math.round((m / V) * 10) / 10;
-      return makeNumericMCQ(
-        "Масса тела " + m + " г, объём " + V + " см³. Чему равна плотность?",
-        rho,
-        [Math.round((rho + 0.5) * 10) / 10, Math.round((rho + 1) * 10) / 10, Math.max(0.1, Math.round((rho - 0.4) * 10) / 10)],
-        "г/см³",
-        "Используй ρ = m / V.",
-        "ρ = " + m + " / " + V + " = " + rho + " г/см³."
-      );
-    }
-    const rho = [0.8,1,2,2.5,7.8][(level + i) % 5];
-    const V = 50 + ((level * 7 + i * 5) % 180);
-    const m = Math.round(rho * V);
-    return makeNumericMCQ(
-      "Плотность вещества " + rho + " г/см³, объём " + V + " см³. Найди массу.",
-      m,
-      [m + 50, Math.max(1, m - 30), m + 20],
-      "г",
-      "Используй m = ρ × V.",
-      "m = " + rho + " × " + V + " = " + m + " г."
-    );
-  }
-
-  if(topic === "force"){
-    if(i % 2 === 0){
-      const m = 2 + ((level + i) % 9);
-      const a = 1 + ((level * 2 + i) % 6);
-      const F = m * a;
-      return makeNumericMCQ(
-        "Масса тела " + m + " кг, ускорение " + a + " м/с². Чему равна сила?",
-        F,
-        [F + 2, F + 4, Math.max(1, F - 2)],
-        "Н",
-        "Используй F = m × a.",
-        "F = " + m + " × " + a + " = " + F + " Н."
-      );
-    }
-    return makeMCQ(
-      "Что измеряют в ньютонах?",
-      "Силу",
-      ["Массу","Объём","Время"],
-      "Это физическая величина.",
-      "Сила измеряется в ньютонах."
-    );
-  }
-
-  if(topic === "pressure"){
-    if(i % 2 === 0){
-      const F = 100 + ((level * 7 + i * 11) % 400);
-      const S = 10 + ((level * 5 + i * 3) % 90);
-      const p = Math.round((F / S) * 10) / 10;
-      return makeNumericMCQ(
-        "Сила " + F + " Н действует на площадь " + S + " см². Чему равно давление?",
-        p,
-        [Math.round((p + 2) * 10) / 10, Math.round((p + 5) * 10) / 10, Math.max(0.1, Math.round((p - 1) * 10) / 10)],
-        "Н/см²",
-        "Используй p = F / S.",
-        "p = " + F + " / " + S + " = " + p + "."
-      );
-    }
-    return makeMCQ(
-      "Какой прибор измеряет давление?",
-      "Барометр",
-      ["Термометр","Амперметр","Линейка"],
-      "Он связан с атмосферой.",
-      "Барометр измеряет давление."
-    );
-  }
-
-  if(topic === "work"){
-    if(i % 2 === 0){
-      const F = 10 + ((level * 3 + i) % 40);
-      const s = 2 + ((level + i) % 18);
-      const A = F * s;
-      return makeNumericMCQ(
-        "Сила " + F + " Н, путь " + s + " м. Чему равна работа?",
-        A,
-        [A + 20, Math.max(1, A - 10), A + 40],
-        "Дж",
-        "Используй A = F × s.",
-        "A = " + F + " × " + s + " = " + A + " Дж."
-      );
-    }
-    const A = 100 + ((level * 9 + i * 13) % 400);
-    const t = 2 + ((level + i) % 9);
-    const P = Math.round((A / t) * 10) / 10;
-    return makeNumericMCQ(
-      "Работа " + A + " Дж, время " + t + " с. Чему равна мощность?",
-      P,
-      [Math.round((P + 5) * 10) / 10, Math.round((P - 3) * 10) / 10, Math.round((P + 8) * 10) / 10],
-      "Вт",
-      "Используй P = A / t.",
-      "P = " + A + " / " + t + " = " + P + " Вт."
-    );
-  }
-
-  if(topic === "heat"){
-    if(i % 2 === 0){
-      const m = 2 + ((level + i) % 9);
-      const c = 4200;
-      const dt = 5 + ((level * 2 + i) % 16);
-      const Q = m * c * dt;
-      return makeNumericMCQ(
-        "Найди количество теплоты: m = " + m + " кг, c = " + c + " Дж/(кг·°C), Δt = " + dt + "°C.",
-        Q,
-        [Q + 4200, Math.max(1, Q - 4200), Q + 8400],
-        "Дж",
-        "Используй Q = c × m × Δt.",
-        "Q = " + c + " × " + m + " × " + dt + " = " + Q + " Дж."
-      );
-    }
-    return makeMCQ(
-      "Как называется передача тепла при соприкосновении тел?",
-      "Теплопроводность",
-      ["Конвекция","Испарение","Радиация"],
-      "Это перенос тепла через вещество.",
-      "Теплопроводность — передача тепла при контакте."
-    );
-  }
-
-  if(topic === "electricity"){
-    if(i % 2 === 0){
-      const U = 6 + ((level * 5 + i) % 19);
-      const R = 2 + ((level + i) % 7);
-      const I = Math.round((U / R) * 10) / 10;
-      return makeNumericMCQ(
-        "Напряжение " + U + " В, сопротивление " + R + " Ом. Найди ток.",
-        I,
-        [Math.round((I + 0.5) * 10) / 10, Math.max(0.1, Math.round((I - 0.4) * 10) / 10), Math.round((I + 1) * 10) / 10],
-        "А",
-        "Используй закон Ома.",
-        "I = " + U + " / " + R + " = " + I + " А."
-      );
-    }
-    return makeMCQ(
-      "Какая формула закона Ома правильная?",
-      "I = U / R",
-      ["I = U × R","I = R / U","I = U + R"],
-      "Ток зависит от напряжения и сопротивления.",
-      "Закон Ома: I = U / R."
-    );
-  }
-
-  if(topic === "circuits"){
-    if(i % 2 === 0){
-      const I1 = 1 + ((level + i) % 4);
-      const I2 = 1 + ((level * 2 + i) % 4);
-      return makeNumericMCQ(
-        "При параллельном соединении токи по ветвям равны " + I1 + " А и " + I2 + " А. Чему равен общий ток?",
-        I1 + I2,
-        [I1 + I2 + 1, Math.max(1, I1 + I2 - 1), I1 * I2],
-        "А",
-        "Общий ток равен сумме токов по ветвям.",
-        "I = " + I1 + " + " + I2 + " = " + (I1 + I2) + " А."
-      );
-    }
-    return makeMCQ(
-      "При каком соединении ток одинаков во всех участках?",
-      "Последовательное соединение",
-      ["Параллельное соединение","Разветвление","Замыкание"],
-      "Элементы идут один за другим.",
-      "При последовательном соединении сила тока одинакова."
-    );
-  }
-
-  if(topic === "optics"){
-    if(i % 2 === 0){
-      const v = 300;
-      const f = 50 + ((level * 3 + i) % 50);
-      const l = Math.round((v / f) * 10) / 10;
-      return makeNumericMCQ(
-        "Скорость волны " + v + " м/с, частота " + f + " Гц. Найди длину волны.",
-        l,
-        [Math.round((l + 0.5) * 10) / 10, Math.max(0.1, Math.round((l - 0.4) * 10) / 10), Math.round((l + 1) * 10) / 10],
-        "м",
-        "Используй λ = v / f.",
-        "λ = " + v + " / " + f + " = " + l + " м."
-      );
-    }
-    return makeMCQ(
-      "Как называется изменение направления света при попадании на зеркало?",
-      "Отражение",
-      ["Преломление","Поглощение","Испарение"],
-      "Это связано с зеркалом.",
-      "Свет от зеркала отражается."
-    );
-  }
-
-  if(topic === "mechanics"){
-    if(i % 2 === 0){
-      const s = 100 + ((level * 23 + i * 7) % 300);
-      const t = 2 + ((level + i) % 8);
-      const v = Math.round((s / t) * 10) / 10;
-      return makeNumericMCQ(
-        "Тело прошло " + s + " м за " + t + " с. Найди скорость.",
-        v,
-        [Math.round((v + 2) * 10) / 10, Math.round((v + 5) * 10) / 10, Math.max(0.1, Math.round((v - 1.2) * 10) / 10)],
-        "м/с",
-        "v = s / t.",
-        "v = " + s + " / " + t + " = " + v + " м/с."
-      );
-    }
-    const m = 1 + ((level + i) % 9);
-    const a = 1 + ((level * 2 + i) % 6);
-    const F = m * a;
-    return makeNumericMCQ(
-      "Масса " + m + " кг, ускорение " + a + " м/с². Чему равна сила?",
-      F,
-      [F + 2, F + 4, Math.max(1, F - 2)],
-      "Н",
-      "F = m × a.",
-      "F = " + m + " × " + a + " = " + F + " Н."
-    );
-  }
-
-  if(topic === "electricAdvanced"){
-    if(i % 2 === 0){
-      const U = 6 + ((level * 5 + i) % 19);
-      const R = 2 + ((level + i) % 7);
-      const I = Math.round((U / R) * 10) / 10;
-      return makeNumericMCQ(
-        "Напряжение " + U + " В, сопротивление " + R + " Ом. Найди ток.",
-        I,
-        [Math.round((I + 0.5) * 10) / 10, Math.max(0.1, Math.round((I - 0.4) * 10) / 10), Math.round((I + 1) * 10) / 10],
-        "А",
-        "Используй закон Ома.",
-        "I = " + U + " / " + R + " = " + I + " А."
-      );
-    }
-    const I = 1 + ((level + i) % 8);
-    const R = 2 + ((level * 2 + i) % 9);
-    const U = I * R;
-    return makeNumericMCQ(
-      "Сила тока " + I + " А, сопротивление " + R + " Ом. Найди напряжение.",
-      U,
-      [U + 3, U + 6, Math.max(1, U - 3)],
-      "В",
-      "U = I × R.",
-      "U = " + I + " × " + R + " = " + U + " В."
-    );
-  }
-
-  if(topic === "waves"){
-    if(i % 2 === 0){
-      const v = 300;
-      const f = 50 + ((level * 3 + i) % 50);
-      const l = Math.round((v / f) * 10) / 10;
-      return makeNumericMCQ(
-        "Скорость волны " + v + " м/с, частота " + f + " Гц. Найди длину волны.",
-        l,
-        [Math.round((l + 0.5) * 10) / 10, Math.max(0.1, Math.round((l - 0.4) * 10) / 10), Math.round((l + 1) * 10) / 10],
-        "м",
-        "Используй λ = v / f.",
-        "λ = " + v + " / " + f + " = " + l + " м."
-      );
-    }
-    return makeMCQ(
-      "Как называется число колебаний в секунду?",
-      "Частота",
-      ["Амплитуда","Скорость","Масса"],
-      "Это про волны.",
-      "Частота — число колебаний в секунду."
-    );
-  }
-
-  return makeMCQ(
-    "Что изучает физика?",
-    "Явления природы",
-    ["Только язык","Только историю","Только растения"],
-    "Это наука о природе.",
-    "Физика изучает явления природы."
-  );
-}
-
-function buildLocalTask(level, i){
-  if(SUBJECT === "physics"){
-    const topic = currentTopic;
-    return genPhysicsTask(topic, level, i);
-  }
-  const bank = APP[SUBJECT].local;
-  const row = bank[(level + i) % bank.length];
-  return makeMCQ(row.q, row.c, row.w, row.h, row.s);
-}
-
-async function loadDeckForLevel(level){
-  const deck = [];
-  const seen = new Set(getRecentKeys().map(normalize));
-
-  if(SUBJECT !== "physics"){
-    const apiQuestions = await fetchOpenTDBQuestions(6);
-    for(const q of apiQuestions){
-      const key = questionKey(q);
-      if(!seen.has(key)){
-        seen.add(key);
-        deck.push(q);
+async function mergeLegacyProgressToFirebase(){
+  const patch = {};
+  for(const cls of Object.keys(SPEC.classes)){
+    for(const topic of SPEC.classes[cls]){
+      const legacy = getProgress(cls, topic);
+      if(legacy && (legacy.highestCompleted || 0) > 0){
+        patch[`progress.physics.${cls}.${topic}`] = legacy;
       }
-      if(deck.length >= 10) break;
     }
   }
-
-  let i = 0;
-  while(deck.length < 10 && i < 80){
-    const q = buildLocalTask(level, i);
-    const key = questionKey(q);
-    if(!seen.has(key)){
-      seen.add(key);
-      deck.push(q);
-    }
-    i++;
-  }
-
-  while(deck.length < 10){
-    const q = buildLocalTask(level, i + 100);
-    const key = questionKey(q);
-    if(!seen.has(key)){
-      seen.add(key);
-      deck.push(q);
-    }else{
-      deck.push(q);
-    }
-    i++;
-  }
-
-  rememberKeyBulk(deck);
-  return deck.slice(0,10);
+  if(Object.keys(patch).length) await updateDoc(userRef, patch);
 }
 
-function rememberKeyBulk(tasks){
-  const arr = getRecentKeys();
-  for(const t of tasks){
-    const k = questionKey(t);
-    if(!arr.includes(k)) arr.unshift(k);
-  }
-  localStorage.setItem(SUBJECT + "_recent_" + currentUser, JSON.stringify(arr.slice(0,180)));
+async function loadFirestoreUser(){
+  const snap = await getDoc(userRef);
+  if(!snap.exists()){
+    await setDoc(userRef, {
+      profile: { nickname: currentUser, avatar: "https://via.placeholder.com/84", bio: "", note: "", fav: "", goal: 7 },
+      studyMeta: { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 },
+      progress: { math:{}, biology:{}, physics:{}, history:{} },
+      activities: [],
+      lastResults: {}
+    });
+    firestoreData = (await getDoc(userRef)).data() || {};
+  }else{ firestoreData = snap.data() || {}; }
+  firestoreData.profile = firestoreData.profile || { nickname: currentUser, avatar: "https://via.placeholder.com/84", bio: "", note: "", fav: "", goal: 7 };
+  firestoreData.studyMeta = firestoreData.studyMeta || { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 };
+  firestoreData.progress = firestoreData.progress || { math:{}, biology:{}, physics:{}, history:{} };
+  firestoreData.progress.physics = firestoreData.progress.physics || {};
+  firestoreData.activities = firestoreData.activities || [];
+  await mergeLegacyProgressToFirebase();
+  const refreshed = await getDoc(userRef);
+  firestoreData = refreshed.data() || firestoreData;
+  firestoreData.studyMeta = firestoreData.studyMeta || { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 };
 }
+
+function toggleTheme(){ document.body.classList.toggle("light"); localStorage.setItem("physics_theme", document.body.classList.contains("light") ? "light" : "dark"); }
+function loadTheme(){ if((localStorage.getItem("physics_theme") || "dark") === "light") document.body.classList.add("light"); }
+function toggleLang(){ uiLang = uiLang === "ru" ? "en" : "ru"; localStorage.setItem(SUBJECT + "_lang", uiLang); applyLang(); }
+function goLobby(){ location.href = "lobby.html"; }
+
+function showScreen(name){ ["screen-class","screen-topic","screen-level","screen-task"].forEach(id => { document.getElementById(id).classList.toggle("hidden", id !== name); }); }
 
 function renderClasses(){
   const grid = document.getElementById("classGrid");
@@ -943,42 +412,40 @@ function renderClasses(){
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "card-btn";
-    btn.innerHTML = "<strong>" + cls + " класс</strong><small>Открой темы этого класса</small>";
+    btn.innerHTML = "<strong>" + cls + " " + T().classWord + "</strong><small>" + T().chooseClassHint + "</small>";
     btn.onclick = function(){ selectClass(cls); };
+    if(cls === currentClass) btn.classList.add("active");
     grid.appendChild(btn);
   });
 }
-
 function renderTopics(){
   const grid = document.getElementById("topicGrid");
-  document.getElementById("topicTitle").textContent = currentClass + " класс — выбери тему";
+  document.getElementById("topicTitle").textContent = currentClass + " " + T().classWord + " — " + (uiLang === "ru" ? "выбери тему" : "choose a topic");
   grid.innerHTML = "";
   SPEC.classes[currentClass].forEach(function(topicId){
     const topic = SPEC.meta[currentClass][topicId];
-    const p = getProgress(currentClass, topicId);
+    const p = firebaseTopicP(currentClass, topicId) || getProgress(currentClass, topicId).highestCompleted || 0;
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "card-btn";
     btn.innerHTML =
       "<strong>" + topic.title + "</strong>" +
       "<small>" + topic.desc + "</small>" +
-      "<span class='small'>Уровень: " + Math.min(16, (p.highestCompleted || 0) + 1) + "/16</span>";
+      "<span class='small'>" + T().levelPrefix + ": " + Math.min(16, (p || 0) + 1) + "/16</span>";
     btn.onclick = function(){ openTopic(topicId); };
     grid.appendChild(btn);
   });
 }
-
 function renderTopicLevels(){
   const topic = SPEC.meta[currentClass][currentTopic];
   const prog = getProgress(currentClass, currentTopic);
-  document.getElementById("levelTitle").textContent = topic.title + " — уровни";
-  document.getElementById("topicProgress").textContent = "Прогресс темы: " + Math.min(16, prog.highestCompleted || 0) + "/16";
+  document.getElementById("levelTitle").textContent = topic.title + " — " + (uiLang === "ru" ? "уровни" : "levels");
+  document.getElementById("topicProgress").textContent = T().progress + " " + Math.min(16, prog.highestCompleted || 0) + "/16";
   document.getElementById("progressFill").style.width = Math.min(100, ((prog.highestCompleted || 0) / 16) * 100) + "%";
 
   const unlocked = unlockFor(currentClass, currentTopic);
   const grid = document.getElementById("levelGrid");
   grid.innerHTML = "";
-
   for(let level=1; level<=16; level++){
     const btn = document.createElement("button");
     btn.type = "button";
@@ -991,49 +458,67 @@ function renderTopicLevels(){
     grid.appendChild(btn);
   }
 }
+function selectClass(cls){ currentClass = cls; showScreen("screen-topic"); renderClasses(); renderTopics(); }
+function openTopic(topicId){ currentTopic = topicId; showScreen("screen-level"); renderTopicLevels(); }
+function backToClass(){ showScreen("screen-class"); renderClasses(); }
+function backToTopics(){ showScreen("screen-topic"); renderTopics(); }
+function backToLevels(){ showScreen("screen-level"); renderTopicLevels(); }
 
-function selectClass(cls){
-  currentClass = cls;
-  showScreen("screen-topic");
-  renderTopics();
-}
-function openTopic(topicId){
-  currentTopic = topicId;
-  showScreen("screen-level");
-  renderTopicLevels();
-}
-function backToClass(){
-  showScreen("screen-class");
-}
-function backToTopics(){
-  showScreen("screen-topic");
-}
-function backToLevels(){
-  showScreen("screen-level");
+function buildLocalTask(level, i){ const bank = SPEC.local; const row = bank[(level + i) % bank.length]; return makeMCQ(row.q, row.c, row.w, row.h, row.s); }
+async function loadDeckForLevel(level){
+  const deck = [];
+  const seen = new Set(getRecentKeys().map(normalize));
+  let apiQuestions = [];
+  try{ apiQuestions = await fetchOpenTDBQuestions(10); }catch(e){ apiQuestions = []; }
+  for(const q of apiQuestions){ const key = questionKey(q); if(!seen.has(key)){ seen.add(key); deck.push(q); } if(deck.length >= 10) break; }
+  let i = 0;
+  while(deck.length < 10 && i < 80){ const q = buildLocalTask(level, i); const key = questionKey(q); if(!seen.has(key)){ seen.add(key); deck.push(q); } i++; }
+  while(deck.length < 10){ deck.push(buildLocalTask(level, i + 100)); i++; }
+  rememberKeyBulk(deck);
+  return deck.slice(0,10);
 }
 
+function startLevel(level){
+  currentLevel = level;
+  currentTasks = [];
+  taskIndex = 0;
+  correctCount = 0;
+  selectedOption = null;
+  checked = false;
+  showScreen("screen-task");
+  document.getElementById("taskTitle").textContent = SPEC.meta[currentClass][currentTopic].title + " — " + T().levelWord + " " + level + "/16";
+  document.getElementById("question").textContent = T().loadingQuestions;
+  document.getElementById("optionGrid").innerHTML = "";
+  document.getElementById("result").textContent = "";
+  document.getElementById("solution").textContent = "";
+  document.getElementById("nextBtn").classList.add("hidden");
+  setTimeout(async function(){
+    try{ currentTasks = await loadDeckForLevel(level); }
+    catch(e){ currentTasks = []; }
+    if(!currentTasks.length) currentTasks = [buildLocalTask(level, 0)];
+    taskIndex = 0;
+    renderTask();
+  }, 20);
+}
 function renderTask(){
   const t = currentTasks[taskIndex];
   if(!t){
-    document.getElementById("question").textContent = "Загрузка...";
+    document.getElementById("question").textContent = T().loading;
     document.getElementById("optionGrid").innerHTML = "";
     document.getElementById("result").textContent = "";
     document.getElementById("solution").textContent = "";
     document.getElementById("nextBtn").classList.add("hidden");
     return;
   }
-
   selectedOption = null;
   checked = false;
   optionButtons = [];
-
   document.getElementById("question").innerText = t.q;
   document.getElementById("result").innerText = "";
   document.getElementById("solution").innerText = "";
   document.getElementById("nextBtn").classList.add("hidden");
-  document.getElementById("taskProgress").innerText = "Вопрос " + (taskIndex + 1) + " / " + currentTasks.length;
+  document.getElementById("taskProgress").innerText = T().question + " " + (taskIndex + 1) + " / " + currentTasks.length;
   document.getElementById("taskProgressFill").style.width = (((taskIndex + 1) / currentTasks.length) * 100) + "%";
-
   const grid = document.getElementById("optionGrid");
   grid.innerHTML = "";
   t.options.forEach(function(opt, idx){
@@ -1045,90 +530,151 @@ function renderTask(){
     optionButtons.push(btn);
     grid.appendChild(btn);
   });
+  document.getElementById("checkBtn").textContent = T().check;
+  document.getElementById("hintBtn").textContent = T().hint;
+  document.getElementById("heroProgressText").textContent = anyData()
+    ? `${totalLevelsNow()} уровней · ${subjectTopicCount()} тем`
+    : T().loadText;
 }
-
-function selectOption(index, button){
-  if(checked) return;
-  selectedOption = index;
-  optionButtons.forEach(function(b){ b.classList.remove("selected"); });
-  button.classList.add("selected");
-}
-
+function selectOption(index, button){ if(checked) return; selectedOption = index; optionButtons.forEach(function(b){ b.classList.remove("selected"); }); button.classList.add("selected"); }
 function checkAnswer(){
   if(checked) return;
   const task = currentTasks[taskIndex];
-  if(!task){
-    return;
-  }
-  if(selectedOption === null){
-    document.getElementById("result").innerText = "Выбери вариант ответа.";
-    return;
-  }
-
+  if(!task) return;
+  if(selectedOption === null){ document.getElementById("result").innerText = T().chooseAnswer; return; }
   checked = true;
-  optionButtons.forEach(function(btn, idx){
-    btn.disabled = true;
-    if(idx === task.answer) btn.classList.add("correct");
-    if(idx === selectedOption && selectedOption !== task.answer) btn.classList.add("wrong");
-  });
-
-  if(selectedOption === task.answer){
-    document.getElementById("result").innerText = "✅ Правильно!";
-    document.getElementById("solution").innerText = "";
-  }else{
-    document.getElementById("result").innerText = "❌ Неправильно";
-    document.getElementById("solution").innerText = "Правильный ответ: " + task.options[task.answer] + ". " + (task.solution || "");
-  }
-
+  optionButtons.forEach(function(btn, idx){ btn.disabled = true; if(idx === task.answer) btn.classList.add("correct"); if(idx === selectedOption && selectedOption !== task.answer) btn.classList.add("wrong"); });
+  if(selectedOption === task.answer){ correctCount++; document.getElementById("result").innerText = T().correct; document.getElementById("solution").innerText = ""; }
+  else{ document.getElementById("result").innerText = T().wrong; document.getElementById("solution").innerText = task.solution || ""; }
   document.getElementById("nextBtn").classList.remove("hidden");
+  document.getElementById("nextBtn").textContent = T().next;
 }
+function showHint(){ const task = currentTasks[taskIndex]; if(task) document.getElementById("solution").innerText = task.hint || ""; }
+function nextTask(){ if(taskIndex < currentTasks.length - 1){ taskIndex++; renderTask(); }else{ finishLevel(); } }
 
-function showHint(){
-  const task = currentTasks[taskIndex];
-  if(task) document.getElementById("solution").innerText = task.hint || "";
-}
-
-function nextTask(){
-  if(taskIndex < currentTasks.length - 1){
-    taskIndex++;
-    renderTask();
-  }else{
-    const p = getProgress(currentClass, currentTopic);
-    if(currentLevel > (p.highestCompleted || 0)) p.highestCompleted = currentLevel;
-    saveProgress(currentClass, currentTopic, p);
+async function finishLevel(){
+  const passed = correctCount > 5;
+  const p = getProgress(currentClass, currentTopic);
+  if(!passed){
+    alert(T().fail(correctCount));
     renderTopicLevels();
     backToLevels();
+    return;
   }
+
+  p.highestCompleted = Math.max(p.highestCompleted || 0, currentLevel);
+  p.lastScore = correctCount;
+  p.lastTotal = currentTasks.length;
+  p.lastPassedAt = Date.now();
+
+  saveProgress(currentClass, currentTopic, p);
+  await saveFirebaseProgress(currentClass, currentTopic, p);
+
+  const meta = firestoreData?.studyMeta || { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 };
+  meta.completedUnits = (meta.completedUnits || 0) + 1;
+  localStorage.setItem(`studyMeta_${currentUser}`, JSON.stringify(meta));
+  firestoreData.studyMeta = meta;
+  await updateDoc(userRef, { studyMeta: meta });
+
+  const lastResult = {
+    subject: "physics",
+    classNum: currentClass,
+    topic: currentTopic,
+    level: currentLevel,
+    correct: correctCount,
+    total: currentTasks.length,
+    passed: true,
+    time: Date.now()
+  };
+  localStorage.setItem(LAST_RESULT_KEY, JSON.stringify(lastResult));
+  await updateDoc(userRef, { [`lastResults.physics`]: lastResult });
+
+  alert(T().pass(correctCount));
+  renderTopicLevels();
+  backToLevels();
+  render();
 }
 
-function startLevel(level){
-  currentLevel = level;
-  currentTasks = [];
-  taskIndex = 0;
-  showScreen("screen-task");
-  document.getElementById("taskTitle").textContent = SPEC.meta[currentClass][currentTopic].title + " — уровень " + level + "/16";
-  document.getElementById("question").textContent = "Загрузка вопросов...";
-  document.getElementById("optionGrid").innerHTML = "";
-  document.getElementById("result").textContent = "";
-  document.getElementById("solution").textContent = "";
-  document.getElementById("nextBtn").classList.add("hidden");
+function renderStats(){
+  const completed = firestoreData?.studyMeta?.completedUnits || json(`studyMeta_${currentUser}`)?.completedUnits || 0;
+  const totalAll = 640;
+  document.getElementById("statClass").textContent = Object.keys(SPEC.classes).length;
+  document.getElementById("statTopic").textContent = Object.values(SPEC.classes).reduce((a,b)=>a+b.length,0);
+  document.getElementById("statLevel").textContent = totalAll;
+  document.getElementById("pillClass").textContent = `${Object.keys(SPEC.classes).length} ${T().classes}`;
+  document.getElementById("pillTopic").textContent = `${Object.values(SPEC.classes).reduce((a,b)=>a+b.length,0)} ${T().topics}`;
+  document.getElementById("pillLevel").textContent = `${totalAll} ${T().levels}`;
+  document.getElementById("pillUser").textContent = currentUser;
 
-  setTimeout(async function(){
-    try{
-      currentTasks = await loadDeckForLevel(level);
-    }catch(e){
-      currentTasks = [];
-    }
-    if(!currentTasks.length){
-      currentTasks = [buildLocalTask(level, 0)];
-    }
-    taskIndex = 0;
-    renderTask();
-  }, 10);
+  const avg = subjectFirebaseProgress();
+  document.getElementById("heroFill").style.width = `${avg}%`;
+  document.getElementById("heroProgressText").textContent = completed > 0
+    ? `${completed}/${totalAll}`
+    : T().loadText;
 }
 
-renderClasses();
-showScreen("screen-class");
+function applyLang(){
+  const Tt = T();
+  document.getElementById("pageTitle").textContent = Tt.pageTitle;
+  document.getElementById("pageSubtitle").textContent = Tt.pageSubtitle;
+  document.getElementById("heroTitle").textContent = Tt.heroTitle;
+  document.getElementById("heroText").textContent = Tt.heroText;
+  document.getElementById("langBtn").textContent = "🌐 " + Tt.lang;
+  document.getElementById("themeLabel").textContent = Tt.theme;
+  document.getElementById("statClassText").textContent = Tt.statClassText;
+  document.getElementById("statTopicText").textContent = Tt.statTopicText;
+  document.getElementById("statLevelText").textContent = Tt.statLevelText;
+  document.getElementById("classTitle").textContent = Tt.classTitle;
+  document.getElementById("topicTitle").textContent = Tt.topicTitle;
+  document.getElementById("levelTitle").textContent = Tt.levelTitle;
+  document.getElementById("checkBtn").textContent = Tt.check;
+  document.getElementById("hintBtn").textContent = Tt.hint;
+  document.getElementById("footerText").textContent = Tt.footer;
+  const topicBack = document.querySelector("#screen-topic .secondary");
+  const levelBack = document.querySelector("#screen-level .secondary");
+  const taskBack = document.querySelector("#screen-task .secondary");
+  if(topicBack) topicBack.textContent = Tt.back;
+  if(levelBack) levelBack.textContent = Tt.back;
+  if(taskBack) taskBack.textContent = Tt.backLevels;
+  const lobbyBtn = document.querySelector(".toolbar .secondary");
+  if(lobbyBtn) lobbyBtn.textContent = Tt.lobby;
+  renderStats();
+  renderClasses();
+  if(currentTopic) renderTopics();
+  if(currentTopic) renderTopicLevels();
+  if(currentTasks.length) renderTask();
+}
+
+async function renderProfileAndStats(){
+  const profile = firestoreData?.profile || { nickname: currentUser, avatar: "https://via.placeholder.com/84" };
+  document.title = `Study Hub | Physics • ${profile.nickname || currentUser}`;
+  renderStats();
+}
+
+async function init(){
+  loadTheme();
+  document.body.classList.toggle("light", (localStorage.getItem(THEME_KEY) || "dark") === "light");
+  await loadFirestoreUser();
+  document.getElementById("pillUser").textContent = currentUser;
+  renderClasses();
+  renderStats();
+  applyLang();
+  showScreen("screen-class");
+  await renderProfileAndStats();
+}
+
+window.toggleTheme = toggleTheme;
+window.toggleLang = toggleLang;
+window.goLobby = goLobby;
+window.backToClass = backToClass;
+window.backToTopics = backToTopics;
+window.backToLevels = backToLevels;
+window.checkAnswer = checkAnswer;
+window.showHint = showHint;
+window.nextTask = nextTask;
+
+await init();
+
 </script>
 </body>
 </html>

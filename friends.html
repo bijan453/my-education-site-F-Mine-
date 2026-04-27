@@ -88,12 +88,10 @@ button:disabled{
 
 <script>
 
-// ===== ADMIN CHECK =====
 function isAdmin(){
     return localStorage.getItem("currentUser") === "admin123";
 }
 
-// ===== LOAD =====
 let chat = document.getElementById("chat");
 
 let messages = JSON.parse(localStorage.getItem("friends_chat") || "[]");
@@ -112,7 +110,6 @@ function render(){
 
 render();
 
-// ===== SEND =====
 function sendMessage(){
 
     if(!isAdmin()){
@@ -135,7 +132,6 @@ function sendMessage(){
     render();
 }
 
-// ===== БЛОКИРОВКА КНОПКИ ДЛЯ НЕ АДМИНА =====
 if(!isAdmin()){
     document.getElementById("sendBtn").disabled = true;
     document.getElementById("text").placeholder = "Только admin123 может писать";
