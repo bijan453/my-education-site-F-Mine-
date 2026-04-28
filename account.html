@@ -4,169 +4,487 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Профиль пользователя</title>
+<title>F-Mine · Профиль</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
-body{min-height:100vh;background:linear-gradient(135deg,#1e1e2f,#3a3a6a);color:#fff;padding:16px}
-body.light{background:linear-gradient(135deg,#f5f5f5,#d0d0ff);color:#222}
-.container{max-width:980px;margin:0 auto}
-.header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.brand{font-size:26px;font-weight:800;background:linear-gradient(90deg,#fff,gold,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.top-actions{display:flex;gap:8px;flex-wrap:wrap}
-button{border:none;border-radius:12px;padding:12px 14px;background:linear-gradient(135deg,#6c63ff,#4a47d1);color:#fff;font-weight:700;cursor:pointer}
-button.secondary{background:#444}
-button.ghost{background:transparent;border:1px solid rgba(255,255,255,.2)}
-body.light button.secondary{background:#666}
-.layout{display:grid;grid-template-columns:340px 1fr;gap:14px}
-details{background:rgba(255,255,255,.06);backdrop-filter:blur(12px);border-radius:18px;padding:14px 16px;margin-bottom:12px;box-shadow:0 0 24px rgba(0,0,0,.25)}
-summary{list-style:none;cursor:pointer;font-size:18px;font-weight:800;display:flex;justify-content:space-between;gap:10px;align-items:center}
-summary::-webkit-details-marker{display:none}
-summary::after{content:"▾";transition:.2s}
-details[open] summary::after{transform:rotate(180deg)}
-.sum-note{font-size:12px;font-weight:600;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}
-.panel{margin-top:12px}
-.class-block{margin-top:12px;padding:12px;border-radius:14px;background:rgba(0,0,0,.18)}
-.avatar{width:84px;height:84px;border-radius:50%;border:2px solid gold;object-fit:cover;cursor:pointer}
-.row{display:flex;gap:12px;align-items:center}
-.username{font-size:22px;font-weight:800}
-.small{font-size:13px;color:#d7dbff;line-height:1.4}
-body.light .small{color:#4a4a63}
-textarea,input,select{width:100%;margin-top:10px;padding:12px;border:none;border-radius:12px;outline:none;background:rgba(0,0,0,.25);color:#fff}
-body.light textarea,body.light input,body.light select{background:rgba(255,255,255,.92);color:#111}
-textarea{min-height:100px;resize:vertical}
-.progress-line{height:20px;background:rgba(0,0,0,.22);border-radius:999px;overflow:hidden;position:relative;margin-top:10px}
-.fill{height:100%;width:0%;background:linear-gradient(90deg,#6c63ff,gold);transition:.5s}
-.ptext{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
-.grid{display:grid;gap:10px}
-.badge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.badge{padding:12px;border-radius:14px;background:rgba(0,0,0,.18)}
-.badge.on{background:linear-gradient(135deg,rgba(108,99,255,.4),rgba(255,215,0,.15))}
-.badge span{display:block;font-size:12px;opacity:.9;margin-top:3px}
-.list{display:grid;gap:8px;margin-top:10px}
-.item{padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.18);font-size:14px;line-height:1.35}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.actions button{flex:1}
-.exit-wrap{display:flex;justify-content:center;margin-top:12px}
-.exit-btn{background:linear-gradient(135deg,#6c63ff,#4a47d1)}
-.subject-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.subject-card{padding:12px;border-radius:14px;background:rgba(0,0,0,.18)}
-.subject-card b{display:block;font-size:16px}
-.subject-card span{display:block;font-size:12px;opacity:.9;margin-top:4px}
-.hero-progress{margin-top:10px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}.sum-note{max-width:55%}}
-@media(max-width:600px){
-  .brand{font-size:20px}
-  .username{font-size:18px}
-  .badge-grid,.subject-grid{grid-template-columns:1fr}
-  .top-actions button{flex:1}
-  .top-actions{width:100%}
-  button{width:100%}
-  summary{font-size:17px}
+/* ─── Design Tokens ─────────────────────────────────── */
+:root {
+  --bg-0: #0c0d1a;
+  --bg-1: #13152b;
+  --bg-2: #1a1d3a;
+  --card: rgba(255,255,255,.06);
+  --card-hover: rgba(255,255,255,.10);
+  --border: rgba(255,255,255,.08);
+  --text: #e8eaf6;
+  --muted: rgba(232,234,246,.60);
+  --accent: #7c6fff;
+  --accent2: #5048d4;
+  --gold: #f5c842;
+  --ok: #3ecf6e;
+  --bad: #ff5c5c;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 8px 32px rgba(0,0,0,.40);
+  --glow: 0 0 24px rgba(124,111,255,.22);
+}
+body.light {
+  --bg-0: #f0f2ff;
+  --bg-1: #e8eaff;
+  --bg-2: #dde0ff;
+  --card: rgba(255,255,255,.72);
+  --card-hover: rgba(255,255,255,.90);
+  --border: rgba(100,100,200,.15);
+  --text: #1a1c3a;
+  --muted: rgba(26,28,58,.55);
+}
+
+/* ─── Reset & Base ──────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(ellipse at 20% 0%, rgba(124,111,255,.18) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 100%, rgba(245,200,66,.10) 0%, transparent 50%),
+              linear-gradient(160deg, var(--bg-0), var(--bg-1) 50%, var(--bg-2));
+  color: var(--text);
+  transition: background .3s, color .3s;
+  padding: 16px;
+}
+
+/* ─── Layout ────────────────────────────────────────── */
+.wrap { max-width: 1060px; margin: 0 auto; }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.brand {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #fff 0%, var(--gold) 50%, #fff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.top-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+/* ─── Cards / Panels ────────────────────────────────── */
+.panel {
+  background: var(--card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  gap: 10px;
+}
+.panel-head:hover { background: var(--card-hover); }
+.panel-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.panel-note { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 46%; }
+.chevron { font-size: 13px; color: var(--muted); transition: transform .2s; }
+.panel.open .chevron { transform: rotate(180deg); }
+.panel-body { padding: 0 16px 16px; display: none; }
+.panel.open .panel-body { display: block; }
+
+/* ─── Buttons ───────────────────────────────────────── */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: filter .15s, transform .12s, box-shadow .15s;
+  box-shadow: var(--glow);
+  white-space: nowrap;
+}
+button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+button:active { transform: translateY(0) scale(.98); }
+button.sec { background: rgba(255,255,255,.08); border: 1px solid var(--border); box-shadow: none; }
+button.ghost { background: transparent; border: 1px solid var(--border); box-shadow: none; }
+body.light button.sec { background: rgba(0,0,0,.07); }
+
+/* ─── Form Controls ─────────────────────────────────── */
+textarea, input[type="text"], input[type="number"], select {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  background: rgba(0,0,0,.25);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color .2s;
+}
+body.light textarea, body.light input, body.light select {
+  background: rgba(255,255,255,.85);
+  color: #111;
+}
+textarea:focus, input:focus, select:focus { border-color: var(--accent); }
+textarea { min-height: 90px; resize: vertical; }
+
+/* ─── Profile card ──────────────────────────────────── */
+.profile-row { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.avatar-wrap { position: relative; flex-shrink: 0; }
+.avatar {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  object-fit: cover;
+  cursor: pointer;
+  display: block;
+}
+.avatar-menu {
+  position: absolute; top: 100%; left: 0; margin-top: 6px;
+  background: rgba(10,10,30,.96);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  min-width: 160px;
+  z-index: 20;
+  display: none;
+}
+.avatar-menu.open { display: flex; flex-direction: column; gap: 4px; }
+.avatar-menu button { width: 100%; justify-content: flex-start; }
+.username { font-size: 20px; font-weight: 900; }
+.meta-text { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+/* ─── Progress bar ──────────────────────────────────── */
+.bar-wrap { margin-top: 10px; }
+.bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.bar {
+  height: 12px;
+  background: rgba(0,0,0,.30);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: 999px;
+  transition: width .6s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 0 8px rgba(124,111,255,.4);
+}
+
+/* ─── Subject cards ─────────────────────────────────── */
+.subject-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 2px; }
+.subject-card {
+  background: rgba(0,0,0,.18);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.subject-card .s-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
+.subject-card .s-stat { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+/* ─── Detail tree ───────────────────────────────────── */
+.class-block { margin-top: 10px; }
+.class-head {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--muted);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+.topic-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  background: rgba(0,0,0,.14);
+  font-size: 13px;
+  gap: 10px;
+}
+.topic-row .t-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topic-row .t-pct { font-size: 11px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.topic-row .mini-bar { width: 60px; height: 6px; background: rgba(0,0,0,.35); border-radius: 999px; overflow: hidden; flex-shrink: 0; }
+.topic-row .mini-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--gold)); border-radius: 999px; }
+
+/* ─── Badges ────────────────────────────────────────── */
+.badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.badge {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.18);
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 800;
+  opacity: .45;
+  transition: opacity .2s, border-color .2s;
+}
+.badge.earned {
+  background: linear-gradient(135deg, rgba(124,111,255,.20), rgba(245,200,66,.12));
+  border-color: rgba(124,111,255,.30);
+  opacity: 1;
+}
+.badge span { display: block; font-size: 11px; font-weight: 500; color: var(--muted); margin-top: 3px; }
+
+/* ─── History ───────────────────────────────────────── */
+.activity-item {
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(0,0,0,.14);
+  font-size: 13px;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.activity-time { font-size: 11px; color: var(--muted); display: block; margin-top: 2px; }
+
+/* ─── Actions row ───────────────────────────────────── */
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.btn-row button { flex: 1; min-width: 0; }
+
+/* ─── Loading state ─────────────────────────────────── */
+.loading-overlay {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 24px; font-size: 15px; color: var(--muted);
+}
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Responsive ────────────────────────────────────── */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .subject-grid, .badge-grid { grid-template-columns: 1fr; }
+  .top-bar button { flex: 1; }
+  .top-bar { width: 100%; }
+  .brand { font-size: 20px; }
 }
 </style>
 </head>
 <body>
-<div class="container">
+
+<div class="wrap">
+
+  <!-- ── Header ── -->
   <div class="header">
-    <div class="brand">F-Mine Profile</div>
-    <div class="top-actions">
+    <div class="brand">⛏ F-Mine</div>
+    <div class="top-bar">
       <button class="ghost" onclick="toggleTheme()">🌓 Тема</button>
-      <button class="secondary" onclick="copyNick()">📋 Ник</button>
-      <button class="secondary" onclick="goLobby()">🏠 Лобби</button>
+      <button class="sec" onclick="copyNick()">📋 Ник</button>
+      <button class="sec" onclick="goLobby()">🏠 Лобби</button>
     </div>
   </div>
 
   <div class="layout">
+
+    <!-- ══ LEFT COLUMN ══════════════════════════════════ -->
     <div>
-      <details open>
-        <summary><span>👤 Профиль</span><span class="sum-note" id="profNote">Био, заметки, прогресс и цели</span></summary>
-        <div class="panel">
-          <div class="row">
-            <div style="position:relative">
-              <img id="avatar" class="avatar" src="https://via.placeholder.com/84" onclick="toggleMenu()" alt="avatar">
-              <div id="menu" style="display:none;position:absolute;left:0;top:100%;margin-top:8px;background:rgba(0,0,0,.9);border-radius:12px;padding:8px;min-width:170px;z-index:10">
+
+      <!-- Profile -->
+      <div class="panel open" id="panelProfile">
+        <div class="panel-head" onclick="togglePanel('panelProfile')">
+          <span class="panel-title">👤 Профиль</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="panel-note" id="pnoteProfile">Загрузка...</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="profile-row">
+            <div class="avatar-wrap">
+              <img id="avatar" class="avatar" src="https://via.placeholder.com/76" alt="avatar" onclick="toggleAvatarMenu()">
+              <div class="avatar-menu" id="avatarMenu">
                 <button onclick="pickAvatar()">🖼️ Сменить аватар</button>
-                <button class="secondary" onclick="resetAvatar()">♻️ Сбросить</button>
+                <button class="sec" onclick="resetAvatar()">♻️ Сбросить</button>
               </div>
+              <input id="avatarFile" type="file" accept="image/*" hidden>
             </div>
             <div>
-              <div id="name" class="username"></div>
-              <div class="small" id="hint">Био, заметки, прогресс и цели.</div>
+              <div class="username" id="username"></div>
+              <div class="meta-text" id="metaHint">Загрузка профиля...</div>
             </div>
           </div>
-
           <textarea id="bio" placeholder="Напиши о себе..."></textarea>
-          <button onclick="saveBio()">💾 Сохранить био</button>
-          <input id="file" type="file" accept="image/*" hidden>
+          <button style="margin-top:10px;width:100%;" onclick="saveBio()">💾 Сохранить био</button>
         </div>
-      </details>
+      </div>
 
-      <details>
-        <summary><span>⭐ Любимая тема</span><span class="sum-note" id="favNote">Пока не выбрана</span></summary>
-        <div class="panel">
-          <select id="fav"></select>
-          <button onclick="saveFav()">Сохранить</button>
-          <div class="small" id="favText" style="margin-top:8px"></div>
-        </div>
-      </details>
-
-      <details>
-        <summary><span>🔥 Серия и цель</span><span class="sum-note" id="streakNote">Пока нет серии</span></summary>
-        <div class="panel">
-          <div class="small" id="streakText">Стрик: 0 дней</div>
-          <div class="small" id="goalText" style="margin-top:6px">Цель недели: 0/0</div>
-          <div class="progress-line"><div id="goalFill" class="fill"></div><div id="goalP" class="ptext">0%</div></div>
-          <input id="goalInput" type="number" min="1" max="100" placeholder="Цель недели">
-          <div class="actions">
-            <button onclick="markToday()">✅ Я учился сегодня</button>
-            <button class="secondary" onclick="saveGoal()">🎯 Сохранить цель</button>
+      <!-- Favourite topic -->
+      <div class="panel" id="panelFav">
+        <div class="panel-head" onclick="togglePanel('panelFav')">
+          <span class="panel-title">⭐ Любимая тема</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="panel-note" id="pnoteFav">Не выбрана</span>
+            <span class="chevron">▾</span>
           </div>
         </div>
-      </details>
+        <div class="panel-body">
+          <select id="favSelect"></select>
+          <button style="margin-top:10px;width:100%;" onclick="saveFav()">Сохранить</button>
+        </div>
+      </div>
 
-      <details>
-        <summary><span>📝 Заметка</span><span class="sum-note" id="noteNote">Личная заметка</span></summary>
-        <div class="panel">
+      <!-- Streak & goal -->
+      <div class="panel" id="panelStreak">
+        <div class="panel-head" onclick="togglePanel('panelStreak')">
+          <span class="panel-title">🔥 Серия и цель</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="panel-note" id="pnoteStreak">—</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div style="font-size:13px;color:var(--muted);" id="streakText">Стрик: 0 дней</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px;" id="goalText">Цель недели: 0 / 0</div>
+          <div class="bar-wrap">
+            <div class="bar"><div class="bar-fill" id="goalFill" style="width:0%"></div></div>
+          </div>
+          <input type="number" id="goalInput" min="1" max="100" placeholder="Цель на неделю (дней)">
+          <div class="btn-row">
+            <button onclick="markToday()">✅ Учился сегодня</button>
+            <button class="sec" onclick="saveGoal()">🎯 Сохранить цель</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal note -->
+      <div class="panel" id="panelNote">
+        <div class="panel-head" onclick="togglePanel('panelNote')">
+          <span class="panel-title">📝 Заметка</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="panel-note" id="pnoteNote">Личная заметка</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
           <textarea id="note" placeholder="Личная заметка..."></textarea>
-          <div class="actions">
+          <div class="btn-row">
             <button onclick="saveNote()">Сохранить</button>
-            <button class="secondary" onclick="clearNote()">Очистить</button>
+            <button class="sec" onclick="clearNote()">Очистить</button>
           </div>
         </div>
-      </details>
+      </div>
 
-      <div class="exit-wrap"><button class="exit-btn" onclick="goLobby()">🛑 Выйти</button></div>
+      <div style="margin-top:4px;">
+        <button style="width:100%;background:linear-gradient(135deg,#3a1a1a,#5c2020);" onclick="goLobby()">🛑 Выйти</button>
+      </div>
+
     </div>
 
+    <!-- ══ RIGHT COLUMN ═════════════════════════════════ -->
     <div>
-      <details open>
-        <summary><span>📈 Общий прогресс</span><span class="sum-note" id="overallNote">0 / 640</span></summary>
-        <div class="panel">
-          <div class="small" id="overallText">Пройдено: 0 / 640</div>
-          <div class="progress-line hero-progress"><div id="overallFill" class="fill"></div><div id="overallP" class="ptext">0%</div></div>
-          <div class="small" id="lastResultText" style="margin-top:8px">Последний результат не найден.</div>
+
+      <!-- Overall progress -->
+      <div class="panel open" id="panelOverall">
+        <div class="panel-head" onclick="togglePanel('panelOverall')">
+          <span class="panel-title">📈 Общий прогресс</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="panel-note" id="pnoteOverall">—</span>
+            <span class="chevron">▾</span>
+          </div>
         </div>
-      </details>
+        <div class="panel-body">
+          <div id="loadingOverall" class="loading-overlay"><div class="spinner"></div> Загрузка...</div>
+          <div id="overallContent" style="display:none;">
+            <div class="bar-wrap">
+              <div class="bar-label">
+                <span id="overallLabel">0 / 0 уровней</span>
+                <span id="overallPct">0%</span>
+              </div>
+              <div class="bar"><div class="bar-fill" id="overallFill" style="width:0%"></div></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-top:10px;" id="lastResultText">Последний результат не найден.</div>
+          </div>
+        </div>
+      </div>
 
-      <details open>
-        <summary><span>📚 Прогресс по предметам</span><span class="sum-note" id="subjectsNote">Пока нет прогресса</span></summary>
-        <div class="panel subject-grid" id="subjects"></div>
-      </details>
+      <!-- Subject breakdown -->
+      <div class="panel open" id="panelSubjects">
+        <div class="panel-head" onclick="togglePanel('panelSubjects')">
+          <span class="panel-title">📚 По предметам</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="panel-note" id="pnoteSubjects">—</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="subject-grid" id="subjectGrid"></div>
+          <button class="ghost" onclick="location.href='results.html'">📊 Результаты</button>
+        </div>
+      </div>
 
-      <details open>
-        <summary><span>🧩 Детальный прогресс</span><span class="sum-note" id="detailsNote">Пока нет данных</span></summary>
-        <div class="panel" id="details"></div>
-      </details>
+      <!-- Detailed topic tree -->
+      <div class="panel" id="panelDetails">
+        <div class="panel-head" onclick="togglePanel('panelDetails')">
+          <span class="panel-title">🧩 Детальный прогресс</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="panel-note" id="pnoteDetails">—</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body" id="detailsBody"></div>
+      </div>
 
-      <details open>
-        <summary><span>⭐ Достижения</span><span class="sum-note" id="badgesNote">Пройди первый уровень</span></summary>
-        <div class="panel badge-grid" id="badges"></div>
-      </details>
+      <!-- Badges -->
+      <div class="panel open" id="panelBadges">
+        <div class="panel-head" onclick="togglePanel('panelBadges')">
+          <span class="panel-title">🏆 Достижения</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="panel-note" id="pnoteBadges">—</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="badge-grid" id="badgeGrid"></div>
+        </div>
+      </div>
 
-      <details open>
-        <summary><span>🕒 История</span><span class="sum-note" id="historyNote">Нет действий</span></summary>
-        <div class="panel list" id="history"></div>
-      </details>
+      <!-- Activity history -->
+      <div class="panel open" id="panelHistory">
+        <div class="panel-head" onclick="togglePanel('panelHistory')">
+          <span class="panel-title">🕒 История</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="panel-note" id="pnoteHistory">Нет записей</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body" id="historyList"></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -175,546 +493,503 @@ textarea{min-height:100px;resize:vertical}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-const firebaseConfig = {
+// ─── Firebase init ────────────────────────────────────
+const FB_CFG = {
   apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
   authDomain: "fmine-auth.firebaseapp.com",
   projectId: "fmine-auth",
   storageBucket: "fmine-auth.firebasestorage.app",
   messagingSenderId: "219769927531",
-  appId: "1:219769927531:web:fbd45a0876f32927d23e2e",
-  measurementId: "G-ETT9HCQRQD"
+  appId: "1:219769927531:web:fbd45a0876f32927d23e2e"
 };
+const db = getFirestore(initializeApp(FB_CFG));
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// ─── Constants ────────────────────────────────────────
+const LEVELS_PER_TOPIC = 16; // same for ALL subjects
+const DEFAULT_AVATAR    = "https://via.placeholder.com/76";
+const currentUser       = localStorage.getItem("currentUser") || "guest";
+const userRef           = doc(db, "users", currentUser);
 
-const user = localStorage.getItem("currentUser") || "guest";
-const pkey = "user_" + user;
-const defAvatar = "https://via.placeholder.com/84";
-const userRef = doc(db, "users", user);
-const TOTAL_PROGRESS_UNITS = 640;
-
+// ─── Subject configuration (single source of truth) ──
+// Each topic has exactly LEVELS_PER_TOPIC = 16 levels
 const SUBJECTS = {
   math: {
     label: "Математика",
-    prefix: "mathProgress",
+    emoji: "📐",
     classes: {
-      7:["integers","linear","fractions","powers","roots","mixed"],
-      8:["linear2","brackets","fractions2","powers2","roots2","mixed2"],
-      9:["quadratic","factor","functions","powers3","roots3","mixed3"],
-      10:["inequalities","quadratic2","trig","logs","exponents","mixed4"]
-    },
-    names: {
-      7:{integers:"Числа",linear:"Линейные",fractions:"Дроби",powers:"Степени",roots:"Корни",mixed:"Смешанные"},
-      8:{linear2:"Линейные",brackets:"Скобки",fractions2:"Дроби",powers2:"Степени",roots2:"Корни",mixed2:"Смешанные"},
-      9:{quadratic:"Квадратные",factor:"Разложение",functions:"Функции",powers3:"Степени",roots3:"Корни",mixed3:"Смешанные"},
-      10:{inequalities:"Неравенства",quadratic2:"Квадратные",trig:"Тригонометрия",logs:"Логарифмы",exponents:"Показательные",mixed4:"Смешанные"}
+      7:  { integers:"Числа", linear:"Линейные", fractions:"Дроби", powers:"Степени", roots:"Корни", mixed:"Смешанные" },
+      8:  { linear2:"Линейные", brackets:"Скобки", fractions2:"Дроби", powers2:"Степени", roots2:"Корни", mixed2:"Смешанные" },
+      9:  { quadratic:"Квадратные", factor:"Разложение", functions:"Функции", powers3:"Степени", roots3:"Корни", mixed3:"Смешанные" },
+      10: { inequalities:"Неравенства", quadratic2:"Квадратные", trig:"Тригонометрия", logs:"Логарифмы", exponents:"Показательные", mixed4:"Смешанные" }
     }
   },
   biology: {
     label: "Биология",
-    prefix: "biologyProgress",
+    emoji: "🌿",
     classes: {
-      7:["cell","plants","animals","mixed7"],
-      8:["humanBody","digestion","breathing","mixed8"],
-      9:["genetics","ecology","evolution","mixed9"],
-      10:["microbiology","cellProcesses","biosphere","mixed10"]
-    },
-    names: {
-      7:{cell:"Клетка",plants:"Растения",animals:"Животные",mixed7:"Смешанные"},
-      8:{humanBody:"Человек",digestion:"Пищеварение",breathing:"Дыхание",mixed8:"Смешанные"},
-      9:{genetics:"Генетика",ecology:"Экология",evolution:"Эволюция",mixed9:"Смешанные"},
-      10:{microbiology:"Микробиология",cellProcesses:"Процессы клетки",biosphere:"Биосфера",mixed10:"Смешанные"}
+      7:  { cell:"Клетка", plants:"Растения", animals:"Животные", mixed7:"Смешанные" },
+      8:  { humanBody:"Человек", digestion:"Пищеварение", breathing:"Дыхание", mixed8:"Смешанные" },
+      9:  { genetics:"Генетика", ecology:"Экология", evolution:"Эволюция", mixed9:"Смешанные" },
+      10: { microbiology:"Микробиология", cellProcesses:"Процессы клетки", biosphere:"Биосфера", mixed10:"Смешанные" }
     }
   },
   physics: {
     label: "Физика",
-    prefix: "physicsProgress",
+    emoji: "⚡",
     classes: {
-      7:["motion","density","force","mixed7"],
-      8:["pressure","work","heat","mixed8"],
-      9:["electricity","circuits","optics","mixed9"],
-      10:["mechanics","electricAdvanced","waves","mixed10"]
-    },
-    names: {
-      7:{motion:"Движение",density:"Плотность",force:"Сила",mixed7:"Смешанные"},
-      8:{pressure:"Давление",work:"Работа и мощность",heat:"Теплота",mixed8:"Смешанные"},
-      9:{electricity:"Электричество",circuits:"Цепи",optics:"Оптика",mixed9:"Смешанные"},
-      10:{mechanics:"Механика",electricAdvanced:"Электричество",waves:"Волны",mixed10:"Смешанные"}
+      7:  { motion:"Движение", density:"Плотность", force:"Сила", mixed7:"Смешанные" },
+      8:  { pressure:"Давление", work:"Работа", heat:"Теплота", mixed8:"Смешанные" },
+      9:  { electricity:"Электричество", circuits:"Цепи", optics:"Оптика", mixed9:"Смешанные" },
+      10: { mechanics:"Механика", electricAdv:"Электричество", waves:"Волны", mixed10:"Смешанные" }
     }
   },
   history: {
     label: "История",
-    prefix: "historyProgress",
+    emoji: "📜",
     classes: {
-      7:["ancientWorld","ancientGreece","ancientRome","mixed7"],
-      8:["middleAges","oldRus","discoveries","mixed8"],
-      9:["renaissanceReformation","empireRussia","industrialNapoleonic","mixed9"],
-      10:["ww1","ww2","coldWarModern","mixed10"]
-    },
-    names: {
-      7:{ancientWorld:"Древний мир",ancientGreece:"Древняя Греция",ancientRome:"Древний Рим",mixed7:"Смешанные"},
-      8:{middleAges:"Средние века",oldRus:"Древняя Русь",discoveries:"Великие открытия",mixed8:"Смешанные"},
-      9:{renaissanceReformation:"Возрождение и Реформация",empireRussia:"Российская империя",industrialNapoleonic:"Новое время",mixed9:"Смешанные"},
-      10:{ww1:"Первая мировая",ww2:"Вторая мировая",coldWarModern:"Холодная война",mixed10:"Смешанные"}
+      7:  { ancientWorld:"Древний мир", ancientGreece:"Греция", ancientRome:"Рим", mixed7:"Смешанные" },
+      8:  { middleAges:"Средние века", oldRus:"Древняя Русь", discoveries:"Открытия", mixed8:"Смешанные" },
+      9:  { renaissance:"Возрождение", empire:"Империи", industrial:"Новое время", mixed9:"Смешанные" },
+      10: { ww1:"Первая мировая", ww2:"Вторая мировая", coldWar:"Холодная война", mixed10:"Смешанные" }
     }
   }
 };
 
-const SUBJECT_KEYS = ["math", "biology", "physics", "history"];
-const CLASS_KEYS = ["7", "8", "9", "10"];
+const SUBJECT_KEYS = Object.keys(SUBJECTS);
+const CLASS_KEYS   = ["7", "8", "9", "10"];
 
-const json = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
+// Pre-calculate max possible levels (used for overall % bar)
+// Math: 4 classes × 6 topics × 16 = 384
+// Bio/Phys/Hist: each 4 classes × 4 topics × 16 = 256  → 3 × 256 = 768
+// Total = 1152
+const TOTAL_LEVELS = SUBJECT_KEYS.reduce((sum, sk) =>
+  sum + CLASS_KEYS.reduce((s, c) =>
+    s + Object.keys(SUBJECTS[sk].classes[c] || {}).length * LEVELS_PER_TOPIC, 0), 0);
 
-const save = o => {
-  localStorage.setItem(pkey, JSON.stringify(o));
-  localStorage.setItem("userData", JSON.stringify({
-    nickname: o.nickname || user,
-    avatar: o.avatar || defAvatar
-  }));
-};
+// ─── Firebase state ───────────────────────────────────
+let fd = null; // firestoreData
 
-const legacyProfile = () => {
-  const d = json(pkey) || json("userData") || {};
-  return {
-    nickname: d.nickname || user,
-    avatar: d.avatar || defAvatar,
-    bio: d.bio || "",
-    note: d.note || "",
-    fav: d.fav || "",
-    goal: d.goal || 7
-  };
-};
-
-const defaultFirestoreDoc = {
-  profile: legacyProfile(),
-  studyMeta: json(`studyMeta_${user}`) || {
-    streak: 0,
-    lastDate: "",
-    weeklyCount: 0,
-    weekKey: "",
-    completedUnits: 0
-  },
-  progress: {
-    math: {},
-    biology: {},
-    physics: {},
-    history: {}
-  },
-  activities: json(`profileActivity_${user}`) || [],
+const defaultDoc = () => ({
+  profile:   { nickname: currentUser, avatar: DEFAULT_AVATAR, bio: "", note: "", fav: "", goal: 7 },
+  studyMeta: { streak: 0, lastDate: "", weeklyCount: 0, weekKey: "", completedUnits: 0 },
+  progress:  { math: {}, biology: {}, physics: {}, history: {} },
+  activities: [],
   lastResults: {}
-};
+});
 
-let firestoreData = null;
-
-async function loadFirestoreUser() {
+async function loadUser() {
   try {
     const snap = await getDoc(userRef);
     if (!snap.exists()) {
-      await setDoc(userRef, defaultFirestoreDoc);
-      firestoreData = JSON.parse(JSON.stringify(defaultFirestoreDoc));
-      return firestoreData;
+      const init = defaultDoc();
+      await setDoc(userRef, init);
+      fd = init;
+    } else {
+      const data = snap.data();
+      const def  = defaultDoc();
+      fd = {
+        profile:    { ...def.profile,    ...(data.profile    || {}) },
+        studyMeta:  { ...def.studyMeta,  ...(data.studyMeta  || {}) },
+        progress: {
+          math:    data.progress?.math    || {},
+          biology: data.progress?.biology || {},
+          physics: data.progress?.physics || {},
+          history: data.progress?.history || {}
+        },
+        activities:  Array.isArray(data.activities) ? data.activities : [],
+        lastResults: data.lastResults || {}
+      };
     }
-
-    const data = snap.data() || {};
-    firestoreData = {
-      profile: { ...defaultFirestoreDoc.profile, ...(data.profile || {}) },
-      studyMeta: { ...defaultFirestoreDoc.studyMeta, ...(data.studyMeta || {}) },
-      progress: {
-        math: { ...(data.progress?.math || {}) },
-        biology: { ...(data.progress?.biology || {}) },
-        physics: { ...(data.progress?.physics || {}) },
-        history: { ...(data.progress?.history || {}) }
-      },
-      activities: Array.isArray(data.activities) ? data.activities : [],
-      lastResults: data.lastResults || {}
-    };
-    return firestoreData;
-  } catch (e) {
-    firestoreData = JSON.parse(JSON.stringify(defaultFirestoreDoc));
-    return firestoreData;
+  } catch (err) {
+    console.warn("Firestore load failed, using defaults:", err);
+    fd = defaultDoc();
   }
 }
 
-async function patchUser(payload) {
+async function patch(payload) {
   try {
     await updateDoc(userRef, payload);
+    // re-fetch to stay in sync
     const snap = await getDoc(userRef);
-    if (snap.exists()) firestoreData = snap.data() || firestoreData || defaultFirestoreDoc;
-  } catch (e) {
-    firestoreData = firestoreData || JSON.parse(JSON.stringify(defaultFirestoreDoc));
+    if (snap.exists()) fd = { ...fd, ...snap.data() };
+  } catch (err) {
+    console.warn("Firestore patch failed:", err);
   }
 }
 
-function getProfile() {
-  const d = firestoreData || {};
-  const p = d.profile || legacyProfile();
-  return {
-    nickname: p.nickname || user,
-    avatar: p.avatar || defAvatar,
-    bio: p.bio || "",
-    note: p.note || "",
-    fav: p.fav || "",
-    goal: p.goal || 7
-  };
+// ─── Progress helpers ─────────────────────────────────
+// BUG FIX: was returning 320 for non-math — now always 16
+function topicHighest(subjectKey, cls, topicId) {
+  return fd?.progress?.[subjectKey]?.[cls]?.[topicId]?.highestCompleted ?? 0;
 }
 
-async function setProfile(part) {
-  const next = { ...getProfile(), ...part };
-  save(next);
-  await patchUser({ profile: next });
-  return next;
+function topicPct(subjectKey, cls, topicId) {
+  return Math.min(100, Math.round(topicHighest(subjectKey, cls, topicId) / LEVELS_PER_TOPIC * 100));
 }
 
-function topicP(subjectKey, c, t) {
-  const firebaseValue = firestoreData?.progress?.[subjectKey]?.[c]?.[t]?.highestCompleted;
-  if (typeof firebaseValue === "number") return firebaseValue;
-
-  const legacy = json(`${SUBJECTS[subjectKey].prefix}_${user}_${c}_${t}`);
-  return legacy?.highestCompleted || 0;
+function classLevels(subjectKey, cls) {
+  return Object.keys(SUBJECTS[subjectKey].classes[cls] || {})
+    .reduce((s, t) => s + Math.min(LEVELS_PER_TOPIC, topicHighest(subjectKey, cls, t)), 0);
 }
 
-function maxFor(subjectKey, c, t) {
-  return subjectKey === "math" ? 16 : 320;
-}
-
-function classCompletedTopics(subjectKey, c) {
-  const topics = SUBJECTS[subjectKey].classes[c] || [];
-  const max = maxFor(subjectKey, c);
-  return topics.filter(t => topicP(subjectKey, c, t) >= max).length;
-}
-
-function classTotalLevels(subjectKey, c) {
-  const topics = SUBJECTS[subjectKey].classes[c] || [];
-  return topics.reduce((s, t) => s + Math.min(maxFor(subjectKey, c, t), topicP(subjectKey, c, t)), 0);
-}
-
-function classP(subjectKey, c) {
-  const topics = SUBJECTS[subjectKey].classes[c] || [];
-  const max = maxFor(subjectKey, c);
-  const total = topics.reduce((s, t) => s + Math.min(max, topicP(subjectKey, c, t)), 0);
-  return topics.length ? Math.round(total / (topics.length * max) * 100) : 0;
-}
-
-function subjectProgress(subjectKey) {
-  const classes = CLASS_KEYS.map(c => classP(subjectKey, c));
-  return classes.length ? Math.round(classes.reduce((a, b) => a + b, 0) / classes.length) : 0;
+function classTopicsDone(subjectKey, cls) {
+  return Object.keys(SUBJECTS[subjectKey].classes[cls] || {})
+    .filter(t => topicHighest(subjectKey, cls, t) >= LEVELS_PER_TOPIC).length;
 }
 
 function subjectLevels(subjectKey) {
-  return CLASS_KEYS.reduce((s, c) => s + (SUBJECTS[subjectKey].classes[c] || []).reduce((a, t) => a + Math.min(maxFor(subjectKey, c, t), topicP(subjectKey, c, t)), 0), 0);
+  return CLASS_KEYS.reduce((s, c) => s + classLevels(subjectKey, c), 0);
 }
 
-function subjectTopics(subjectKey) {
-  return CLASS_KEYS.reduce((s, c) => {
-    const max = maxFor(subjectKey, c);
-    return s + (SUBJECTS[subjectKey].classes[c] || []).filter(t => topicP(subjectKey, c, t) >= max).length;
-  }, 0);
+function subjectTopicsDone(subjectKey) {
+  return CLASS_KEYS.reduce((s, c) => s + classTopicsDone(subjectKey, c), 0);
 }
 
-function totalLevels() {
+function subjectTotalTopics(subjectKey) {
+  return CLASS_KEYS.reduce((s, c) => s + Object.keys(SUBJECTS[subjectKey].classes[c] || {}).length, 0);
+}
+
+// BUG FIX: overall progress from actual highestCompleted, not completedUnits counter
+function totalLevelsDone() {
   return SUBJECT_KEYS.reduce((s, sk) => s + subjectLevels(sk), 0);
 }
 
-function totalTopics() {
-  return SUBJECT_KEYS.reduce((s, sk) => s + subjectTopics(sk), 0);
+function totalTopicsDone() {
+  return SUBJECT_KEYS.reduce((s, sk) => s + subjectTopicsDone(sk), 0);
 }
 
-function getAverage() {
-  const arr = SUBJECT_KEYS.map(subjectProgress);
-  return Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
+// ─── Profile helpers ──────────────────────────────────
+const getProfile  = () => fd?.profile || defaultDoc().profile;
+const getMeta     = () => fd?.studyMeta || defaultDoc().studyMeta;
+
+async function setProfile(part) {
+  const next = { ...getProfile(), ...part };
+  fd.profile = next;
+  // persist localStorage for other pages (lobby etc.)
+  localStorage.setItem("userData", JSON.stringify({ nickname: next.nickname, avatar: next.avatar }));
+  await patch({ profile: next });
 }
 
-const getOlymp = c => parseInt(localStorage.getItem(`${user}_olymp_${c}`) || "0", 10) || 0;
-const lastMath = () => json(`${user}_math_last`);
-const lastResultAny = () => {
-  const all = firestoreData?.lastResults || {};
-  const items = Object.entries(all)
-    .filter(([, v]) => v && typeof v === "object")
-    .map(([subject, value]) => ({ subject, ...value }));
-  if (!items.length) return null;
-  items.sort((a, b) => (b.time || 0) - (a.time || 0));
-  return items[0];
-};
-const subjectLabel = key => SUBJECTS[key]?.label || key;
-const study = () => firestoreData?.studyMeta || json(`studyMeta_${user}`) || { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 };
-
-const keyToday = () => new Date().toISOString().slice(0,10);
-const keyWeek = () => {
-  const d = new Date();
-  const day = d.getDay() || 7;
-  const mon = new Date(d);
-  mon.setDate(d.getDate() - day + 1);
-  mon.setHours(0,0,0,0);
-  return mon.toISOString().slice(0,10);
+// ─── Date helpers ─────────────────────────────────────
+const todayKey = () => new Date().toISOString().slice(0, 10);
+const weekKey  = () => {
+  const d = new Date(), day = d.getDay() || 7, mon = new Date(d);
+  mon.setDate(d.getDate() - day + 1); mon.setHours(0,0,0,0);
+  return mon.toISOString().slice(0, 10);
 };
 
-function toggleTheme() {
-  document.body.classList.toggle("light");
-  localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
-}
-
-function toggleMenu() {
-  const m = document.getElementById("menu");
-  m.style.display = m.style.display === "flex" ? "none" : "flex";
-}
-document.addEventListener("click", e => {
-  const m = document.getElementById("menu"), a = document.getElementById("avatar");
-  if (m && !m.contains(e.target) && e.target !== a) m.style.display = "none";
-});
-
-function pickAvatar() { document.getElementById("file").click(); }
-
-async function resetAvatar() {
-  document.getElementById("avatar").src = defAvatar;
-  await setProfile({ avatar:defAvatar });
-  addAct("Аватар сброшен.");
-  render();
-}
-async function saveBio() {
-  await setProfile({ bio: document.getElementById("bio").value });
-  addAct("Био сохранено.");
-  alert("Сохранено");
-  render();
-}
-async function saveNote() {
-  await setProfile({ note: document.getElementById("note").value });
-  addAct("Заметка сохранена.");
-  render();
-}
-async function clearNote() {
-  document.getElementById("note").value = "";
-  await setProfile({ note:"" });
-  addAct("Заметка очищена.");
-  render();
-}
-async function saveFav() {
-  const v = document.getElementById("fav").value;
-  await setProfile({ fav:v });
-  document.getElementById("favText").innerText = v ? "Любимая: " + v : "Пока не выбрана";
-  addAct("Любимая тема сохранена.");
-  render();
-}
-async function markToday() {
-  const today = keyToday();
-  const weekKey = keyWeek();
-  const s = { ...study() };
-
-  if (s.lastDate === today) return alert("Сегодня уже отмечено.");
-
-  if (s.weekKey !== weekKey) {
-    s.weekKey = weekKey;
-    s.weeklyCount = 0;
-  }
-
-  s.streak = s.lastDate
-    ? (new Date(today) - new Date(s.lastDate) === 86400000 ? (s.streak || 0) + 1 : 1)
-    : 1;
-
-  s.weeklyCount = (s.weeklyCount || 0) + 1;
-  s.lastDate = today;
-
-  localStorage.setItem(`studyMeta_${user}`, JSON.stringify(s));
-  await patchUser({ studyMeta: s });
-  addAct("Отмечено занятие за сегодня.");
-  render();
-}
-async function saveGoal() {
-  const g = parseInt(document.getElementById("goalInput").value, 10);
-  if (!g || g < 1) return alert("Введите цель.");
-  await setProfile({ goal:g });
-  addAct(`Цель недели: ${g}.`);
-  render();
-}
-function copyNick() {
-  navigator.clipboard.writeText(user)
-    .then(() => { alert("Ник скопирован"); addAct("Ник скопирован."); })
-    .catch(() => alert("Не удалось скопировать"));
-}
-function goLobby() { location.href = "lobby.html"; }
-
-async function addAct(text) {
+// ─── Activity log ─────────────────────────────────────
+async function logActivity(text) {
   const entry = { text, time: new Date().toLocaleString("ru-RU") };
-  const arr = [...(firestoreData?.activities || []), entry].slice(0, 8);
-  localStorage.setItem(`profileActivity_${user}`, JSON.stringify(arr));
-  await patchUser({ activities: arr });
+  const arr   = [...(fd.activities || []), entry].slice(-10); // keep last 10
+  fd.activities = arr;
+  await patch({ activities: arr });
   renderHistory();
 }
 
-function renderSubjectSummary() {
-  const w = document.getElementById("subjects");
-  w.innerHTML = "";
-  SUBJECT_KEYS.forEach(sk => {
-    const subj = SUBJECTS[sk];
-    const doneTopics = CLASS_KEYS.reduce((sum, c) => sum + classCompletedTopics(sk, c), 0);
-    const totalTopicsCount = CLASS_KEYS.reduce((sum, c) => sum + (SUBJECTS[sk].classes[c] || []).length, 0);
-    const totalLevelsCount = subjectLevels(sk);
+// ─── Panel toggle ─────────────────────────────────────
+window.togglePanel = (id) => {
+  document.getElementById(id)?.classList.toggle("open");
+};
 
-    w.innerHTML += `
+// ─── Theme ───────────────────────────────────────────
+window.toggleTheme = () => {
+  document.body.classList.toggle("light");
+  localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
+};
+
+// ─── Avatar ───────────────────────────────────────────
+window.toggleAvatarMenu = () => document.getElementById("avatarMenu").classList.toggle("open");
+window.pickAvatar       = () => { document.getElementById("avatarFile").click(); document.getElementById("avatarMenu").classList.remove("open"); };
+window.resetAvatar      = async () => {
+  document.getElementById("avatar").src = DEFAULT_AVATAR;
+  await setProfile({ avatar: DEFAULT_AVATAR });
+  await logActivity("Аватар сброшен");
+  renderProfile();
+};
+
+document.getElementById("avatarFile").onchange = function () {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    document.getElementById("avatar").src = e.target.result;
+    await setProfile({ avatar: e.target.result });
+    await logActivity("Аватар обновлён");
+    renderProfile();
+  };
+  reader.readAsDataURL(file);
+};
+
+// Close avatar menu on outside click
+document.addEventListener("click", e => {
+  const menu = document.getElementById("avatarMenu");
+  const avtr = document.getElementById("avatar");
+  if (menu && !menu.contains(e.target) && e.target !== avtr) menu.classList.remove("open");
+});
+
+// ─── Profile actions ──────────────────────────────────
+window.saveBio   = async () => { await setProfile({ bio: document.getElementById("bio").value }); await logActivity("Био сохранено"); alert("Сохранено"); renderProfile(); };
+window.saveNote  = async () => { await setProfile({ note: document.getElementById("note").value }); await logActivity("Заметка сохранена"); renderProfile(); };
+window.clearNote = async () => { document.getElementById("note").value = ""; await setProfile({ note: "" }); await logActivity("Заметка очищена"); renderProfile(); };
+window.saveFav   = async () => {
+  const v = document.getElementById("favSelect").value;
+  await setProfile({ fav: v });
+  await logActivity("Любимая тема сохранена");
+  renderProfile();
+};
+window.saveGoal  = async () => {
+  const g = parseInt(document.getElementById("goalInput").value, 10);
+  if (!g || g < 1) return alert("Введите число больше 0");
+  await setProfile({ goal: g });
+  await logActivity(`Цель недели: ${g} дней`);
+  renderStats();
+};
+window.markToday = async () => {
+  const today = todayKey(), wk = weekKey();
+  const m = { ...getMeta() };
+  if (m.lastDate === today) return alert("Сегодня уже отмечено!");
+  if (m.weekKey !== wk) { m.weekKey = wk; m.weeklyCount = 0; }
+  m.streak     = m.lastDate && (new Date(today) - new Date(m.lastDate) === 86400000) ? (m.streak || 0) + 1 : 1;
+  m.weeklyCount = (m.weeklyCount || 0) + 1;
+  m.lastDate   = today;
+  fd.studyMeta = m;
+  await patch({ studyMeta: m });
+  await logActivity("Отмечено занятие");
+  renderStats();
+};
+window.copyNick = () => {
+  navigator.clipboard.writeText(currentUser)
+    .then(() => { alert("Ник скопирован!"); logActivity("Ник скопирован"); })
+    .catch(() => alert("Не удалось скопировать"));
+};
+window.goLobby = () => { location.href = "lobby.html"; };
+
+// ─── Favourite topic dropdown ─────────────────────────
+function buildFavSelect() {
+  const sel = document.getElementById("favSelect");
+  if (sel.options.length) return;
+  let html = "";
+  SUBJECT_KEYS.forEach(sk => {
+    CLASS_KEYS.forEach(c => {
+      Object.entries(SUBJECTS[sk].classes[c] || {}).forEach(([id, name]) => {
+        html += `<option value="${sk}:${c}:${id}">${SUBJECTS[sk].label} · ${c} кл. — ${name}</option>`;
+      });
+    });
+  });
+  sel.innerHTML = html;
+}
+
+// ─── Render: Profile panel ────────────────────────────
+function renderProfile() {
+  const p = getProfile();
+  document.getElementById("username").textContent = p.nickname || currentUser;
+  document.getElementById("avatar").src = p.avatar || DEFAULT_AVATAR;
+  document.getElementById("bio").value  = p.bio  || "";
+  document.getElementById("note").value = p.note || "";
+  document.getElementById("goalInput").value = p.goal || 7;
+  document.getElementById("pnoteProfile").textContent = p.bio ? "Био заполнено" : "Заполни профиль";
+  document.getElementById("metaHint").textContent = p.bio
+    ? p.bio.slice(0, 60) + (p.bio.length > 60 ? "…" : "")
+    : "Нажми на аватар или заполни био.";
+
+  buildFavSelect();
+  if (p.fav) document.getElementById("favSelect").value = p.fav;
+  document.getElementById("pnoteFav").textContent = p.fav
+    ? p.fav.split(":").pop()
+    : "Не выбрана";
+
+  const lastResult = getLastResult();
+  if (lastResult) {
+    const sk   = lastResult.subject;
+    const name = SUBJECTS[sk]?.classes[lastResult.classNum]?.[lastResult.topic] || lastResult.topic || "";
+    document.getElementById("metaHint").textContent =
+      `Последний: ${SUBJECTS[sk]?.label || sk} · ${lastResult.classNum} кл. · ${name} · ур. ${lastResult.level}/${LEVELS_PER_TOPIC}`;
+  }
+}
+
+function getLastResult() {
+  const results = fd?.lastResults || {};
+  const items   = Object.entries(results)
+    .filter(([, v]) => v && v.time)
+    .map(([subject, v]) => ({ subject, ...v }));
+  if (!items.length) return null;
+  return items.sort((a, b) => b.time - a.time)[0];
+}
+
+// ─── Render: Overall progress ─────────────────────────
+function renderOverall() {
+  const done = totalLevelsDone();
+  const pct  = TOTAL_LEVELS > 0 ? Math.round(done / TOTAL_LEVELS * 100) : 0;
+
+  document.getElementById("overallLabel").textContent = `${done} / ${TOTAL_LEVELS} уровней`;
+  document.getElementById("overallPct").textContent   = `${pct}%`;
+  document.getElementById("overallFill").style.width  = `${pct}%`;
+  document.getElementById("pnoteOverall").textContent = `${done} / ${TOTAL_LEVELS} · ${pct}%`;
+
+  const lr = getLastResult();
+  if (lr) {
+    const sk   = lr.subject;
+    const name = SUBJECTS[sk]?.classes[lr.classNum]?.[lr.topic] || lr.topic || "";
+    document.getElementById("lastResultText").textContent =
+      `Последний: ${SUBJECTS[sk]?.label || sk} — ${name} (${lr.classNum} кл.), уровень ${lr.level}/${LEVELS_PER_TOPIC}`;
+  } else {
+    document.getElementById("lastResultText").textContent = "Последний результат не найден.";
+  }
+
+  document.getElementById("loadingOverall").style.display = "none";
+  document.getElementById("overallContent").style.display = "block";
+}
+
+// ─── Render: Subject cards ────────────────────────────
+function renderSubjects() {
+  const grid = document.getElementById("subjectGrid");
+  grid.innerHTML = "";
+  let totalDone = 0, totalTopics = 0;
+
+  SUBJECT_KEYS.forEach(sk => {
+    const subj      = SUBJECTS[sk];
+    const lvlsDone  = subjectLevels(sk);
+    const topicsDone = subjectTopicsDone(sk);
+    const totalT    = subjectTotalTopics(sk);
+    const maxLvls   = totalT * LEVELS_PER_TOPIC;
+    const pct       = maxLvls > 0 ? Math.round(lvlsDone / maxLvls * 100) : 0;
+    totalDone += topicsDone; totalTopics += totalT;
+
+    grid.innerHTML += `
       <div class="subject-card">
-        <b>${subj.label}</b>
-        <div class="progress-line"><div class="fill" style="width:${Math.min(100, totalTopicsCount ? (doneTopics / totalTopicsCount) * 100 : 0)}%"></div><div class="ptext">${doneTopics}/${totalTopicsCount}</div></div>
-        <span>Тем закрыто: ${doneTopics}/${totalTopicsCount} · Уровней: ${totalLevelsCount}</span>
+        <div class="s-title">${subj.emoji} ${subj.label}</div>
+        <div class="bar-wrap">
+          <div class="bar-label">
+            <span>${topicsDone}/${totalT} тем</span>
+            <span style="color:var(--gold);font-weight:800">${pct}%</span>
+          </div>
+          <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div class="s-stat">${lvlsDone} уровней пройдено</div>
       </div>`;
   });
 
-  const any = SUBJECT_KEYS.some(sk => subjectLevels(sk) > 0);
-  document.getElementById("subjectsNote").innerText = any ? `${totalTopics()} тем · ${totalLevels()} уровней` : "Пока нет прогресса";
+  document.getElementById("pnoteSubjects").textContent = totalDone > 0
+    ? `${totalDone} тем · ${totalLevelsDone()} уровней`
+    : "Начни первый уровень";
 }
 
+// ─── Render: Detailed topic tree ──────────────────────
 function renderDetails() {
-  const w = document.getElementById("details");
-  w.innerHTML = "";
+  const body = document.getElementById("detailsBody");
+  body.innerHTML = "";
+  let hasAny = false;
+
   SUBJECT_KEYS.forEach(sk => {
     const subj = SUBJECTS[sk];
-    let html = `<div class="class-block"><div class="row" style="justify-content:space-between"><div>${subj.label}</div><div>${subjectTopics(sk)} тем</div></div><div class="list">`;
-    let hasData = false;
+    let html = `<div class="class-block" style="margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:900;margin-bottom:8px;">${subj.emoji} ${subj.label}</div>`;
 
     CLASS_KEYS.forEach(c => {
-      const topics = subj.classes[c] || [];
-      const max = maxFor(sk, c);
-      const totalLevelsInClass = topics.reduce((s, t) => s + Math.min(max, topicP(sk, c, t)), 0);
-      const doneTopics = topics.filter(t => topicP(sk, c, t) >= max).length;
-      if (topics.some(t => topicP(sk, c, t) > 0)) hasData = true;
+      const topics = Object.entries(subj.classes[c] || {});
+      const lvls   = classLevels(sk, c);
+      const done   = classTopicsDone(sk, c);
+      html += `<div class="class-head"><span>${c} класс</span><span>${done}/${topics.length} тем · ${lvls} ур.</span></div>`;
 
-      html += `<div class="item"><b>${c} класс</b><br><small>${doneTopics}/${topics.length} тем · ${totalLevelsInClass} уровней</small></div>`;
-
-      topics.forEach(t => {
-        const tp = topicP(sk, c, t);
-        const n = subj.names[c]?.[t] || t;
-        html += `<div class="item" style="margin-left:8px"><b>${n}</b><br><small>${tp}/${max} уровней</small><span style="float:right;font-weight:800">${Math.round((tp/max)*100)}%</span></div>`;
+      topics.forEach(([id, name]) => {
+        const highest = topicHighest(sk, c, id);
+        const pct     = topicPct(sk, c, id);
+        if (highest > 0) hasAny = true;
+        html += `<div class="topic-row">
+          <span class="t-name">${name}</span>
+          <div class="mini-bar"><div class="mini-fill" style="width:${pct}%"></div></div>
+          <span class="t-pct">${highest}/${LEVELS_PER_TOPIC}</span>
+        </div>`;
       });
     });
 
-    if (!hasData) html += `<div class="item">Пока нет данных. Начни с первого уровня.</div>`;
-    html += `</div></div>`;
-    w.innerHTML += html;
+    html += "</div>";
+    body.innerHTML += html;
   });
 
-  document.getElementById("detailsNote").innerText = totalLevels() > 0 ? "Есть данные по предметам" : "Пока нет данных";
+  document.getElementById("pnoteDetails").textContent = hasAny ? "Есть данные" : "Нет данных";
 }
 
+// ─── Render: Badges ───────────────────────────────────
 function renderBadges() {
-  const g = document.getElementById("badges");
-  const avg = getAverage();
-  const meta = study();
-  const fav = getProfile().fav;
-  const badges = [
-    ["Старт","1 уровень", totalLevels() >= 1],
-    ["Первые 10","10 уровней", totalLevels() >= 10],
-    ["Темы закрыты","3 темы", totalTopics() >= 3],
-    ["Отличник","50%+", avg >= 50],
-    ["Мастер","80%+", avg >= 80],
-    ["Серия","3 дня подряд", (meta.streak || 0) >= 3],
-    ["План недели","цель недели", (meta.weeklyCount || 0) >= (getProfile().goal || 7)],
-    ["Любимая тема","выбрана", !!fav]
+  const m       = getMeta();
+  const p       = getProfile();
+  const lvls    = totalLevelsDone();
+  const topics  = totalTopicsDone();
+
+  const definitions = [
+    { icon:"🚀", title:"Старт",        hint:"1 уровень",         earned: lvls   >= 1 },
+    { icon:"🔟", title:"Первые 10",    hint:"10 уровней",        earned: lvls   >= 10 },
+    { icon:"📖", title:"Темы открыты", hint:"3 темы закрыто",    earned: topics >= 3 },
+    { icon:"🎓", title:"Хорошист",     hint:"50+ уровней",       earned: lvls   >= 50 },
+    { icon:"🏆", title:"Мастер",       hint:"100+ уровней",      earned: lvls   >= 100 },
+    { icon:"🔥", title:"Серия",        hint:"3 дня подряд",      earned: (m.streak||0) >= 3 },
+    { icon:"🎯", title:"Цель недели",  hint:"выполнена",         earned: (m.weeklyCount||0) >= (p.goal||7) },
+    { icon:"⭐", title:"Любимая тема", hint:"выбрана",           earned: !!p.fav },
   ];
-  const any = badges.some(b => b[2]);
-  g.innerHTML = badges.map(b => `<div class="badge ${b[2] ? 'on' : ''}"><b>${b[0]}</b><span>${b[1]}</span></div>`).join("");
-  if (!any) g.innerHTML = `<div class="badge">Пока достижений нет. Пройди первый уровень.</div>`;
-  document.getElementById("badgesNote").innerText = any ? "Есть достижения" : "Пройди первый уровень";
+
+  const earned = definitions.filter(d => d.earned).length;
+  document.getElementById("badgeGrid").innerHTML = definitions.map(d => `
+    <div class="badge ${d.earned ? "earned" : ""}">
+      ${d.icon} ${d.title}
+      <span>${d.hint}</span>
+    </div>`).join("");
+  document.getElementById("pnoteBadges").textContent = earned > 0 ? `${earned} из ${definitions.length}` : "Пройди первый уровень";
 }
 
-function renderHistory() {
-  const w = document.getElementById("history");
-  const arr = firestoreData?.activities || json(`profileActivity_${user}`) || [];
-  w.innerHTML = arr.length ? arr.map(a => `<div class="item"><b>${a.time}</b><br>${a.text}</div>`).join("") : `<div class="item">Пока действий нет.</div>`;
-  document.getElementById("historyNote").innerText = arr.length ? `${arr.length} записей` : "Нет действий";
-}
-
-function renderFavSelect() {
-  const s = document.getElementById("fav");
-  if (!s.options.length) {
-    let html = "";
-    SUBJECT_KEYS.forEach(sk => {
-      const subj = SUBJECTS[sk];
-      CLASS_KEYS.forEach(c => {
-        (subj.classes[c] || []).forEach(id => {
-          const name = subj.names[c]?.[id] || id;
-          html += `<option value="${sk}:${c}:${id}">${subj.label} · ${c} класс — ${name}</option>`;
-        });
-      });
-    });
-    s.innerHTML = html;
-  }
-  const fav = getProfile().fav;
-  if (fav) s.value = fav;
-  document.getElementById("favText").innerText = fav ? "Любимая: " + fav : "Пока не выбрана";
-  document.getElementById("favNote").innerText = fav ? fav : "Пока не выбрана";
-  document.getElementById("profNote").innerText = getProfile().bio ? "Био заполнено" : "Био, заметки, прогресс и цели";
-}
-
+// ─── Render: Stats (streak / goal) ───────────────────
 function renderStats() {
-  const s = study();
+  const m = getMeta();
   const g = getProfile().goal || 7;
-  const wc = s.weeklyCount || 0;
-  const gp = Math.min(100, Math.round((wc / g) * 100));
-  const completed = s.completedUnits || 0;
+  const wc = m.weeklyCount || 0;
+  const gp = Math.min(100, Math.round(wc / g * 100));
 
-  document.getElementById("streakText").innerText = "Стрик: " + (s.streak || 0) + " дней";
-  document.getElementById("goalText").innerText = `Цель недели: ${wc}/${g}`;
-  document.getElementById("goalFill").style.width = gp + "%";
-  document.getElementById("goalP").innerText = gp + "%";
-  document.getElementById("streakNote").innerText = s.streak > 0 ? `${s.streak} дн.` : "Пока нет серии";
-
-  document.getElementById("overallText").innerText = `Пройдено: ${completed} / ${TOTAL_PROGRESS_UNITS}`;
-  document.getElementById("overallFill").style.width = Math.min(100, Math.round((completed / TOTAL_PROGRESS_UNITS) * 100)) + "%";
-  document.getElementById("overallP").innerText = Math.min(100, Math.round((completed / TOTAL_PROGRESS_UNITS) * 100)) + "%";
-  document.getElementById("overallNote").innerText = `${completed} / ${TOTAL_PROGRESS_UNITS}`;
-
-  const lr = lastResultAny();
-  const lm = lastMath();
-  const last = lr || (lm ? { subject: "math", ...lm } : null);
-  if (last) {
-    const title = subjectLabel(last.subject);
-    const topicName = SUBJECTS[last.subject]?.names?.[last.classNum]?.[last.topic] || last.topic || "";
-    const max = maxFor(last.subject || "math", last.classNum, last.topic);
-    document.getElementById("lastResultText").innerText = `Последний результат: ${title} · ${last.classNum} класс · ${topicName} · уровень ${last.level}/${max}`;
-    document.getElementById("hint").innerText = `Последний уровень: ${title} · ${last.classNum} класс · ${last.level}/${max}`;
-  } else {
-    document.getElementById("lastResultText").innerText = "Последний результат не найден.";
-    document.getElementById("hint").innerText = "Био, заметки, прогресс и цели.";
-  }
+  document.getElementById("streakText").textContent = `Стрик: ${m.streak || 0} дней`;
+  document.getElementById("goalText").textContent   = `Цель недели: ${wc} / ${g} дней`;
+  document.getElementById("goalFill").style.width   = `${gp}%`;
+  document.getElementById("pnoteStreak").textContent = m.streak > 0 ? `${m.streak} дн. подряд` : "Нет серии";
 }
 
-function render() {
-  const profile = getProfile();
-  document.getElementById("name").innerText = profile.nickname || user;
-  document.getElementById("avatar").src = profile.avatar || defAvatar;
-  document.getElementById("bio").value = profile.bio || "";
-  document.getElementById("note").value = profile.note || "";
-  document.getElementById("goalInput").value = profile.goal || 7;
-  renderFavSelect();
-  renderSubjectSummary();
+// ─── Render: History ─────────────────────────────────
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  const acts = fd?.activities || [];
+  list.innerHTML = acts.length
+    ? [...acts].reverse().map(a => `
+        <div class="activity-item">
+          ${a.text}
+          <span class="activity-time">${a.time}</span>
+        </div>`).join("")
+    : `<div class="activity-item" style="color:var(--muted)">Активности пока нет.</div>`;
+  document.getElementById("pnoteHistory").textContent = acts.length ? `${acts.length} записей` : "Нет записей";
+}
+
+// ─── Full render ──────────────────────────────────────
+function renderAll() {
+  renderProfile();
   renderStats();
+  renderOverall();
+  renderSubjects();
   renderDetails();
   renderBadges();
   renderHistory();
 }
 
-document.getElementById("file").onchange = function() {
-  const file = this.files[0];
-  if (!file) return;
-  const r = new FileReader();
-  r.onload = e => {
-    document.getElementById("avatar").src = e.target.result;
-    setProfile({ avatar:e.target.result }).then(() => {
-      addAct("Аватар обновлён.");
-      render();
-    });
-  };
-  r.readAsDataURL(file);
-};
-
-if ((localStorage.getItem("accountTheme") || "dark") === "light") document.body.classList.add("light");
-
+// ─── Boot ─────────────────────────────────────────────
 async function init() {
-  await loadFirestoreUser();
-  render();
+  if ((localStorage.getItem("accountTheme") || "dark") === "light") {
+    document.body.classList.add("light");
+  }
+
+  await loadUser();
+  renderAll();
 }
 
+// expose for inline onclick
 window.toggleTheme = toggleTheme;
-window.toggleMenu = toggleMenu;
+window.togglePanel = togglePanel;
+window.toggleAvatarMenu = toggleAvatarMenu;
 window.pickAvatar = pickAvatar;
 window.resetAvatar = resetAvatar;
 window.saveBio = saveBio;

@@ -1,0 +1,589 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>F-Mine · Результаты</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Manrope:wght@400;600;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:       #080b18;
+  --bg1:      #0e1225;
+  --bg2:      #141930;
+  --card:     rgba(255,255,255,.055);
+  --border:   rgba(255,255,255,.08);
+  --text:     #dde2f5;
+  --muted:    rgba(221,226,245,.5);
+  --accent:   #7b6fff;
+  --gold:     #f0c040;
+  --ok:       #3ecb74;
+  --warn:     #ff7b54;
+  --r:        16px;
+  --mono:     'Space Mono', monospace;
+  --sans:     'Manrope', sans-serif;
+}
+
+/* subject colours */
+--math-c:    #7b6fff;
+--bio-c:     #3ecb74;
+--phys-c:    #38bfff;
+--hist-c:    #f0c040;
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(123,111,255,.14), transparent),
+    radial-gradient(ellipse 50% 40% at 90% 90%, rgba(62,203,116,.10), transparent),
+    linear-gradient(160deg, var(--bg), var(--bg1) 55%, var(--bg2));
+  color: var(--text);
+  min-height: 100vh;
+  padding: 20px 16px 40px;
+}
+
+.wrap { max-width: 1040px; margin: 0 auto; }
+
+/* ── Header ── */
+.hd {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; margin-bottom: 28px;
+}
+.hd-left { display: flex; align-items: center; gap: 14px; }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 14px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--card);
+  color: var(--text); font-family: var(--sans); font-size: 13px; font-weight: 700;
+  cursor: pointer; text-decoration: none; transition: background .15s;
+}
+.back-btn:hover { background: rgba(255,255,255,.10); }
+.page-title { font-size: 22px; font-weight: 900; letter-spacing: -.5px; }
+.page-title span { color: var(--accent); }
+
+.filter-tabs {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.tab {
+  padding: 7px 14px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--card);
+  color: var(--muted); font-family: var(--sans); font-size: 12px; font-weight: 800;
+  cursor: pointer; transition: all .15s;
+}
+.tab.active, .tab:hover { color: var(--text); background: rgba(123,111,255,.22); border-color: var(--accent); }
+.tab[data-s="math"].active    { background: rgba(123,111,255,.22); border-color: #7b6fff; color: #7b6fff; }
+.tab[data-s="biology"].active { background: rgba(62,203,116,.18);  border-color: #3ecb74; color: #3ecb74; }
+.tab[data-s="physics"].active { background: rgba(56,191,255,.18);  border-color: #38bfff; color: #38bfff; }
+.tab[data-s="history"].active { background: rgba(240,192,64,.18);  border-color: #f0c040; color: #f0c040; }
+
+/* ── Stat pills row ── */
+.pills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 22px; }
+.pill {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 18px;
+  position: relative; overflow: hidden;
+}
+.pill::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: var(--pill-color, var(--accent));
+}
+.pill-val { font-family: var(--mono); font-size: 26px; font-weight: 700; line-height: 1; color: var(--pill-color, var(--text)); }
+.pill-label { font-size: 11px; color: var(--muted); margin-top: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ── Two column ── */
+.two-col { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; margin-bottom: 16px; }
+
+/* ── Radar chart ── */
+.radar-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 20px;
+}
+.radar-card h3 { font-size: 13px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 16px; }
+#radarSvg { display: block; width: 100%; }
+
+/* ── Last result hero ── */
+.last-result-card {
+  background: linear-gradient(135deg, rgba(123,111,255,.12), rgba(62,203,116,.07));
+  border: 1px solid rgba(123,111,255,.25);
+  border-radius: var(--r); padding: 18px 20px;
+}
+.lr-label { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+.lr-subject { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+.lr-meta { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.lr-score {
+  margin-top: 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.score-big { font-family: var(--mono); font-size: 40px; font-weight: 700; line-height: 1; color: var(--ok); }
+.score-note { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* ── Subject blocks ── */
+.subject-block {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); margin-bottom: 12px; overflow: hidden;
+}
+.sb-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px; cursor: pointer; user-select: none; gap: 12px;
+  transition: background .15s;
+}
+.sb-head:hover { background: rgba(255,255,255,.04); }
+.sb-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 900; }
+.sb-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.sb-right { display: flex; align-items: center; gap: 14px; }
+.sb-pct { font-family: var(--mono); font-size: 20px; font-weight: 700; }
+.sb-bar { width: 90px; height: 6px; background: rgba(0,0,0,.35); border-radius: 999px; overflow: hidden; }
+.sb-fill { height: 100%; border-radius: 999px; transition: width .6s ease; }
+.sb-chevron { font-size: 12px; color: var(--muted); transition: transform .2s; }
+.subject-block.open .sb-chevron { transform: rotate(180deg); }
+
+.sb-body { display: none; padding: 0 18px 16px; }
+.subject-block.open .sb-body { display: block; }
+
+/* class label */
+.cls-label {
+  font-size: 10px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  border-top: 1px solid var(--border); padding-top: 10px; margin: 10px 0 6px;
+}
+
+/* topic row */
+.t-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 50px 50px;
+  gap: 10px; align-items: center;
+  padding: 8px 10px; border-radius: 10px;
+  margin-bottom: 4px; font-size: 13px;
+  transition: background .15s;
+}
+.t-row:hover { background: rgba(255,255,255,.04); }
+.t-row.weak  { background: rgba(255,123,84,.06); border: 1px solid rgba(255,123,84,.12); }
+.t-row.done  { background: rgba(62,203,116,.06); border: 1px solid rgba(62,203,116,.12); }
+.t-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-minibar { height: 5px; background: rgba(0,0,0,.4); border-radius: 999px; overflow: hidden; }
+.t-minifill { height: 100%; border-radius: 999px; }
+.t-lvl { font-family: var(--mono); font-size: 11px; text-align: right; color: var(--muted); }
+.t-acc { font-family: var(--mono); font-size: 11px; text-align: right; }
+.t-acc.good { color: var(--ok); }
+.t-acc.bad  { color: var(--warn); }
+.t-acc.none { color: var(--muted); }
+
+/* ── Weak spots section ── */
+.section-head {
+  font-size: 12px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .07em;
+  margin: 22px 0 10px;
+}
+.spot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.spot-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px;
+  border-left: 3px solid var(--spot-color, var(--accent));
+}
+.spot-card.priority { border-left-color: var(--warn); }
+.spot-subj { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.spot-name { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+.spot-meta { font-size: 11px; color: var(--muted); }
+.spot-bar { height: 4px; background: rgba(0,0,0,.4); border-radius: 999px; margin-top: 8px; overflow: hidden; }
+.spot-fill { height: 100%; border-radius: 999px; }
+
+/* ── Loading ── */
+.loader {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 40vh; gap: 14px;
+  font-size: 14px; color: var(--muted);
+}
+.spin {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ── */
+@media (max-width: 800px) {
+  .two-col { grid-template-columns: 1fr; }
+  .pills   { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .spot-grid { grid-template-columns: 1fr 1fr; }
+  .t-row { grid-template-columns: 1fr 60px 44px; }
+  .t-acc { display: none; }
+  .pills { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 380px) {
+  .spot-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp .45s ease both; }
+.d1 { animation-delay: .05s; }
+.d2 { animation-delay: .10s; }
+.d3 { animation-delay: .15s; }
+.d4 { animation-delay: .20s; }
+.d5 { animation-delay: .25s; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="loader" id="loader">
+    <div class="spin"></div>
+    Загружаем результаты...
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const FB = {
+  apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+  authDomain: "fmine-auth.firebaseapp.com",
+  projectId: "fmine-auth",
+  storageBucket: "fmine-auth.firebasestorage.app",
+  messagingSenderId: "219769927531",
+  appId: "1:219769927531:web:fbd45a0876f32927d23e2e"
+};
+const db          = getFirestore(initializeApp(FB));
+const currentUser = localStorage.getItem("currentUser") || "guest";
+const LEVELS      = 16;
+
+// ── Subject config ────────────────────────────────────
+const SUBJECTS = {
+  math: {
+    label:"Математика", emoji:"📐", color:"#7b6fff",
+    classes:{
+      7:{integers:"Числа",linear:"Линейные",fractions:"Дроби",powers:"Степени",roots:"Корни",mixed:"Смешанные"},
+      8:{linear2:"Линейные",brackets:"Скобки",fractions2:"Дроби",powers2:"Степени",roots2:"Корни",mixed2:"Смешанные"},
+      9:{quadratic:"Квадратные",factor:"Разложение",functions:"Функции",powers3:"Степени",roots3:"Корни",mixed3:"Смешанные"},
+      10:{inequalities:"Неравенства",quadratic2:"Квадратные",trig:"Тригонометрия",logs:"Логарифмы",exponents:"Показательные",mixed4:"Смешанные"}
+    }
+  },
+  biology: {
+    label:"Биология", emoji:"🌿", color:"#3ecb74",
+    classes:{
+      7:{cell:"Клетка",plants:"Растения",animals:"Животные",mixed7:"Смешанные"},
+      8:{humanBody:"Человек",digestion:"Пищеварение",breathing:"Дыхание",mixed8:"Смешанные"},
+      9:{genetics:"Генетика",ecology:"Экология",evolution:"Эволюция",mixed9:"Смешанные"},
+      10:{microbiology:"Микробиология",cellProcesses:"Процессы клетки",biosphere:"Биосфера",mixed10:"Смешанные"}
+    }
+  },
+  physics: {
+    label:"Физика", emoji:"⚡", color:"#38bfff",
+    classes:{
+      7:{motion:"Движение",density:"Плотность",force:"Сила",mixed7:"Смешанные"},
+      8:{pressure:"Давление",work:"Работа",heat:"Теплота",mixed8:"Смешанные"},
+      9:{electricity:"Электричество",circuits:"Цепи",optics:"Оптика",mixed9:"Смешанные"},
+      10:{mechanics:"Механика",electricAdv:"Электричество",waves:"Волны",mixed10:"Смешанные"}
+    }
+  },
+  history: {
+    label:"История", emoji:"📜", color:"#f0c040",
+    classes:{
+      7:{ancientWorld:"Древний мир",ancientGreece:"Греция",ancientRome:"Рим",mixed7:"Смешанные"},
+      8:{middleAges:"Средние века",oldRus:"Древняя Русь",discoveries:"Открытия",mixed8:"Смешанные"},
+      9:{renaissance:"Возрождение",empire:"Империи",industrial:"Новое время",mixed9:"Смешанные"},
+      10:{ww1:"Первая мировая",ww2:"Вторая мировая",coldWar:"Холодная война",mixed10:"Смешанные"}
+    }
+  }
+};
+const SKS  = Object.keys(SUBJECTS);
+const CLSS = ["7","8","9","10"];
+
+// ── Read Firebase ─────────────────────────────────────
+let fd = null;
+async function load() {
+  try {
+    const snap = await getDoc(doc(db,"users",currentUser));
+    fd = snap.exists() ? snap.data() : {};
+  } catch(e) { fd = {}; }
+  fd.progress    = fd.progress    || {};
+  fd.studyMeta   = fd.studyMeta   || {};
+  fd.lastResults = fd.lastResults || {};
+}
+
+// ── Helpers ───────────────────────────────────────────
+function highest(sk, cls, tid) {
+  return fd?.progress?.[sk]?.[cls]?.[tid]?.highestCompleted ?? 0;
+}
+function lastScore(sk, cls, tid) {
+  const d = fd?.progress?.[sk]?.[cls]?.[tid];
+  if (!d || !d.lastTotal) return null;
+  return { correct: d.lastScore ?? 0, total: d.lastTotal };
+}
+function subjectAvgPct(sk) {
+  let sum = 0, n = 0;
+  CLSS.forEach(c => Object.keys(SUBJECTS[sk].classes[c]||{}).forEach(t => { sum += Math.min(LEVELS, highest(sk,c,t)); n++; }));
+  return n ? Math.round(sum / (n * LEVELS) * 100) : 0;
+}
+function totalLevels() {
+  return SKS.reduce((s,sk) => s + CLSS.reduce((a,c) =>
+    a + Object.keys(SUBJECTS[sk].classes[c]||{}).reduce((x,t) => x + Math.min(LEVELS, highest(sk,c,t)), 0), 0), 0);
+}
+function totalMaxLevels() {
+  return SKS.reduce((s,sk) => s + CLSS.reduce((a,c) =>
+    a + Object.keys(SUBJECTS[sk].classes[c]||{}).length * LEVELS, 0), 0);
+}
+function totalTopicsDone() {
+  return SKS.reduce((s,sk) => s + CLSS.reduce((a,c) =>
+    a + Object.keys(SUBJECTS[sk].classes[c]||{}).filter(t => highest(sk,c,t) >= LEVELS).length, 0), 0);
+}
+function overallAccuracy() {
+  let correct = 0, total = 0;
+  SKS.forEach(sk => CLSS.forEach(c => Object.keys(SUBJECTS[sk].classes[c]||{}).forEach(t => {
+    const sc = lastScore(sk, c, t);
+    if (sc) { correct += sc.correct; total += sc.total; }
+  })));
+  return total ? Math.round(correct / total * 100) : null;
+}
+function getLastResult() {
+  const items = Object.entries(fd.lastResults||{})
+    .filter(([,v]) => v && v.time)
+    .map(([sk,v]) => ({ sk, ...v }));
+  if (!items.length) return null;
+  return items.sort((a,b) => b.time - a.time)[0];
+}
+function getAllWeakSpots() {
+  const spots = [];
+  SKS.forEach(sk => CLSS.forEach(c => Object.entries(SUBJECTS[sk].classes[c]||{}).forEach(([tid, name]) => {
+    const h   = highest(sk, c, tid);
+    const pct = Math.round(h / LEVELS * 100);
+    if (h > 0 && pct < 100) spots.push({ sk, c, tid, name, h, pct });
+  })));
+  return spots.sort((a,b) => a.pct - b.pct); // weakest first
+}
+
+// ── URL param filter ──────────────────────────────────
+const urlParam  = new URLSearchParams(location.search).get("subject");
+let activeFilter = SKS.includes(urlParam) ? urlParam : "all";
+
+// ── Radar SVG ─────────────────────────────────────────
+function buildRadar(pcts) {
+  const cx = 130, cy = 130, r = 100;
+  const labels  = SKS.map(sk => SUBJECTS[sk].emoji + " " + SUBJECTS[sk].label);
+  const colors  = SKS.map(sk => SUBJECTS[sk].color);
+  const angles  = SKS.map((_, i) => (i / SKS.length) * Math.PI * 2 - Math.PI / 2);
+  const grid    = [25, 50, 75, 100];
+
+  let svg = `<svg id="radarSvg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="rgrad" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#7b6fff" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#3ecb74" stop-opacity=".06"/>
+    </radialGradient>
+  </defs>`;
+
+  // grid rings
+  grid.forEach(g => {
+    const pts = angles.map(a => {
+      const rg = r * g / 100;
+      return `${cx + rg * Math.cos(a)},${cy + rg * Math.sin(a)}`;
+    }).join(" ");
+    svg += `<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1"/>`;
+  });
+
+  // grid spokes
+  angles.forEach(a => {
+    svg += `<line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(a)}" y2="${cy + r * Math.sin(a)}" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`;
+  });
+
+  // data polygon
+  const dataPoints = angles.map((a, i) => {
+    const rp = r * (pcts[i] / 100);
+    return `${cx + rp * Math.cos(a)},${cy + rp * Math.sin(a)}`;
+  }).join(" ");
+  svg += `<polygon points="${dataPoints}" fill="url(#rgrad)" stroke="#7b6fff" stroke-width="2" opacity=".9"/>`;
+
+  // dots + labels
+  angles.forEach((a, i) => {
+    const rp  = r * (pcts[i] / 100);
+    const px  = cx + rp * Math.cos(a);
+    const py  = cy + rp * Math.sin(a);
+    const lx  = cx + (r + 22) * Math.cos(a);
+    const ly  = cy + (r + 22) * Math.sin(a);
+    const anch = Math.abs(a) < 0.1 ? "middle" : (Math.cos(a) > 0.1 ? "start" : "end");
+    svg += `<circle cx="${px}" cy="${py}" r="5" fill="${colors[i]}" opacity=".9"/>`;
+    svg += `<text x="${lx}" y="${ly + 4}" text-anchor="${anch}" font-size="9" fill="rgba(221,226,245,.7)" font-family="Manrope,sans-serif" font-weight="700">${labels[i]}</text>`;
+    svg += `<text x="${lx}" y="${ly + 14}" text-anchor="${anch}" font-size="8" fill="${colors[i]}" font-family="Space Mono,monospace" font-weight="700">${pcts[i]}%</text>`;
+  });
+
+  svg += "</svg>";
+  return svg;
+}
+
+// ── Render main UI ────────────────────────────────────
+function render() {
+  const app = document.getElementById("app");
+  const lr  = getLastResult();
+  const acc = overallAccuracy();
+  const dom = totalLevels();
+  const tot = totalMaxLevels();
+
+  // filter helper
+  const visibleSKs = activeFilter === "all" ? SKS : [activeFilter];
+
+  // build filter tabs
+  const tabs = [
+    { k:"all", label:"Все" },
+    ...SKS.map(sk => ({ k: sk, label: SUBJECTS[sk].emoji + " " + SUBJECTS[sk].label }))
+  ].map(t => `<button class="tab${activeFilter===t.k?" active":""}" data-s="${t.k}" onclick="setFilter('${t.k}')">${t.label}</button>`).join("");
+
+  // pills
+  const pillsHtml = `
+    <div class="pills fade-up d1">
+      <div class="pill" style="--pill-color:#7b6fff">
+        <div class="pill-val">${dom}</div>
+        <div class="pill-label">Уровней пройдено</div>
+      </div>
+      <div class="pill" style="--pill-color:#3ecb74">
+        <div class="pill-val">${totalTopicsDone()}</div>
+        <div class="pill-label">Тем закрыто</div>
+      </div>
+      <div class="pill" style="--pill-color:#38bfff">
+        <div class="pill-val">${fd.studyMeta?.streak ?? 0}</div>
+        <div class="pill-label">Дней подряд</div>
+      </div>
+      <div class="pill" style="--pill-color:#f0c040">
+        <div class="pill-val">${acc !== null ? acc+"%" : "—"}</div>
+        <div class="pill-label">Средняя точность</div>
+      </div>
+    </div>`;
+
+  // radar
+  const radarPcts = SKS.map(subjectAvgPct);
+  const radarHtml = `
+    <div class="radar-card fade-up d2">
+      <h3>Прогресс по предметам</h3>
+      ${buildRadar(radarPcts)}
+    </div>`;
+
+  // last result card
+  let lrHtml = "";
+  if (lr) {
+    const sk      = lr.sk;
+    const topicNm = SUBJECTS[sk]?.classes[lr.classNum]?.[lr.topic] || lr.topic || "";
+    const scoreColor = (lr.correct >= 7) ? "var(--ok)" : "var(--warn)";
+    lrHtml = `
+      <div class="last-result-card fade-up d2">
+        <div class="lr-label">Последний результат</div>
+        <div class="lr-subject" style="color:${SUBJECTS[sk]?.color}">${SUBJECTS[sk]?.emoji} ${SUBJECTS[sk]?.label}</div>
+        <div class="lr-meta">
+          ${lr.classNum} класс · ${topicNm}<br>
+          Уровень ${lr.level} из ${LEVELS}
+        </div>
+        <div class="lr-score">
+          <div class="score-big" style="color:${scoreColor}">${lr.correct ?? "?"}/${lr.total ?? 10}</div>
+          <div class="score-note">
+            ${lr.correct >= 7 ? "✅ Засчитано" : "❌ Не засчитано"}<br>
+            <span style="font-size:10px;color:var(--muted)">${lr.time ? new Date(lr.time).toLocaleString("ru-RU") : ""}</span>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // subject blocks
+  const subjectsHtml = visibleSKs.map((sk, idx) => {
+    const subj = SUBJECTS[sk];
+    const avgPct = subjectAvgPct(sk);
+    let bodyHtml = "";
+
+    CLSS.forEach(c => {
+      const topics = Object.entries(subj.classes[c] || {});
+      if (!topics.length) return;
+      bodyHtml += `<div class="cls-label">${c} класс</div>`;
+      topics.forEach(([tid, name]) => {
+        const h   = highest(sk, c, tid);
+        const pct = Math.round(h / LEVELS * 100);
+        const sc  = lastScore(sk, c, tid);
+        const accPct = sc ? Math.round(sc.correct / sc.total * 100) : null;
+        let rowCls = "";
+        if (h >= LEVELS) rowCls = "done";
+        else if (h > 0 && pct < 50) rowCls = "weak";
+
+        bodyHtml += `
+          <div class="t-row ${rowCls}">
+            <div class="t-name">${name}</div>
+            <div class="t-minibar"><div class="t-minifill" style="width:${pct}%;background:${subj.color}"></div></div>
+            <div class="t-lvl">${h}/${LEVELS}</div>
+            <div class="t-acc ${accPct===null?"none":accPct>=70?"good":"bad"}">${accPct!==null?accPct+"%":"—"}</div>
+          </div>`;
+      });
+    });
+
+    return `
+      <div class="subject-block open fade-up" style="animation-delay:${.15+idx*.07}s">
+        <div class="sb-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="sb-title">
+            <span class="sb-dot" style="background:${subj.color}"></span>
+            ${subj.emoji} ${subj.label}
+          </div>
+          <div class="sb-right">
+            <div class="sb-pct" style="color:${subj.color}">${avgPct}%</div>
+            <div class="sb-bar"><div class="sb-fill" style="width:${avgPct}%;background:${subj.color}"></div></div>
+            <span class="sb-chevron">▾</span>
+          </div>
+        </div>
+        <div class="sb-body">${bodyHtml}</div>
+      </div>`;
+  }).join("");
+
+  // weak spots (only if showing all subjects)
+  let weakHtml = "";
+  if (activeFilter === "all") {
+    const weak = getAllWeakSpots().slice(0, 6);
+    if (weak.length) {
+      const cards = weak.map(w => {
+        const clr = SUBJECTS[w.sk].color;
+        return `
+          <div class="spot-card ${w.pct < 30 ? "priority" : ""}" style="--spot-color:${clr}">
+            <div class="spot-subj">${SUBJECTS[w.sk].emoji} ${SUBJECTS[w.sk].label} · ${w.c} кл.</div>
+            <div class="spot-name">${w.name}</div>
+            <div class="spot-meta">${w.h} / ${LEVELS} уровней · ${w.pct}%</div>
+            <div class="spot-bar"><div class="spot-fill" style="width:${w.pct}%;background:${clr}"></div></div>
+          </div>`;
+      }).join("");
+      weakHtml = `
+        <div class="section-head fade-up">⚠️ Слабые места — изучи в первую очередь</div>
+        <div class="spot-grid fade-up">${cards}</div>`;
+    }
+  }
+
+  app.innerHTML = `
+    <div class="hd fade-up">
+      <div class="hd-left">
+        <a href="account.html" class="back-btn">← Профиль</a>
+        <div class="page-title">Мои <span>результаты</span></div>
+      </div>
+      <div class="filter-tabs">${tabs}</div>
+    </div>
+    ${pillsHtml}
+    <div class="two-col fade-up d3">
+      ${radarHtml}
+      <div>
+        ${lrHtml || `<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;text-align:center;color:var(--muted);font-size:14px;">Нет результатов.<br>Пройди первый уровень!</div>`}
+      </div>
+    </div>
+    ${weakHtml}
+    <div class="section-head fade-up">📊 Прогресс по темам</div>
+    <div class="fade-up">${subjectsHtml}</div>`;
+}
+
+window.setFilter = (k) => {
+  activeFilter = k;
+  if (k !== "all") history.replaceState(null,"",`?subject=${k}`);
+  else history.replaceState(null,"","results.html");
+  render();
+};
+
+// ── Boot ──────────────────────────────────────────────
+await load();
+document.getElementById("loader").remove();
+render();
+</script>
+</body>
+</html>
