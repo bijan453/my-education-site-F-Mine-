@@ -1,1 +1,946 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F-Mine | Chat</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #1a1a24;
+  --border: rgba(255,255,255,0.07);
+  --gold: #f5c842;
+  --gold2: #e8a020;
+  --accent: #7c6af7;
+  --text: #e8e8f0;
+  --muted: #5a5a72;
+  --danger: #ff4d6d;
+  --green: #3dffa0;
+  --radius: 16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* ── TOP BAR ── */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,15,0.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 22px;
+  background: linear-gradient(90deg, var(--gold), var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+#userBadge {
+  font-size: 13px; color: var(--muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 6px 12px; border-radius: 30px;
+}
+#userBadge span { color: var(--gold); font-weight: 600; }
+
+/* ── IMPROVEMENT 3: Online counter ── */
+#onlineBadge {
+  font-size: 12px; color: var(--green);
+  background: rgba(61,255,160,0.08);
+  border: 1px solid rgba(61,255,160,0.2);
+  padding: 5px 10px; border-radius: 30px;
+  display: flex; align-items: center; gap: 5px;
+}
+#onlineBadge::before {
+  content: '';
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── LAYOUT ── */
+.layout {
+  flex: 1;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 16px 140px;
+  position: relative; z-index: 1;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 11px 18px;
+  border: none; border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.18s; text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #6a58f0; transform: translateY(-1px); }
+.btn-gold { background: var(--gold); color: #000; }
+.btn-gold:hover { background: var(--gold2); transform: translateY(-1px); }
+.btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--accent); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+/* ── MESSAGES ── */
+#feed { display: flex; flex-direction: column; gap: 10px; }
+
+.msg-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  position: relative;
+  animation: fadeUp 0.3s ease;
+  transition: border-color 0.2s;
+}
+.msg-card:hover { border-color: rgba(255,255,255,0.12); }
+.msg-card.admin-msg { border-color: rgba(245,200,66,0.2); }
+.msg-card.own-msg { border-color: rgba(124,106,247,0.2); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.msg-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+}
+
+.avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; flex-shrink: 0; color: white;
+}
+.avatar.admin-avatar { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: #000; }
+
+.msg-meta { flex: 1; min-width: 0; }
+.msg-name {
+  font-size: 13px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.msg-time { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+/* ── IMPROVEMENT 2: Reply quote block ── */
+.reply-quote {
+  background: rgba(124,106,247,0.08);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  font-size: 12px; color: var(--muted);
+  cursor: pointer;
+}
+.reply-quote strong { color: var(--accent); display: block; font-size: 11px; margin-bottom: 2px; }
+
+.msg-text { font-size: 14px; line-height: 1.6; color: #d0d0e8; word-break: break-word; }
+
+.msg-img {
+  margin-top: 10px; border-radius: 10px;
+  max-width: 100%; max-height: 300px;
+  object-fit: cover; display: block;
+  cursor: zoom-in; transition: opacity 0.2s;
+}
+.msg-img:hover { opacity: 0.9; }
+
+.msg-footer {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 10px; padding-top: 8px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+/* Like button */
+.like-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 11px;
+  color: var(--muted); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.18s; font-family: inherit;
+}
+.like-btn:hover, .like-btn.liked {
+  background: rgba(255,77,109,0.1);
+  border-color: #ff4d6d; color: #ff6b85;
+}
+
+/* ── IMPROVEMENT 1: Reaction buttons ── */
+.reaction-wrap { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+
+.reaction-btn {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 16px; padding: 3px 9px;
+  font-size: 12px; cursor: pointer; transition: all 0.15s;
+  font-family: inherit; color: var(--text);
+}
+.reaction-btn:hover { border-color: var(--accent); transform: scale(1.08); }
+.reaction-btn.active { background: rgba(124,106,247,0.15); border-color: var(--accent); }
+
+.emoji-picker-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: 16px; padding: 3px 8px;
+  font-size: 14px; cursor: pointer; transition: all 0.15s;
+  color: var(--muted);
+}
+.emoji-picker-btn:hover { border-color: var(--accent); }
+
+.emoji-popup {
+  position: absolute; bottom: calc(100% + 8px); left: 0;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 8px;
+  display: none; gap: 6px; z-index: 50;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.emoji-popup.open { display: flex; }
+.emoji-popup button {
+  background: none; border: none; font-size: 20px; cursor: pointer;
+  padding: 4px; border-radius: 6px; transition: background 0.15s;
+  line-height: 1;
+}
+.emoji-popup button:hover { background: rgba(255,255,255,0.08); }
+
+/* Action buttons row */
+.msg-actions { margin-left: auto; display: flex; gap: 4px; }
+
+.icon-btn {
+  background: none; border: 1px solid transparent;
+  border-radius: 8px; padding: 4px 8px;
+  font-size: 12px; cursor: pointer; transition: all 0.15s;
+  font-family: inherit; color: var(--muted);
+}
+.icon-btn:hover { border-color: var(--border); color: var(--text); }
+.icon-btn.delete-btn:hover { color: var(--danger); border-color: rgba(255,77,109,0.3); }
+.icon-btn.ban-btn-inline:hover { color: var(--danger); border-color: rgba(255,77,109,0.3); }
+
+.banned-banner {
+  background: rgba(255,77,109,0.08);
+  border: 1px solid rgba(255,77,109,0.2);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center; color: var(--danger);
+  font-weight: 600; font-size: 14px;
+}
+
+/* ── IMPROVEMENT 6: Typing indicator ── */
+#typingBar {
+  max-width: 680px; margin: 0 auto;
+  padding: 0 16px 6px;
+  font-size: 12px; color: var(--muted);
+  min-height: 20px; position: relative; z-index: 1;
+}
+.typing-dots span {
+  display: inline-block; width: 4px; height: 4px;
+  background: var(--muted); border-radius: 50%; margin: 0 1px;
+  animation: typingDot 1.2s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-4px)} }
+
+/* ── IMPROVEMENT 5: Scroll-to-bottom button ── */
+#scrollBtn {
+  position: fixed; bottom: 130px; right: 20px; z-index: 200;
+  width: 42px; height: 42px;
+  background: var(--accent); color: white;
+  border: none; border-radius: 50%; font-size: 18px;
+  cursor: pointer; box-shadow: 0 4px 20px rgba(124,106,247,0.5);
+  display: none; align-items: center; justify-content: center;
+  transition: opacity 0.2s, transform 0.2s;
+}
+#scrollBtn.show { display: flex; }
+#scrollBtn:hover { transform: scale(1.1); }
+
+/* ── IMPROVEMENT 4: Unread badge ── */
+#unreadBadge {
+  position: fixed; bottom: 178px; right: 14px; z-index: 201;
+  background: var(--danger); color: white;
+  font-size: 11px; font-weight: 700;
+  border-radius: 20px; padding: 2px 7px;
+  display: none;
+}
+#unreadBadge.show { display: block; }
+
+/* ── COMPOSE BAR ── */
+#composeBar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10,10,15,0.92);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 10px 16px 14px;
+}
+
+.compose-inner {
+  max-width: 680px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+/* ── IMPROVEMENT 7: Reply preview in compose ── */
+#replyPreview {
+  display: none;
+  background: rgba(124,106,247,0.08);
+  border: 1px solid rgba(124,106,247,0.2);
+  border-radius: 10px; padding: 8px 12px;
+  font-size: 12px; color: var(--muted);
+  align-items: center; gap: 8px;
+}
+#replyPreview strong { color: var(--accent); }
+#cancelReply {
+  margin-left: auto; background: none; border: none;
+  color: var(--muted); cursor: pointer; font-size: 16px;
+}
+#cancelReply:hover { color: var(--danger); }
+
+.compose-row { display: flex; gap: 8px; align-items: flex-end; }
+
+#msgInput {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit; font-size: 14px;
+  padding: 10px 14px;
+  resize: none; outline: none;
+  max-height: 100px;
+  transition: border-color 0.2s;
+  line-height: 1.5;
+}
+#msgInput:focus { border-color: var(--accent); }
+
+.compose-actions { display: flex; gap: 6px; align-items: center; }
+
+#photoBtn {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 18px; transition: all 0.18s;
+  color: var(--muted); flex-shrink: 0;
+}
+#photoBtn:hover { border-color: var(--accent); color: var(--accent); }
+
+#photoPreviewWrap {
+  display: none; align-items: center; gap: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 6px 10px;
+}
+#photoThumb { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; }
+#clearPhoto { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 16px; }
+
+/* ── ADMIN TAG ── */
+.admin-tag {
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  color: #000; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
+}
+
+/* ── IMAGE LIGHTBOX ── */
+#lightbox {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
+}
+#lightbox.open { display: flex; }
+#lightbox img { max-width: 95vw; max-height: 95vh; border-radius: 10px; }
+#lightbox-close {
+  position: absolute; top: 16px; right: 20px;
+  background: none; border: none; color: white; font-size: 32px; cursor: pointer;
+}
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%);
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 30px; padding: 10px 20px;
+  font-size: 13px; font-weight: 600; color: var(--text);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, bottom 0.3s;
+  z-index: 300; white-space: nowrap;
+}
+#toast.show { opacity: 1; bottom: 98px; }
+
+/* ── EMPTY ── */
+.empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty .icon { font-size: 48px; margin-bottom: 12px; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">F-Mine</div>
+  <div class="header-right">
+    <!-- IMPROVEMENT 3: online counter -->
+    <div id="onlineBadge"><span id="onlineCount">0</span> online</div>
+    <div id="userBadge">Вы: <span id="headerName">—</span></div>
+    <button class="btn btn-ghost" onclick="doLogout()" style="padding:6px 12px;font-size:13px;">Выйти</button>
+  </div>
+</header>
+
+<div class="layout">
+  <div id="bannedMsg" class="banned-banner" style="display:none">
+    🚫 Вы заблокированы администратором. Писать нельзя.
+  </div>
+  <div id="feed"><div class="empty"><div class="icon">💬</div><p>Загрузка...</p></div></div>
+</div>
+
+<!-- IMPROVEMENT 6: Typing indicator -->
+<div id="typingBar"></div>
+
+<!-- IMPROVEMENT 4: Unread badge + IMPROVEMENT 5: scroll btn -->
+<div id="unreadBadge"></div>
+<button id="scrollBtn" onclick="scrollToBottom(true)">↓</button>
+
+<!-- COMPOSE -->
+<div id="composeBar">
+  <div class="compose-inner">
+    <!-- IMPROVEMENT 2: Reply preview -->
+    <div id="replyPreview">
+      <div>Ответ → <strong id="replyAuthorLabel"></strong>: <span id="replyTextLabel" style="opacity:.7"></span></div>
+      <button id="cancelReply" onclick="clearReply()">✕</button>
+    </div>
+    <div id="photoPreviewWrap">
+      <img id="photoThumb" src="" alt="preview" />
+      <span id="photoName" style="font-size:12px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      <button id="clearPhoto" onclick="clearPhoto()">✕</button>
+    </div>
+    <div class="compose-row">
+      <textarea id="msgInput" rows="1" placeholder="Написать сообщение..." onkeydown="handleKey(event)" oninput="handleInput(this)"></textarea>
+      <div class="compose-actions">
+        <label id="photoBtn" title="Прикрепить фото">
+          📷
+          <input type="file" accept="image/*" id="photoInput" style="display:none" onchange="handlePhoto(event)" />
+        </label>
+        <button class="btn btn-gold" onclick="sendMessage()" id="sendBtn">↑</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">×</button>
+  <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, onSnapshot, orderBy, query,
+  doc, updateDoc, arrayUnion, arrayRemove, serverTimestamp,
+  getDoc, setDoc, deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+  authDomain: "fmine-auth.firebaseapp.com",
+  projectId: "fmine-auth",
+  storageBucket: "fmine-auth.firebasestorage.app",
+  messagingSenderId: "219769927531",
+  appId: "1:219769927551:web:fbd45a0876f32927d23e2e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// ── STATE ──
+let currentUser = null;
+let isAdmin = false;
+let bannedUsers = new Set();
+let selectedFile = null;
+let likedMsgs = JSON.parse(localStorage.getItem('fmine_likes') || '[]');
+let replyTo = null; // { id, author, text }
+let typingTimer = null;
+let unreadCount = 0;
+let isAtBottom = true;
+let allMessages = [];
+
+const REACTIONS = ['🔥','❤️','😂','👍','😮'];
+
+// ── AUTH: Read from localStorage (set by index.html) ──
+function initAuth() {
+  const stored = localStorage.getItem('currentUser') || localStorage.getItem('fmine_user');
+  if (!stored) {
+    // redirect to auth page
+    window.location.href = 'index.html';
+    return false;
+  }
+  currentUser = stored;
+  isAdmin = (currentUser === 'admin123');
+  document.getElementById('headerName').textContent = currentUser;
+  if (isAdmin) document.getElementById('headerName').innerHTML = '👑 admin123';
+  return true;
+}
+
+window.doLogout = () => {
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem('fmine_user');
+  clearPresence();
+  window.location.href = 'index.html';
+};
+
+// ── PRESENCE (online counter) ──
+let presenceRef = null;
+
+async function initPresence() {
+  presenceRef = doc(db, 'presence', currentUser + '_' + Math.random().toString(36).slice(2, 7));
+  const now = Date.now();
+  await setDoc(presenceRef, { user: currentUser, ts: now });
+
+  // Refresh every 20s
+  setInterval(async () => {
+    await setDoc(presenceRef, { user: currentUser, ts: Date.now() });
+  }, 20000);
+
+  // Watch all presence docs
+  onSnapshot(collection(db, 'presence'), snap => {
+    const cutoff = Date.now() - 60000; // 1 min window
+    const active = new Set();
+    snap.docs.forEach(d => {
+      if (d.data().ts > cutoff) active.add(d.data().user);
+    });
+    document.getElementById('onlineCount').textContent = active.size;
+  });
+
+  window.addEventListener('beforeunload', clearPresence);
+}
+
+async function clearPresence() {
+  if (presenceRef) await deleteDoc(presenceRef).catch(() => {});
+}
+
+// ── TYPING INDICATOR ──
+let typingRef = null;
+
+async function setTyping(active) {
+  if (!currentUser) return;
+  const tRef = doc(db, 'typing', currentUser);
+  if (active) {
+    await setDoc(tRef, { user: currentUser, ts: Date.now() });
+  } else {
+    await deleteDoc(tRef).catch(() => {});
+  }
+}
+
+function startTypingListener() {
+  onSnapshot(collection(db, 'typing'), snap => {
+    const cutoff = Date.now() - 4000;
+    const typers = snap.docs
+      .filter(d => d.data().user !== currentUser && d.data().ts > cutoff)
+      .map(d => d.data().user);
+    const bar = document.getElementById('typingBar');
+    if (typers.length) {
+      const names = typers.join(', ');
+      bar.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px">${escHtml(names)} печатает<span class="typing-dots"><span></span><span></span><span></span></span></span>`;
+    } else {
+      bar.innerHTML = '';
+    }
+  });
+}
+
+// ── BANNED USERS ──
+async function loadBannedUsers() {
+  const snap = await getDoc(doc(db, 'meta', 'banned'));
+  if (snap.exists()) bannedUsers = new Set(snap.data().users || []);
+  updateComposeState();
+}
+
+function updateComposeState() {
+  const isBanned = bannedUsers.has(currentUser);
+  document.getElementById('bannedMsg').style.display = isBanned ? 'block' : 'none';
+  document.getElementById('sendBtn').disabled = isBanned && !isAdmin;
+  document.getElementById('msgInput').disabled = isBanned && !isAdmin;
+}
+
+// ── SCROLL HANDLING ──
+function checkScroll() {
+  const scrollY = window.scrollY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  isAtBottom = scrollY >= maxScroll - 120;
+  document.getElementById('scrollBtn').classList.toggle('show', !isAtBottom);
+  if (isAtBottom) {
+    unreadCount = 0;
+    document.getElementById('unreadBadge').classList.remove('show');
+  }
+}
+
+function scrollToBottom(smooth = false) {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+  unreadCount = 0;
+  document.getElementById('unreadBadge').classList.remove('show');
+}
+
+window.scrollToBottom = scrollToBottom;
+window.addEventListener('scroll', checkScroll);
+
+// ── REAL-TIME FEED ──
+function startFeed() {
+  const q = query(collection(db, 'messages'), orderBy('ts', 'asc'));
+  let firstLoad = true;
+  onSnapshot(q, snap => {
+    const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const wasAtBottom = isAtBottom;
+    const prevCount = allMessages.length;
+    allMessages = msgs;
+    renderFeed(msgs);
+    if (firstLoad) {
+      scrollToBottom(false);
+      firstLoad = false;
+    } else if (wasAtBottom) {
+      scrollToBottom(true);
+    } else if (msgs.length > prevCount) {
+      unreadCount += msgs.length - prevCount;
+      const badge = document.getElementById('unreadBadge');
+      badge.textContent = `+${unreadCount} новых`;
+      badge.classList.add('show');
+    }
+  });
+}
+
+function renderFeed(msgs) {
+  const feed = document.getElementById('feed');
+  if (!msgs.length) {
+    feed.innerHTML = '<div class="empty"><div class="icon">💬</div><p>Пока нет сообщений</p></div>';
+    return;
+  }
+  feed.innerHTML = msgs.map(m => buildCard(m)).join('');
+}
+
+function buildCard(m) {
+  const admin = m.author === 'admin123';
+  const isOwn = m.author === currentUser;
+  const isBanned = bannedUsers.has(m.author);
+  const initials = (m.author || '?')[0].toUpperCase();
+  const time = m.ts ? new Date(m.ts.seconds * 1000).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' }) : '';
+
+  // IMPROVEMENT 1: Reactions
+  const reactions = m.reactions || {};
+  const reactionHtml = REACTIONS.map(emoji => {
+    const users = reactions[emoji] || [];
+    if (!users.length) return '';
+    const active = users.includes(currentUser) ? 'active' : '';
+    return `<button class="reaction-btn ${active}" onclick="toggleReaction('${m.id}','${emoji}')">${emoji} <span>${users.length}</span></button>`;
+  }).join('');
+
+  const emojiPickerHtml = `
+    <div style="position:relative">
+      <button class="emoji-picker-btn" onclick="toggleEmojiPicker('${m.id}')">＋</button>
+      <div class="emoji-popup" id="picker-${m.id}">
+        ${REACTIONS.map(e => `<button onclick="toggleReaction('${m.id}','${e}');closeAllPickers()">${e}</button>`).join('')}
+      </div>
+    </div>`;
+
+  // IMPROVEMENT 2: Reply quote
+  let replyHtml = '';
+  if (m.replyTo) {
+    const orig = allMessages.find(x => x.id === m.replyTo.id);
+    const txt = orig ? (orig.text || '📷 фото') : (m.replyTo.text || '📷');
+    replyHtml = `<div class="reply-quote" onclick="scrollToMsg('${m.replyTo.id}')">
+      <strong>${escHtml(m.replyTo.author)}</strong>
+      ${escHtml(txt.slice(0, 80))}${txt.length > 80 ? '…' : ''}
+    </div>`;
+  }
+
+  // Image
+  let imgHtml = '';
+  if (m.imgUrl) {
+    imgHtml = `<img class="msg-img" src="${m.imgUrl}" alt="photo" onclick="openLightbox('${m.imgUrl}')" loading="lazy" />`;
+  }
+
+  // Action buttons
+  let actionsHtml = '';
+  const canDelete = isOwn || isAdmin;
+  const canBan = isAdmin && m.author !== 'admin123';
+  if (canDelete || canBan) {
+    actionsHtml = `<div class="msg-actions">
+      <button class="icon-btn" onclick="replyMessage('${m.id}')" title="Ответить">↩ Ответить</button>
+      ${canDelete ? `<button class="icon-btn delete-btn" onclick="deleteMessage('${m.id}')" title="Удалить">🗑</button>` : ''}
+      ${canBan ? `<button class="icon-btn ban-btn-inline" onclick="toggleBan('${m.author}',${isBanned})">${isBanned ? '✅ Разбан' : '🚫 Бан'}</button>` : ''}
+    </div>`;
+  } else {
+    actionsHtml = `<div class="msg-actions"><button class="icon-btn" onclick="replyMessage('${m.id}')" title="Ответить">↩</button></div>`;
+  }
+
+  // Like
+  const liked = likedMsgs.includes(m.id);
+  const likeCount = (m.likes || []).length;
+
+  return `
+    <div class="msg-card ${admin ? 'admin-msg' : ''} ${isOwn ? 'own-msg' : ''}" id="msg-${m.id}">
+      <div class="msg-header">
+        <div class="avatar ${admin ? 'admin-avatar' : ''}">${admin ? '👑' : initials}</div>
+        <div class="msg-meta">
+          <div class="msg-name">
+            ${admin ? '<span class="admin-tag">ADMIN</span> ' : ''}${escHtml(m.author)}
+            ${isBanned ? '<span style="font-size:11px;color:var(--danger);margin-left:5px">🚫</span>' : ''}
+            ${isOwn && !admin ? '<span style="font-size:10px;color:var(--accent);margin-left:5px">вы</span>' : ''}
+          </div>
+          <div class="msg-time">${time}</div>
+        </div>
+      </div>
+      ${replyHtml}
+      ${m.text ? `<div class="msg-text">${escHtml(m.text)}</div>` : ''}
+      ${imgHtml}
+      <div class="msg-footer">
+        <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${m.id}')">
+          ${liked ? '❤️' : '🤍'} ${likeCount}
+        </button>
+        <div class="reaction-wrap">${reactionHtml}${emojiPickerHtml}</div>
+        ${actionsHtml}
+      </div>
+    </div>`;
+}
+
+// ── SEND MESSAGE ──
+window.sendMessage = async () => {
+  if (bannedUsers.has(currentUser) && !isAdmin) return;
+  const text = document.getElementById('msgInput').value.trim();
+  if (!text && !selectedFile) return;
+
+  document.getElementById('sendBtn').disabled = true;
+  await setTyping(false);
+
+  let imgUrl = null;
+  if (selectedFile) {
+    try {
+      const storageRef = ref(storage, `chat-photos/${Date.now()}_${selectedFile.name}`);
+      await uploadBytes(storageRef, selectedFile);
+      imgUrl = await getDownloadURL(storageRef);
+    } catch (e) {
+      showToast('Ошибка загрузки фото');
+      document.getElementById('sendBtn').disabled = false;
+      return;
+    }
+  }
+
+  const msgData = {
+    author: currentUser,
+    text: text || '',
+    imgUrl: imgUrl || null,
+    likes: [],
+    reactions: {},
+    ts: serverTimestamp()
+  };
+
+  // IMPROVEMENT 2: attach reply
+  if (replyTo) {
+    msgData.replyTo = { id: replyTo.id, author: replyTo.author, text: replyTo.text || '' };
+  }
+
+  await addDoc(collection(db, 'messages'), msgData);
+
+  document.getElementById('msgInput').value = '';
+  document.getElementById('msgInput').style.height = 'auto';
+  clearPhoto();
+  clearReply();
+  document.getElementById('sendBtn').disabled = false;
+};
+
+// IMPROVEMENT 8: Delete message
+window.deleteMessage = async (msgId) => {
+  if (!confirm('Удалить сообщение?')) return;
+  await deleteDoc(doc(db, 'messages', msgId));
+  showToast('Сообщение удалено');
+};
+
+// ── LIKES ──
+window.toggleLike = async (msgId) => {
+  const already = likedMsgs.includes(msgId);
+  const ref2 = doc(db, 'messages', msgId);
+  if (already) {
+    likedMsgs = likedMsgs.filter(x => x !== msgId);
+    const snap = await getDoc(ref2);
+    const likes = (snap.data().likes || []).filter(l => !l.startsWith(currentUser + '_'));
+    await updateDoc(ref2, { likes });
+  } else {
+    likedMsgs.push(msgId);
+    await updateDoc(ref2, { likes: arrayUnion(currentUser + '_' + Date.now()) });
+  }
+  localStorage.setItem('fmine_likes', JSON.stringify(likedMsgs));
+};
+
+// IMPROVEMENT 1: Reactions
+window.toggleReaction = async (msgId, emoji) => {
+  const ref2 = doc(db, 'messages', msgId);
+  const snap = await getDoc(ref2);
+  const reactions = snap.data().reactions || {};
+  const users = reactions[emoji] || [];
+  if (users.includes(currentUser)) {
+    reactions[emoji] = users.filter(u => u !== currentUser);
+  } else {
+    reactions[emoji] = [...users, currentUser];
+  }
+  await updateDoc(ref2, { reactions });
+};
+
+window.toggleEmojiPicker = (msgId) => {
+  const picker = document.getElementById('picker-' + msgId);
+  if (!picker) return;
+  const isOpen = picker.classList.contains('open');
+  closeAllPickers();
+  if (!isOpen) picker.classList.add('open');
+};
+
+window.closeAllPickers = () => {
+  document.querySelectorAll('.emoji-popup').forEach(p => p.classList.remove('open'));
+};
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.emoji-picker-btn') && !e.target.closest('.emoji-popup')) closeAllPickers();
+});
+
+// IMPROVEMENT 2: Reply
+window.replyMessage = (msgId) => {
+  const msg = allMessages.find(m => m.id === msgId);
+  if (!msg) return;
+  replyTo = { id: msgId, author: msg.author, text: msg.text || '' };
+  document.getElementById('replyAuthorLabel').textContent = msg.author;
+  document.getElementById('replyTextLabel').textContent = (msg.text || '📷').slice(0, 60);
+  document.getElementById('replyPreview').style.display = 'flex';
+  document.getElementById('msgInput').focus();
+};
+
+window.clearReply = () => {
+  replyTo = null;
+  document.getElementById('replyPreview').style.display = 'none';
+};
+
+window.scrollToMsg = (msgId) => {
+  const el = document.getElementById('msg-' + msgId);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+// ── BAN ──
+window.toggleBan = async (username, currentlyBanned) => {
+  const banRef = doc(db, 'meta', 'banned');
+  const snap = await getDoc(banRef);
+  let users = snap.exists() ? (snap.data().users || []) : [];
+
+  if (currentlyBanned) {
+    users = users.filter(u => u !== username);
+    bannedUsers.delete(username);
+    showToast(`✅ ${username} разбанен`);
+  } else {
+    users.push(username);
+    bannedUsers.add(username);
+    showToast(`🚫 ${username} заблокирован`);
+  }
+
+  await setDoc(banRef, { users });
+  updateComposeState();
+};
+
+// ── PHOTO ──
+window.handlePhoto = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  attachFile(file);
+};
+
+function attachFile(file) {
+  selectedFile = file;
+  const url = URL.createObjectURL(file);
+  document.getElementById('photoThumb').src = url;
+  document.getElementById('photoName').textContent = file.name;
+  document.getElementById('photoPreviewWrap').style.display = 'flex';
+}
+
+window.clearPhoto = () => {
+  selectedFile = null;
+  document.getElementById('photoInput').value = '';
+  document.getElementById('photoPreviewWrap').style.display = 'none';
+};
+
+// IMPROVEMENT 9: Paste image from clipboard
+document.addEventListener('paste', (e) => {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      const file = item.getAsFile();
+      if (file) { attachFile(file); showToast('📷 Изображение вставлено'); }
+    }
+  }
+});
+
+// ── KEYBOARD / INPUT ──
+window.handleKey = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+};
+
+window.handleInput = (el) => {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+
+  // IMPROVEMENT 6: typing indicator
+  setTyping(true);
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(() => setTyping(false), 3000);
+};
+
+// ── LIGHTBOX ──
+window.openLightbox = (url) => {
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightbox').classList.add('open');
+};
+window.closeLightbox = () => {
+  document.getElementById('lightbox').classList.remove('open');
+};
+
+// ── UTILS ──
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+window.showToast = (msg) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+};
+
+// ── INIT ──
+if (initAuth()) {
+  Promise.all([loadBannedUsers(), initPresence()]).then(() => {
+    startFeed();
+    startTypingListener();
+  });
+}
+</script>
+</body>
+</html>
