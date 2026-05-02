@@ -1,170 +1,241 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Функции - F-Mind</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F‑Mine · Функции</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #06080f;
+            --bg2: #0b0e1a;
+            --bg3: #101524;
+            --surface: rgba(255,255,255,0.03);
+            --surface2: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.07);
+            --border2: rgba(255,255,255,0.13);
+            --text: #e8ecf8;
+            --text2: #7e87b0;
+            --text3: #4a5070;
+            --violet: #8b5cf6;
+            --violet2: #6d3fec;
+            --violet-glow: rgba(139,92,246,0.4);
+            --amber: #f59e0b;
+            --amber2: #fbbf24;
+            --amber-glow: rgba(245,158,11,0.35);
+            --teal: #40E0D0;
+            --teal-glow: rgba(64,224,208,0.4);
+            --sans: 'Outfit', sans-serif;
+            --display: 'Syne', sans-serif;
+            --mono: 'DM Mono', monospace;
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-xs: 10px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+            --shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06);
+            --shadow-premium: 0 0 30px rgba(245,158,11,0.25), 0 8px 32px rgba(0,0,0,0.6);
+            --ease: 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        body.light {
+            --bg: #f2f4ff;
+            --bg2: #e7eaff;
+            --bg3: #dfe2fc;
+            --surface: rgba(255,255,255,0.65);
+            --surface2: rgba(255,255,255,0.8);
+            --border: rgba(139,92,246,0.1);
+            --border2: rgba(139,92,246,0.18);
+            --text: #1a1730;
+            --text2: #5a5580;
+            --text3: #8884b0;
+            --shadow-sm: 0 2px 8px rgba(108,99,255,0.1);
+            --shadow: 0 4px 16px rgba(108,99,255,0.12);
+            --shadow-lg: 0 8px 28px rgba(108,99,255,0.15);
+            --shadow-premium: 0 0 30px rgba(245,158,11,0.2), 0 8px 32px rgba(0,0,0,0.1);
+        }
 
-<style>
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  overflow:hidden;
-}
+        *,
+        *::before,
+        *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image:
+                radial-gradient(ellipse 60% 50% at 30% 20%, rgba(139,92,246,0.1), transparent 55%),
+                radial-gradient(ellipse 40% 40% at 70% 80%, rgba(245,158,11,0.06), transparent 55%);
+            transition: background 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
+        }
 
-.container {
-  width:90%;
-  max-width:900px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(15px);
-  padding:25px;
-  border-radius:20px;
-  box-shadow:0 0 40px rgba(0,0,0,0.3);
-}
+        .wrapper { width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 18px; }
 
-/* 🔥 ЛОГО */
-.logo span {
-  font-size:2rem;
-  font-weight:bold;
-  color:white;
-  animation:goldBlink 2s infinite;
-}
-.logo span:nth-child(1){animation-delay:0s;}
-.logo span:nth-child(2){animation-delay:0.2s;}
-.logo span:nth-child(3){animation-delay:0.4s;}
-.logo span:nth-child(4){animation-delay:0.6s;}
-.logo span:nth-child(5){animation-delay:0.8s;}
-.logo span:nth-child(6){animation-delay:1s;}
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .logo {
+            font-family: var(--display); font-size: 26px; font-weight: 800;
+            letter-spacing: -0.5px; display: flex; align-items: center; gap: 2px;
+            text-shadow: 0 0 20px var(--amber-glow);
+        }
+        .logo-f { color: var(--amber); text-shadow: 0 0 30px var(--amber-glow), 0 0 60px rgba(245,158,11,0.3); }
+        .logo-dot { width: 5px; height: 5px; background: var(--violet); border-radius: 50%; margin: 0 3px; box-shadow: 0 0 15px var(--violet-glow); }
+        .logo-mine { color: var(--text); text-shadow: 0 0 15px rgba(255,255,255,0.1); }
+        .header-actions { display: flex; gap: 8px; }
 
-@keyframes goldBlink {
-  0%,20%,100% { color:white; text-shadow:none; }
-  50% { color:gold; text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4); }
-}
+        /* cards */
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(18px, 3vw, 28px);
+            box-shadow: var(--shadow-sm);
+            transition: border-color var(--ease), box-shadow var(--ease);
+            animation: fadeUp 0.5s ease both;
+        }
+        .card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
-h1 {
-  text-align:center;
-  margin:10px 0 20px;
-}
+        .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .tier-card {
+            border-radius: var(--radius); padding: 26px 24px;
+            background: var(--surface); backdrop-filter: blur(16px);
+            border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+            transition: all var(--ease); position: relative; overflow: hidden;
+        }
+        .tier-card:hover { border-color: var(--border2); box-shadow: var(--shadow); transform: translateY(-4px); }
+        .tier-card.premium {
+            border: 1.5px solid rgba(245,158,11,0.4); box-shadow: var(--shadow-premium);
+            background: linear-gradient(135deg, rgba(245,158,11,0.06), rgba(139,92,246,0.04));
+        }
+        .tier-card.premium::before {
+            content: "PREMIUM"; position: absolute; top: 18px; right: -32px;
+            background: var(--amber); color: #000; font-family: var(--display); font-weight: 800;
+            font-size: 11px; padding: 5px 36px; transform: rotate(45deg);
+            letter-spacing: 0.12em; text-transform: uppercase; box-shadow: 0 0 20px var(--amber-glow);
+        }
+        .tier-title {
+            font-family: var(--display); font-size: 24px; font-weight: 800;
+            margin-bottom: 16px; color: var(--text); letter-spacing: -0.3px;
+        }
+        .premium .tier-title { color: var(--amber); text-shadow: 0 0 12px var(--amber-glow); }
+        .tier-list {
+            list-style: none; padding: 0; font-size: 15px; color: var(--text2);
+            line-height: 1.8;
+        }
+        .tier-list li { display: flex; align-items: center; gap: 10px; }
+        .tier-list li::before { content: "✦"; color: var(--violet); font-size: 13px; }
+        .premium .tier-list li::before { content: "★"; color: var(--amber); }
 
-/* 🔥 БЛОКИ */
-.grid {
-  display:flex;
-  gap:20px;
-}
+        /* buttons */
+        .btn {
+            padding: 10px 20px; border: none; border-radius: var(--radius-xs);
+            font-family: var(--sans); font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: filter 0.15s, transform 0.15s, box-shadow 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            letter-spacing: 0.02em; box-shadow: 0 4px 18px var(--violet-glow);
+            background: linear-gradient(135deg, var(--violet), var(--violet2));
+            color: #fff; white-space: nowrap;
+        }
+        .btn:hover { filter: brightness(1.08); transform: translateY(-2px); box-shadow: 0 8px 28px var(--violet-glow); }
+        .btn:active { transform: scale(0.98); }
+        .btn.ghost {
+            background: transparent; border: 1.5px solid var(--border2);
+            color: var(--text2); box-shadow: none;
+        }
+        .btn.ghost:hover {
+            background: rgba(255,255,255,0.05); border-color: var(--violet);
+            color: var(--violet); box-shadow: 0 0 18px rgba(139,92,246,0.2);
+        }
 
-.card {
-  flex:1;
-  padding:20px;
-  border-radius:15px;
-  background:rgba(255,255,255,0.05);
-  transition:0.3s;
-}
-
-.card:hover {
-  transform:translateY(-5px);
-}
-
-/* 💎 платный */
-.premium {
-  border:1px solid gold;
-  box-shadow:0 0 20px rgba(255,215,0,0.2);
-}
-
-h2 {
-  color:gold;
-}
-
-ul {
-  padding-left:15px;
-  line-height:1.6;
-}
-
-button {
-  margin-top:15px;
-  padding:10px;
-  width:100%;
-  border:none;
-  border-radius:10px;
-  background:#6c63ff;
-  color:white;
-  cursor:pointer;
-}
-
-button:hover {
-  transform:translateY(-2px);
-}
-
-</style>
+        @media (max-width: 780px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+            .tier-card.premium::before { top: 14px; right: -40px; font-size: 10px; }
+        }
+        @media (max-width: 480px) {
+            .tier-title { font-size: 20px; }
+            .logo { font-size: 22px; }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="wrapper">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn ghost" id="themeToggle" onclick="toggleBackground()">🌓 Тема</button>
+                <button class="btn" onclick="goBack()">← Назад</button>
+            </div>
+        </div>
 
-<div class="container">
+        <!-- 🆓 / 💎 comparison -->
+        <div class="comparison-grid">
+            <div class="tier-card" id="freeCard">
+                <div class="tier-title">🆓 Бесплатно</div>
+                <ul class="tier-list">
+                    <li>Базовый чат-бот</li>
+                    <li>Решение школьных задач</li>
+                    <li>Переводчик</li>
+                    <li>Простая статистика</li>
+                    <li>Базовые объяснения</li>
+                </ul>
+            </div>
 
-<div class="logo" style="text-align:center;">
-  <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
-</div>
+            <div class="tier-card premium" id="premiumCard">
+                <div class="tier-title">💎 Premium</div>
+                <ul class="tier-list">
+                    <li>Умный AI‑бот (аналог Wolfram)</li>
+                    <li>Сложные олимпиадные задачи</li>
+                    <li>Полные пошаговые решения</li>
+                    <li>Быстрая обработка</li>
+                    <li>Расширенная аналитика</li>
+                    <li>Персональные задания</li>
+                    <li>Достижения и уровни</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-<h1>Функции</h1>
+    <script>
+        // Theme toggle – changes background between dark and light
+        window.toggleBackground = function() {
+            document.body.classList.toggle('light');
+            // Save preference
+            const theme = document.body.classList.contains('light') ? 'light' : 'dark';
+            localStorage.setItem('accountTheme', theme);
+        };
 
-<div class="grid">
+        // Load saved theme on startup
+        if (localStorage.getItem('accountTheme') === 'light') {
+            document.body.classList.add('light');
+        }
 
-<!-- 🆓 БЕСПЛАТНО -->
-<div class="card section">
-<h2>🆓 Бесплатно</h2>
-<ul>
-<li>🤖 Базовый чат-бот</li>
-<li>📚 Решение школьных задач</li>
-<li>🌐 Переводчик</li>
-<li>📊 Простая статистика</li>
-<li>🧠 Базовые объяснения</li>
-</ul>
-</div>
+        window.goBack = function() {
+            window.location.href = "lobby.html";
+        };
 
-<!-- 💎 ПЛАТНО -->
-<div class="card premium section">
-<h2>💎 Premium (в разработке)</h2>
-<ul>
-<li>🤖 Умный AI-бот (как Wolfram)</li>
-<li>📈 Сложные задачи (олимпиада)</li>
-<li>🧠 Полные пошаговые решения</li>
-<li>⚡ Быстрая обработка</li>
-<li>📊 Расширенная аналитика</li>
-<li>🎯 Персональные задания</li>
-<li>🏆 Достижения и уровни</li>
-</ul>
-</div>
-
-</div>
-
-<button onclick="goBack()">⬅ Назад</button>
-
-</div>
-
-<script>
-
-function goBack(){
-  window.location.href = "lobby.html";
-}
-
-document.querySelectorAll('.section').forEach((el,i)=>{
-  el.style.opacity="0";
-  el.style.transform="translateY(15px)";
-
-  setTimeout(()=>{
-    el.style.transition="0.5s";
-    el.style.opacity="1";
-    el.style.transform="translateY(0)";
-  }, i*200);
-});
-
-</script>
-
+        // Staggered card entrance
+        const cards = document.querySelectorAll('.tier-card');
+        cards.forEach((card, i) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(18px)';
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * i);
+        });
+    </script>
 </body>
 </html>

@@ -1,680 +1,874 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Физика</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>F‑Mine | Физика</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg1:#07111f;
-  --bg2:#111b35;
-  --bg3:#1c2f5b;
-  --card:rgba(255,255,255,.08);
-  --card2:rgba(255,255,255,.12);
-  --text:#fff;
-  --muted:rgba(255,255,255,.78);
-  --ok:#37c96d;
-  --bad:#ff5d5d;
-  --warn:#ffcc00;
-  --accent:#6c63ff;
-  --accent2:#4a47d1;
-  --glow:0 0 18px rgba(108,99,255,.28), 0 0 30px rgba(0,212,255,.16);
-  --glow2:0 0 12px rgba(108,99,255,.45), 0 0 24px rgba(0,212,255,.28);
-  --shadow:0 18px 40px rgba(0,0,0,.28);
+  --bg:#06080f;--bg2:#0b0e1a;--bg3:#101524;--bg4:#161b2e;
+  --surface:rgba(255,255,255,.025);--surface2:rgba(255,255,255,.045);--surface3:rgba(255,255,255,.075);
+  --glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.12);--border3:rgba(255,255,255,.18);
+  --text:#e8ecf8;--text2:#7e87b0;--text3:#4a5070;
+  --violet:#8b5cf6;--violet2:#6d3fec;--violet-glow:rgba(139,92,246,.4);
+  --amber:#f59e0b;--amber2:#fbbf24;--amber-glow:rgba(245,158,11,.35);
+  --emerald:#10b981;--emerald-glow:rgba(16,185,129,.3);
+  --rose:#f43f5e;--rose-glow:rgba(244,63,94,.3);
+  --sky:#38bdf8;--sky2:#0ea5e9;--sky-glow:rgba(56,189,248,.4);
+  --teal:#40E0D0;--teal-glow:rgba(64,224,208,.45);
+  --shadow-xs:0 1px 3px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.02);
+  --shadow-sm:0 2px 8px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.03);
+  --shadow:0 4px 16px rgba(0,0,0,.7),0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.8),0 16px 48px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05),0 0 40px rgba(56,189,248,.08);
+  --shadow-xl:0 12px 32px rgba(0,0,0,.9),0 24px 64px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);
+  --shadow-glow-sky:0 0 0 1px rgba(56,189,248,.4),0 0 30px rgba(56,189,248,.3),0 8px 32px rgba(0,0,0,.5);
+  --r:18px;--r-sm:13px;--ease:.25s cubic-bezier(.4,0,.2,1);
 }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;min-height:100vh;font-family:Arial,sans-serif;color:var(--text);
-  background:
-    radial-gradient(circle at 10% 10%, rgba(108,99,255,.18), transparent 26%),
-    radial-gradient(circle at 90% 18%, rgba(0,212,255,.12), transparent 22%),
-    radial-gradient(circle at 50% 100%, rgba(255,215,0,.08), transparent 26%),
-    linear-gradient(135deg,var(--bg1),var(--bg2) 45%,var(--bg3));
-  transition:.25s ease;
-}
-body.light{
-  --card:rgba(255,255,255,.68);
-  --card2:rgba(255,255,255,.84);
-  --text:#172033;
-  --muted:#33415f;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(108,99,255,.10), transparent 26%),
-    radial-gradient(circle at 90% 18%, rgba(0,212,255,.08), transparent 22%),
-    radial-gradient(circle at 50% 100%, rgba(255,215,0,.08), transparent 26%),
-    linear-gradient(135deg,#edf4ff,#dfe9ff 45%,#d1ddff);
-}
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;
-  background:linear-gradient(rgba(255,255,255,.03), transparent 35%),radial-gradient(circle at 50% 0%, rgba(255,255,255,.08), transparent 34%);
-  opacity:.35;
-}
-.container{width:min(1180px,100%);margin:0 auto;padding:18px}
-.header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-.brand{display:flex;flex-direction:column;gap:4px}
-.brand h1{margin:0;font-size:28px;line-height:1.1;text-shadow:0 0 10px rgba(108,99,255,.25), 0 0 16px rgba(0,212,255,.14)}
-.brand p{margin:0;font-size:13px;color:var(--muted);opacity:.9}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap}
-button{
-  border:none;border-radius:14px;padding:12px 14px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;font-weight:700;cursor:pointer;transition:.18s ease;box-shadow:var(--shadow), var(--glow);position:relative;overflow:hidden
-}
-button::after{content:"";position:absolute;inset:-1px;background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,.22) 40%, transparent 60%);transform:translateX(-120%);transition:transform .55s ease}
-button:hover::after{transform:translateX(120%)}
-button:hover{transform:translateY(-2px);box-shadow:var(--shadow), var(--glow2);filter:brightness(1.04)}
-button:active{transform:translateY(0) scale(.99)}
-button.secondary{background:linear-gradient(135deg,#444,#2f2f44)}
-button.ghost{background:transparent;border:1px solid rgba(255,255,255,.18);box-shadow:none}
-body.light button.secondary{background:linear-gradient(135deg,#6b7280,#555c70)}
-button.card-btn{text-align:left;padding:16px;white-space:normal;line-height:1.35;border:1px solid rgba(255,255,255,.08)}
-button.card-btn.active{outline:2px solid rgba(255,255,255,.35);transform:translateY(-1px)}
-.card{margin-top:14px;padding:18px;border-radius:22px;background:var(--card);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.10);box-shadow:var(--shadow)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.level-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.option-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.card-btn strong{display:block;font-size:17px;margin-bottom:4px;text-shadow:0 0 10px rgba(108,99,255,.12)}
-.card-btn small{display:block;opacity:.86;font-size:13px;color:var(--muted)}
-.hidden{display:none}
-.small{font-size:13px;opacity:.88;line-height:1.45;color:var(--muted)}
-.progress{margin-top:10px;font-weight:700}
-.bar{width:min(820px,100%);height:14px;background:rgba(0,0,0,.28);border-radius:999px;margin:10px auto 0;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
-.fill{width:0%;height:100%;background:linear-gradient(90deg,var(--accent),gold);box-shadow:0 0 12px rgba(108,99,255,.35);transition:.3s}
-.q{font-size:22px;line-height:1.5;margin:18px 0 10px;text-shadow:0 0 10px rgba(255,255,255,.08), 0 0 16px rgba(108,99,255,.10)}
-.option-btn{min-height:58px;text-align:left}
-.option-btn.selected{outline:2px solid rgba(255,255,255,.55)}
-.option-btn.correct{background:var(--ok)}
-.option-btn.wrong{background:var(--bad)}
-.result{margin-top:14px;font-size:20px;min-height:28px}
-.solution{margin-top:10px;min-height:24px;line-height:1.45;opacity:.92}
-.nav-row{margin-top:16px}
-.footer{margin-top:24px;opacity:.82;text-align:center;font-size:14px;color:var(--muted)}
-.top-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
-.stat{padding:14px 16px;border-radius:18px;background:var(--card2);border:1px solid rgba(255,255,255,.08)}
-.stat b{display:block;font-size:18px;margin-bottom:4px}
-.stat span{font-size:13px;opacity:.85;color:var(--muted)}
-.loading{text-align:center;padding:20px 10px;font-size:18px;opacity:.9}
-.lang-btn{min-width:84px}
-.hero{margin-top:14px;padding:18px;border-radius:22px;background:linear-gradient(135deg, rgba(108,99,255,.18), rgba(0,212,255,.08));border:1px solid rgba(255,255,255,.10);box-shadow:var(--shadow)}
-.hero-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
-.hero h2{margin:0 0 8px;font-size:22px}
-.hero p{margin:0;color:var(--muted);line-height:1.5}
-.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.pill{padding:8px 10px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.08);font-size:12px;color:var(--muted)}
-@media (max-width:768px){
-  .grid,.option-grid,.top-stats{grid-template-columns:1fr}
-  .level-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .brand h1{font-size:22px}
-  button{width:100%}
-  .container{padding:14px}
-}
-@media (max-width:480px){
-  .level-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-top:70px;padding-bottom:80px;overflow-x:hidden;background-image:radial-gradient(ellipse 65% 45% at 85% -5%,rgba(56,189,248,.07),transparent 58%),radial-gradient(ellipse 50% 35% at 5% 92%,rgba(56,189,248,.04),transparent 52%),radial-gradient(ellipse 35% 30% at 50% 45%,rgba(56,189,248,.025),transparent 58%);-webkit-font-smoothing:antialiased}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-size:200px 200px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border3);border-radius:99px}
+
+/* HEADER */
+.hd{position:fixed;top:0;left:0;right:0;z-index:200;height:68px;background:rgba(6,8,15,.85);backdrop-filter:blur(28px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,3vw,30px);gap:12px;box-shadow:0 1px 0 rgba(255,255,255,.02),0 6px 28px rgba(0,0,0,.7)}
+.logo{font-family:'Syne',sans-serif;font-size:clamp(20px,3vw,26px);font-weight:800;letter-spacing:-.5px;cursor:pointer;display:flex;align-items:center;gap:0;text-decoration:none}
+.logo-f{color:var(--amber);text-shadow:0 0 30px var(--amber-glow),0 0 60px rgba(245,158,11,.3)}
+.logo-dot{width:5px;height:5px;background:var(--violet);border-radius:50%;margin:0 3px;align-self:center;margin-bottom:5px;box-shadow:0 0 15px var(--violet-glow);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 10px var(--violet-glow)}50%{box-shadow:0 0 25px rgba(139,92,246,.7)}}
+.logo-mine{color:var(--text);letter-spacing:-1px;text-shadow:0 0 15px rgba(255,255,255,.15)}
+.hd-right{display:flex;align-items:center;gap:10px}
+
+.lang-toggle{display:flex;align-items:center;background:var(--surface2);border:1.5px solid var(--border2);border-radius:999px;padding:3px;gap:2px;box-shadow:var(--shadow-xs)}
+.lang-btn{padding:5px 14px;border:none;border-radius:999px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;transition:var(--ease);color:var(--text3);background:transparent;letter-spacing:.04em}
+.lang-btn.active{background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;box-shadow:0 2px 10px var(--sky-glow)}
+.lang-btn:not(.active):hover{color:var(--text);background:var(--surface3)}
+
+.btn{padding:10px 20px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:var(--ease);text-align:center;letter-spacing:.02em;white-space:nowrap;position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:linear-gradient(135deg,var(--violet),var(--violet2));color:#fff;box-shadow:0 4px 20px var(--violet-glow)}
+.btn.primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 8px 30px var(--violet-glow)}
+.btn.ghost{background:transparent;border:1.5px solid var(--border2);color:var(--text2)}
+.btn.ghost:hover{background:var(--surface3);border-color:var(--violet);color:var(--violet);box-shadow:0 0 22px rgba(139,92,246,.2)}
+.btn.sky{background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;box-shadow:0 4px 20px var(--sky-glow)}
+.btn.sky:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 8px 28px var(--sky-glow)}
+.btn:active{transform:scale(.93)!important;transition:.08s ease!important}
+
+.wrap{max-width:1040px;margin:0 auto;padding:clamp(16px,3vw,28px) clamp(14px,3vw,22px) 50px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+.section{margin-bottom:clamp(14px,2.2vw,20px);opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.section.visible{opacity:1;transform:translateY(0)}
+
+/* HERO */
+.hero{background:var(--bg3);border:1px solid rgba(56,189,248,.18);border-radius:var(--r);padding:clamp(22px,4vw,38px) clamp(20px,4vw,38px);margin-bottom:clamp(16px,2.5vw,20px);position:relative;overflow:hidden;box-shadow:var(--shadow-lg);opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.hero.visible{opacity:1;transform:translateY(0)}
+.hero:hover{box-shadow:var(--shadow-xl),0 0 50px rgba(56,189,248,.1)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 55% 80% at 85% -10%,rgba(56,189,248,.13),transparent 55%),radial-gradient(ellipse 40% 40% at 10% 100%,rgba(56,189,248,.06),transparent 50%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(56,189,248,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;position:relative;z-index:1}
+.hero-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--sky);text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px;opacity:.85;text-shadow:0 0 10px rgba(56,189,248,.5)}
+.hero-name{font-family:'Syne',sans-serif;font-size:clamp(28px,5.5vw,48px);font-weight:800;color:#fff;line-height:1;letter-spacing:-1px;text-shadow:0 0 25px rgba(255,255,255,.3),0 0 50px rgba(56,189,248,.3)}
+.hero-sub{font-size:14px;color:var(--text2);margin-top:8px}
+.hero-badge{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.22);border-radius:999px;padding:8px 18px;font-size:12px;font-weight:700;color:var(--sky);white-space:nowrap;letter-spacing:.02em;box-shadow:0 0 22px rgba(56,189,248,.2);text-shadow:0 0 12px rgba(56,189,248,.4)}
+.hero-stats{display:flex;gap:clamp(20px,4vw,48px);margin-top:18px;flex-wrap:wrap;position:relative;z-index:1}
+.hero-stat{transition:var(--ease);cursor:default;padding:4px 0}
+.hero-stat:hover{transform:translateY(-3px)}
+.hero-stat-val{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,42px);font-weight:800;color:white;line-height:1;letter-spacing:-1px;text-shadow:0 0 30px rgba(255,255,255,.4),0 0 60px rgba(56,189,248,.3)}
+.hero-stat-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:.1em;text-shadow:0 0 10px rgba(255,255,255,.15)}
+
+/* XP BAR */
+.xp-section{position:relative;z-index:1;margin-top:20px;background:rgba(0,0,0,.22);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow-sm)}
+.xp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:12px}
+.xp-level-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--sky),var(--sky2));border-radius:999px;padding:5px 14px 5px 6px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#fff;box-shadow:0 4px 20px var(--sky-glow),inset 0 1px 0 rgba(255,255,255,.2);text-shadow:0 0 12px rgba(255,255,255,.3)}
+.xp-level-num{background:rgba(255,255,255,.2);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.xp-info{font-size:12px;color:var(--text2)}
+.xp-info span{color:var(--sky);font-weight:700;text-shadow:0 0 8px rgba(56,189,248,.4)}
+.xp-bar-track{height:8px;background:rgba(255,255,255,.04);border-radius:999px;overflow:visible;position:relative}
+.xp-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sky2),var(--sky),#7dd3fc);background-size:200% auto;animation:shimmer 2.5s linear infinite;transition:width .8s ease;position:relative;box-shadow:0 0 15px rgba(56,189,248,.5)}
+.xp-bar-fill::after{content:'';position:absolute;right:-5px;top:-4px;width:16px;height:16px;background:var(--sky);border-radius:50%;border:3px solid var(--bg3);box-shadow:0 0 20px var(--sky-glow);animation:pulse-ring 2s ease-in-out infinite}
+@keyframes pulse-ring{0%,100%{box-shadow:0 0 0 0 var(--sky-glow)}50%{box-shadow:0 0 0 10px transparent}}
+
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sec-title{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.14em;white-space:nowrap}
+.sec-line{flex:1;height:1px;background:var(--border);border-radius:99px}
+.sec-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--sky);background:rgba(56,189,248,.1);padding:3px 10px;border-radius:99px;font-weight:500;letter-spacing:.05em;border:1px solid rgba(56,189,248,.15)}
+
+.class-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1.5vw,14px)}
+.class-card{background:var(--glass);border:1.5px solid var(--border);border-radius:16px;padding:clamp(16px,2.5vw,24px);cursor:pointer;transition:var(--ease);text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.class-card:hover{transform:translateY(-5px);border-color:var(--sky);box-shadow:0 0 30px rgba(56,189,248,.3),0 16px 40px rgba(0,0,0,.6)}
+.class-card.active{border-color:rgba(56,189,248,.6);background:rgba(56,189,248,.07);box-shadow:0 0 25px rgba(56,189,248,.25)}
+.class-num{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,44px);font-weight:800;color:#fff;line-height:1;text-shadow:0 0 20px rgba(56,189,248,.4)}
+.class-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.12em}
+.class-prog{font-size:12px;font-weight:700;color:var(--sky)}
+
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(160px,20vw,220px),1fr));gap:clamp(8px,1.5vw,14px)}
+.topic-card{background:var(--glass);border:1.5px solid var(--border);border-radius:16px;padding:clamp(16px,2.5vw,22px);cursor:pointer;transition:var(--ease);position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.topic-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--sky),var(--sky2));transform:scaleX(0);transition:var(--ease);transform-origin:left}
+.topic-card:hover{transform:translateY(-4px);border-color:var(--border2);box-shadow:var(--shadow-lg)}
+.topic-card:hover::after{transform:scaleX(1)}
+.topic-icon{font-size:clamp(24px,4vw,32px);margin-bottom:8px;line-height:1}
+.topic-name{font-family:'Syne',sans-serif;font-size:clamp(14px,2vw,17px);font-weight:800;color:var(--text);letter-spacing:-.3px;margin-bottom:4px}
+.topic-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px}
+.topic-prog-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.topic-prog-bar{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:999px;overflow:hidden}
+.topic-prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--sky2));border-radius:999px;transition:width .6s ease}
+.topic-prog-text{font-family:'DM Mono',monospace;font-size:10px;color:var(--sky);font-weight:500;white-space:nowrap}
+
+.level-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:clamp(6px,1vw,10px)}
+.lvl-btn{aspect-ratio:1;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:clamp(13px,1.8vw,16px);font-weight:800;cursor:pointer;transition:var(--ease);position:relative;display:flex;align-items:center;justify-content:center}
+.lvl-btn.done{background:rgba(56,189,248,.15);border:1.5px solid rgba(56,189,248,.35);color:var(--sky);box-shadow:0 0 12px rgba(56,189,248,.2)}
+.lvl-btn.done:hover{background:rgba(56,189,248,.25);transform:translateY(-3px);box-shadow:0 0 22px rgba(56,189,248,.4)}
+.lvl-btn.unlocked{background:var(--surface2);border:1.5px solid var(--border2);color:var(--text)}
+.lvl-btn.unlocked:hover{transform:translateY(-3px);border-color:var(--sky);box-shadow:0 0 20px rgba(56,189,248,.3)}
+.lvl-btn.locked{background:var(--surface);border:1.5px solid var(--border);color:var(--text3);cursor:not-allowed;opacity:.4}
+.lvl-btn.done::before{content:'✓';position:absolute;top:3px;right:5px;font-size:9px;color:var(--sky);opacity:.7}
+
+.quiz-card{background:var(--bg3);border:1px solid rgba(56,189,248,.15);border-radius:var(--r);padding:clamp(22px,4vw,38px);position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.quiz-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 90% -10%,rgba(56,189,248,.08),transparent 55%);pointer-events:none}
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
+.q-badge{font-family:'DM Mono',monospace;font-size:10px;padding:4px 12px;border-radius:999px;background:rgba(56,189,248,.12);color:var(--sky);border:1px solid rgba(56,189,248,.2)}
+.q-score{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--text2)}
+.q-score span{color:var(--sky)}
+.q-lang-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 10px;border-radius:999px}
+.q-prog-track{height:6px;background:rgba(255,255,255,.04);border-radius:999px;overflow:hidden;margin-bottom:24px;position:relative;z-index:1}
+.q-prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--sky2));border-radius:999px;transition:width .5s ease}
+.question-text{font-family:'Syne',sans-serif;font-size:clamp(18px,3vw,26px);font-weight:700;color:#fff;line-height:1.4;margin-bottom:24px;position:relative;z-index:1;text-shadow:0 0 20px rgba(255,255,255,.1)}
+.options-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;position:relative;z-index:1}
+.opt-btn{background:var(--surface2);border:1.5px solid var(--border2);border-radius:12px;padding:14px 18px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--ease);text-align:left;line-height:1.4;position:relative;overflow:hidden}
+.opt-btn:hover:not(:disabled){background:var(--surface3);border-color:var(--sky);transform:translateY(-2px);box-shadow:0 4px 16px rgba(56,189,248,.2)}
+.opt-btn.selected{border-color:var(--sky);background:rgba(56,189,248,.1);box-shadow:0 0 20px rgba(56,189,248,.2)}
+.opt-btn.correct{background:rgba(56,189,248,.2)!important;border-color:var(--sky)!important;color:#fff!important;box-shadow:0 0 24px rgba(56,189,248,.4)!important}
+.opt-btn.wrong{background:rgba(244,63,94,.18)!important;border-color:var(--rose)!important;color:#fff!important}
+.opt-btn:disabled{cursor:not-allowed}
+.quiz-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;position:relative;z-index:1}
+.result-box{margin-top:16px;padding:14px 18px;border-radius:12px;font-size:14px;font-weight:700;line-height:1.5;position:relative;z-index:1}
+.result-box.correct{background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.25);color:var(--sky)}
+.result-box.wrong{background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.25);color:var(--rose)}
+.result-box.hint{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--amber2)}
+.result-box.neutral{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);color:var(--sky)}
+
+.finish-card{background:var(--bg3);border:1px solid rgba(56,189,248,.18);border-radius:var(--r);padding:clamp(30px,5vw,52px);text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.finish-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 0%,rgba(56,189,248,.15),transparent 55%);pointer-events:none}
+.finish-icon{font-size:64px;margin-bottom:16px;position:relative;z-index:1;animation:bounce-in .5s ease}
+@keyframes bounce-in{0%{transform:scale(0) rotate(-10deg)}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+.finish-title{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,42px);font-weight:800;color:#fff;letter-spacing:-1px;position:relative;z-index:1;text-shadow:0 0 30px rgba(56,189,248,.5)}
+.finish-score{font-family:'DM Mono',monospace;font-size:16px;color:var(--text2);margin-top:8px;position:relative;z-index:1}
+.finish-score span{color:var(--sky);font-weight:700}
+.finish-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.25);border-radius:999px;padding:10px 24px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--sky);margin-top:16px;position:relative;z-index:1;box-shadow:0 0 24px rgba(56,189,248,.3)}
+.finish-fail{display:inline-flex;align-items:center;gap:8px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);border-radius:999px;padding:10px 24px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--rose);margin-top:16px;position:relative;z-index:1}
+.back-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.breadcrumb{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.breadcrumb span{color:var(--text2)}
+
+.loading-state{text-align:center;padding:48px 20px}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--sky);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(16px);background:#13172a;border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:10px 24px;font-size:13px;font-weight:700;opacity:0;transition:all .32s ease;z-index:9999;box-shadow:var(--shadow-xl);pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+body.light{--bg:#f2f4ff;--bg2:#e7eaff;--bg3:#dfe2fc;--bg4:#d5d9f7;--glass:rgba(255,255,255,.55);--border:rgba(56,189,248,.1);--border2:rgba(56,189,248,.18);--text:#1a1730;--text2:#5a5580;--text3:#8884b0}
+body.light .hd{background:rgba(242,244,255,.86)}
+body.light #toast{background:#1a1730;color:#fff}
+.hidden{display:none!important}
+
+@media(max-width:820px){.class-grid{grid-template-columns:repeat(2,1fr)}.level-grid{grid-template-columns:repeat(4,1fr)}.options-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.level-grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="brand">
-      <h1 id="pageTitle">Физика</h1>
-      <p id="pageSubtitle">Русский / English интерфейс. Вопросы берутся из API и не повторяются каждый уровень.</p>
-    </div>
-    <div class="toolbar">
-      <button class="ghost" id="themeBtn" type="button" onclick="toggleTheme()">🌓 <span id="themeLabel">Тема</span></button>
-      <button class="ghost lang-btn" id="langBtn" type="button" onclick="toggleLang()">🌐 RU</button>
-      <button class="secondary" type="button" onclick="goLobby()">⬅ Лобби</button>
-    </div>
-  </div>
 
-  <div class="hero">
-    <div class="hero-row">
+<header class="hd">
+  <a class="logo" href="lobby.html"><span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span></a>
+  <div class="hd-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="langRuBtn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="btn ghost" onclick="toggleTheme()" style="padding:8px 14px;font-size:12px">🌓</button>
+    <button class="btn ghost" onclick="location.href='lobby.html'" style="padding:8px 14px;font-size:12px" id="backLobbyBtn">⬅ Лобби</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero" id="heroBlock">
+    <div class="hero-bg"></div><div class="hero-grid"></div>
+    <div class="hero-top">
       <div>
-        <h2 id="heroTitle">Учись быстрее и красивее</h2>
-        <p id="heroText">Выбирай класс, тему и уровень. Прогресс сохраняется автоматически.</p>
+        <div class="hero-label" id="heroLabel">// физика</div>
+        <div class="hero-name">⚡ <span id="heroTitle">ФИЗИКА</span></div>
+        <div class="hero-sub" id="heroSub">Теория и задачи с формулами — от простого к сложному</div>
       </div>
-      <div style="min-width:220px;flex:1;max-width:320px">
-        <div class="small" id="heroProgressText">Загружается прогресс...</div>
-        <div class="bar"><div id="heroFill" class="fill"></div></div>
+      <div class="hero-badge" id="heroBadge">🔬 Загрузка...</div>
+    </div>
+    <div class="xp-section">
+      <div class="xp-top">
+        <div class="xp-level-badge"><div class="xp-level-num" id="xpLvlNum">—</div><span id="xpLevelWord">УРОВЕНЬ</span></div>
+        <div class="xp-info"><span id="xpCur">0</span> / <span id="xpNxt">100</span> XP</div>
+      </div>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val" id="statLevels">0</div><div class="hero-stat-label" id="statLevelsLabel">Уровней пройдено</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" id="statTopics">0</div><div class="hero-stat-label" id="statTopicsLabel">Тем закрыто</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" id="statStreak">0</div><div class="hero-stat-label" id="statStreakLabel">Дней подряд</div></div>
+    </div>
+  </div>
+
+  <div class="section" id="screenClass">
+    <div class="sec-head"><div class="sec-title" id="secClassTitle">📚 Выбери класс</div><div class="sec-line"></div><div class="sec-badge">4 <span id="classWord">класса</span></div></div>
+    <div class="class-grid" id="classGrid"></div>
+  </div>
+
+  <div class="section hidden" id="screenTopic">
+    <div class="back-row">
+      <button class="btn ghost" onclick="goToClass()" style="padding:7px 14px;font-size:12px" id="backToClassBtn">⬅ Классы</button>
+      <div class="breadcrumb"><span id="bcPhysics">Физика</span> <span class="sep">›</span> <span id="breadClass">7 класс</span></div>
+    </div>
+    <div class="sec-head"><div class="sec-title" id="secTopicTitle">⚡ Темы</div><div class="sec-line"></div><div class="sec-badge" id="topicBadge">4 темы</div></div>
+    <div class="topic-grid" id="topicGrid"></div>
+  </div>
+
+  <div class="section hidden" id="screenLevel">
+    <div class="back-row">
+      <button class="btn ghost" onclick="goToTopics()" style="padding:7px 14px;font-size:12px" id="backToTopicsBtn">⬅ Темы</button>
+      <div class="breadcrumb"><span id="bcPhysics2">Физика</span> <span class="sep">›</span> <span id="breadClass2"></span> <span class="sep">›</span> <span id="breadTopic"></span></div>
+    </div>
+    <div class="sec-head"><div class="sec-title" id="levelSecTitle">📈 Уровни</div><div class="sec-line"></div><div class="sec-badge" id="levelBadge">0/16</div></div>
+    <div class="level-grid" id="levelGrid"></div>
+  </div>
+
+  <div class="section hidden" id="screenQuiz">
+    <div class="back-row">
+      <button class="btn ghost" onclick="goToLevels()" style="padding:7px 14px;font-size:12px" id="backToLevelsBtn">⬅ К уровням</button>
+      <div class="breadcrumb"><span id="breadQuiz"></span></div>
+    </div>
+    <div class="quiz-card">
+      <div class="quiz-bg"></div>
+      <div class="q-header">
+        <div class="q-badge" id="qBadge">Вопрос 1/10</div>
+        <div class="q-lang-label" id="qLangLabel">🇷🇺 Русский</div>
+        <div class="q-score"><span id="qScoreWord">Правильно</span>: <span id="qScore">0</span></div>
+      </div>
+      <div class="q-prog-track"><div class="q-prog-fill" id="qProgFill" style="width:10%"></div></div>
+      <div class="question-text" id="questionText">Загрузка...</div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="quiz-actions">
+        <button class="btn sky" id="checkBtn" onclick="checkAnswer()">✓ <span id="checkBtnText">Проверить</span></button>
+        <button class="btn ghost" onclick="showHint()" style="font-size:12px">💡 <span id="hintBtnText">Подсказка</span></button>
+        <button class="btn primary hidden" id="nextBtn" onclick="nextQuestion()"><span id="nextBtnText">Далее</span> →</button>
+      </div>
+      <div id="resultBox" class="hidden"></div>
+    </div>
+  </div>
+
+  <div class="section hidden" id="screenFinish">
+    <div class="finish-card">
+      <div class="finish-bg"></div>
+      <div class="finish-icon" id="finishIcon">🎉</div>
+      <div class="finish-title" id="finishTitle">Уровень пройден!</div>
+      <div class="finish-score"><span id="finishScore">10/10</span> <span id="finishScoreWord">правильных ответов</span></div>
+      <div id="finishXPBadge"></div>
+      <div class="finish-actions">
+        <button class="btn sky" onclick="goToLevels()" id="finishBackBtn">⬅ <span id="finishBackText">К уровням</span></button>
+        <button class="btn primary" onclick="retryLevel()" id="finishRetryBtn">🔄 <span id="finishRetryText">Ещё раз</span></button>
+        <button class="btn ghost" onclick="goToTopics()" id="finishTopicsBtn">📚 <span id="finishTopicsText">Темы</span></button>
       </div>
     </div>
-    <div class="badge-row">
-      <span class="pill" id="pillClass">4 класса</span>
-      <span class="pill" id="pillTopic">0 тем</span>
-      <span class="pill" id="pillLevel">16 уровней</span>
-      <span class="pill" id="pillUser">guest</span>
-    </div>
   </div>
-
-  <div class="top-stats">
-    <div class="stat"><b id="statClass">4</b><span id="statClassText">класса</span></div>
-    <div class="stat"><b id="statTopic">0</b><span id="statTopicText">тем</span></div>
-    <div class="stat"><b id="statLevel">16</b><span id="statLevelText">уровней</span></div>
-  </div>
-
-  <div class="card" id="screen-class">
-    <h2 id="classTitle">Выбери класс</h2>
-    <div id="classGrid" class="grid" style="margin-top:12px;"></div>
-  </div>
-
-  <div class="card hidden" id="screen-topic">
-    <h2 id="topicTitle">Выбери тему</h2>
-    <div id="topicGrid" class="grid" style="margin-top:12px;"></div>
-    <div class="nav-row"><button class="secondary" type="button" onclick="backToClass()">⬅ Назад</button></div>
-  </div>
-
-  <div class="card hidden" id="screen-level">
-    <h2 id="levelTitle">Выбери уровень</h2>
-    <div class="progress" id="topicProgress"></div>
-    <div class="bar"><div id="progressFill" class="fill"></div></div>
-    <div id="levelGrid" class="level-grid" style="margin-top:12px;"></div>
-    <div class="nav-row"><button class="secondary" type="button" onclick="backToTopics()">⬅ Назад</button></div>
-  </div>
-
-  <div class="card hidden" id="screen-task">
-    <h2 id="taskTitle">Уровень</h2>
-    <div class="progress" id="taskProgress"></div>
-    <div class="bar"><div id="taskProgressFill" class="fill"></div></div>
-    <div id="taskBody">
-      <p class="q" id="question"></p>
-      <div id="optionGrid" class="option-grid"></div>
-      <div class="nav-row" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px;">
-        <button type="button" onclick="checkAnswer()" id="checkBtn">Проверить</button>
-        <button type="button" onclick="showHint()" id="hintBtn">💡 Подсказка</button>
-        <button id="nextBtn" class="hidden" type="button" onclick="nextTask()">Далее</button>
-      </div>
-      <div id="result" class="result"></div>
-      <div id="solution" class="solution"></div>
-    </div>
-    <div class="nav-row"><button class="secondary" type="button" onclick="backToLevels()">⬅ К уровням</button></div>
-  </div>
-
-  <div class="footer" id="footerText">Кнопка уровня открывает экран сразу, а вопросы подгружаются после этого.</div>
 </div>
-<script type="module">
+<div id="toast"></div>
 
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
-  authDomain: "fmine-auth.firebaseapp.com",
-  projectId: "fmine-auth",
-  storageBucket: "fmine-auth.firebasestorage.app",
-  messagingSenderId: "219769927531",
-  appId: "1:219769927531:web:fbd45a0876f32927d23e2e",
-  measurementId: "G-ETT9HCQRQD"
-};
-
-const app = initializeApp(firebaseConfig);
+const app = initializeApp({apiKey:"AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",authDomain:"fmine-auth.firebaseapp.com",projectId:"fmine-auth",storageBucket:"fmine-auth.firebasestorage.app",messagingSenderId:"219769927531",appId:"1:219769927531:web:fbd45a0876f32927d23e2e"});
 const db = getFirestore(app);
-
-const SUBJECT = "physics";
-const SUBJECT_TITLE = "Физика";
-const THEME_KEY = SUBJECT + "_theme";
-const TOKEN_KEY = SUBJECT + "_opentdb_token";
 const currentUser = localStorage.getItem("currentUser") || "guest";
+if (!currentUser) location.href = "index.html";
 const userRef = doc(db, "users", currentUser);
-const LAST_RESULT_KEY = currentUser + "_" + SUBJECT + "_lastResult";
 
-let uiLang = localStorage.getItem(SUBJECT + "_lang") || "ru";
-let currentClass = "7";
-let currentTopic = null;
-let currentLevel = 1;
-let currentTasks = [];
-let taskIndex = 0;
-let selectedOption = null;
-let optionButtons = [];
-let checked = false;
-let correctCount = 0;
-let firestoreData = null;
+let LANG = localStorage.getItem("fmine_lang") || "ru";
 
-const UI = {
+const T = {
   ru: {
-    pageTitle: "Физика",
-    pageSubtitle: "Русский / English интерфейс. Вопросы берутся из API и не повторяются каждый уровень.",
-    heroTitle: "Учись быстрее и красивее",
-    heroText: "Выбирай класс, тему и уровень. Прогресс сохраняется автоматически.",
-    statClassText: "класса",
-    statTopicText: "тем",
-    statLevelText: "уровней",
-    classTitle: "Выбери класс",
-    topicTitle: "Выбери тему",
-    levelTitle: "Выбери уровень",
-    back: "⬅ Назад",
-    backLevels: "⬅ К уровням",
-    check: "Проверить",
-    hint: "💡 Подсказка",
-    next: "Далее",
-    chooseAnswer: "Выбери вариант ответа.",
-    correct: "✅ Правильно!",
-    wrong: "❌ Неправильно",
-    pass: c => `🎉 Отлично! У тебя ${c}/10. Результат засчитан.`,
-    fail: c => `⚠️ У тебя ${c}/10. Результат не засчитан.`,
-    lobby: "⬅ Лобби",
-    theme: "Тема",
-    lang: "EN",
-    footer: "Кнопка уровня открывает экран сразу, а вопросы подгружаются после этого.",
-    loading: "Загрузка...",
-    loadingQuestions: "Загрузка вопросов...",
-    chooseClassHint: "Открой темы этого класса",
-    chooseTopicHint: "Открой темы и уровни",
-    levelPrefix: "Уровень",
-    progress: "Прогресс темы:",
-    question: "Вопрос",
-    topicProgress: "Прогресс темы",
-    levelWord: "уровень",
-    classWord: "класс",
-    classes: "класса",
-    topics: "тем",
-    levels: "уровней",
-    doneTopics: "тем закрыто",
-    noData: "Пока нет данных. Начни с первого уровня.",
-    loadText: "Готово к работе",
-    hintText: "Подумай по теме и выбери самый точный вариант.",
-    correctAnswerPrefix: "Правильный ответ: "
+    heroLabel:"// физика",heroTitle:"ФИЗИКА",heroSub:"Теория и задачи с формулами — от простого к сложному",
+    xpLevel:"УРОВЕНЬ",statLevels:"Уровней пройдено",statTopics:"Тем закрыто",statStreak:"Дней подряд",
+    secClass:"📚 Выбери класс",classWord:"класса",secTopic:"⚡ Темы",secLevels:"📈 Уровни",
+    backClasses:"⬅ Классы",backTopics:"⬅ Темы",backLevels:"⬅ К уровням",backLobby:"⬅ Лобби",
+    physics:"Физика",grade:"класс",checkBtn:"Проверить",hintBtn:"Подсказка",nextBtn:"Далее",
+    qWord:"Вопрос",correctWord:"Правильно",finishPassed:"Уровень пройден!",finishFailed:"Попробуй ещё раз",
+    finishScoreWord:"правильных ответов",finishBack:"К уровням",finishRetry:"Ещё раз",finishTopics:"Темы",
+    xpEarned:"XP заработано",needMore:"Нужно минимум",forCredit:"для зачёта",langLabel:"🇷🇺 Русский",
+    loadingQ:"⏳ Загрузка вопросов...",selectAnswer:"👆 Выбери вариант",correct:"✅ Правильно!",wrong:"❌ Неверно. ",hint:"💡 ",topicsLabel:"темы"
   },
   en: {
-    pageTitle: "Physics",
-    pageSubtitle: "Русский / English интерфейс. Вопросы берутся из API и не повторяются каждый уровень.",
-    heroTitle: "Study faster and cleaner",
-    heroText: "Choose a class, a topic, and a level. Your progress is saved automatically.",
-    statClassText: "classes",
-    statTopicText: "topics",
-    statLevelText: "levels",
-    classTitle: "Choose a class",
-    topicTitle: "Choose a topic",
-    levelTitle: "Choose a level",
-    back: "⬅ Back",
-    backLevels: "⬅ Levels",
-    check: "Check",
-    hint: "💡 Hint",
-    next: "Next",
-    chooseAnswer: "Choose an answer.",
-    correct: "✅ Correct!",
-    wrong: "❌ Wrong",
-    pass: c => `🎉 Great job! You got ${c}/10. Result counted.`,
-    fail: c => `⚠️ You got ${c}/10. Result will not be counted.`,
-    lobby: "⬅ Lobby",
-    theme: "Theme",
-    lang: "RU",
-    footer: "The level button opens the screen first, then the questions load.",
-    loading: "Loading...",
-    loadingQuestions: "Loading questions...",
-    chooseClassHint: "Open topics in this class",
-    chooseTopicHint: "Open topics and levels",
-    levelPrefix: "Level",
-    progress: "Topic progress:",
-    question: "Question",
-    topicProgress: "Topic progress",
-    levelWord: "level",
-    classWord: "class",
-    classes: "classes",
-    topics: "topics",
-    levels: "levels",
-    doneTopics: "topics done",
-    noData: "No data yet. Start from the first level.",
-    loadText: "Ready to go",
-    hintText: "Think about the topic and choose the most accurate option.",
-    correctAnswerPrefix: "Correct answer: "
+    heroLabel:"// physics",heroTitle:"PHYSICS",heroSub:"Theory and problems with formulas — from easy to hard",
+    xpLevel:"LEVEL",statLevels:"Levels done",statTopics:"Topics done",statStreak:"Day streak",
+    secClass:"📚 Choose a grade",classWord:"grades",secTopic:"⚡ Topics",secLevels:"📈 Levels",
+    backClasses:"⬅ Grades",backTopics:"⬅ Topics",backLevels:"⬅ Levels",backLobby:"⬅ Lobby",
+    physics:"Physics",grade:"grade",checkBtn:"Check",hintBtn:"Hint",nextBtn:"Next",
+    qWord:"Question",correctWord:"Correct",finishPassed:"Level passed!",finishFailed:"Try again",
+    finishScoreWord:"correct answers",finishBack:"Back to levels",finishRetry:"Retry",finishTopics:"Topics",
+    xpEarned:"XP earned",needMore:"Need at least",forCredit:"to pass",langLabel:"🇬🇧 English",
+    loadingQ:"⏳ Loading questions...",selectAnswer:"👆 Select an answer",correct:"✅ Correct!",wrong:"❌ Wrong. ",hint:"💡 ",topicsLabel:"topics"
   }
 };
 
-const SPEC = {
-  classes: {"7": ["motion", "density", "force", "mixed7"], "8": ["pressure", "work", "heat", "mixed8"], "9": ["electricity", "circuits", "optics", "mixed9"], "10": ["mechanics", "electricAdvanced", "waves", "mixed10"]},
-  meta: {"7": {"motion": {"title": "Движение", "desc": "Скорость, путь и время"}, "density": {"title": "Плотность", "desc": "Масса, объём и плотность"}, "force": {"title": "Сила", "desc": "Силы и их действие"}, "mixed7": {"title": "Смешанные", "desc": "Разные вопросы"}}, "8": {"pressure": {"title": "Давление", "desc": "Давление в жидкостях и газах"}, "work": {"title": "Работа и мощность", "desc": "Механическая работа"}, "heat": {"title": "Теплота", "desc": "Тепловые явления"}, "mixed8": {"title": "Смешанные", "desc": "Разные вопросы"}}, "9": {"electricity": {"title": "Электричество", "desc": "Заряд, ток, напряжение"}, "circuits": {"title": "Цепи", "desc": "Последовательные и параллельные цепи"}, "optics": {"title": "Оптика", "desc": "Свет и изображение"}, "mixed9": {"title": "Смешанные", "desc": "Разные вопросы"}}, "10": {"mechanics": {"title": "Механика", "desc": "Законы движения"}, "electricAdvanced": {"title": "Электричество", "desc": "Сложные электрические темы"}, "waves": {"title": "Волны", "desc": "Колебания и волновые процессы"}, "mixed10": {"title": "Смешанные", "desc": "Разные вопросы"}}},
-  local: [{"q": "Что изучает физика?", "c": "Явления природы", "w": ["Только растения", "Только звёзды", "Только людей"], "h": "Это наука о природе и её законах.", "s": "Физика изучает природные явления."}, {"q": "Какая величина измеряется в метрах?", "c": "Длина", "w": ["Масса", "Сила", "Время"], "h": "Это расстояние между точками.", "s": "Длина измеряется в метрах."}, {"q": "Какая величина измеряется в секундах?", "c": "Время", "w": ["Длина", "Температура", "Объём"], "h": "Это то, что идёт и длится.", "s": "Время измеряется в секундах."}, {"q": "Что такое сила?", "c": "Действие одного тела на другое", "w": ["Только скорость", "Только масса", "Только плотность"], "h": "Она может менять движение тела.", "s": "Сила — это действие одного тела на другое."}, {"q": "Как называется прибор для измерения температуры?", "c": "Термометр", "w": ["Барометр", "Спидометр", "Амперметр"], "h": "Он показывает градусы.", "s": "Температуру измеряют термометром."}, {"q": "Как называется явление изменения направления света при переходе?", "c": "Преломление", "w": ["Испарение", "Трение", "Сопротивление"], "h": "Луч меняет направление на границе сред.", "s": "Это преломление света."}, {"q": "Какое тело имеет большую массу: 1 кг или 500 г?", "c": "1 кг", "w": ["500 г", "Одинаково", "Нельзя сравнить"], "h": "Сравни единицы.", "s": "1 кг больше, чем 500 г."}, {"q": "Как называется путь, который проходит тело?", "c": "Расстояние", "w": ["Сила", "Масса", "Давление"], "h": "Это длина движения.", "s": "Путь тела называют расстоянием."}, {"q": "Что вызывает трение?", "c": "Контакт поверхностей", "w": ["Только свет", "Только звук", "Только тепло"], "h": "Оно возникает при соприкосновении тел.", "s": "Трение возникает между соприкасающимися поверхностями."}, {"q": "Какой прибор измеряет силу тока?", "c": "Амперметр", "w": ["Термометр", "Линейка", "Часы"], "h": "Он связан с электрическим током.", "s": "Силу тока измеряет амперметр."}]
+function t(key) { return T[LANG]?.[key] || T.ru[key] || key; }
+window.setLang = function(lang) {
+  LANG = lang;
+  localStorage.setItem("fmine_lang", lang);
+  document.getElementById("langRuBtn").classList.toggle("active", lang === "ru");
+  document.getElementById("langEnBtn").classList.toggle("active", lang === "en");
+  applyTranslations();
+  if (!document.getElementById("screenClass").classList.contains("hidden")) renderClasses();
+  if (!document.getElementById("screenTopic").classList.contains("hidden")) renderTopics();
+  if (!document.getElementById("screenLevel").classList.contains("hidden")) renderLevels();
+  showToast(lang === "ru" ? "🇷🇺 Русский язык" : "🇬🇧 English language");
 };
 
-function T(){ return UI[uiLang]; }
-function decodeHtml(str){ const ta = document.createElement("textarea"); ta.innerHTML = str; return ta.value; }
-function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
-function unique(arr){ return Array.from(new Set(arr)); }
-function normalize(text){ return String(text).toLowerCase().replace(/ё/g,"е").replace(/[–−]/g,"-").replace(/\s+/g," ").trim(); }
-function questionKey(task){ return normalize(task.q || ""); }
-function makeMCQ(q, correct, wrongs, hint, solution){ const options = shuffle([correct].concat(wrongs)); return { q, options, answer: options.indexOf(correct), hint, solution }; }
-function progressKey(cls, topic){ return SUBJECT + "Progress_" + currentUser + "_" + cls + "_" + topic; }
-function getProgress(cls, topic){ try { return JSON.parse(localStorage.getItem(progressKey(cls, topic)) || '{"highestCompleted":0}'); } catch(e){ return { highestCompleted:0 }; } }
-function saveProgress(cls, topic, data){ localStorage.setItem(progressKey(cls, topic), JSON.stringify(data)); }
-function unlockFor(cls, topic){ const p = getProgress(cls, topic); return Math.min(16, (p.highestCompleted || 0) + 1); }
-function getRecentKeys(){ try { return JSON.parse(localStorage.getItem(SUBJECT + "_recent_" + currentUser) || "[]"); } catch(e){ return []; } }
-function rememberKeyBulk(tasks){ const arr = getRecentKeys(); for(const t of tasks){ const k = questionKey(t); if(!arr.includes(k)) arr.unshift(k); } localStorage.setItem(SUBJECT + "_recent_" + currentUser, JSON.stringify(arr.slice(0,180))); }
-async function fetchWithTimeout(url, ms){ const controller = new AbortController(); const id = setTimeout(() => controller.abort(), ms); try{ const res = await fetch(url, { signal: controller.signal }); return await res.json(); } finally { clearTimeout(id); } }
-async function getOpenTDBToken(){ const saved = localStorage.getItem(TOKEN_KEY); if(saved) return saved; try{ const data = await fetchWithTimeout("https://opentdb.com/api_token.php?command=request", 4000); if(data && data.token){ localStorage.setItem(TOKEN_KEY, data.token); return data.token; } }catch(e){} return null; }
-async function translateEnRu(text){ try{ const url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=en|ru"; const data = await fetchWithTimeout(url, 4500); const out = data?.responseData?.translatedText; if(out && typeof out === "string") return decodeHtml(out); }catch(e){} return text; }
-async function localizeQuestion(q){ const ruQ = await translateEnRu(q.q); const ruOptions = []; for(const opt of q.options) ruOptions.push(await translateEnRu(opt)); let answer = ruOptions[typeof q.answer === "number" ? q.answer : 0]; const out = { q: ruQ, options: shuffle(unique(ruOptions)), hint: T().hintText, solution: "" }; out.answer = out.options.findIndex(v => normalize(v) === normalize(answer)); if(out.answer < 0) out.answer = 0; out.solution = T().correctAnswerPrefix + out.options[out.answer] + "."; return out; }
-async function fetchOpenTDBQuestions(count){ const token = await getOpenTDBToken(); const category = 17; const reqs = Array.from({length: count}, async () => { const url = token ? `https://opentdb.com/api.php?amount=1&type=multiple&category=${category}&token=${token}` : `https://opentdb.com/api.php?amount=1&type=multiple&category=${category}`; try{ const data = await fetchWithTimeout(url, 5000); if(!data || !data.results || !data.results.length) return null; if(data.response_code === 3 || data.response_code === 4) localStorage.removeItem(TOKEN_KEY); const r = data.results[0]; const raw = { q: decodeHtml(r.question), options: [decodeHtml(r.correct_answer)].concat((r.incorrect_answers || []).map(decodeHtml)), answer: 0 }; return await localizeQuestion(raw); }catch(e){ return null; } }); return (await Promise.all(reqs)).filter(Boolean); }
-
-function firebaseTopicP(cls, topic){ return firestoreData?.progress?.physics?.[cls]?.[topic]?.highestCompleted || 0; }
-function classFirebaseProgress(cls){ const topics = SPEC.classes[cls] || []; const total = topics.reduce((s, t) => s + Math.min(16, firebaseTopicP(cls, t)), 0); return topics.length ? Math.round(total / (topics.length * 16) * 100) : 0; }
-function subjectFirebaseProgress(){ const vals = Object.keys(SPEC.classes).map(classFirebaseProgress); return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0; }
-function subjectTopicCount(){ return Object.keys(SPEC.classes).reduce((sum, cls) => sum + (SPEC.classes[cls] || []).filter(t => firebaseTopicP(cls, t) >= 16).length, 0); }
-function totalLevelsNow(){ return Object.keys(SPEC.classes).reduce((sum, cls) => sum + (SPEC.classes[cls] || []).reduce((acc, t) => acc + Math.min(16, firebaseTopicP(cls, t)), 0), 0); }
-function anyData(){ return totalLevelsNow() > 0; }
-
-async function saveFirebaseProgress(cls, topic, data){
-  const payload = { [`progress.physics.${cls}.${topic}`]: data };
-  await updateDoc(userRef, payload);
-  firestoreData = firestoreData || {};
-  firestoreData.progress = firestoreData.progress || {};
-  firestoreData.progress.physics = firestoreData.progress.physics || {};
-  firestoreData.progress.physics[cls] = firestoreData.progress.physics[cls] || {};
-  firestoreData.progress.physics[cls][topic] = data;
+function applyTranslations() {
+  const ids = {
+    heroLabel:"heroLabel",heroTitle:"heroTitle",heroSub:"heroSub",
+    xpLevelWord:"xpLevel",statLevelsLabel:"statLevels",statTopicsLabel:"statTopics",
+    statStreakLabel:"statStreak",secClassTitle:"secClass",classWord:"classWord",
+    secTopicTitle:"secTopic",backToClassBtn:"backClasses",backToTopicsBtn:"backTopics",
+    backToLevelsBtn:"backLevels",backLobbyBtn:"backLobby",
+    bcPhysics:"physics",bcPhysics2:"physics",
+    checkBtnText:"checkBtn",hintBtnText:"hintBtn",nextBtnText:"nextBtn",
+    qScoreWord:"correctWord",finishScoreWord:"finishScoreWord",
+    finishBackText:"finishBack",finishRetryText:"finishRetry",finishTopicsText:"finishTopics",
+    qLangLabel:"langLabel"
+  };
+  for (const [id, key] of Object.entries(ids)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(key);
+  }
 }
 
-async function mergeLegacyProgressToFirebase(){
-  const patch = {};
-  for(const cls of Object.keys(SPEC.classes)){
-    for(const topic of SPEC.classes[cls]){
-      const legacy = getProgress(cls, topic);
-      if(legacy && (legacy.highestCompleted || 0) > 0){
-        patch[`progress.physics.${cls}.${topic}`] = legacy;
+const SUBJECT = "physics";
+const LEVELS_PER_TOPIC = 16;
+const QUESTIONS_PER_LEVEL = 10;
+const PASS_THRESHOLD = 6;
+
+// ─── PHYSICS TOPICS ──────────────────────────────────────────
+const SPEC = {
+  "7": { id:"7", topics:{
+    motion:  {title:{ru:"Движение",      en:"Motion"},       icon:"🏃", desc:{ru:"Скорость, время, путь",          en:"Speed, time, distance"} },
+    density: {title:{ru:"Плотность",     en:"Density"},      icon:"⚖️", desc:{ru:"Масса и объём",                  en:"Mass and volume"} },
+    force:   {title:{ru:"Сила",          en:"Force"},         icon:"💪", desc:{ru:"Тяжесть, упругость, трение",     en:"Gravity, elasticity, friction"} },
+    mixed7:  {title:{ru:"Смешанные",     en:"Mixed"},         icon:"🧪", desc:{ru:"Все темы 7 класса",              en:"All grade 7 topics"} }
+  }},
+  "8": { id:"8", topics:{
+    pressure:{title:{ru:"Давление",      en:"Pressure"},      icon:"🗜️", desc:{ru:"Твёрдых тел, жидкостей, газов",  en:"Solids, liquids, gases"} },
+    work:    {title:{ru:"Работа",        en:"Work"},          icon:"🔧", desc:{ru:"Механическая работа, мощность",  en:"Mechanical work, power"} },
+    heat:    {title:{ru:"Теплота",       en:"Heat"},          icon:"🌡️", desc:{ru:"Температура, энергия",           en:"Temperature, energy"} },
+    mixed8:  {title:{ru:"Смешанные",     en:"Mixed"},         icon:"🧪", desc:{ru:"Все темы 8 класса",              en:"All grade 8 topics"} }
+  }},
+  "9": { id:"9", topics:{
+    electricity:{title:{ru:"Электричество", en:"Electricity"}, icon:"⚡", desc:{ru:"Ток, напряжение, сопротивление", en:"Current, voltage, resistance"} },
+    circuits:   {title:{ru:"Цепи",          en:"Circuits"},    icon:"🔌", desc:{ru:"Последовательные/параллельные",  en:"Series/parallel circuits"} },
+    optics:     {title:{ru:"Оптика",        en:"Optics"},      icon:"🔦", desc:{ru:"Линзы, зеркала, свет",           en:"Lenses, mirrors, light"} },
+    mixed9:     {title:{ru:"Смешанные",     en:"Mixed"},       icon:"🧪", desc:{ru:"Все темы 9 класса",              en:"All grade 9 topics"} }
+  }},
+  "10": { id:"10", topics:{
+    mechanics:   {title:{ru:"Механика",        en:"Mechanics"},       icon:"⚙️", desc:{ru:"Законы Ньютона, импульс",       en:"Newton's laws, momentum"} },
+    electricAdv: {title:{ru:"Электричество",   en:"Advanced Electricity"}, icon:"🔋", desc:{ru:"ЭДС, мощность тока",           en:"EMF, electric power"} },
+    waves:       {title:{ru:"Волны",           en:"Waves"},           icon:"🌊", desc:{ru:"Звук, частота, длина волны",      en:"Sound, frequency, wavelength"} },
+    mixed10:     {title:{ru:"Смешанные",       en:"Mixed"},           icon:"🧪", desc:{ru:"Все темы 10 класса",             en:"All grade 10 topics"} }
+  }}
+};
+
+// ─── 8 ESSENTIAL FORMULAS ────────────────────────────────────
+const FORMULAS = {
+  speed:    { ru:"v = s / t",            en:"v = d / t" },
+  density:  { ru:"ρ = m / V",            en:"ρ = m / V" },
+  pressure: { ru:"p = F / S",            en:"p = F / A" },
+  work:     { ru:"A = F · s",            en:"W = F · d" },
+  power:    { ru:"N = A / t",            en:"P = W / t" },
+  current:  { ru:"I = q / t",            en:"I = Q / t" },
+  ohm:      { ru:"U = I · R",            en:"V = I · R" },
+  electricPower: { ru:"P = U · I",       en:"P = V · I" }
+};
+
+// ─── THEORY QUESTION BANKS ───────────────────────────────────
+const THEORY_RU = [
+  {q:"Что изучает физика?",c:"Природные явления и законы",w:["Только химию","Только биологию","Искусство"],h:"Наука о природе.",s:"Физика — наука о природе."},
+  {q:"Единица измерения скорости в СИ?",c:"м/с",w:["км/ч","м/мин","см/с"],h:"Метры в секунду.",s:"Скорость в СИ измеряется в м/с."},
+  {q:"Формула скорости?",c:"v = s / t",w:["v = t / s","v = s + t","v = s · t"],h:"Путь делить на время.",s:"v = s / t."},
+  {q:"Плотность измеряется в?",c:"кг/м³",w:["кг","м³","Н"],h:"Масса на объём.",s:"Плотность — кг/м³."},
+  {q:"Сила тяжести направлена?",c:"Вниз, к центру Земли",w:["Вверх","В сторону","Горизонтально"],h:"К центру планеты.",s:"Сила тяжести направлена вниз."},
+  {q:"Давление твердого тела зависит от?",c:"Силы и площади",w:["Только силы","Только площади","Объёма"],h:"p = F / S.",s:"Давление зависит от силы и площади."},
+  {q:"Работа равна нулю, если?",c:"Нет перемещения",w:["Приложена сила","Есть трение","Тело движется"],h:"A = F · s, если s = 0, A = 0.",s:"Если перемещение равно нулю, работа равна нулю."},
+  {q:"Мощность показывает?",c:"Быстроту выполнения работы",w:["Величину силы","Путь","Скорость"],h:"N = A / t.",s:"Мощность — работа в единицу времени."},
+  {q:"Напряжение измеряется в?",c:"Вольтах (В)",w:["Амперах","Омах","Ваттах"],h:"U.",s:"Напряжение — в вольтах."},
+  {q:"Закон Ома для участка цепи?",c:"I = U / R",w:["U = I · t","R = U + I","I = R / U"],h:"Ток прямо пропорционален напряжению.",s:"I = U / R."}
+];
+
+const THEORY_EN = [
+  {q:"What does physics study?",c:"Natural phenomena and laws",w:["Only chemistry","Only biology","Art"],h:"Science of nature.",s:"Physics is the science of nature."},
+  {q:"SI unit of speed?",c:"m/s",w:["km/h","m/min","cm/s"],h:"Meters per second.",s:"Speed in SI is m/s."},
+  {q:"Speed formula?",c:"v = d / t",w:["v = t / d","v = d + t","v = d · t"],h:"Distance divided by time.",s:"v = d / t."},
+  {q:"Density is measured in?",c:"kg/m³",w:["kg","m³","N"],h:"Mass per volume.",s:"Density — kg/m³."},
+  {q:"Gravity force direction?",c:"Downwards, to Earth's center",w:["Upwards","Sideways","Horizontal"],h:"Toward planet center.",s:"Gravity pulls downwards."},
+  {q:"Solid pressure depends on?",c:"Force and area",w:["Only force","Only area","Volume"],h:"p = F / A.",s:"Pressure depends on force and area."},
+  {q:"Work is zero if?",c:"No displacement",w:["Force applied","Friction","Body moves"],h:"W = F·d, if d=0, W=0.",s:"If displacement is zero, work is zero."},
+  {q:"Power shows?",c:"Rate of doing work",w:["Amount of force","Distance","Speed"],h:"P = W / t.",s:"Power is work per unit time."},
+  {q:"Voltage unit?",c:"Volts (V)",w:["Amperes","Ohms","Watts"],h:"U.",s:"Voltage — volts."},
+  {q:"Ohm's law for a circuit section?",c:"I = V / R",w:["V = I · t","R = V + I","I = R / V"],h:"Current proportional to voltage.",s:"I = V / R."}
+];
+
+// ─── PROBLEM GENERATORS (using formulas) ─────────────────────
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function round(val, dec = 2) { return +val.toFixed(dec); }
+
+function makeProblem(q, correct, wrongs, hint, sol) {
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return { q, opts, answer: opts.indexOf(correct), hint, sol };
+}
+
+function genSpeedProblem(level) {
+  const s = rand(10, 50) * (level > 8 ? 10 : 1);  // path in meters
+  const t = rand(2, 10);
+  const v = round(s / t, 1);
+  const q = LANG === "ru" ?
+    `Тело прошло ${s} м за ${t} с. Найдите скорость (м/с).` :
+    `A body travels ${s} m in ${t} s. Find the speed (m/s).`;
+  const wrong = [round(v + rand(1,5),1), round(v * 2,1), round(v / 2,1)].map(String);
+  return makeProblem(q, String(v) + " м/с", wrong, FORMULAS.speed[LANG], "v = s/t = " + s + "/" + t + " = " + v + " м/с");
+}
+
+function genDensityProblem(level) {
+  const m = rand(20, 100);
+  const V = rand(2, 10);
+  const ρ = round(m / V, 1);
+  const q = LANG === "ru" ?
+    `Масса тела ${m} кг, объём ${V} м³. Найдите плотность (кг/м³).` :
+    `Mass of body is ${m} kg, volume ${V} m³. Find density (kg/m³).`;
+  const wrong = [round(ρ + rand(1,4),1), round(ρ * 2,1), round(ρ / 2,1)].map(String);
+  return makeProblem(q, String(ρ) + " кг/м³", wrong, FORMULAS.density[LANG], "ρ = m/V = " + m + "/" + V + " = " + ρ + " кг/м³");
+}
+
+function genPressureProblem(level) {
+  const F = rand(10, 30);
+  const S = rand(1, 5);
+  const p = round(F / S, 1);
+  const q = LANG === "ru" ?
+    `Сила ${F} Н действует на площадь ${S} м². Давление (Па)?` :
+    `Force ${F} N acts on area ${S} m². Pressure (Pa)?`;
+  const wrong = [round(p + rand(1,5),1), round(p * 0.8,1), round(p * 1.2,1)].map(String);
+  return makeProblem(q, String(p) + " Па", wrong, FORMULAS.pressure[LANG], "p = F/S = " + F + "/" + S + " = " + p + " Па");
+}
+
+function genWorkProblem(level) {
+  const F = rand(5, 20);
+  const s = rand(2, 8);
+  const A = F * s;
+  const q = LANG === "ru" ?
+    `Сила ${F} Н перемещает тело на ${s} м. Работа (Дж)?` :
+    `Force ${F} N moves body by ${s} m. Work (J)?`;
+  const wrong = [String(A + rand(5,15)), String(A * 0.4), String(A * 2.5)];
+  return makeProblem(q, String(A) + " Дж", wrong, FORMULAS.work[LANG], "A = F·s = " + F + "·" + s + " = " + A + " Дж");
+}
+
+function genPowerProblem(level) {
+  const A = rand(20, 80);
+  const t = rand(2, 10);
+  const N = round(A / t, 1);
+  const q = LANG === "ru" ?
+    `Работа ${A} Дж совершена за ${t} с. Мощность (Вт)?` :
+    `Work ${A} J done in ${t} s. Power (W)?`;
+  const wrong = [round(N + rand(1,5),1), round(N * 1.5,1), round(N / 2,1)].map(String);
+  return makeProblem(q, String(N) + " Вт", wrong, FORMULAS.power[LANG], "N = A/t = " + A + "/" + t + " = " + N + " Вт");
+}
+
+function genCurrentProblem(level) {
+  const q = rand(10, 50);
+  const t = rand(2, 5);
+  const I = round(q / t, 1);
+  const question = LANG === "ru" ?
+    `Заряд ${q} Кл прошёл за ${t} с. Сила тока (А)?` :
+    `Charge ${q} C passed in ${t} s. Current (A)?`;
+  const wrong = [round(I + rand(1,3),1), round(I * 0.7,1), round(I + 2,1)].map(String);
+  return makeProblem(question, String(I) + " А", wrong, FORMULAS.current[LANG], "I = q/t = " + q + "/" + t + " = " + I + " А");
+}
+
+function genOhmProblem(level) {
+  const U = rand(4, 12);
+  const R = rand(2, 6);
+  const I = round(U / R, 1);
+  const q = LANG === "ru" ?
+    `Напряжение ${U} В, сопротивление ${R} Ом. Ток (А)?` :
+    `Voltage ${U} V, resistance ${R} Ω. Current (A)?`;
+  const wrong = [round(I + rand(1,2),1), round(I * 1.5,1), round(I / 2,1)].map(String);
+  return makeProblem(q, String(I) + " А", wrong, FORMULAS.ohm[LANG], "I = U/R = " + U + "/" + R + " = " + I + " А");
+}
+
+function genElectricPowerProblem(level) {
+  const U = rand(6, 15);
+  const I = rand(1, 4);
+  const P = U * I;
+  const q = LANG === "ru" ?
+    `Напряжение ${U} В, ток ${I} А. Мощность (Вт)?` :
+    `Voltage ${U} V, current ${I} A. Power (W)?`;
+  const wrong = [String(P + rand(2,8)), String(P * 0.6), String(P * 2)];
+  return makeProblem(q, String(P) + " Вт", wrong, FORMULAS.electricPower[LANG], "P = U·I = " + U + "·" + I + " = " + P + " Вт");
+}
+
+const problemGenerators = [genSpeedProblem, genDensityProblem, genPressureProblem, genWorkProblem, genPowerProblem, genCurrentProblem, genOhmProblem, genElectricPowerProblem];
+
+// ─── BUILD QUIZ BY LEVEL ─────────────────────────────────────
+function buildQuestions(cls, topicId, level) {
+  const mix = [];
+  const theoryBank = LANG === "ru" ? THEORY_RU : THEORY_EN;
+  const shuffledTheory = shuffle([...theoryBank]);
+  const numProblems = Math.floor(level / 3); // early levels: 0-1 problems, later up to 5
+  const numTheory = QUESTIONS_PER_LEVEL - numProblems;
+
+  // theory
+  for (let i = 0; i < numTheory; i++) {
+    mix.push(shuffledTheory[i % shuffledTheory.length]);
+  }
+  // problems
+  for (let i = 0; i < numProblems; i++) {
+    const gen = problemGenerators[i % problemGenerators.length];
+    mix.push(gen(level));
+  }
+  return shuffle(mix);
+}
+
+// ─── Other necessary functions ───────────────────────────────
+let fd = null;
+let currentClass = null, currentTopic = null, currentLevel = null;
+let quiz = { tasks:[], index:0, correct:0, selected:null, checked:false };
+
+async function loadUser() {
+  try {
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      await setDoc(userRef, { profile:{nickname:currentUser}, studyMeta:{streak:0,studyDays:{},totalXP:0}, progress:{math:{},biology:{},physics:{},history:{}}, lastResults:{} });
+      fd = (await getDoc(userRef)).data();
+    } else { fd = snap.data(); }
+    fd.progress = fd.progress || {};
+    fd.progress.physics = fd.progress.physics || {};
+    fd.studyMeta = fd.studyMeta || { streak:0, studyDays:{}, totalXP:0 };
+  } catch(e) { fd = { progress:{ physics:{} }, studyMeta:{ streak:0, studyDays:{}, totalXP:0 }, profile:{} }; }
+}
+
+async function onLevelComplete(cls, topicId, newHighest) {
+  const today = new Date().toISOString().slice(0, 10);
+  const topicData = { highestCompleted: newHighest, lastPassedAt: Date.now() };
+  if (!fd.progress.physics[cls]) fd.progress.physics[cls] = {};
+  fd.progress.physics[cls][topicId] = topicData;
+  let freshFd = fd;
+  try { freshFd = (await getDoc(userRef)).data() || fd; } catch(e) {}
+  const studyDays = freshFd?.studyMeta?.studyDays || {};
+  const todayCount = (studyDays[today] || 0) + 1;
+  const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+  const hadYesterday = (studyDays[yesterday] || 0) > 0;
+  const currentStreak = freshFd?.studyMeta?.streak || 0;
+  const alreadyToday = (studyDays[today] || 0) > 0;
+  const newStreak = alreadyToday ? currentStreak : (hadYesterday ? currentStreak + 1 : 1);
+  const allProgress = freshFd?.progress || {};
+  allProgress.physics = allProgress.physics || {};
+  if (!allProgress.physics[cls]) allProgress.physics[cls] = {};
+  allProgress.physics[cls][topicId] = topicData;
+  let levelsTotal = 0, topicsDone = 0;
+  for (const sk of ["math","biology","physics","history"]) {
+    const sp = allProgress[sk] || {};
+    for (const c of Object.keys(sp)) {
+      for (const tt of Object.keys(sp[c])) {
+        const h = sp[c][tt]?.highestCompleted || 0;
+        levelsTotal += Math.min(LEVELS_PER_TOPIC, h);
+        if (h >= LEVELS_PER_TOPIC) topicsDone++;
       }
     }
   }
-  if(Object.keys(patch).length) await updateDoc(userRef, patch);
-}
-
-async function loadFirestoreUser(){
-  const snap = await getDoc(userRef);
-  if(!snap.exists()){
-    await setDoc(userRef, {
-      profile: { nickname: currentUser, avatar: "https://via.placeholder.com/84", bio: "", note: "", fav: "", goal: 7 },
-      studyMeta: { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 },
-      progress: { math:{}, biology:{}, physics:{}, history:{} },
-      activities: [],
-      lastResults: {}
+  const newTotalXP = levelsTotal * 10 + topicsDone * 50 + newStreak * 5 + (freshFd?.studyMeta?.bonusXP || 0);
+  try {
+    await updateDoc(userRef, {
+      [`progress.physics.${cls}.${topicId}`]: topicData,
+      [`studyMeta.studyDays.${today}`]: todayCount,
+      "studyMeta.streak": newStreak,
+      "studyMeta.totalXP": newTotalXP,
+      [`lastResults.physics`]: { time: Date.now(), class: cls, topic: topicId, level: currentLevel }
     });
-    firestoreData = (await getDoc(userRef)).data() || {};
-  }else{ firestoreData = snap.data() || {}; }
-  firestoreData.profile = firestoreData.profile || { nickname: currentUser, avatar: "https://via.placeholder.com/84", bio: "", note: "", fav: "", goal: 7 };
-  firestoreData.studyMeta = firestoreData.studyMeta || { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 };
-  firestoreData.progress = firestoreData.progress || { math:{}, biology:{}, physics:{}, history:{} };
-  firestoreData.progress.physics = firestoreData.progress.physics || {};
-  firestoreData.activities = firestoreData.activities || [];
-  await mergeLegacyProgressToFirebase();
-  const refreshed = await getDoc(userRef);
-  firestoreData = refreshed.data() || firestoreData;
-  firestoreData.studyMeta = firestoreData.studyMeta || { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 };
+  } catch(e) { showToast(t("noConnection")); }
+  fd.studyMeta.streak = newStreak;
+  fd.studyMeta.totalXP = newTotalXP;
+  fd.studyMeta.studyDays = fd.studyMeta.studyDays || {};
+  fd.studyMeta.studyDays[today] = todayCount;
 }
 
-function toggleTheme(){ document.body.classList.toggle("light"); localStorage.setItem("physics_theme", document.body.classList.contains("light") ? "light" : "dark"); }
-function loadTheme(){ if((localStorage.getItem("physics_theme") || "dark") === "light") document.body.classList.add("light"); }
-function toggleLang(){ uiLang = uiLang === "ru" ? "en" : "ru"; localStorage.setItem(SUBJECT + "_lang", uiLang); applyLang(); }
-function goLobby(){ location.href = "lobby.html"; }
+function calcXP() {
+  let levels = 0, topics = 0;
+  const phys = fd?.progress?.physics || {};
+  for (const cls of Object.keys(SPEC)) {
+    for (const tid of Object.keys(SPEC[cls].topics)) {
+      const h = phys[cls]?.[tid]?.highestCompleted || 0;
+      levels += Math.min(LEVELS_PER_TOPIC, h);
+      if (h >= LEVELS_PER_TOPIC) topics++;
+    }
+  }
+  return levels * 10 + topics * 50 + (fd?.studyMeta?.streak || 0) * 5 + (fd?.studyMeta?.bonusXP || 0);
+}
+function xpForLevel(lvl) { return lvl <= 1 ? 0 : Math.floor(100 * Math.pow(lvl - 1, 1.5)); }
+function calcLevel(xp) { let l = 1; while (xpForLevel(l + 1) <= xp) l++; return l; }
+function getHighest(cls, tid) { return fd?.progress?.physics?.[cls]?.[tid]?.highestCompleted || 0; }
+function totalPhysicsLevels() { let s=0; for(const c of Object.keys(SPEC)) for(const t of Object.keys(SPEC[c].topics)) s+=Math.min(16,getHighest(c,t)); return s; }
+function totalPhysicsTopics() { let s=0; for(const c of Object.keys(SPEC)) for(const t of Object.keys(SPEC[c].topics)) if(getHighest(c,t)>=16) s++; return s; }
 
-function showScreen(name){ ["screen-class","screen-topic","screen-level","screen-task"].forEach(id => { document.getElementById(id).classList.toggle("hidden", id !== name); }); }
+function renderHero() {
+  const xp = calcXP(), level = calcLevel(xp);
+  const thisLX = xpForLevel(level), nextLX = xpForLevel(level + 1);
+  const pct = nextLX > thisLX ? Math.round((xp - thisLX) / (nextLX - thisLX) * 100) : 100;
+  document.getElementById("xpLvlNum").textContent = level;
+  document.getElementById("xpCur").textContent = xp - thisLX;
+  document.getElementById("xpNxt").textContent = nextLX - thisLX;
+  document.getElementById("xpBarFill").style.width = pct + "%";
+  document.getElementById("statLevels").textContent = totalPhysicsLevels();
+  document.getElementById("statTopics").textContent = totalPhysicsTopics();
+  document.getElementById("statStreak").textContent = fd?.studyMeta?.streak || 0;
+  document.getElementById("heroBadge").textContent = `🔬 ${totalPhysicsLevels()} ${LANG==="ru"?"уровней":"levels"} · ${pct}% XP`;
+}
 
-function renderClasses(){
+function showScreen(id) {
+  ["screenClass","screenTopic","screenLevel","screenQuiz","screenFinish"].forEach(s => {
+    document.getElementById(s).classList.toggle("hidden", s !== id);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderClasses() {
   const grid = document.getElementById("classGrid");
   grid.innerHTML = "";
-  Object.keys(SPEC.classes).forEach(function(cls){
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "card-btn";
-    btn.innerHTML = "<strong>" + cls + " " + T().classWord + "</strong><small>" + T().chooseClassHint + "</small>";
-    btn.onclick = function(){ selectClass(cls); };
-    if(cls === currentClass) btn.classList.add("active");
-    grid.appendChild(btn);
-  });
+  for (const cls of Object.keys(SPEC)) {
+    const topics = Object.keys(SPEC[cls].topics);
+    const done = topics.reduce((s,tid)=>s+Math.min(16,getHighest(cls,tid)),0);
+    const total = topics.length * 16;
+    const pct = Math.round(done/total*100);
+    const div = document.createElement("div");
+    div.className = "class-card" + (currentClass === cls ? " active" : "");
+    div.innerHTML = `<div class="class-num">${cls}</div><div class="class-label">${t("grade").toUpperCase()}</div><div class="class-prog">${done}/${total} · ${pct}%</div>`;
+    div.onclick = () => selectClass(cls);
+    grid.appendChild(div);
+  }
 }
-function renderTopics(){
-  const grid = document.getElementById("topicGrid");
-  document.getElementById("topicTitle").textContent = currentClass + " " + T().classWord + " — " + (uiLang === "ru" ? "выбери тему" : "choose a topic");
-  grid.innerHTML = "";
-  SPEC.classes[currentClass].forEach(function(topicId){
-    const topic = SPEC.meta[currentClass][topicId];
-    const p = firebaseTopicP(currentClass, topicId) || getProgress(currentClass, topicId).highestCompleted || 0;
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "card-btn";
-    btn.innerHTML =
-      "<strong>" + topic.title + "</strong>" +
-      "<small>" + topic.desc + "</small>" +
-      "<span class='small'>" + T().levelPrefix + ": " + Math.min(16, (p || 0) + 1) + "/16</span>";
-    btn.onclick = function(){ openTopic(topicId); };
-    grid.appendChild(btn);
-  });
-}
-function renderTopicLevels(){
-  const topic = SPEC.meta[currentClass][currentTopic];
-  const prog = getProgress(currentClass, currentTopic);
-  document.getElementById("levelTitle").textContent = topic.title + " — " + (uiLang === "ru" ? "уровни" : "levels");
-  document.getElementById("topicProgress").textContent = T().progress + " " + Math.min(16, prog.highestCompleted || 0) + "/16";
-  document.getElementById("progressFill").style.width = Math.min(100, ((prog.highestCompleted || 0) / 16) * 100) + "%";
 
-  const unlocked = unlockFor(currentClass, currentTopic);
+function selectClass(cls) {
+  currentClass = cls;
+  document.getElementById("breadClass").textContent = cls + " " + t("grade");
+  document.getElementById("breadClass2").textContent = cls + " " + t("grade");
+  renderTopics();
+  showScreen("screenTopic");
+}
+
+window.goToClass = () => { showScreen("screenClass"); renderClasses(); };
+
+function renderTopics() {
+  const grid = document.getElementById("topicGrid");
+  const topicsObj = SPEC[currentClass].topics;
+  const topicIds = Object.keys(topicsObj);
+  document.getElementById("topicBadge").textContent = topicIds.length + " " + t("topicsLabel");
+  grid.innerHTML = "";
+  for (const tid of topicIds) {
+    const meta = topicsObj[tid];
+    const h = getHighest(currentClass, tid);
+    const pct = Math.round(h / 16 * 100);
+    const div = document.createElement("div");
+    div.className = "topic-card";
+    div.innerHTML = `
+      <div class="topic-icon">${meta.icon}</div>
+      <div class="topic-name">${meta.title[LANG]}</div>
+      <div class="topic-desc">${meta.desc[LANG]}</div>
+      <div class="topic-prog-row">
+        <div class="topic-prog-bar"><div class="topic-prog-fill" style="width:${pct}%"></div></div>
+        <div class="topic-prog-text">${h}/16</div>
+      </div>`;
+    div.onclick = () => selectTopic(tid);
+    grid.appendChild(div);
+  }
+}
+
+function selectTopic(tid) {
+  currentTopic = tid;
+  document.getElementById("breadTopic").textContent = SPEC[currentClass].topics[tid].title[LANG];
+  renderLevels();
+  showScreen("screenLevel");
+}
+
+window.goToTopics = () => { showScreen("screenTopic"); renderTopics(); };
+
+function renderLevels() {
+  const h = getHighest(currentClass, currentTopic);
+  const unlocked = Math.min(LEVELS_PER_TOPIC, h + 1);
+  const meta = SPEC[currentClass].topics[currentTopic];
+  document.getElementById("levelSecTitle").textContent = meta.icon + " " + meta.title[LANG] + (LANG==="ru"?" — уровни":" — levels");
+  document.getElementById("levelBadge").textContent = h + "/" + LEVELS_PER_TOPIC;
   const grid = document.getElementById("levelGrid");
   grid.innerHTML = "";
-  for(let level=1; level<=16; level++){
+  for (let lvl = 1; lvl <= LEVELS_PER_TOPIC; lvl++) {
     const btn = document.createElement("button");
-    btn.type = "button";
-    const done = level <= (prog.highestCompleted || 0);
-    const locked = level > unlocked;
-    btn.textContent = done ? ("✓ " + level) : String(level);
-    btn.disabled = locked;
-    btn.style.opacity = locked ? "0.45" : "1";
-    btn.onclick = function(){ startLevel(level); };
+    btn.className = "lvl-btn " + (lvl <= h ? "done" : lvl <= unlocked ? "unlocked" : "locked");
+    btn.textContent = lvl;
+    btn.disabled = lvl > unlocked;
+    btn.onclick = () => startLevel(lvl);
     grid.appendChild(btn);
   }
 }
-function selectClass(cls){ currentClass = cls; showScreen("screen-topic"); renderClasses(); renderTopics(); }
-function openTopic(topicId){ currentTopic = topicId; showScreen("screen-level"); renderTopicLevels(); }
-function backToClass(){ showScreen("screen-class"); renderClasses(); }
-function backToTopics(){ showScreen("screen-topic"); renderTopics(); }
-function backToLevels(){ showScreen("screen-level"); renderTopicLevels(); }
 
-function buildLocalTask(level, i){ const bank = SPEC.local; const row = bank[(level + i) % bank.length]; return makeMCQ(row.q, row.c, row.w, row.h, row.s); }
-async function loadDeckForLevel(level){
-  const deck = [];
-  const seen = new Set(getRecentKeys().map(normalize));
-  let apiQuestions = [];
-  try{ apiQuestions = await fetchOpenTDBQuestions(10); }catch(e){ apiQuestions = []; }
-  for(const q of apiQuestions){ const key = questionKey(q); if(!seen.has(key)){ seen.add(key); deck.push(q); } if(deck.length >= 10) break; }
-  let i = 0;
-  while(deck.length < 10 && i < 80){ const q = buildLocalTask(level, i); const key = questionKey(q); if(!seen.has(key)){ seen.add(key); deck.push(q); } i++; }
-  while(deck.length < 10){ deck.push(buildLocalTask(level, i + 100)); i++; }
-  rememberKeyBulk(deck);
-  return deck.slice(0,10);
+window.goToLevels = () => { showScreen("screenLevel"); renderLevels(); };
+
+function shuffle(arr) { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+async function loadQuestionsForLevel(cls, topicId, level) {
+  return buildQuestions(cls, topicId, level);
 }
 
-function startLevel(level){
+async function startLevel(level) {
   currentLevel = level;
-  currentTasks = [];
-  taskIndex = 0;
-  correctCount = 0;
-  selectedOption = null;
-  checked = false;
-  showScreen("screen-task");
-  document.getElementById("taskTitle").textContent = SPEC.meta[currentClass][currentTopic].title + " — " + T().levelWord + " " + level + "/16";
-  document.getElementById("question").textContent = T().loadingQuestions;
-  document.getElementById("optionGrid").innerHTML = "";
-  document.getElementById("result").textContent = "";
-  document.getElementById("solution").textContent = "";
-  document.getElementById("nextBtn").classList.add("hidden");
-  setTimeout(async function(){
-    try{ currentTasks = await loadDeckForLevel(level); }
-    catch(e){ currentTasks = []; }
-    if(!currentTasks.length) currentTasks = [buildLocalTask(level, 0)];
-    taskIndex = 0;
-    renderTask();
-  }, 20);
+  quiz = { tasks:[], index:0, correct:0, selected:null, checked:false };
+  const meta = SPEC[currentClass].topics[currentTopic];
+  document.getElementById("breadQuiz").textContent = `${currentClass} ${t("grade")} › ${meta.title[LANG]} › ${LANG==="ru"?"Уровень":"Level"} ${level}`;
+  document.getElementById("qLangLabel").textContent = t("langLabel");
+  showScreen("screenQuiz");
+  renderLoadingQuiz();
+  quiz.tasks = await loadQuestionsForLevel(currentClass, currentTopic, level);
+  renderQuestion();
 }
-function renderTask(){
-  const t = currentTasks[taskIndex];
-  if(!t){
-    document.getElementById("question").textContent = T().loading;
-    document.getElementById("optionGrid").innerHTML = "";
-    document.getElementById("result").textContent = "";
-    document.getElementById("solution").textContent = "";
-    document.getElementById("nextBtn").classList.add("hidden");
-    return;
-  }
-  selectedOption = null;
-  checked = false;
-  optionButtons = [];
-  document.getElementById("question").innerText = t.q;
-  document.getElementById("result").innerText = "";
-  document.getElementById("solution").innerText = "";
+
+window.retryLevel = () => startLevel(currentLevel);
+
+function renderLoadingQuiz() {
+  document.getElementById("questionText").textContent = t("loadingQ");
+  document.getElementById("optionsGrid").innerHTML = `<div style="grid-column:1/-1"><div class="loading-state"><div class="loading-spinner"></div></div></div>`;
+  document.getElementById("checkBtn").classList.add("hidden");
   document.getElementById("nextBtn").classList.add("hidden");
-  document.getElementById("taskProgress").innerText = T().question + " " + (taskIndex + 1) + " / " + currentTasks.length;
-  document.getElementById("taskProgressFill").style.width = (((taskIndex + 1) / currentTasks.length) * 100) + "%";
-  const grid = document.getElementById("optionGrid");
+  document.getElementById("resultBox").classList.add("hidden");
+}
+
+function renderQuestion() {
+  const task = quiz.tasks[quiz.index];
+  if (!task) return;
+  quiz.selected = null;
+  quiz.checked = false;
+  document.getElementById("qBadge").textContent = `${t("qWord")} ${quiz.index+1}/${quiz.tasks.length}`;
+  document.getElementById("qScore").textContent = quiz.correct;
+  document.getElementById("qProgFill").style.width = ((quiz.index+1)/quiz.tasks.length*100)+"%";
+  document.getElementById("questionText").textContent = task.q;
+  document.getElementById("checkBtn").classList.remove("hidden");
+  document.getElementById("checkBtn").disabled = false;
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("resultBox").className = "hidden";
+  const grid = document.getElementById("optionsGrid");
   grid.innerHTML = "";
-  t.options.forEach(function(opt, idx){
+  task.opts.forEach((opt, i) => {
     const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "option-btn secondary";
+    btn.className = "opt-btn";
     btn.textContent = opt;
-    btn.onclick = function(){ selectOption(idx, btn); };
-    optionButtons.push(btn);
+    btn.onclick = () => selectOption(i);
     grid.appendChild(btn);
   });
-  document.getElementById("checkBtn").textContent = T().check;
-  document.getElementById("hintBtn").textContent = T().hint;
-  document.getElementById("heroProgressText").textContent = anyData()
-    ? `${totalLevelsNow()} уровней · ${subjectTopicCount()} тем`
-    : T().loadText;
 }
-function selectOption(index, button){ if(checked) return; selectedOption = index; optionButtons.forEach(function(b){ b.classList.remove("selected"); }); button.classList.add("selected"); }
-function checkAnswer(){
-  if(checked) return;
-  const task = currentTasks[taskIndex];
-  if(!task) return;
-  if(selectedOption === null){ document.getElementById("result").innerText = T().chooseAnswer; return; }
-  checked = true;
-  optionButtons.forEach(function(btn, idx){ btn.disabled = true; if(idx === task.answer) btn.classList.add("correct"); if(idx === selectedOption && selectedOption !== task.answer) btn.classList.add("wrong"); });
-  if(selectedOption === task.answer){ correctCount++; document.getElementById("result").innerText = T().correct; document.getElementById("solution").innerText = ""; }
-  else{ document.getElementById("result").innerText = T().wrong; document.getElementById("solution").innerText = task.solution || ""; }
+
+function selectOption(i) {
+  if (quiz.checked) return;
+  quiz.selected = i;
+  document.querySelectorAll(".opt-btn").forEach((b, idx) => b.classList.toggle("selected", idx === i));
+}
+
+window.checkAnswer = () => {
+  if (quiz.checked) return;
+  const task = quiz.tasks[quiz.index];
+  if (quiz.selected === null) { showResult("neutral", t("selectAnswer")); return; }
+  quiz.checked = true;
+  const correct = quiz.selected === task.answer;
+  if (correct) quiz.correct++;
+  document.querySelectorAll(".opt-btn").forEach((b, i) => {
+    b.disabled = true;
+    if (i === task.answer) b.classList.add("correct");
+    if (i === quiz.selected && !correct) b.classList.add("wrong");
+  });
+  document.getElementById("checkBtn").disabled = true;
   document.getElementById("nextBtn").classList.remove("hidden");
-  document.getElementById("nextBtn").textContent = T().next;
-}
-function showHint(){ const task = currentTasks[taskIndex]; if(task) document.getElementById("solution").innerText = task.hint || ""; }
-function nextTask(){ if(taskIndex < currentTasks.length - 1){ taskIndex++; renderTask(); }else{ finishLevel(); } }
+  showResult(correct ? "correct" : "wrong", correct ? t("correct") : t("wrong") + task.sol);
+};
 
-async function finishLevel(){
-  const passed = correctCount > 5;
-  const p = getProgress(currentClass, currentTopic);
-  if(!passed){
-    alert(T().fail(correctCount));
-    renderTopicLevels();
-    backToLevels();
-    return;
+window.showHint = () => {
+  const task = quiz.tasks[quiz.index];
+  if (task) showResult("hint", t("hint") + task.hint);
+};
+
+window.nextQuestion = () => {
+  if (quiz.index < quiz.tasks.length - 1) { quiz.index++; renderQuestion(); }
+  else finishLevel();
+};
+
+function showResult(type, text) {
+  const box = document.getElementById("resultBox");
+  box.className = "result-box " + type;
+  box.textContent = text;
+}
+
+async function finishLevel() {
+  const passed = quiz.correct >= PASS_THRESHOLD;
+  showScreen("screenFinish");
+  if (passed) {
+    const h = getHighest(currentClass, currentTopic);
+    const newHighest = Math.max(h, currentLevel);
+    await onLevelComplete(currentClass, currentTopic, newHighest);
+    renderHero();
+    renderLevels();
+    document.getElementById("finishIcon").textContent = "🎉";
+    document.getElementById("finishTitle").textContent = t("finishPassed");
+    document.getElementById("finishScore").textContent = `${quiz.correct}/${quiz.tasks.length}`;
+    document.getElementById("finishXPBadge").innerHTML = `<div class="finish-xp">⭐ +10 ${t("xpEarned")}</div>`;
+    showToast(`🎉 ${LANG==="ru"?"Уровень":"Level"} ${currentLevel} ${LANG==="ru"?"пройден":"passed"}! +10 XP`);
+  } else {
+    document.getElementById("finishIcon").textContent = "😔";
+    document.getElementById("finishTitle").textContent = t("finishFailed");
+    document.getElementById("finishScore").textContent = `${quiz.correct}/${quiz.tasks.length}`;
+    document.getElementById("finishXPBadge").innerHTML = `<div class="finish-fail">⚠️ ${t("needMore")} ${PASS_THRESHOLD}/10 ${t("forCredit")}</div>`;
   }
-
-  p.highestCompleted = Math.max(p.highestCompleted || 0, currentLevel);
-  p.lastScore = correctCount;
-  p.lastTotal = currentTasks.length;
-  p.lastPassedAt = Date.now();
-
-  saveProgress(currentClass, currentTopic, p);
-  await saveFirebaseProgress(currentClass, currentTopic, p);
-
-  const meta = firestoreData?.studyMeta || { streak:0, lastDate:"", weeklyCount:0, weekKey:"", completedUnits:0 };
-  meta.completedUnits = (meta.completedUnits || 0) + 1;
-  localStorage.setItem(`studyMeta_${currentUser}`, JSON.stringify(meta));
-  firestoreData.studyMeta = meta;
-  await updateDoc(userRef, { studyMeta: meta });
-
-  const lastResult = {
-    subject: "physics",
-    classNum: currentClass,
-    topic: currentTopic,
-    level: currentLevel,
-    correct: correctCount,
-    total: currentTasks.length,
-    passed: true,
-    time: Date.now()
-  };
-  localStorage.setItem(LAST_RESULT_KEY, JSON.stringify(lastResult));
-  await updateDoc(userRef, { [`lastResults.physics`]: lastResult });
-
-  alert(T().pass(correctCount));
-  renderTopicLevels();
-  backToLevels();
-  render();
 }
 
-function renderStats(){
-  const completed = firestoreData?.studyMeta?.completedUnits || json(`studyMeta_${currentUser}`)?.completedUnits || 0;
-  const totalAll = 640;
-  document.getElementById("statClass").textContent = Object.keys(SPEC.classes).length;
-  document.getElementById("statTopic").textContent = Object.values(SPEC.classes).reduce((a,b)=>a+b.length,0);
-  document.getElementById("statLevel").textContent = totalAll;
-  document.getElementById("pillClass").textContent = `${Object.keys(SPEC.classes).length} ${T().classes}`;
-  document.getElementById("pillTopic").textContent = `${Object.values(SPEC.classes).reduce((a,b)=>a+b.length,0)} ${T().topics}`;
-  document.getElementById("pillLevel").textContent = `${totalAll} ${T().levels}`;
-  document.getElementById("pillUser").textContent = currentUser;
-
-  const avg = subjectFirebaseProgress();
-  document.getElementById("heroFill").style.width = `${avg}%`;
-  document.getElementById("heroProgressText").textContent = completed > 0
-    ? `${completed}/${totalAll}`
-    : T().loadText;
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 3000);
 }
 
-function applyLang(){
-  const Tt = T();
-  document.getElementById("pageTitle").textContent = Tt.pageTitle;
-  document.getElementById("pageSubtitle").textContent = Tt.pageSubtitle;
-  document.getElementById("heroTitle").textContent = Tt.heroTitle;
-  document.getElementById("heroText").textContent = Tt.heroText;
-  document.getElementById("langBtn").textContent = "🌐 " + Tt.lang;
-  document.getElementById("themeLabel").textContent = Tt.theme;
-  document.getElementById("statClassText").textContent = Tt.statClassText;
-  document.getElementById("statTopicText").textContent = Tt.statTopicText;
-  document.getElementById("statLevelText").textContent = Tt.statLevelText;
-  document.getElementById("classTitle").textContent = Tt.classTitle;
-  document.getElementById("topicTitle").textContent = Tt.topicTitle;
-  document.getElementById("levelTitle").textContent = Tt.levelTitle;
-  document.getElementById("checkBtn").textContent = Tt.check;
-  document.getElementById("hintBtn").textContent = Tt.hint;
-  document.getElementById("footerText").textContent = Tt.footer;
-  const topicBack = document.querySelector("#screen-topic .secondary");
-  const levelBack = document.querySelector("#screen-level .secondary");
-  const taskBack = document.querySelector("#screen-task .secondary");
-  if(topicBack) topicBack.textContent = Tt.back;
-  if(levelBack) levelBack.textContent = Tt.back;
-  if(taskBack) taskBack.textContent = Tt.backLevels;
-  const lobbyBtn = document.querySelector(".toolbar .secondary");
-  if(lobbyBtn) lobbyBtn.textContent = Tt.lobby;
-  renderStats();
+window.toggleTheme = () => {
+  document.body.classList.toggle("light");
+  localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
+};
+
+function initAnimations() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
+  }, { threshold: .08 });
+  document.querySelectorAll(".section, .hero").forEach(el => obs.observe(el));
+}
+
+async function init() {
+  if (localStorage.getItem("accountTheme") === "light") document.body.classList.add("light");
+  LANG = localStorage.getItem("fmine_lang") || "ru";
+  document.getElementById("langRuBtn").classList.toggle("active", LANG === "ru");
+  document.getElementById("langEnBtn").classList.toggle("active", LANG === "en");
+  applyTranslations();
+  await loadUser();
+  renderHero();
   renderClasses();
-  if(currentTopic) renderTopics();
-  if(currentTopic) renderTopicLevels();
-  if(currentTasks.length) renderTask();
+  showScreen("screenClass");
+  initAnimations();
 }
-
-async function renderProfileAndStats(){
-  const profile = firestoreData?.profile || { nickname: currentUser, avatar: "https://via.placeholder.com/84" };
-  document.title = `Study Hub | Physics • ${profile.nickname || currentUser}`;
-  renderStats();
-}
-
-async function init(){
-  loadTheme();
-  document.body.classList.toggle("light", (localStorage.getItem(THEME_KEY) || "dark") === "light");
-  await loadFirestoreUser();
-  document.getElementById("pillUser").textContent = currentUser;
-  renderClasses();
-  renderStats();
-  applyLang();
-  showScreen("screen-class");
-  await renderProfileAndStats();
-}
-
-window.toggleTheme = toggleTheme;
-window.toggleLang = toggleLang;
-window.goLobby = goLobby;
-window.backToClass = backToClass;
-window.backToTopics = backToTopics;
-window.backToLevels = backToLevels;
-window.checkAnswer = checkAnswer;
-window.showHint = showHint;
-window.nextTask = nextTask;
-
-await init();
-
+init();
 </script>
 </body>
 </html>

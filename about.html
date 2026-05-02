@@ -1,162 +1,486 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>О нас - F-Mind</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F‑Mine · О нас</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #06080f;
+            --bg2: #0b0e1a;
+            --bg3: #101524;
+            --surface: rgba(255,255,255,0.03);
+            --surface2: rgba(255,255,255,0.06);
+            --surface3: rgba(255,255,255,0.09);
+            --border: rgba(255,255,255,0.07);
+            --border2: rgba(255,255,255,0.13);
+            --text: #e8ecf8;
+            --text2: #7e87b0;
+            --text3: #4a5070;
+            --violet: #8b5cf6;
+            --violet2: #6d3fec;
+            --violet-glow: rgba(139,92,246,0.4);
+            --amber: #f59e0b;
+            --amber2: #fbbf24;
+            --amber-glow: rgba(245,158,11,0.35);
+            --teal: #40E0D0;
+            --teal-glow: rgba(64,224,208,0.4);
+            --emerald: #10b981;
+            --emerald-glow: rgba(16,185,129,0.3);
+            --rose: #f43f5e;
+            --rose-glow: rgba(244,63,94,0.3);
+            --sans: 'Outfit', sans-serif;
+            --display: 'Syne', sans-serif;
+            --mono: 'DM Mono', monospace;
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-xs: 10px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+            --shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06);
+            --ease: 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        body.light {
+            --bg: #f2f4ff;
+            --bg2: #e7eaff;
+            --bg3: #dfe2fc;
+            --surface: rgba(255,255,255,0.65);
+            --surface2: rgba(255,255,255,0.8);
+            --surface3: rgba(139,92,246,0.08);
+            --border: rgba(139,92,246,0.1);
+            --border2: rgba(139,92,246,0.18);
+            --text: #1a1730;
+            --text2: #5a5580;
+            --text3: #8884b0;
+            --shadow-sm: 0 2px 8px rgba(108,99,255,0.1);
+            --shadow: 0 4px 16px rgba(108,99,255,0.12);
+            --shadow-lg: 0 8px 28px rgba(108,99,255,0.15);
+        }
 
-<style>
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#1e1e2f,#3a3a6a);
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  overflow:hidden; /* УБРАЛ СКРОЛЛ */
-}
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image:
+                radial-gradient(ellipse 60% 50% at 30% 20%, rgba(139,92,246,0.1), transparent 55%),
+                radial-gradient(ellipse 40% 40% at 70% 80%, rgba(245,158,11,0.06), transparent 55%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.01'%3E%3Ccircle cx='30' cy='30' r='0.6'/%3E%3C/g%3E%3C/svg%3E");
+            transition: background 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
+        }
 
-.container {
-  width:90%;
-  max-width:700px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(15px);
-  padding:25px;
-  border-radius:20px;
-  box-shadow:0 0 40px rgba(0,0,0,0.3);
-  animation:fadeIn 0.8s ease;
-}
+        .wrapper {
+            width: 100%;
+            max-width: 850px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
 
-h1 {
-  text-align:center;
-  margin-bottom:15px;
-  font-size:2rem;
-}
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo {
+            font-family: var(--display);
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            text-shadow: 0 0 20px var(--amber-glow);
+        }
+        .logo-f { color: var(--amber); text-shadow: 0 0 30px var(--amber-glow), 0 0 60px rgba(245,158,11,0.3); }
+        .logo-dot { width: 5px; height: 5px; background: var(--violet); border-radius: 50%; margin: 0 3px; box-shadow: 0 0 15px var(--violet-glow); }
+        .logo-mine { color: var(--text); text-shadow: 0 0 15px rgba(255,255,255,0.1); }
 
-/* 🔥 ЛОГО F-Mine как в лобби */
-.logo span {
-  font-size:2rem;
-  font-weight:bold;
-  color:white;
-  animation:goldBlink 2s infinite;
-}
-.logo span:nth-child(1){animation-delay:0s;}
-.logo span:nth-child(2){animation-delay:0.2s;}
-.logo span:nth-child(3){animation-delay:0.4s;}
-.logo span:nth-child(4){animation-delay:0.6s;}
-.logo span:nth-child(5){animation-delay:0.8s;}
-.logo span:nth-child(6){animation-delay:1s;}
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(16px, 3vw, 26px);
+            box-shadow: var(--shadow);
+            transition: border-color var(--ease), box-shadow var(--ease);
+            animation: fadeUp 0.5s ease both;
+        }
+        .card:hover { border-color: var(--border2); box-shadow: var(--shadow-lg); }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        .card-title {
+            font-family: var(--display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--amber);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.3px;
+        }
+        .card-text { font-size: 15px; color: var(--text2); line-height: 1.6; margin-bottom: 8px; }
+        .card-text strong { color: var(--text); font-weight: 700; }
+        .highlight { color: var(--teal); font-weight: 700; text-shadow: 0 0 8px rgba(64,224,208,0.3); }
 
-@keyframes goldBlink {
-  0%,20%,100% { color:white; text-shadow:none; }
-  50% { color:gold; text-shadow:0 0 8px gold,0 0 15px rgba(255,215,0,0.4); }
-}
+        .form-group { margin-bottom: 14px; }
+        .form-label {
+            font-family: var(--mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text3);
+            margin-bottom: 6px;
+            display: block;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: var(--radius-xs);
+            background: rgba(0,0,0,0.25);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus { border-color: var(--violet); box-shadow: 0 0 12px rgba(139,92,246,0.2); }
+        textarea { min-height: 100px; resize: vertical; }
+        body.light input, body.light textarea { background: rgba(255,255,255,0.8); color: #111; }
 
-.section {
-  margin-bottom:15px;
-  padding:12px;
-  border-radius:12px;
-  background:rgba(255,255,255,0.05);
-  font-size:15px;
+        /* Hidden honeypot — invisible to users, trap for bots */
+        .honeypot {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+            height: 0;
+            width: 0;
+            overflow: hidden;
+        }
 
-  transition:0.5s; /* ← добавь это */
-}
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-xs);
+            font-family: var(--sans);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter 0.15s, transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            letter-spacing: 0.02em;
+            box-shadow: 0 4px 18px var(--violet-glow);
+            background: linear-gradient(135deg, var(--violet), var(--violet2));
+            color: #fff;
+            width: 100%;
+        }
+        .btn:hover { filter: brightness(1.08); transform: translateY(-2px); box-shadow: 0 8px 28px var(--violet-glow); }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.6; filter: grayscale(0.3); transform: none; box-shadow: none; cursor: not-allowed; }
+        .btn-back {
+            background: transparent;
+            border: 1.5px solid var(--border2);
+            color: var(--text2);
+            box-shadow: none;
+            margin-top: 8px;
+        }
+        .btn-back:hover {
+            background: var(--surface3);
+            border-color: var(--violet);
+            color: var(--violet);
+            box-shadow: 0 0 18px rgba(139,92,246,0.2);
+        }
 
-h2 {
-  color:gold;
-  margin-bottom:5px;
-  font-size:16px;
-}
+        .cooldown-info {
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text3);
+            text-align: center;
+        }
 
-p {
-  font-size:14px;
-  line-height:1.4;
-}
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(10,12,28,0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border2);
+            border-radius: 99px;
+            padding: 12px 26px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #fff;
+            opacity: 0;
+            transition: all 0.35s ease;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-button {
-  padding:10px 15px;
-  border:none;
-  border-radius:10px;
-  background:#6c63ff;
-  color:white;
-  cursor:pointer;
-  margin-top:10px;
-  width:100%;
-}
-
-button:hover {
-  transform:translateY(-2px);
-}
-
-@keyframes fadeIn {
-  from {opacity:0; transform:translateY(20px);}
-  to {opacity:1; transform:translateY(0);}
-}
-</style>
+        @media (max-width: 600px) {
+            .logo { font-size: 22px; }
+            .card-title { font-size: 18px; }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="wrapper">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+            </div>
+            <button class="btn-back btn" style="width:auto; padding:10px 20px;" onclick="goBack()">← Назад</button>
+        </div>
 
-<div class="container">
+        <div class="card" id="about">
+            <div class="card-title">📌 О проекте</div>
+            <div class="card-text">
+                <span class="highlight">F‑Mine</span> — инновационная образовательная платформа, которая объединяет интерактивные задачи, интеллектуальных чат‑ботов и геймификацию. Мы создаём пространство, где каждый может учиться с удовольствием и достигать новых высот.
+            </div>
+        </div>
 
-<!-- 🔥 ЛОГО -->
-<div class="logo" style="text-align:center; margin-bottom:10px;">
-  <span>F</span><span>-</span><span>M</span><span>i</span><span>n</span><span>e</span>
-</div>
+        <div class="card" id="mission">
+            <div class="card-title">🚀 Наша цель</div>
+            <div class="card-text">
+                Сделать обучение быстрым, персонализированным и увлекательным. Технологии помогают нам адаптировать контент под твой уровень и давать мгновенную обратную связь.
+            </div>
+        </div>
 
-<h1>О нас</h1>
+        <div class="card" id="telegram">
+            <div class="card-title">🤖 Telegram‑бот</div>
+            <div class="card-text">
+                У нас есть удобный бот для быстрого решения задач и получения помощи. <br/>
+                👉 <strong>Бот скоро появится</strong> — следи за обновлениями!
+            </div>
+        </div>
 
-<div class="section">
-<h2>📌 О проекте</h2>
-<p>
-F-Mind — образовательная платформа, где можно решать задачи, использовать чат-ботов и прокачивать знания.
-</p>
-</div>
+        <div class="card" id="contacts">
+            <div class="card-title">📞 Контакты</div>
+            <div class="card-text">
+                📱 Телефон: <strong>91-943-34-00</strong><br/>
+                📧 Email: <strong>Fmine@gmail.com</strong>
+            </div>
+        </div>
 
-<div class="section">
-<h2>🚀 Наша цель</h2>
-<p>
-Сделать обучение быстрым, удобным и интересным с помощью технологий.
-</p>
-</div>
+        <!-- 💌 Contact Form with Anti‑Spam Protections -->
+        <div class="card" id="feedback">
+            <div class="card-title">💌 Свяжитесь с нами</div>
+            <div class="card-text" style="margin-bottom:16px;">
+                Есть идеи или вопросы? Напишите нам — мы ответим в ближайшее время.
+            </div>
+            <form id="feedbackForm" onsubmit="return submitFeedback(event)">
+                <!-- Honeypot – invisible field, bots fill it, humans don't -->
+                <div class="honeypot" aria-hidden="true">
+                    <label for="website">Website</label>
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                </div>
 
-<div class="section">
-<h2>🤖 Telegram-бот</h2>
-<p>
-У нас есть Telegram-бот для быстрого решения задач.
-</p>
-<p>
-👉 Вставь сюда: <b>"БОТА in futere"</b>
-</p>
-</div>
+                <div class="form-group">
+                    <label class="form-label" for="fromName">Ваше имя</label>
+                    <input type="text" id="fromName" maxlength="50" placeholder="Алексей" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="fromEmail">Email</label>
+                    <input type="email" id="fromEmail" maxlength="100" placeholder="alex@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="message">Сообщение</label>
+                    <textarea id="message" maxlength="500" placeholder="Ваше сообщение..." required></textarea>
+                </div>
+                <button type="submit" class="btn" id="submitBtn">✉️ Отправить</button>
+                <div class="cooldown-info" id="cooldownMsg"></div>
+            </form>
+        </div>
+    </div>
 
-<div class="section">
-<h2>📞 Контакты</h2>
-<p>📱 Телефон: <b>91-943-34-00</b></p>
-<p>📧 Email: <b>Fmine@gmail.com</b></p>
-</div>
+    <div class="toast" id="toast"></div>
 
-<button onclick="goBack()">⬅ Назад</button>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-</div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+            authDomain: "fmine-auth.firebaseapp.com",
+            projectId: "fmine-auth",
+            storageBucket: "fmine-auth.firebasestorage.app",
+            messagingSenderId: "219769927531",
+            appId: "1:219769927531:web:fbd45a0876f32927d23e2e"
+        };
 
-<script>
-function goBack(){
-    window.location.href = "lobby.html";
-}
-document.querySelectorAll('.section').forEach((el, i)=>{
-    el.style.opacity = "0";
-    el.style.transform = "translateY(15px)";
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    setTimeout(()=>{
-        el.style.transition = "0.5s ease";
-        el.style.opacity = "1";
-        el.style.transform = "translateY(0)";
-    }, i * 150);
-});
-</script>
+        // ── Anti‑Spam Configuration ──────────────────
+        const COOLDOWN_MINUTES = 5;          // minutes between submissions
+        const MAX_MESSAGE_LENGTH = 500;       // enforced also via HTML maxlength
+        const MAX_NAME_LENGTH = 50;
+        const MAX_EMAIL_LENGTH = 100;
 
+        function sanitize(str) {
+            return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').trim();
+        }
+
+        function isCooldownActive() {
+            const lastSubmission = localStorage.getItem('fmine_last_feedback_time');
+            if (!lastSubmission) return false;
+            const elapsed = Date.now() - parseInt(lastSubmission, 10);
+            const cooldownMs = COOLDOWN_MINUTES * 60 * 1000;
+            return elapsed < cooldownMs;
+        }
+
+        function remainingCooldownMinutes() {
+            const lastSubmission = localStorage.getItem('fmine_last_feedback_time');
+            if (!lastSubmission) return 0;
+            const elapsed = Date.now() - parseInt(lastSubmission, 10);
+            const remaining = (COOLDOWN_MINUTES * 60 * 1000) - elapsed;
+            return Math.ceil(remaining / 60000);
+        }
+
+        window.submitFeedback = async function(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById("submitBtn");
+            const cooldownMsg = document.getElementById("cooldownMsg");
+
+            // 1. Check cooldown
+            if (isCooldownActive()) {
+                const mins = remainingCooldownMinutes();
+                cooldownMsg.textContent = `⏳ Слишком частые сообщения. Подождите ${mins} мин.`;
+                showToast(`Подождите ${mins} минут перед повторной отправкой.`, false);
+                return false;
+            }
+
+            // 2. Honeypot check – if filled, silently ignore (bot)
+            const honeypot = document.getElementById("website");
+            if (honeypot && honeypot.value.trim() !== "") {
+                // Silently show success but don't write to DB
+                showToast("✅ Сообщение отправлено!", true);
+                document.getElementById("feedbackForm").reset();
+                return false;
+            }
+
+            // 3. Get values & sanitize
+            const name = sanitize(document.getElementById("fromName").value);
+            const email = sanitize(document.getElementById("fromEmail").value);
+            const message = sanitize(document.getElementById("message").value);
+
+            // 4. Length validations (double protection)
+            if (name.length === 0 || email.length === 0 || message.length === 0) {
+                showToast("Пожалуйста, заполните все поля.", false);
+                return false;
+            }
+            if (name.length > MAX_NAME_LENGTH ||
+                email.length > MAX_EMAIL_LENGTH ||
+                message.length > MAX_MESSAGE_LENGTH) {
+                showToast("Слишком длинное значение.", false);
+                return false;
+            }
+            // Basic email format check
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast("Введите корректный Email.", false);
+                return false;
+            }
+
+            // 5. Disable button & show loading feedback
+            submitBtn.disabled = true;
+            submitBtn.textContent = "⏳ Отправка...";
+
+            try {
+                await addDoc(collection(db, "feedback"), {
+                    name,
+                    email,
+                    message,
+                    timestamp: serverTimestamp(),
+                    user: localStorage.getItem("currentUser") || "anonymous"
+                });
+
+                // Set cooldown timestamp
+                localStorage.setItem('fmine_last_feedback_time', Date.now().toString());
+
+                showToast("✅ Сообщение отправлено! Мы скоро свяжемся с вами.", true);
+                document.getElementById("feedbackForm").reset();
+                cooldownMsg.textContent = "";
+            } catch (error) {
+                console.error("Feedback error:", error);
+                showToast("❌ Ошибка отправки. Попробуйте позже.", false);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "✉️ Отправить";
+            }
+
+            return false; // prevent default form submission
+        };
+
+        function showToast(text, success = true) {
+            const toast = document.getElementById("toast");
+            toast.textContent = text;
+            toast.classList.add("show");
+            toast.style.borderColor = success ? "var(--emerald)" : "var(--rose)";
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2800);
+        }
+
+        window.goBack = () => {
+            window.location.href = "lobby.html";
+        };
+
+        // Theme support
+        if (localStorage.getItem("accountTheme") === "light") {
+            document.body.classList.add("light");
+        }
+
+        // Staggered card animation
+        document.querySelectorAll('.card').forEach((card, index) => {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(18px)";
+            setTimeout(() => {
+                card.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                card.style.opacity = "1";
+                card.style.transform = "translateY(0)";
+            }, 120 * index);
+        });
+
+        // On page load, check cooldown status and display info if needed
+        if (isCooldownActive()) {
+            const mins = remainingCooldownMinutes();
+            document.getElementById("cooldownMsg").textContent = `⏳ Подождите ${mins} мин. перед повторной отправкой.`;
+            document.getElementById("submitBtn").disabled = true;
+        } else {
+            document.getElementById("submitBtn").disabled = false;
+            document.getElementById("cooldownMsg").textContent = "";
+        }
+    </script>
 </body>
 </html>

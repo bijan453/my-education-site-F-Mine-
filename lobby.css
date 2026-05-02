@@ -53,3 +53,12 @@ button {
 button:hover {
   background: darkgreen;
 }
+.glow-border {
+  border: 2px solid #40E0D0; /* бирюзовый */
+  box-shadow: 
+    0 0 5px #40E0D0,
+    0 0 10px #40E0D0,
+    0 0 20px #40E0D0,
+    0 0 40px rgba(64, 224, 208, 0.6);
+  transition: 0.3s;
+}

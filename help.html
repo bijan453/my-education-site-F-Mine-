@@ -1,202 +1,372 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Help - F-Mine</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F‑Mine · Помощь</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #06080f;
+            --bg2: #0b0e1a;
+            --bg3: #101524;
+            --surface: rgba(255,255,255,0.03);
+            --surface2: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.07);
+            --border2: rgba(255,255,255,0.13);
+            --text: #e8ecf8;
+            --text2: #7e87b0;
+            --text3: #4a5070;
+            --violet: #8b5cf6;
+            --violet2: #6d3fec;
+            --violet-glow: rgba(139,92,246,0.4);
+            --amber: #f59e0b;
+            --amber2: #fbbf24;
+            --amber-glow: rgba(245,158,11,0.35);
+            --teal: #40E0D0;
+            --teal-glow: rgba(64,224,208,0.4);
+            --emerald: #10b981;
+            --emerald-glow: rgba(16,185,129,0.3);
+            --sans: 'Outfit', sans-serif;
+            --display: 'Syne', sans-serif;
+            --mono: 'DM Mono', monospace;
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-xs: 10px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+            --shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+            --ease: 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        body.light {
+            --bg: #f2f4ff;
+            --bg2: #e7eaff;
+            --bg3: #dfe2fc;
+            --surface: rgba(255,255,255,0.65);
+            --surface2: rgba(255,255,255,0.8);
+            --border: rgba(139,92,246,0.1);
+            --border2: rgba(139,92,246,0.18);
+            --text: #1a1730;
+            --text2: #5a5580;
+            --text3: #8884b0;
+            --shadow-sm: 0 2px 8px rgba(108,99,255,0.1);
+            --shadow: 0 4px 16px rgba(108,99,255,0.12);
+        }
 
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+        body{
+            font-family:var(--sans);
+            background:var(--bg);
+            color:var(--text);
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:flex-start;
+            padding:20px;
+            background-image:
+                radial-gradient(ellipse 60% 50% at 30% 20%, rgba(139,92,246,0.1), transparent 55%),
+                radial-gradient(ellipse 40% 40% at 70% 80%, rgba(245,158,11,0.06), transparent 55%);
+            transition: background 0.3s, color 0.3s;
+            -webkit-font-smoothing:antialiased;
+        }
+        .wrapper{width:100%;max-width:950px;display:flex;flex-direction:column;gap:18px;padding:20px 0 60px}
 
-.container{
-  width:90%;
-  max-width:900px;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(15px);
-  padding:25px;
-  border-radius:20px;
-  box-shadow:0 0 40px rgba(0,0,0,0.3);
-}
+        .header{
+            display:flex;justify-content:space-between;align-items:center;
+            flex-wrap:wrap;gap:12px;
+        }
+        .logo{
+            font-family:var(--display);font-size:26px;font-weight:800;
+            letter-spacing:-0.5px;display:flex;align-items:center;gap:2px;
+            text-shadow:0 0 20px var(--amber-glow);
+        }
+        .logo-f{color:var(--amber);text-shadow:0 0 30px var(--amber-glow),0 0 60px rgba(245,158,11,0.3)}
+        .logo-dot{width:5px;height:5px;background:var(--violet);border-radius:50%;margin:0 3px;box-shadow:0 0 15px var(--violet-glow)}
+        .logo-mine{color:var(--text);text-shadow:0 0 15px rgba(255,255,255,0.1)}
+        .header-actions{display:flex;gap:8px}
 
-h1{
-  text-align:center;
-  color:gold;
-  text-shadow:0 0 10px rgba(255,215,0,0.7);
-}
+        .card{
+            background:var(--surface);
+            backdrop-filter:blur(16px);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            padding:clamp(16px,3vw,24px);
+            box-shadow:var(--shadow-sm);
+            transition:all var(--ease);
+            animation:fadeUp 0.5s ease both;
+        }
+        .card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-.section{
-  margin-top:20px;
-  padding:15px;
-  border-radius:15px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);
-  box-shadow:0 0 10px rgba(255,255,255,0.05);
-}
+        .page-title{
+            font-family:var(--display);font-size:clamp(22px,4vw,30px);font-weight:800;
+            color:var(--amber);text-align:center;letter-spacing:-0.5px;
+            text-shadow:0 0 20px var(--amber-glow);
+        }
 
-.section h2{
-  color:gold;
-  margin-bottom:8px;
-  text-shadow:0 0 8px rgba(255,215,0,0.4);
-}
+        .search-wrap{margin-bottom:4px}
+        .search-input{
+            width:100%;padding:14px 20px;border-radius:99px;
+            background:rgba(0,0,0,0.25);border:1.5px solid var(--border);
+            color:var(--text);font-family:var(--sans);font-size:15px;
+            outline:none;transition:border-color 0.2s;
+        }
+        .search-input:focus{border-color:var(--violet);box-shadow:0 0 18px rgba(139,92,246,0.25)}
+        body.light .search-input{background:rgba(255,255,255,0.8);color:#111}
 
-.section p, .section li{
-  color:white;
-  text-shadow:0 0 6px rgba(255,255,255,0.4);
-  line-height:1.5;
-}
+        .accordion{margin-bottom:10px}
+        .accordion-head{
+            display:flex;justify-content:space-between;align-items:center;
+            padding:16px 20px;border-radius:var(--radius-sm);
+            background:var(--surface);border:1px solid var(--border);
+            cursor:pointer;transition:all var(--ease);
+            font-family:var(--display);font-size:16px;font-weight:800;
+            color:var(--text);letter-spacing:-0.2px;
+            box-shadow:var(--shadow-sm);
+        }
+        .accordion-head:hover{
+            border-color:var(--amber);
+            box-shadow:0 0 20px rgba(245,158,11,0.15),0 8px 24px rgba(0,0,0,0.4);
+        }
+        .accordion-head .chevron{
+            font-size:12px;color:var(--text3);
+            transition:transform 0.25s ease;
+        }
+        .accordion.open .accordion-head .chevron{transform:rotate(180deg)}
+        .accordion-body{
+            max-height:0;overflow:hidden;
+            transition:max-height 0.35s ease,padding 0.35s ease;
+            background:rgba(0,0,0,0.1);
+            border-radius:0 0 var(--radius-sm) var(--radius-sm);
+            padding:0 20px;
+        }
+        .accordion.open .accordion-body{
+            max-height:500px;
+            padding:16px 20px;
+        }
+        .accordion-body p,.accordion-body li{
+            color:var(--text2);font-size:14px;line-height:1.6;
+        }
+        .accordion-body ul{padding-left:20px;margin-top:6px}
+        .accordion-body li{margin-bottom:4px}
 
-button{
-  margin-top:20px;
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#6c63ff;
-  color:white;
-  cursor:pointer;
-  transition:0.3s;
-}
+        .contact-grid{
+            display:grid;grid-template-columns:1fr 1fr;
+            gap:12px;margin-top:14px;
+        }
+        .contact-item{
+            padding:14px 16px;border-radius:var(--radius-sm);
+            background:var(--surface);border:1px solid var(--border);
+            font-size:14px;text-align:center;
+            transition:all var(--ease);
+        }
+        .contact-item:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+        .contact-item .c-icon{font-size:24px;display:block;margin-bottom:6px}
+        .contact-item .c-label{color:var(--text3);font-size:12px;margin-bottom:4px}
+        .contact-item .c-value{color:var(--text);font-weight:700}
 
-button:hover{
-  background:#5751d6;
-  box-shadow:0 0 15px rgba(108,99,255,0.5);
-}
-.section{
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:15px;
-  padding:15px;
-  cursor:pointer;
-  transition:0.3s;
+        .btn{
+            padding:10px 20px;border:none;border-radius:var(--radius-xs);
+            font-family:var(--sans);font-size:13px;font-weight:700;
+            cursor:pointer;transition:filter 0.15s,transform 0.15s,box-shadow 0.2s;
+            display:inline-flex;align-items:center;justify-content:center;gap:6px;
+            letter-spacing:0.02em;box-shadow:0 4px 18px var(--violet-glow);
+            background:linear-gradient(135deg,var(--violet),var(--violet2));
+            color:#fff;white-space:nowrap;
+        }
+        .btn:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 8px 28px var(--violet-glow)}
+        .btn:active{transform:scale(0.98)}
+        .btn.ghost{
+            background:transparent;border:1.5px solid var(--border2);
+            color:var(--text2);box-shadow:none;
+        }
+        .btn.ghost:hover{
+            background:rgba(255,255,255,0.05);border-color:var(--violet);
+            color:var(--violet);box-shadow:0 0 18px rgba(139,92,246,0.2);
+        }
 
-  /* ⚪ лёгкий неон по умолчанию */
-  box-shadow:
-    0 0 8px rgba(255,255,255,0.08),
-    0 0 15px rgba(255,255,255,0.05);
-}
+        .toast{
+            position:fixed;bottom:28px;left:50%;
+            transform:translateX(-50%) translateY(20px);
+            background:rgba(10,12,28,0.95);backdrop-filter:blur(20px);
+            border:1px solid var(--border2);border-radius:99px;
+            padding:12px 26px;font-weight:700;font-size:14px;
+            color:#fff;opacity:0;transition:all 0.35s ease;
+            z-index:9999;pointer-events:none;box-shadow:0 12px 40px rgba(0,0,0,0.7);
+        }
+        .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ⚡ hover эффект */
-.section:hover{
-  transform:translateY(-5px);
-
-  /* 💛 премиум золотой неон */
-  border-color:gold;
-  box-shadow:
-    0 0 10px rgba(255,215,0,0.4),
-    0 0 25px rgba(255,215,0,0.3),
-    0 0 45px rgba(255,215,0,0.15);
-}
-
-/* 💛 заголовки внутри карточек */
-.section h3{
-  color:gold;
-  text-shadow:0 0 8px rgba(255,215,0,0.5);
-}
-
-/* ⚪ описание */
-.section p{
-  color:white;
-  text-shadow:0 0 6px rgba(255,255,255,0.4);
-}
-
-</style>
+        @media(max-width:600px){
+            .contact-grid{grid-template-columns:1fr}
+            .page-title{font-size:22px}
+        }
+    </style>
 </head>
-
 <body>
+<div class="wrapper">
+    <div class="header">
+        <div class="logo">
+            <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn ghost" id="themeToggle" onclick="toggleBackground()">🌓 Тема</button>
+            <button class="btn" onclick="goBack()">← Назад</button>
+        </div>
+    </div>
 
-<div class="container">
+    <div class="page-title">💡 Помощь по платформе</div>
 
-<h1>💡 Help - F-Mine Platform</h1>
+    <div class="search-wrap">
+        <input type="text" class="search-input" id="helpSearch" placeholder="🔍 Поиск по разделам помощи..." oninput="filterHelp()">
+    </div>
 
-<div class="section">
-<h2>🏠 Lobby (Главная система)</h2>
-<p>
-Лобби — это центр проекта. Здесь находятся все основные функции:
-боты, задания, обучение и инструменты.
-Через лобби пользователь переходит ко всем разделам платформы.
-</p>
+    <div id="helpSections">
+        <div class="accordion open" data-keywords="лобби главная система центр">
+            <div class="accordion-head" onclick="toggleAccordion(this)">
+                🏠 Лобби (Главная система)
+                <span class="chevron">▾</span>
+            </div>
+            <div class="accordion-body">
+                <p>Лобби — это центр проекта. Здесь находятся все основные функции: боты, задания, обучение и инструменты. Через лобби пользователь переходит ко всем разделам платформы.</p>
+            </div>
+        </div>
+
+        <div class="accordion" data-keywords="чат боты помощь вопросы объяснения">
+            <div class="accordion-head" onclick="toggleAccordion(this)">
+                🤖 Чат-боты
+                <span class="chevron">▾</span>
+            </div>
+            <div class="accordion-body">
+                <p>В проекте есть удобные чат-боты, которые помогают:</p>
+                <ul>
+                    <li>отвечать на вопросы</li>
+                    <li>объяснять темы</li>
+                    <li>помогать с заданиями</li>
+                    <li>поддерживать обучение</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="accordion" data-keywords="математика обучение 7 8 9 10 класс темы прогресс">
+            <div class="accordion-head" onclick="toggleAccordion(this)">
+                📘 Math HTML (Обучение математике)
+                <span class="chevron">▾</span>
+            </div>
+            <div class="accordion-body">
+                <p>Раздел математики помогает ученикам с 7 по 10 класс изучать темы шаг за шагом. После прохождения тем сохраняется прогресс в account HTML.</p>
+            </div>
+        </div>
+
+        <div class="accordion" data-keywords="олимпиада сложные задания логика мышление">
+            <div class="accordion-head" onclick="toggleAccordion(this)">
+                🏆 Math Olymp HTML
+                <span class="chevron">▾</span>
+            </div>
+            <div class="accordion-body">
+                <p>Олимпиадный режим — это более сложные задания. Он подключен к системе прогресса и помогает развивать логическое мышление.</p>
+            </div>
+        </div>
+
+        <div class="accordion" data-keywords="аккаунт прогресс результаты темы уровень">
+            <div class="accordion-head" onclick="toggleAccordion(this)">
+                👤 Account HTML (Прогресс)
+                <span class="chevron">▾</span>
+            </div>
+            <div class="accordion-body">
+                <p>Аккаунт сохраняет прогресс пользователя:</p>
+                <ul>
+                    <li>пройденные темы</li>
+                    <li>результаты заданий</li>
+                    <li>уровень обучения</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="accordion" data-keywords="переводчик языки обмен история точный быстрый">
+            <div class="accordion-head" onclick="toggleAccordion(this)">
+                🌍 Переводчик
+                <span class="chevron">▾</span>
+            </div>
+            <div class="accordion-body">
+                <p>Переводчик поддерживает 6 языков.</p>
+                <ul>
+                    <li>можно легко менять языки</li>
+                    <li>есть кнопка обмена языков</li>
+                    <li>перевод точный и быстрый</li>
+                    <li>сохраняется история переводов</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="accordion" data-keywords="цель проект образование ученики 7 8 9 10 класс">
+            <div class="accordion-head" onclick="toggleAccordion(this)">
+                💎 Цель проекта
+                <span class="chevron">▾</span>
+            </div>
+            <div class="accordion-body">
+                <p>F-Mine — это образовательная платформа для учеников 7–10 классов. Она объединяет обучение, помощь, AI и удобные инструменты в одном месте.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="contactCard">
+        <div style="font-family:var(--display);font-size:20px;font-weight:800;color:var(--amber);margin-bottom:8px;">
+            📞 Быстрая связь с поддержкой
+        </div>
+        <div class="contact-grid">
+            <div class="contact-item">
+                <span class="c-icon">📱</span>
+                <div class="c-label">Телефон</div>
+                <div class="c-value">91-943-34-00</div>
+            </div>
+            <div class="contact-item">
+                <span class="c-icon">📧</span>
+                <div class="c-label">Email</div>
+                <div class="c-value">Fmine@gmail.com</div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="section">
-<h2>🤖 Чат-боты</h2>
-<p>
-В проекте есть удобные чат-боты, которые помогают:
-</p>
-<ul>
-<li>отвечать на вопросы</li>
-<li>объяснять темы</li>
-<li>помогать с заданиями</li>
-<li>поддерживать обучение</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>📘 Math HTML (Обучение математике)</h2>
-<p>
-Раздел математики помогает ученикам с 7 по 10 класс изучать темы шаг за шагом.
-После прохождения тем сохраняется прогресс в account HTML.
-</p>
-</div>
-
-<div class="section">
-<h2>🏆 Math Olymp HTML</h2>
-<p>
-Олимпиадный режим — это более сложные задания.
-Он подключен к системе прогресса и помогает развивать логическое мышление.
-</p>
-</div>
-
-<div class="section">
-<h2>👤 Account HTML (Прогресс)</h2>
-<p>
-Аккаунт сохраняет прогресс пользователя:
-</p>
-<ul>
-<li>пройденные темы</li>
-<li>результаты заданий</li>
-<li>уровень обучения</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>🌍 Переводчик</h2>
-<p>
-Переводчик поддерживает 6 языков.
-</p>
-<ul>
-<li>можно легко менять языки</li>
-<li>есть кнопка обмена языков</li>
-<li>перевод точный и быстрый</li>
-<li>сохраняется история переводов</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>💎 Цель проекта</h2>
-<p>
-F-Mine — это образовательная платформа для учеников 7–10 классов.
-Она объединяет обучение, помощь, AI и удобные инструменты в одном месте.
-</p>
-</div>
-
-<button onclick="goBack()">⬅ Назад в лобби</button>
-
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-function goBack(){
-  window.location.href = "lobby.html";
-}
-</script>
+    window.toggleBackground = function() {
+        document.body.classList.toggle('light');
+        localStorage.setItem('accountTheme', document.body.classList.contains('light')?'light':'dark');
+    };
+    if(localStorage.getItem('accountTheme')==='light') document.body.classList.add('light');
 
+    window.goBack = function() { window.location.href = "lobby.html"; };
+
+    window.toggleAccordion = function(head) {
+        const accordion = head.parentElement;
+        accordion.classList.toggle('open');
+    };
+
+    window.filterHelp = function() {
+        const query = document.getElementById('helpSearch').value.toLowerCase().trim();
+        const sections = document.querySelectorAll('#helpSections .accordion');
+        sections.forEach(sec => {
+            const keywords = sec.getAttribute('data-keywords') || '';
+            const text = sec.textContent.toLowerCase();
+            if (!query || keywords.includes(query) || text.includes(query)) {
+                sec.style.display = '';
+            } else {
+                sec.style.display = 'none';
+            }
+        });
+    };
+
+    // staggered entrance
+    document.querySelectorAll('.accordion, .card').forEach((el,i)=>{
+        el.style.opacity='0';el.style.transform='translateY(16px)';
+        setTimeout(()=>{
+            el.style.transition='opacity 0.5s ease, transform 0.5s ease';
+            el.style.opacity='1';el.style.transform='translateY(0)';
+        },80*i);
+    });
+</script>
 </body>
 </html>
