@@ -2,829 +2,972 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fmine | Language Bot</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>F‑Mine · Language Bot</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  @media (max-width: 768px){
-    h1{ font-size:24px; }
-    button{ width:100%; }
-  }
+:root{
+  --bg:#04050d;--bg2:#080a16;--bg3:#0c0f1e;
+  --glass:rgba(255,255,255,.03);--glass2:rgba(255,255,255,.06);--glass3:rgba(255,255,255,.1);
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.14);
+  --text:#e8ecff;--text2:#7880b0;--text3:#3d4468;
+  --v:#a78bfa;--v2:#7c3aed;--vg:rgba(167,139,250,.5);--vg2:rgba(167,139,250,.2);
+  --p:#f472b6;--pg:rgba(244,114,182,.4);
+  --c:#67e8f9;--cg:rgba(103,232,249,.4);
+  --g:#4ade80;--gg:rgba(74,222,128,.4);
+  --a:#fbbf24;--ag:rgba(251,191,36,.4);
+  --o:#fb923c;--r:#f87171;--rg:rgba(248,113,113,.4);
+  --sh-xs:0 2px 8px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.025);
+  --sh-sm:0 4px 18px rgba(0,0,0,.75),0 0 30px rgba(167,139,250,.06);
+  --sh-md:0 8px 32px rgba(0,0,0,.85),0 0 60px rgba(167,139,250,.1);
+  --sh-lg:0 12px 44px rgba(0,0,0,.9),0 0 90px rgba(167,139,250,.14);
+  --sh-gv:0 0 0 1px rgba(167,139,250,.5),0 0 28px rgba(167,139,250,.4),0 8px 32px rgba(0,0,0,.6);
+  --sh-btn:0 4px 20px rgba(0,0,0,.65),0 8px 36px rgba(167,139,250,.35);
+  --ease:.22s cubic-bezier(.4,0,.2,1);--sbw:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 5% 0%,rgba(167,139,250,.1) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 45% at 95% 95%,rgba(244,114,182,.07) 0%,transparent 52%),
+    radial-gradient(ellipse 45% 35% at 50% 50%,rgba(103,232,249,.04) 0%,transparent 60%);
+  -webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px;opacity:.022}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
-  * {
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
-  }
+/* HEADER */
+.hd{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
+  padding:12px clamp(12px,3vw,24px);background:rgba(4,5,13,.88);
+  backdrop-filter:blur(28px);border-bottom:1px solid var(--border);
+  box-shadow:0 8px 40px rgba(0,0,0,.85),0 0 60px rgba(167,139,250,.07);gap:10px}
+.logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;text-decoration:none;display:flex;align-items:center;flex-shrink:0}
+.logo-f{color:var(--a);text-shadow:0 0 28px var(--ag)}
+.logo-dot{width:5px;height:5px;background:var(--v);border-radius:50%;margin:0 3px;align-self:center;margin-bottom:4px;animation:pdot 2s ease-in-out infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 10px var(--vg)}50%{box-shadow:0 0 26px rgba(167,139,250,.8)}}
+.logo-mine{color:var(--text)}
+.hd-right{display:flex;gap:6px;align-items:center}
+.lang-pill{display:flex;align-items:center;background:var(--glass2);border:1.5px solid var(--border2);border-radius:999px;padding:3px;gap:2px}
+.lp-btn{padding:4px 12px;border:none;border-radius:999px;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;transition:var(--ease);color:var(--text3);background:transparent}
+.lp-btn.on{background:linear-gradient(135deg,var(--p),#db2777);color:#fff;box-shadow:0 2px 14px var(--pg)}
+.lp-btn:not(.on):hover{color:var(--text);background:var(--glass3)}
+.hd-btn{padding:6px 13px;border:1.5px solid var(--border2);border-radius:9px;background:var(--glass);color:var(--text2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:var(--ease)}
+.hd-btn:hover{background:var(--glass3);border-color:var(--p);color:var(--p)}
+.hd-btn:active{transform:scale(.92)}
+.sb-toggle{display:none;width:36px;height:36px;border:1.5px solid var(--border2);border-radius:9px;background:var(--glass);color:var(--text2);font-size:16px;cursor:pointer;transition:var(--ease);align-items:center;justify-content:center}
+.sb-toggle:hover{border-color:var(--p);color:var(--p)}
 
-  body {
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
-    color:white;
-  }
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:var(--sbw) 1fr;height:calc(100vh - 57px);position:relative;z-index:1}
 
-  body.light {
-    background:linear-gradient(135deg,#f5f5f5,#d0d0ff);
-    color:#222;
-  }
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;box-shadow:2px 0 40px rgba(0,0,0,.5);width:var(--sbw)}
+.sidebar-inner{overflow-y:auto;flex:1;padding-bottom:16px}
+.sb-section{padding:14px 14px 6px}
+.sb-title{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--text3);margin-bottom:8px;padding:0 3px}
+.sb-card{background:var(--glass);border:1px solid var(--border);border-radius:11px;padding:9px 11px;margin-bottom:5px;cursor:pointer;transition:var(--ease);display:flex;align-items:center;gap:9px}
+.sb-card:hover{background:var(--glass2);border-color:var(--border2);transform:translateX(3px)}
+.sb-card:active{transform:scale(.97)}
+.sb-icon{font-size:16px;flex-shrink:0}
+.sb-name{font-size:12px;font-weight:700;color:var(--text)}
+.sb-desc{font-size:10px;color:var(--text3);margin-top:1px}
+.quick-list{display:flex;flex-direction:column;gap:4px;padding:0 14px}
+.qex{padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--glass);font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);cursor:pointer;transition:var(--ease);line-height:1.4}
+.qex:hover{border-color:var(--p);color:var(--p);background:rgba(244,114,182,.06)}
+.stats-row{display:flex;gap:5px;padding:10px 14px 0}
+.stat-chip{flex:1;background:var(--glass);border:1px solid var(--border);border-radius:9px;padding:7px 8px;text-align:center}
+.stat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;text-shadow:0 0 15px var(--vg2)}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
 
-  .container {
-    width:90%;
-    max-width:700px;
-    background:rgba(255,255,255,0.05);
-    backdrop-filter:blur(15px);
-    padding:24px;
-    border-radius:16px;
-    box-shadow:0 0 30px rgba(0,0,0,0.15);
-  }
+/* AI status badge */
+.ai-status{display:flex;align-items:center;gap:6px;padding:7px 12px;margin:8px 14px;border-radius:9px;font-family:'DM Mono',monospace;font-size:10px;border:1px solid var(--border);background:var(--glass);transition:var(--ease)}
+.ai-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--a);animation:pulse-dot 1s ease-in-out infinite}
+.ai-dot.ready{background:var(--g);box-shadow:0 0 8px var(--gg);animation:none}
+.ai-dot.busy{background:var(--p);animation:pulse-dot 0.6s ease-in-out infinite}
+.ai-dot.err{background:var(--r);animation:none}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+.ai-label{color:var(--text2)}
 
-  h1 {
-    text-align:center;
-    margin-bottom:12px;
-    font-size:2.1rem;
-    background:linear-gradient(90deg,gold,#ffd700,gold);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    animation:shine 2s infinite alternate;
-  }
+/* CHAT */
+.chat-main{display:flex;flex-direction:column;height:100%;overflow:hidden;min-width:0}
+.chat-window{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px clamp(10px,3vw,24px);display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+.chat-window::-webkit-scrollbar{width:4px}
+.chat-window::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
-  @keyframes shine {
-    0%{background-position:0%}
-    100%{background-position:100%}
-  }
+/* WELCOME */
+.welcome{background:var(--bg3);border:1.5px solid rgba(244,114,182,.2);border-radius:18px;padding:20px;position:relative;overflow:hidden;animation:fadeUp .5s ease both;box-shadow:var(--sh-md)}
+.welcome::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(244,114,182,.12),transparent 70%);pointer-events:none}
+.welcome::after{content:'';position:absolute;bottom:-20px;left:-20px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(103,232,249,.07),transparent 70%);pointer-events:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.welcome-title{font-family:'Syne',sans-serif;font-size:clamp(16px,3vw,22px);font-weight:800;color:#fff;margin-bottom:5px;position:relative;z-index:1;text-shadow:0 0 20px rgba(244,114,182,.3)}
+.welcome-sub{font-size:12px;color:var(--text2);line-height:1.65;position:relative;z-index:1}
+.welcome-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;position:relative;z-index:1}
+.wchip{padding:4px 11px;border-radius:999px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:var(--ease);border:1px solid;font-weight:500}
+.wchip-p{color:var(--p);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.07)}
+.wchip-v{color:var(--v);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.07)}
+.wchip-c{color:var(--c);border-color:rgba(103,232,249,.3);background:rgba(103,232,249,.06)}
+.wchip-g{color:var(--g);border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.06)}
+.wchip-a{color:var(--a);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.06)}
+.wchip:hover{transform:translateY(-2px);filter:brightness(1.2)}
 
-  .topbar {
-    display:flex;
-    gap:8px;
-    justify-content:center;
-    flex-wrap:wrap;
-    margin-bottom:10px;
-  }
+/* MESSAGES */
+.msg-row{display:flex;gap:8px;align-items:flex-end;animation:msgIn .28s ease both}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg-row.user{flex-direction:row-reverse}
+.msg-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px}
+.msg-avatar.bot-av{background:linear-gradient(135deg,var(--p),#db2777);box-shadow:0 0 14px var(--pg),0 0 28px rgba(244,114,182,.15)}
+.msg-avatar.user-av{background:linear-gradient(135deg,var(--c),#0ea5e9);box-shadow:0 0 14px var(--cg)}
+.msg-bubble{max-width:min(82%,700px);padding:11px 14px;border-radius:15px;font-size:13.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.msg-row.bot .msg-bubble{background:var(--bg3);border:1.5px solid rgba(244,114,182,.18);color:var(--text);border-bottom-left-radius:3px;box-shadow:var(--sh-md)}
+.msg-row.user .msg-bubble{background:linear-gradient(135deg,rgba(103,232,249,.12),rgba(103,232,249,.06));border:1.5px solid rgba(103,232,249,.22);color:var(--text);border-bottom-right-radius:3px;box-shadow:var(--sh-sm)}
+.msg-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px}
+.msg-row.bot .msg-time{text-align:left}.msg-row.user .msg-time{text-align:right}
 
-  .lang-btn {
-    min-width:74px;
-    padding:10px 14px;
-    border-radius:8px;
-    border:none;
-    background:#444;
-    color:white;
-    cursor:pointer;
-  }
+/* Styled sections inside bot bubbles */
+.msg-bubble .section-head{font-family:'Syne',sans-serif;font-weight:800;color:var(--p);font-size:13px;display:block;margin-top:6px}
+.msg-bubble .source-tag{font-family:'DM Mono',monospace;font-size:9px;padding:2px 8px;border-radius:999px;display:inline-block;margin-top:5px}
+.msg-bubble .source-ai{background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.25);color:var(--p)}
+.msg-bubble .source-wiki{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:var(--a)}
+.msg-bubble .error-item{color:var(--r);font-size:13px;margin:3px 0}
+.msg-bubble .fix-item{color:var(--g);font-size:12px;margin-left:8px}
+.msg-bubble .tip-box{background:rgba(103,232,249,.07);border:1px solid rgba(103,232,249,.2);border-radius:8px;padding:8px 12px;margin:6px 0;font-size:12px;color:var(--c)}
 
-  .lang-btn.active {
-    background:#6c63ff;
-  }
+/* THINKING */
+.thinking-bubble{display:flex;align-items:center;gap:5px;padding:11px 15px;border-radius:15px;border-bottom-left-radius:3px;background:var(--bg3);border:1.5px solid rgba(244,114,182,.18);box-shadow:var(--sh-sm)}
+.t-dot{width:7px;height:7px;border-radius:50%;background:var(--p);animation:tdot 1.2s ease-in-out infinite}
+.t-dot:nth-child(2){animation-delay:.18s;background:var(--v)}
+.t-dot:nth-child(3){animation-delay:.36s;background:var(--c)}
+@keyframes tdot{0%,80%,100%{transform:scale(.35);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-  #chat {
-    border:1px solid rgba(255,255,255,0.3);
-    border-radius:10px;
-    padding:10px;
-    height:380px;
-    overflow-y:auto;
-    margin-bottom:10px;
-    background:rgba(0,0,0,0.1);
-  }
+/* INPUT */
+.input-bar{padding:12px clamp(10px,3vw,24px);background:rgba(4,5,13,.92);border-top:1px solid var(--border)}
+.input-wrap{display:flex;align-items:flex-end;gap:7px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:15px;padding:6px 7px 6px 14px;transition:var(--ease);box-shadow:var(--sh-sm)}
+.input-wrap:focus-within{border-color:rgba(244,114,182,.45);box-shadow:var(--sh-gv)}
+.msg-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Nunito',sans-serif;font-size:14px;line-height:1.5;resize:none;min-height:22px;max-height:120px;overflow-y:auto;padding:2px 0}
+.msg-input::placeholder{color:var(--text3)}
+.ib-btn{width:36px;height:36px;border-radius:10px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--ease);flex-shrink:0;font-size:15px}
+.ib-mic{background:var(--glass2);border:1px solid var(--border2);color:var(--text2)}
+.ib-mic:hover{border-color:var(--r);color:var(--r);background:rgba(248,113,113,.08)}
+.ib-mic.rec{border-color:var(--r);color:var(--r);animation:precord 1s ease-in-out infinite}
+@keyframes precord{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.4)}50%{box-shadow:0 0 0 7px transparent}}
+.ib-clear{background:var(--glass2);border:1px solid var(--border2);color:var(--text3)}
+.ib-clear:hover{border-color:var(--r);color:var(--r)}
+.ib-send{width:36px;height:36px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--p),#db2777);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--ease);flex-shrink:0;box-shadow:0 4px 20px var(--pg),0 8px 30px rgba(244,114,182,.2)}
+.ib-send:hover{filter:brightness(1.15);transform:scale(1.06);box-shadow:0 6px 28px var(--pg)}
+.ib-send:active{transform:scale(.92)}
+.ib-send:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 
-  .message {
-    margin:5px 0;
-    white-space:pre-wrap;
-    line-height:1.35;
-  }
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(16px);background:#0c0f1e;border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:9px 22px;font-size:13px;font-weight:700;opacity:0;transition:all .3s ease;z-index:9999;pointer-events:none;box-shadow:0 16px 50px rgba(0,0,0,.8)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  .user { color:#6c63ff; }
-  .bot { color:#ffd700; }
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;backdrop-filter:blur(4px)}
+.sb-overlay.show{display:block}
 
-  .controls {
-    display:flex;
-    gap:6px;
-    flex-wrap:wrap;
-  }
-
-  input {
-    flex:1 1 250px;
-    padding:10px;
-    border-radius:8px;
-    border:none;
-    outline:none;
-    min-width:180px;
-  }
-
-  button {
-    padding:10px 14px;
-    border-radius:8px;
-    border:none;
-    background:#6c63ff;
-    color:white;
-    cursor:pointer;
-    margin:2px 0;
-  }
-
-  button:hover { opacity:0.92; }
-  .alt { background:#444; }
-
-  #toastBox{
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    z-index:9999;
-  }
-
-  .toast{
-    padding:12px 18px;
-    border-radius:10px;
-    color:white;
-    font-weight:bold;
-    animation:slideIn 0.3s ease;
-    box-shadow:0 10px 24px rgba(0,0,0,0.18);
-  }
-
-  .success{ background:#4caf50; }
-  .error{ background:#f44336; }
-  .info{ background:#6c63ff; }
-
-  @keyframes slideIn{
-    from{opacity:0; transform:translateX(50px);}
-    to{opacity:1; transform:translateX(0);}
-  }
+@media(max-width:900px){
+  .sb-toggle{display:flex}
+  .layout{grid-template-columns:1fr!important}
+  .sidebar{position:fixed;left:0;top:57px;bottom:0;z-index:160;transform:translateX(-100%);transition:transform var(--ease);width:var(--sbw)!important}
+  .sidebar.open{transform:translateX(0)}
+}
+@media(max-width:500px){
+  .hd{padding:10px 12px}.chat-window{padding:12px 10px}.input-bar{padding:10px}
+  .msg-bubble{font-size:13px;max-width:91%}.hd-btn.back-lbl{display:none}
+}
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>💛 Fmine Language Bot</h1>
 
-  <div class="topbar">
-    <button id="btnRU" class="lang-btn active" onclick="setLang('RU')">RU</button>
-    <button id="btnEN" class="lang-btn" onclick="setLang('EN')">EN</button>
-    <button class="lang-btn alt" onclick="toggleTheme()">🌓</button>
-    <button class="lang-btn alt" onclick="clearChat()" id="clearBtn">Очистить чат</button>
-    <button class="lang-btn alt" onclick="goLobby()" id="exitBtn">⬅ Выйти в лобби</button>
+<header class="hd">
+  <a class="logo" href="lobby.html">
+    <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+  </a>
+  <div class="hd-right">
+    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()">☰</button>
+    <div class="lang-pill">
+      <button class="lp-btn on" id="lpRU" onclick="setLang('RU')">RU</button>
+      <button class="lp-btn" id="lpEN" onclick="setLang('EN')">EN</button>
+    </div>
+    <button class="hd-btn" onclick="clearChat()">🗑</button>
+    <button class="hd-btn back-lbl" onclick="location.href='lobby.html'" id="backBtn">⬅ Лобби</button>
   </div>
+</header>
 
-  <div id="chat"></div>
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
 
-  <div class="controls">
-    <input id="userInput" placeholder="Напишите текст или тему для доклада">
-    <button onclick="sendMessage()" id="sendBtn">Отправить</button>
-    <button onclick="startVoice()" id="voiceBtn">🎤 Голосовой ввод</button>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+      <div class="stats-row">
+        <div class="stat-chip"><div class="stat-val" id="statMsg">0</div><div class="stat-lbl" id="statMsgLbl">сообщ.</div></div>
+        <div class="stat-chip"><div class="stat-val" id="statRep">0</div><div class="stat-lbl" id="statRepLbl">докладов</div></div>
+        <div class="stat-chip"><div class="stat-val" id="statChk">0</div><div class="stat-lbl" id="statChkLbl">проверок</div></div>
+      </div>
+
+      <div class="ai-status" id="aiStatus">
+        <div class="ai-dot" id="aiDot"></div>
+        <span class="ai-label" id="aiLabel">Инициализация AI...</span>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-title" id="sbFeatTitle">Возможности</div>
+
+        <div class="sb-card" onclick="ex('Доклад пчёлы')">
+          <span class="sb-icon" style="color:var(--a)">📚</span>
+          <div><div class="sb-name" id="sbReport">Доклад / Реферат</div><div class="sb-desc" id="sbReportDesc">AI + Факты Wikipedia</div></div>
+        </div>
+        <div class="sb-card" onclick="ex('Проверь: I goes to school every day.')">
+          <span class="sb-icon" style="color:var(--g)">✍️</span>
+          <div><div class="sb-name" id="sbCheck">Проверка текста</div><div class="sb-desc" id="sbCheckDesc">Грамматика + стиль</div></div>
+        </div>
+        <div class="sb-card" onclick="ex('Переведи: Привет, как дела?')">
+          <span class="sb-icon" style="color:var(--c)">🌐</span>
+          <div><div class="sb-name" id="sbTranslate">Перевод текста</div><div class="sb-desc">RU ↔ EN + другие</div></div>
+        </div>
+        <div class="sb-card" onclick="ex('Перескажи: The sun is a star at the centre of our Solar System.')">
+          <span class="sb-icon" style="color:var(--v)">📝</span>
+          <div><div class="sb-name" id="sbRetell">Пересказ</div><div class="sb-desc" id="sbRetellDesc">Краткое изложение</div></div>
+        </div>
+        <div class="sb-card" onclick="ex('Напиши сочинение: Моя любимая книга')">
+          <span class="sb-icon" style="color:var(--p)">✏️</span>
+          <div><div class="sb-name" id="sbEssay">Сочинение / Эссе</div><div class="sb-desc" id="sbEssayDesc">По теме или плану</div></div>
+        </div>
+        <div class="sb-card" onclick="ex('Вопрос: Что такое фотосинтез?')">
+          <span class="sb-icon" style="color:var(--r)">❓</span>
+          <div><div class="sb-name" id="sbQuestion">Вопрос-ответ</div><div class="sb-desc" id="sbQuestionDesc">Любая тема</div></div>
+        </div>
+        <div class="sb-card" onclick="ex('Улучши текст: The cat sit on mat.')">
+          <span class="sb-icon" style="color:var(--o)">✨</span>
+          <div><div class="sb-name" id="sbImprove">Улучшить текст</div><div class="sb-desc" id="sbImproveDesc">Стиль, красота, ясность</div></div>
+        </div>
+        <div class="sb-card" onclick="ex('Объясни правило: Present Perfect')">
+          <span class="sb-icon" style="color:var(--c)">📖</span>
+          <div><div class="sb-name" id="sbRule">Правило языка</div><div class="sb-desc" id="sbRuleDesc">Грамматика с примерами</div></div>
+        </div>
+      </div>
+
+      <div class="sb-section"><div class="sb-title" id="sbExTitle">Примеры запросов</div></div>
+      <div class="quick-list" id="quickList"></div>
+    </div>
+  </aside>
+
+  <div class="chat-main">
+    <div class="chat-window" id="chatWindow">
+      <div class="welcome" id="welcomeBanner">
+        <div class="welcome-title">💬 <span id="wTitle">Language Bot — F‑Mine</span></div>
+        <div class="welcome-sub" id="wSub">Умный языковой помощник на базе AI. Пишу доклады, проверяю тексты, перевожу, объясняю правила грамматики и отвечаю на любые вопросы о языке.</div>
+        <div class="welcome-chips">
+          <span class="wchip wchip-a" onclick="ex('Доклад пчёлы')">📚 Доклад пчёлы</span>
+          <span class="wchip wchip-g" onclick="ex('Проверь: I goes to school.')">✍️ Проверить текст</span>
+          <span class="wchip wchip-c" onclick="ex('Переведи: Привет мир')">🌐 Перевести</span>
+          <span class="wchip wchip-p" onclick="ex('Напиши сочинение: Осень')">✏️ Сочинение</span>
+          <span class="wchip wchip-v" onclick="ex('Объясни правило: Past Simple')">📖 Правило</span>
+        </div>
+      </div>
+    </div>
+    <div class="input-bar">
+      <div class="input-wrap">
+        <button class="ib-btn ib-mic" id="micBtn" title="Голос">🎤</button>
+        <textarea class="msg-input" id="msgInput" placeholder="Напиши запрос или вопрос..." rows="1"></textarea>
+        <button class="ib-btn ib-clear" onclick="clearInput()" title="Очистить">✕</button>
+        <button class="ib-btn ib-send" id="sendBtn" onclick="sendMessage()" title="Отправить">➤</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<div id="toastBox"></div>
+<div id="toast"></div>
 
-<script>
-const LS_CHAT = "fmine_langbot_chatHistory";
-const LS_THEME = "fmine_langbot_theme";
-const LS_LANG = "fmine_langbot_lang";
-const LS_LAST_REPORT = "fmine_langbot_lastReport";
+<!-- Firebase -->
+<script type="module">
+// ══════════════════════════════════════════════════════
+// CONFIG — paste your Anthropic API key here
+// ══════════════════════════════════════════════════════
+const API_KEY = 'YOUR_ANTHROPIC_API_KEY_HERE';
 
-let chat = document.getElementById("chat");
-let lastBotText = "";
-let lastUserText = "";
-let lastReportText = localStorage.getItem(LS_LAST_REPORT) || "";
-let chatHistory = JSON.parse(localStorage.getItem(LS_CHAT)) || [];
-let lang = localStorage.getItem(LS_LANG) || "RU";
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let LANG = localStorage.getItem('fmine_lang') || 'RU';
+let isBusy = false;
+let lastReport = '';
+const chatWindow = document.getElementById('chatWindow');
+const msgInput   = document.getElementById('msgInput');
+const sendBtn    = document.getElementById('sendBtn');
 
-const UI = {
+// ══════════════════════════════════════════════════════
+// I18N
+// ══════════════════════════════════════════════════════
+const T = {
   RU: {
-    title: "💛 Fmine Language Bot",
-    input: "Напишите текст или тему для доклада",
-    send: "Отправить",
-    voice: "🎤 Голосовой ввод",
-    clear: "Очистить чат",
-    exit: "⬅ Выйти в лобби",
-    intro: 'Привет! Используйте "Доклад пчелы", "Проверь рассказ", "Вопрос что такое..." или просто напишите привет.',
-    reportNeedTopic: 'Напиши тему после слова «доклад».\nНапример: Доклад пчелы',
-    reportLoading: "📚 Собираю доклад...",
-    checkNeedText: 'Напиши текст после слова «проверь».\nНапример: Проверь рассказ ...',
-    checkLoading: "🔍 Проверяю текст...",
-    questionNeedText: 'Напиши вопрос после слова «вопрос».\nНапример: Вопрос что такое ...',
-    questionLoading: "🤔 Думаю над вопросом...",
-    reportLabel: "📘 Доклад на тему: ",
-    introLabel: "🔹 Введение:",
-    mainLabel: "🔹 Основная часть:",
-    conclLabel: "🔹 Заключение:",
-    answerPrefix: "Ответ на вопрос:\n",
-    reportNoInfo: "Не удалось найти информацию по этой теме.",
-    reportError: "Ошибка при получении информации.",
-    noContext: "Сначала сделай доклад, потом задай вопрос 🙂",
-    sameText: "Ты уже это писал 🤨",
-    errorsHeader: "Ошибки:",
-    noErrors: "✅ Ошибок не найдено.",
-    checkError: "Ошибка проверки текста.",
-    commandHint: 'Используй команды:\nДоклад пчелы\nПроверь рассказ ...\nВопрос что такое ...',
-    cleared: "Чат очищен.",
-    greet: ["Привет 👋", "Здравствуйте!", "Привет, я на связи 🙂"],
-    bye: ["Пока 👋", "До встречи!", "Увидимся позже 🙂"],
-    how: ["Всё хорошо 😎", "Нормально, готов помогать.", "Отлично, спасибо что спросил 🙂"],
-    thanks: ["Пожалуйста 🙂", "Всегда рад помочь.", "Обращайся ещё 👌"],
-    who: ["Я бот для докладов, текста и вопросов 📚", "Я Fmine Bot — помогаю с текстом и учебой.", "Я умею делать доклады, проверять текст и отвечать на вопросы."],
-    whatCan: ["Я умею: доклад, проверка текста, вопрос по докладу.", "Напиши: Доклад пчелы, Проверь рассказ, Вопрос что такое ..."],
-    help: ["Конечно 🙂 Напиши тему или текст.", "Я рядом, просто отправь запрос.", "Скажи, что нужно сделать."],
-    ok: ["Окей 👍", "Понял.", "Хорошо 🙂"],
-    no: ["Хорошо.", "Понял.", "Ладно 🙂"],
-    yes: ["Отлично 👍", "Понял.", "Хорошо, продолжаем."]
+    backBtn:'⬅ Лобби', statMsg:'сообщ.', statRep:'докладов', statChk:'проверок',
+    sbFeat:'Возможности', sbEx:'Примеры',
+    sbReport:'Доклад / Реферат', sbReportDesc:'AI + Факты Wikipedia',
+    sbCheck:'Проверка текста', sbCheckDesc:'Грамматика + стиль',
+    sbTranslate:'Перевод текста', sbRetell:'Пересказ', sbRetellDesc:'Краткое изложение',
+    sbEssay:'Сочинение / Эссе', sbEssayDesc:'По теме или плану',
+    sbQuestion:'Вопрос-ответ', sbQuestionDesc:'Любая тема',
+    sbImprove:'Улучшить текст', sbImproveDesc:'Стиль, красота, ясность',
+    sbRule:'Правило языка', sbRuleDesc:'Грамматика с примерами',
+    wTitle:'Language Bot — F‑Mine',
+    wSub:'Умный языковой помощник на базе AI. Пишу доклады, проверяю тексты, перевожу, объясняю правила грамматики и отвечаю на любые вопросы о языке.',
+    placeholder:'Напиши запрос или вопрос...',
+    cleared:'🗑 Чат очищен', micStart:'🎤 Говори...', micErr:'❌ Ошибка',
+    levelUp: l => `🎉 Уровень ${l}!`,
+    aiReady:'AI готов', aiThinking:'AI думает...', aiErr:'Ошибка AI',
+    thinking:'Думаю...',
+    noConn: e => `❌ Нет ответа от AI.\n${e}`,
   },
   EN: {
-    title: "💛 Fmine Language Bot",
-    input: "Write text or a topic for a report",
-    send: "Send",
-    voice: "🎤 Voice input",
-    clear: "Clear chat",
-    exit: "⬅ Back to lobby",
-    intro: 'Hi! Use "Report bees", "Check story", "Question what is..." or just say hello.',
-    reportNeedTopic: 'Write a topic after the word "report".\nExample: Report bees',
-    reportLoading: "📚 Building the report...",
-    checkNeedText: 'Write text after the word "check".\nExample: Check story ...',
-    checkLoading: "🔍 Checking text...",
-    questionNeedText: 'Write a question after the word "question".\nExample: Question what is ...',
-    questionLoading: "🤔 Thinking about the question...",
-    reportLabel: "📘 Report on: ",
-    introLabel: "🔹 Introduction:",
-    mainLabel: "🔹 Main part:",
-    conclLabel: "🔹 Conclusion:",
-    answerPrefix: "Answer:\n",
-    reportNoInfo: "Could not find information on this topic.",
-    reportError: "Error while fetching information.",
-    noContext: "Make a report first, then ask a question 🙂",
-    sameText: "You already wrote that 🤨",
-    errorsHeader: "Errors:",
-    noErrors: "✅ No errors found.",
-    checkError: "Text check error.",
-    commandHint: 'Use commands:\nReport bees\nCheck story ...\nQuestion what is ...',
-    cleared: "Chat cleared.",
-    greet: ["Hello 👋", "Hi there!", "Hello, I am here 🙂"],
-    bye: ["Bye 👋", "See you!", "Talk later 🙂"],
-    how: ["I am good 😎", "Fine, ready to help.", "Great, thanks for asking 🙂"],
-    thanks: ["You are welcome 🙂", "Glad to help.", "Any time 👌"],
-    who: ["I am a bot for reports, text and questions 📚", "I am Fmine Bot — I help with text and study.", "I can make reports, check text, and answer questions."],
-    whatCan: ["I can do reports, text checking, and report questions.", "Type: Report bees, Check story, Question what is ..."],
-    help: ["Of course 🙂 Write a topic or text.", "I am here, just send your request.", "Tell me what you need."],
-    ok: ["Okay 👍", "Got it.", "Alright 🙂"],
-    no: ["Okay.", "Understood.", "Fine 🙂"],
-    yes: ["Great 👍", "Understood.", "Okay, let’s continue."]
+    backBtn:'⬅ Lobby', statMsg:'msgs', statRep:'reports', statChk:'checks',
+    sbFeat:'Features', sbEx:'Examples',
+    sbReport:'Report / Essay', sbReportDesc:'AI + Wikipedia facts',
+    sbCheck:'Text check', sbCheckDesc:'Grammar + style',
+    sbTranslate:'Translation', sbRetell:'Retelling', sbRetellDesc:'Short summary',
+    sbEssay:'Essay / Composition', sbEssayDesc:'By topic or plan',
+    sbQuestion:'Q&A', sbQuestionDesc:'Any topic',
+    sbImprove:'Improve text', sbImproveDesc:'Style, clarity, beauty',
+    sbRule:'Language rule', sbRuleDesc:'Grammar with examples',
+    wTitle:'Language Bot — F‑Mine',
+    wSub:'Smart AI language assistant. I write reports, check texts, translate, explain grammar rules, and answer any language questions.',
+    placeholder:'Type your request or question...',
+    cleared:'🗑 Chat cleared', micStart:'🎤 Speak now...', micErr:'❌ Error',
+    levelUp: l => `🎉 Level ${l}!`,
+    aiReady:'AI ready', aiThinking:'AI thinking...', aiErr:'AI error',
+    thinking:'Thinking...',
+    noConn: e => `❌ AI not responding.\n${e}`,
   }
 };
-
-function t(key){
-  return UI[lang][key];
+function t(k, ...a) {
+  const fn = T[LANG][k];
+  return typeof fn === 'function' ? fn(...a) : (fn || k);
 }
 
-function toast(msg, type="info"){
-  const box = document.getElementById("toastBox");
-  const el = document.createElement("div");
-  el.className = "toast " + type;
-  el.innerText = msg;
-  box.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
-}
-
-function saveChat(){
-  localStorage.setItem(LS_CHAT, JSON.stringify(chatHistory));
-}
-
-function saveLastReport(text){
-  lastReportText = text;
-  localStorage.setItem(LS_LAST_REPORT, text);
-}
-
-function setLang(newLang){
-  lang = newLang;
-  localStorage.setItem(LS_LANG, lang);
-
-  document.documentElement.lang = lang === "RU" ? "ru" : "en";
-  document.getElementById("btnRU").classList.toggle("active", lang === "RU");
-  document.getElementById("btnEN").classList.toggle("active", lang === "EN");
-
-  document.getElementById("userInput").placeholder = t("input");
-  document.getElementById("sendBtn").textContent = t("send");
-  document.getElementById("voiceBtn").textContent = t("voice");
-  document.getElementById("clearBtn").textContent = t("clear");
-  document.getElementById("exitBtn").textContent = t("exit");
-  document.querySelector("h1").textContent = UI[lang].title;
-
-  addMessage("Bot", lang === "RU" ? "Язык изменён." : "Language changed.", "bot");
-}
-
-function toggleTheme(){
-  document.body.classList.toggle("light");
-  localStorage.setItem(LS_THEME, document.body.classList.contains("light") ? "light" : "dark");
-}
-
-function goLobby(){
-  if(document.referrer){
-    window.history.back();
-  } else {
-    window.location.href = "lobby.html";
-  }
-}
-
-function addMessage(sender, text, cls, save = true){
-  const div = document.createElement("div");
-  div.classList.add("message", cls);
-  div.textContent = sender + ": " + text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-
-  if(cls === "bot") lastBotText = text;
-  if(save){
-    chatHistory.push({ sender, text, cls });
-    saveChat();
-  }
-}
-
-function renderSavedChat(){
-  chat.innerHTML = "";
-  if(chatHistory.length === 0){
-    addMessage("Bot", t("intro"), "bot");
-    return;
-  }
-
-  chatHistory.forEach(msg => {
-    const div = document.createElement("div");
-    div.classList.add("message", msg.cls);
-    div.textContent = msg.sender + ": " + msg.text;
-    chat.appendChild(div);
-  });
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function clearChat(){
-  chatHistory = [];
-  lastBotText = "";
-  lastUserText = "";
-  lastReportText = "";
-  localStorage.removeItem(LS_CHAT);
-  localStorage.removeItem(LS_LAST_REPORT);
-  chat.innerHTML = "";
-  addMessage("Bot", t("cleared"), "bot");
-}
-
-function normalizeText(text){
-  return String(text)
-    .toLowerCase()
-    .replace(/[«»"„“]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function normalizeTopic(topic){
-  return String(topic)
-    .trim()
-    .replace(/[?.!,;:]+$/g, "")
-    .replace(/\s+/g, " ")
-    .replace(/^(?:мне\s+)?(?:пожалуйста\s+)?/i, "")
-    .replace(/^(?:про|о|об|about|on|на тему|по теме)\s+/i, "")
-    .trim();
-}
-
-function pickRandom(arr){
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function getSmallTalkReply(text){
-  const ttext = normalizeText(text);
-
-  const rules = [
-    { re: /^(привет|здравствуй|здравствуйте|hello|hi|hey)\b/, key: "greet" },
-    { re: /^(пока|до свидания|бай|bye|goodbye)\b/, key: "bye" },
-    { re: /^(как дела|как ты|как настроение|how are you)\b/, key: "how" },
-    { re: /^(спасибо|благодарю|thank you|thanks)\b/, key: "thanks" },
-    { re: /^(кто ты|ты кто|who are you)\b/, key: "who" },
-    { re: /^(что ты умеешь|что умеешь|помощь|help)\b/, key: "whatCan" },
-    { re: /^(помоги|подскажи|help me)\b/, key: "help" },
-    { re: /^(ок|okay|ладно|понятно)\b/, key: "ok" },
-    { re: /^(нет|no)\b/, key: "no" },
-    { re: /^(да|yes|ага)\b/, key: "yes" }
-  ];
-
-  for(const rule of rules){
-    if(rule.re.test(ttext)) return pickRandom(UI[lang][rule.key]);
-  }
-
-  return "";
-}
-
-function expandRussianWord(word){
-  const w = String(word || "").trim().toLowerCase();
-  const out = new Set();
-  if(!w) return [];
-
-  out.add(w);
-
-  if(w.length < 3) return [...out];
-
-  const last = w.slice(-1);
-  const base = w.slice(0, -1);
-
-  if(last === "а"){
-    out.add(base);
-    out.add(base + "ы");
-    out.add(base + "и");
-    out.add(base + "е");
-  } else if(last === "я"){
-    out.add(base);
-    out.add(base + "и");
-    out.add(base + "е");
-  } else if(last === "ы" || last === "и"){
-    out.add(base);
-    out.add(base + "а");
-    out.add(base + "я");
-    out.add(base + "е");
-  } else if(last === "ь"){
-    out.add(base);
-    out.add(base + "я");
-    out.add(base + "и");
-  } else if(/[бвгджзйклмнпрстфхцчшщ]/i.test(last)){
-    out.add(w + "а");
-    out.add(w + "ы");
-    out.add(w + "и");
-    out.add(w + "е");
-  }
-
-  return [...out];
-}
-
-function buildTopicCandidates(topic){
-  const raw = normalizeTopic(topic);
-  const set = new Set();
-
-  if(raw) set.add(raw);
-
-  const words = raw.split(" ").filter(Boolean);
-  if(words.length > 0){
-    const lastWord = words[words.length - 1];
-    const expanded = expandRussianWord(lastWord);
-
-    for(const v of expanded){
-      const candidateWords = [...words.slice(0, -1), v].filter(Boolean);
-      if(candidateWords.length) set.add(candidateWords.join(" "));
-    }
-
-    if(words.length === 1){
-      const w = words[0];
-      for(const v of expandRussianWord(w)) set.add(v);
-    }
-  }
-
-  return [...set].filter(Boolean);
-}
-
-function scoreWikiResult(title, snippet, query){
-  const t = normalizeText(title);
-  const q = normalizeText(query);
-  const s = normalizeText(String(snippet || "").replace(/<[^>]+>/g, ""));
-  const qTokens = q.split(/\s+/).filter(Boolean);
-  let score = 0;
-
-  if(t === q) score += 120;
-  if(t.startsWith(q)) score += 70;
-  if(t.includes(q)) score += 50;
-
-  let overlap = 0;
-  for(const tok of qTokens){
-    if(t.includes(tok)) overlap++;
-    if(s.includes(tok)) score += 5;
-  }
-  score += overlap * 15;
-
-  if(s.includes(q)) score += 12;
-
-  if(/значения|disambiguation/i.test(title)) score -= 35;
-
-  const bioWords = /(композитор|певец|актёр|актер|политик|футболист|режиссёр|режиссер|писатель|учёный|ученый)/i;
-  if(bioWords.test(title) && qTokens.length <= 2) score -= 15;
-
-  return score;
-}
-
-async function fetchWikiReport(topic){
-  try{
-    const wikiLang = lang === "RU" ? "ru" : "en";
-    const candidates = buildTopicCandidates(topic);
-
-    let best = null;
-    let bestScore = -Infinity;
-
-    for(const q of candidates){
-      const searchUrl =
-        `https://${wikiLang}.wikipedia.org/w/api.php` +
-        `?action=query` +
-        `&list=search` +
-        `&srsearch=${encodeURIComponent(q)}` +
-        `&srlimit=6` +
-        `&format=json` +
-        `&origin=*`;
-
-      const searchRes = await fetch(searchUrl);
-      const searchData = await searchRes.json();
-      const results = searchData?.query?.search || [];
-
-      for(const item of results){
-        const score = scoreWikiResult(item.title, item.snippet || "", q);
-        if(score > bestScore){
-          bestScore = score;
-          best = item;
-        }
-      }
-
-      if(bestScore >= 100) break;
-    }
-
-    if(!best){
-      return lang === "RU"
-        ? "Не удалось найти информацию по этой теме."
-        : "Could not find information on this topic.";
-    }
-
-    const summaryUrl =
-      `https://${wikiLang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(best.title)}`;
-
-    const summaryRes = await fetch(summaryUrl);
-    const summaryData = await summaryRes.json();
-
-    if(summaryData && summaryData.extract){
-      return summaryData.extract;
-    }
-
-    const snippet = String(best.snippet || "").replace(/<[^>]+>/g, "").trim();
-    if(snippet){
-      return snippet;
-    }
-
-    return lang === "RU"
-      ? `Статья «${best.title}» найдена, но краткое описание недоступно.`
-      : `Found article "${best.title}", but no short summary is available.`;
-
-  }catch(e){
-    return lang === "RU"
-      ? "Ошибка при получении информации."
-      : "Error while fetching information.";
-  }
-}
-
-async function checkText(txt){
-  try{
-    const checkLang = lang === "RU" ? "ru" : "en";
-    const res = await fetch("https://api.languagetool.org/v2/check", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "text=" + encodeURIComponent(txt) + "&language=" + checkLang
-    });
-
-    const data = await res.json();
-
-    if(data.matches.length === 0){
-      addMessage("Bot", t("noErrors"), "bot");
-      return;
-    }
-
-    let out = t("errorsHeader") + "\n\n";
-    data.matches.slice(0, 6).forEach((m, i) => {
-      out += (i + 1) + ") " + m.message + "\n";
-      if(m.replacements && m.replacements.length > 0){
-        out += (lang === "RU" ? "Варианты: " : "Suggestions: ") + m.replacements.slice(0, 4).map(r => r.value).join(", ") + "\n";
-      }
-      out += "\n";
-    });
-
-    addMessage("Bot", out.trim(), "bot");
-  }catch(e){
-    addMessage("Bot", t("checkError"), "bot");
-  }
-}
-
-function answerQuestion(q){
-  const context = lastReportText || localStorage.getItem(LS_LAST_REPORT) || "";
-  if(!context){
-    addMessage("Bot", t("noContext"), "bot");
-    return;
-  }
-
-  const sentences = splitSentences(context);
-  const question = q.toLowerCase();
-  let answer = "";
-
-  if(question.includes("что") || question.includes("what") || question.includes("о чем") || question.includes("о чём")){
-    answer = sentences.slice(0, 3).join(" ");
-  } else if(question.includes("когда") || question.includes("when")){
-    answer = (lang === "RU" ? "В этом тексте нет точной даты. " : "There is no exact date in this text. ") + sentences.slice(0, 2).join(" ");
-  } else if(question.includes("почему") || question.includes("why")){
-    const found = sentences.find(s => /потому|поэтому|важн|значит|объясн|because|therefore|important/i.test(s));
-    answer = found || sentences.slice(0, 2).join(" ");
-  } else if(question.includes("кто") || question.includes("who") || question.includes("что такое") || question.includes("what is")){
-    answer = sentences.slice(0, 2).join(" ");
-  } else {
-    answer = sentences.slice(0, 2).join(" ");
-  }
-
-  addMessage("Bot", t("answerPrefix") + answer, "bot");
-}
-
-function splitSentences(text){
-  const cleaned = String(text).replace(/\s+/g, " ").trim();
-  const parts = cleaned.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
-  return parts ? parts.map(s => s.trim()).filter(Boolean) : [cleaned];
-}
-
-function parseReportTopic(text){
-  const raw = text.trim();
-  const patterns = [
-    /^(?:сделай|напиши|составь|подготовь|создай)\s+(?:мне\s+)?(?:доклад|реферат|report|essay)\s*(?:про|о|об|about|on|на тему|по теме)?\s*(.+)$/i,
-    /^(?:доклад|реферат|report|essay)\s*(?:про|о|об|about|on|на тему|по теме)?\s*(.+)$/i,
-    /^(?:сделай|напиши|составь|подготовь|создай)\s+(?:мне\s+)?(?:доклад|реферат)\s*(.+)$/i,
-    /^(?:write|make|create|prepare)\s+(?:me\s+)?(?:a\s+)?(?:report|essay)\s*(?:about|on)?\s*(.+)$/i,
-    /^(?:report)\s+(.+)$/i,
-    /^(?:essay)\s+(.+)$/i,
-    /^(?:доклад)\s+(.+)$/i,
-    /^(?:реферат)\s+(.+)$/i
-  ];
-
-  for (const re of patterns) {
-    const m = raw.match(re);
-    if (m && m[1]) return m[1].trim();
-  }
-
-  if (/^(?:сделай|напиши|составь|подготовь|создай)\s+(?:мне\s+)?(?:доклад|реферат|report|essay)\b/i.test(raw)) return "";
-  return null;
-}
-
-function parseCheckText(text){
-  const raw = text.trim();
-  const patterns = [
-    /^(?:проверь|проверьте|check)\s+(?:текст|стих|рассказ|сочинение|paragraph|story|poem)?\s*(.+)$/i,
-    /^(?:проверь|проверьте|check)\s*(?:текст|стих|рассказ|сочинение|paragraph|story|poem)\s*(.+)$/i,
-    /^(?:проверить|check)\s+(?:текст|стих|рассказ|сочинение|paragraph|story|poem)?\s*(.+)$/i,
-    /^(?:проверь\s+мне)\s+(.+)$/i,
-    /^(?:check\s+my)\s+(.+)$/i,
-    /^(?:check\s+text)\s+(.+)$/i,
-    /^(?:check\s+story)\s+(.+)$/i,
-    /^(?:check\s+poem)\s+(.+)$/i,
-    /^(?:проверь\s+рассказ)\s+(.+)$/i,
-    /^(?:проверь\s+стих)\s+(.+)$/i
-  ];
-
-  for (const re of patterns) {
-    const m = raw.match(re);
-    if (m && m[1]) return m[1].trim();
-  }
-
-  if (/^(?:проверь|проверьте|check|проверить)\b/i.test(raw)) return "";
-  return null;
-}
-
-function parseQuestion(text){
-  const raw = text.trim();
-  const patterns = [
-    /^(?:вопрос|question)\s*(.+)$/i,
-    /^(?:ответь\s+на\s+вопрос)\s*(.+)$/i,
-    /^(?:ответь)\s*(.+)$/i,
-    /^(?:объясни)\s*(.+)$/i,
-    /^(?:что\s+такое)\s*(.+)$/i,
-    /^(?:что\s+это)\s*(.+)$/i,
-    /^(?:what\s+is)\s*(.+)$/i,
-    /^(?:tell\s+me\s+about)\s*(.+)$/i,
-    /^(?:can\s+you\s+explain)\s*(.+)$/i,
-    /^(?:explain)\s*(.+)$/i
-  ];
-
-  for (const re of patterns) {
-    const m = raw.match(re);
-    if (m && m[1]) return m[1].trim();
-  }
-
-  if (/^(?:вопрос|question|ответь|объясни|что\s+такое|what\s+is|explain)\b/i.test(raw)) return "";
-  return null;
-}
-
-function startVoice(){
-  if(!("webkitSpeechRecognition" in window)){
-    alert(lang === "RU" ? "Голосовой ввод не поддерживается" : "Voice input is not supported");
-    return;
-  }
-
-  const rec = new webkitSpeechRecognition();
-  rec.lang = lang === "RU" ? "ru-RU" : "en-US";
-  rec.onresult = e => {
-    document.getElementById("userInput").value = e.results[0][0].transcript;
-    sendMessage();
+const EXAMPLES = {
+  RU:[
+    'Доклад пчёлы','Доклад Великая Отечественная война',
+    'Проверь: I goes to school every day.',
+    'Проверь: Он пришёл вчера в школе.',
+    'Переведи: Привет, как дела?',
+    'Переведи на французский: Я люблю читать',
+    'Напиши сочинение: Моя любимая книга',
+    'Напиши сочинение: Дружба — это главное',
+    'Перескажи: Photosynthesis is the process by which plants make food from sunlight.',
+    'Улучши текст: The cat sit on mat and he sleep.',
+    'Объясни правило: Present Perfect',
+    'Объясни правило: Склонение существительных',
+    'Вопрос: Что такое метафора?',
+    'Вопрос: В чём разница между "affect" и "effect"?',
+  ],
+  EN:[
+    'Report bees','Report World War II',
+    'Check: I goes to school every day.',
+    "Check: She don't like apples.",
+    'Translate: Привет, как дела?',
+    'Translate to Spanish: I love reading',
+    'Write essay: My favourite book',
+    'Write essay: Friendship is important',
+    'Retell: Фотосинтез — процесс, при котором растения производят пищу из солнечного света.',
+    'Improve: The cat sit on mat and he sleep.',
+    'Explain rule: Past Simple vs Past Perfect',
+    'Explain rule: Articles in English',
+    'Question: What is a metaphor?',
+    'Question: What is the difference between "affect" and "effect"?',
+  ]
+};
+
+window.setLang = l => {
+  LANG = l;
+  localStorage.setItem('fmine_lang', l);
+  document.getElementById('lpRU').classList.toggle('on', l === 'RU');
+  document.getElementById('lpEN').classList.toggle('on', l === 'EN');
+  applyTranslations();
+  showToast(l === 'RU' ? '🇷🇺 Русский' : '🇬🇧 English');
+};
+
+function applyTranslations() {
+  const map = {
+    backBtn:'backBtn', statMsgLbl:'statMsg', statRepLbl:'statRep', statChkLbl:'statChk',
+    sbFeatTitle:'sbFeat', sbExTitle:'sbEx',
+    sbReport:'sbReport', sbReportDesc:'sbReportDesc',
+    sbCheck:'sbCheck', sbCheckDesc:'sbCheckDesc',
+    sbTranslate:'sbTranslate', sbRetell:'sbRetell', sbRetellDesc:'sbRetellDesc',
+    sbEssay:'sbEssay', sbEssayDesc:'sbEssayDesc',
+    sbQuestion:'sbQuestion', sbQuestionDesc:'sbQuestionDesc',
+    sbImprove:'sbImprove', sbImproveDesc:'sbImproveDesc',
+    sbRule:'sbRule', sbRuleDesc:'sbRuleDesc',
+    wTitle:'wTitle', wSub:'wSub'
   };
-  rec.start();
+  for (const [id, key] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(key);
+  }
+  msgInput.placeholder = t('placeholder');
+  renderQuickList();
 }
 
-async function handleText(text){
-  const smallTalk = getSmallTalkReply(text);
-  if(smallTalk){
-    addMessage("Bot", smallTalk, "bot");
+function renderQuickList() {
+  document.getElementById('quickList').innerHTML =
+    EXAMPLES[LANG].map(e => `<div class="qex" onclick="ex(${JSON.stringify(e)})">${e}</div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// AI STATUS BADGE
+// ══════════════════════════════════════════════════════
+function setAiStatus(state) {
+  const dot = document.getElementById('aiDot');
+  const label = document.getElementById('aiLabel');
+  if (!dot || !label) return;
+  dot.className = 'ai-dot ' + (state === 'ready' ? 'ready' : state === 'busy' ? 'busy' : state === 'err' ? 'err' : '');
+  label.textContent = t(state === 'ready' ? 'aiReady' : state === 'busy' ? 'aiThinking' : 'aiErr');
+}
+
+// ══════════════════════════════════════════════════════
+// WIKIPEDIA API
+// ══════════════════════════════════════════════════════
+async function fetchWikiFacts(topic) {
+  try {
+    const wikiLang = LANG === 'RU' ? 'ru' : 'en';
+    const searchUrl = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(topic)}&srlimit=3&format=json&origin=*`;
+    const sRes = await fetch(searchUrl);
+    const sData = await sRes.json();
+    const results = sData?.query?.search || [];
+    if (!results.length) return '';
+    const best = results[0];
+    const summUrl = `https://${wikiLang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(best.title)}`;
+    const sumRes = await fetch(summUrl);
+    const sumData = await sumRes.json();
+    return sumData?.extract || '';
+  } catch(e) { return ''; }
+}
+
+// ══════════════════════════════════════════════════════
+// CLAUDE AI — FIXED: added required headers
+// ══════════════════════════════════════════════════════
+async function callAI(systemPrompt, userMessage) {
+  setAiStatus('busy');
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,                              // FIX: was missing
+      'anthropic-version': '2023-06-01',                 // FIX: was missing
+      'anthropic-dangerous-direct-browser-access': 'true' // required for browser
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }]
+    })
+  });
+
+  if (!resp.ok) {
+    const e = await resp.json().catch(() => ({}));
+    setAiStatus('err');
+    throw new Error(e.error?.message || `HTTP ${resp.status}`);
+  }
+
+  const data = await resp.json();
+  setAiStatus('ready');
+  return data.content?.map(b => b.text || '').join('') || '';
+}
+
+// ══════════════════════════════════════════════════════
+// INTENT DETECTION
+// ══════════════════════════════════════════════════════
+function detectIntent(text) {
+  const lo = text.toLowerCase().trim();
+
+  if (/^(доклад|реферат|напиши доклад|сделай доклад|составь доклад|подготовь доклад|report|essay on|write report about)\b/.test(lo))
+    return { type: 'report', topic: text.replace(/^(доклад|реферат|напиши\s+доклад|сделай\s+доклад|составь\s+доклад|подготовь\s+доклад|report\s*on?|essay\s*on?|write\s+report\s+about)\s*/i, '').trim() };
+
+  if (/^(проверь|проверьте|проверить|check|grammar check|проверь текст|check text|check:)\s*/.test(lo))
+    return { type: 'check', text: text.replace(/^(проверь|проверьте|проверить|check|grammar check|проверь текст|check text|check:)\s*/i, '').trim() };
+
+  if (/^(переведи|перевести|перевод|translate|переведи на|translate to)\b/.test(lo))
+    return { type: 'translate', text: text.replace(/^(переведи|перевести|перевод|translate)\s*/i, '').trim() };
+
+  if (/^(перескажи|перескажите|пересказ|retell|summarize|summary|краткое изложение)\b/.test(lo))
+    return { type: 'retell', text: text.replace(/^(перескажи|перескажите|пересказ|retell|summarize|summary|краткое изложение)\s*/i, '').trim() };
+
+  if (/^(напиши сочинение|составь сочинение|сочинение на тему|сочинение:|write essay|essay:|write a short essay|write composition)\b/.test(lo))
+    return { type: 'essay', topic: text.replace(/^(напиши сочинение|составь сочинение|сочинение на тему|сочинение:|write essay|essay:|write a short essay|write composition)\s*/i, '').trim() };
+
+  if (/^(улучши|улучшить|исправь и улучши|improve|rewrite|make better|улучши текст|improve text|улучши:)\b/.test(lo))
+    return { type: 'improve', text: text.replace(/^(улучши|улучшить|исправь и улучши|improve|rewrite|make better|улучши текст|improve text|улучши:)\s*/i, '').trim() };
+
+  if (/^(объясни правило|объясни|расскажи о правиле|explain rule|explain|grammar rule|объясни:)\b/.test(lo))
+    return { type: 'rule', topic: text.replace(/^(объясни правило|объясни|расскажи о правиле|explain rule|explain|grammar rule|объясни:)\s*/i, '').trim() };
+
+  if (/^(вопрос|ответь|ответь на вопрос|question|answer|tell me about|вопрос:|question:)\b/.test(lo))
+    return { type: 'question', q: text.replace(/^(вопрос|ответь|ответь на вопрос|question|answer|tell me about|вопрос:|question:)\s*/i, '').trim() };
+
+  if (/^(привет|hello|hi|hey|здравствуй|хай)[\s!?]*$/.test(lo))
+    return { type: 'greet' };
+
+  return { type: 'open', text };
+}
+
+// ══════════════════════════════════════════════════════
+// AI SYSTEM PROMPTS
+// ══════════════════════════════════════════════════════
+function buildSystemPrompt(intent) {
+  const isEN = LANG === 'EN';
+  const base = isEN
+    ? `You are an intelligent language assistant called "F‑Mine Language Bot". You help students with language tasks. Always respond in English unless the user's text is in Russian (then respond in Russian). Be clear, educational, and friendly.`
+    : `Ты умный языковой помощник "F‑Mine Language Bot". Помогаешь ученикам с языковыми задачами. Всегда отвечай на русском, если задание на русском, и на английском, если задание на английском. Будь понятным, образовательным и дружелюбным.`;
+
+  const prompts = {
+    report: isEN
+      ? `${base}\n\nYour task: write a structured school report/essay. Use the Wikipedia facts provided. Format:\n📘 Report: [topic]\n\n🔹 Introduction:\n[2-3 sentences introducing the topic]\n\n🔹 Main Part:\n[4-6 sentences with key facts, structured clearly]\n\n🔹 Conclusion:\n[2 sentences summarizing importance]\n\n🔹 Interesting Fact:\n[One surprising fact]\n\nBe accurate, educational, and suitable for school age.`
+      : `${base}\n\nТвоя задача: написать структурированный школьный доклад/реферат. Используй факты из Wikipedia. Формат:\n📘 Доклад на тему: [тема]\n\n🔹 Введение:\n[2-3 предложения, вводящие в тему]\n\n🔹 Основная часть:\n[4-6 предложений с ключевыми фактами, структурированно]\n\n🔹 Заключение:\n[2 предложения с выводом]\n\n🔹 Интересный факт:\n[Один необычный факт по теме]\n\nПиши точно, образовательно и подходяще для школьника.`,
+
+    check: isEN
+      ? `${base}\n\nYour task: check the user's text for grammar, spelling, and style errors. Format your response:\n\n✅ Grammar Check\n\nFor each error found:\n❌ Error: [quote the wrong part]\n✏️ Correction: [correct version]\n💡 Rule: [brief explanation of the rule]\n\nAt the end:\n📊 Total errors: X\n🎯 Level: [beginner/intermediate/advanced]\n\nIf no errors: "✅ No errors found! Your text is correct."\n\nBe encouraging and educational.`
+      : `${base}\n\nТвоя задача: проверить текст пользователя на ошибки в грамматике, орфографии и стиле. Формат ответа:\n\n✅ Проверка текста\n\nДля каждой ошибки:\n❌ Ошибка: [цитата неправильного фрагмента]\n✏️ Исправление: [правильный вариант]\n💡 Правило: [краткое объяснение правила]\n\nВ конце:\n📊 Всего ошибок: X\n🎯 Уровень: [начинающий/средний/продвинутый]\n\nЕсли ошибок нет: "✅ Ошибок не найдено! Текст написан правильно."\n\nБудь поощряющим и образовательным.`,
+
+    translate: isEN
+      ? `${base}\n\nYour task: translate the user's text. Detect the source language automatically. If the user specifies a target language (e.g. "to Spanish"), use that. Otherwise translate RU→EN or EN→RU.\n\nFormat:\n🌐 Translation\n\nOriginal: [original text]\nTranslation: [translated text]\n\n💡 Note: [1 short grammar or vocabulary tip from this translation, if interesting]`
+      : `${base}\n\nТвоя задача: перевести текст пользователя. Автоматически определи исходный язык. Если пользователь указал целевой язык (например "на французский"), используй его. Иначе переводи RU→EN или EN→RU.\n\nФормат:\n🌐 Перевод\n\nОригинал: [оригинальный текст]\nПеревод: [переведённый текст]\n\n💡 Примечание: [1 короткий совет по грамматике или лексике из этого перевода, если интересно]`,
+
+    retell: isEN
+      ? `${base}\n\nYour task: create a clear and brief retelling/summary of the user's text. Format:\n\n📝 Summary\n\nMain idea: [1 sentence]\n\nKey points:\n• [point 1]\n• [point 2]\n• [point 3 if needed]\n\nConclusion: [1 sentence]\n\nKeep it concise and in simple language suitable for school age.`
+      : `${base}\n\nТвоя задача: написать чёткий краткий пересказ текста пользователя. Формат:\n\n📝 Пересказ\n\nГлавная мысль: [1 предложение]\n\nКлючевые моменты:\n• [момент 1]\n• [момент 2]\n• [момент 3 при необходимости]\n\nВывод: [1 предложение]\n\nПиши кратко и простым языком для школьника.`,
+
+    essay: isEN
+      ? `${base}\n\nYour task: write a short school essay/composition on the given topic. Format:\n\n✏️ Essay: [topic]\n\n[Introduction paragraph — 2-3 sentences]\n\n[Main paragraph — 3-4 sentences with arguments and examples]\n\n[Conclusion — 2 sentences]\n\nWrite in a clear, expressive style appropriate for a school student.`
+      : `${base}\n\nТвоя задача: написать короткое школьное сочинение на заданную тему. Формат:\n\n✏️ Сочинение на тему: [тема]\n\n[Вступление — 2-3 предложения]\n\n[Основная часть — 3-4 предложения с аргументами и примерами]\n\n[Заключение — 2 предложения]\n\nПиши ясным, выразительным языком, подходящим для школьника.`,
+
+    improve: isEN
+      ? `${base}\n\nYour task: improve the user's text — fix errors, improve style, clarity, and flow. Format:\n\n✨ Improved Version:\n[improved text]\n\n📝 Changes made:\n• [change 1]\n• [change 2]\n• [change 3 etc.]\n\n💡 Style tip: [one useful writing tip]`
+      : `${base}\n\nТвоя задача: улучшить текст пользователя — исправить ошибки, улучшить стиль, ясность и читаемость. Формат:\n\n✨ Улучшенный вариант:\n[улучшенный текст]\n\n📝 Что изменено:\n• [изменение 1]\n• [изменение 2]\n• [изменение 3 и т.д.]\n\n💡 Совет по стилю: [один полезный совет по написанию]`,
+
+    rule: isEN
+      ? `${base}\n\nYour task: explain a grammar or language rule clearly for a school student. Format:\n\n📖 Rule: [rule name]\n\n📌 What it is:\n[Simple explanation in 2-3 sentences]\n\n✅ When to use it:\n[Clear conditions]\n\n📝 Examples:\n1. [example 1 with translation if helpful]\n2. [example 2]\n3. [example 3]\n\n⚠️ Common mistake:\n[Most frequent error + correction]\n\n💡 Memory trick:\n[Helpful tip to remember the rule]`
+      : `${base}\n\nТвоя задача: объяснить грамматическое или языковое правило понятно для школьника. Формат:\n\n📖 Правило: [название правила]\n\n📌 Что это:\n[Простое объяснение в 2-3 предложениях]\n\n✅ Когда использовать:\n[Чёткие условия]\n\n📝 Примеры:\n1. [пример 1 с переводом если нужно]\n2. [пример 2]\n3. [пример 3]\n\n⚠️ Частая ошибка:\n[Самая распространённая ошибка + исправление]\n\n💡 Подсказка для запоминания:\n[Полезный совет]`,
+
+    question: isEN
+      ? `${base}\n\nYour task: answer the user's question about language, grammar, words, or literature clearly and educationally. Be precise but not overly long. If you know the answer from your knowledge, give it. Add a practical example if it helps.`
+      : `${base}\n\nТвоя задача: ответить на вопрос пользователя о языке, грамматике, словах или литературе ясно и образовательно. Будь точным, но не слишком длинным. Если знаешь ответ — дай его. Добавь практический пример если поможет.`,
+
+    open: isEN
+      ? `${base}\n\nAnswer the user's language or text request helpfully. If it's not related to language/text/education, politely redirect to language topics.`
+      : `${base}\n\nОтветь на запрос пользователя о языке или тексте полезно. Если тема не связана с языком/текстом/учёбой, мягко перенаправь к языковым темам.`,
+  };
+
+  return prompts[intent] || prompts.open;
+}
+
+// ══════════════════════════════════════════════════════
+// HANDLE MESSAGE
+// ══════════════════════════════════════════════════════
+async function handleMessage(text) {
+  const intent = detectIntent(text);
+
+  // Greet
+  if (intent.type === 'greet') {
+    const greets = LANG === 'RU'
+      ? [
+          'Привет! 👋 Я языковой бот F‑Mine. Могу написать доклад, проверить текст, перевести или объяснить правило. Попробуй написать: "Доклад пчёлы" или "Проверь: I goes to school"',
+          'Здравствуй! 😊 Чем могу помочь? Напиши тему доклада или текст для проверки.',
+          'Привет! 👋 Готов помочь с языком. Напиши что нужно!'
+        ]
+      : [
+          "Hello! 👋 I'm the F‑Mine Language Bot. I can write reports, check grammar, translate or explain rules. Try: \"Report bees\" or \"Check: I goes to school\"",
+          'Hi there! 😊 How can I help? Write a report topic or text to check.',
+          "Hello! 👋 Ready to help with language. What do you need?"
+        ];
+    addMessage('bot', greets[Math.floor(Math.random() * greets.length)]);
     return;
   }
 
-  const reportTopic = parseReportTopic(text);
-  if(reportTopic !== null){
-    if(!reportTopic){
-      addMessage("Bot", t("reportNeedTopic"), "bot");
+  // REPORT
+  if (intent.type === 'report') {
+    const topic = intent.topic;
+    if (!topic) {
+      addMessage('bot', LANG === 'RU'
+        ? 'Напиши тему после слова «Доклад». Например: Доклад пчёлы'
+        : 'Write a topic after "Report". Example: Report bees');
       return;
     }
+    showThinking();
+    try {
+      const [wikiFacts, aiReport] = await Promise.all([
+        fetchWikiFacts(topic),
+        callAI(
+          buildSystemPrompt('report'),
+          LANG === 'RU'
+            ? `Напиши школьный доклад на тему: "${topic}"`
+            : `Write a school report on the topic: "${topic}"`
+        )
+      ]);
 
-    addMessage("Bot", t("reportLoading"), "bot");
-    const report = await fetchWikiReport(reportTopic);
-    const formatted = formatReport(reportTopic, report);
-    saveLastReport(formatted);
-    addMessage("Bot", formatted, "bot");
+      hideThinking();
+      let finalText = aiReport;
+
+      if (wikiFacts && wikiFacts.length > 50) {
+        const factSnippet = wikiFacts.slice(0, 200) + (wikiFacts.length > 200 ? '...' : '');
+        finalText += LANG === 'RU'
+          ? `\n\n📌 Факт из Wikipedia:\n${factSnippet}`
+          : `\n\n📌 Wikipedia fact:\n${factSnippet}`;
+      }
+
+      lastReport = finalText;
+      addMessage('bot', finalText, true);
+      incStat('statRep');
+      if (window.saveLangStatToFirebase) window.saveLangStatToFirebase('report');
+    } catch(e) {
+      hideThinking();
+      addMessage('bot', t('noConn', e.message));
+    }
     return;
   }
 
-  const checkTarget = parseCheckText(text);
-  if(checkTarget !== null){
-    if(!checkTarget){
-      addMessage("Bot", t("checkNeedText"), "bot");
+  // CHECK
+  if (intent.type === 'check') {
+    const txt = intent.text;
+    if (!txt) {
+      addMessage('bot', LANG === 'RU'
+        ? 'Напиши текст после «Проверь:». Например: Проверь: I goes to school'
+        : 'Write text after "Check:". Example: Check: I goes to school');
       return;
     }
-
-    addMessage("Bot", t("checkLoading"), "bot");
-    await checkText(checkTarget);
+    showThinking();
+    try {
+      const result = await callAI(buildSystemPrompt('check'), txt);
+      hideThinking();
+      addMessage('bot', result, true);
+      incStat('statChk');
+      if (window.saveLangStatToFirebase) window.saveLangStatToFirebase('check');
+    } catch(e) {
+      hideThinking();
+      addMessage('bot', t('noConn', e.message));
+    }
     return;
   }
 
-  const question = parseQuestion(text);
-  if(question !== null){
-    if(!question){
-      addMessage("Bot", t("questionNeedText"), "bot");
+  // TRANSLATE
+  if (intent.type === 'translate') {
+    if (!intent.text) {
+      addMessage('bot', LANG === 'RU'
+        ? 'Напиши текст после «Переведи:». Например: Переведи: Hello world'
+        : 'Write text after "Translate:". Example: Translate: Привет мир');
       return;
     }
-
-    addMessage("Bot", t("questionLoading"), "bot");
-    answerQuestion(question);
+    showThinking();
+    try {
+      const result = await callAI(buildSystemPrompt('translate'), intent.text);
+      hideThinking();
+      addMessage('bot', result, true);
+    } catch(e) {
+      hideThinking();
+      addMessage('bot', t('noConn', e.message));
+    }
     return;
   }
 
-  addMessage("Bot", t("commandHint"), "bot");
-}
-
-function formatReport(topic, extract){
-  const sentences = splitSentences(extract);
-
-  const intro = sentences[0] || extract || (lang === "RU" ? "Тема требует дополнительной информации." : "The topic needs more information.");
-  const main = sentences.slice(1, 4).join(" ") || intro;
-  const concl = sentences.slice(4).join(" ") || (lang === "RU" ? "Таким образом, тема важна и её полезно изучать." : "Thus, the topic is important and useful to study.");
-
-  return `${t("reportLabel")}${topic}
-
-${t("introLabel")}
-${intro}
-
-${t("mainLabel")}
-${main}
-
-${t("conclLabel")}
-${concl}`;
-}
-
-function sendMessage(){
-  const input = document.getElementById("userInput");
-  const text = input.value.trim();
-  if(!text) return;
-
-  if(text === lastUserText){
-    addMessage("Bot", t("sameText"), "bot");
-    input.value = "";
+  // RETELL
+  if (intent.type === 'retell') {
+    if (!intent.text) {
+      addMessage('bot', LANG === 'RU'
+        ? 'Напиши текст для пересказа после «Перескажи:»'
+        : 'Write text to summarize after "Retell:"');
+      return;
+    }
+    showThinking();
+    try {
+      const result = await callAI(buildSystemPrompt('retell'), intent.text);
+      hideThinking();
+      addMessage('bot', result, true);
+    } catch(e) {
+      hideThinking();
+      addMessage('bot', t('noConn', e.message));
+    }
     return;
   }
 
-  lastUserText = text;
-  addMessage("Вы", text, "user");
-  input.value = "";
-  handleText(text);
+  // ESSAY
+  if (intent.type === 'essay') {
+    if (!intent.topic) {
+      addMessage('bot', LANG === 'RU'
+        ? 'Напиши тему сочинения. Например: Напиши сочинение: Моя семья'
+        : 'Write the essay topic. Example: Write essay: My family');
+      return;
+    }
+    showThinking();
+    try {
+      const result = await callAI(
+        buildSystemPrompt('essay'),
+        LANG === 'RU' ? `Тема: ${intent.topic}` : `Topic: ${intent.topic}`
+      );
+      hideThinking();
+      addMessage('bot', result, true);
+    } catch(e) {
+      hideThinking();
+      addMessage('bot', t('noConn', e.message));
+    }
+    return;
+  }
+
+  // IMPROVE
+  if (intent.type === 'improve') {
+    if (!intent.text) {
+      addMessage('bot', LANG === 'RU'
+        ? 'Напиши текст после «Улучши:». Например: Улучши: The cat sit on mat'
+        : 'Write text after "Improve:". Example: Improve: The cat sit on mat');
+      return;
+    }
+    showThinking();
+    try {
+      const result = await callAI(buildSystemPrompt('improve'), intent.text);
+      hideThinking();
+      addMessage('bot', result, true);
+    } catch(e) {
+      hideThinking();
+      addMessage('bot', t('noConn', e.message));
+    }
+    return;
+  }
+
+  // RULE
+  if (intent.type === 'rule') {
+    if (!intent.topic) {
+      addMessage('bot', LANG === 'RU'
+        ? 'Напиши название правила. Например: Объясни правило: Present Simple'
+        : 'Write the rule name. Example: Explain rule: Present Simple');
+      return;
+    }
+    showThinking();
+    try {
+      const result = await callAI(
+        buildSystemPrompt('rule'),
+        LANG === 'RU' ? `Правило: ${intent.topic}` : `Rule: ${intent.topic}`
+      );
+      hideThinking();
+      addMessage('bot', result, true);
+    } catch(e) {
+      hideThinking();
+      addMessage('bot', t('noConn', e.message));
+    }
+    return;
+  }
+
+  // QUESTION / OPEN
+  showThinking();
+  try {
+    const sys = buildSystemPrompt(intent.type === 'question' ? 'question' : 'open');
+    const msg = intent.type === 'question' ? intent.q : intent.text;
+    const result = await callAI(sys, msg);
+    hideThinking();
+    addMessage('bot', result, true);
+  } catch(e) {
+    hideThinking();
+    addMessage('bot', t('noConn', e.message));
+  }
 }
 
-function applyThemeFromStorage(){
-  const theme = localStorage.getItem(LS_THEME) || "dark";
-  if(theme === "light") document.body.classList.add("light");
+// ══════════════════════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════════════════════
+function addMessage(role, content, isHtml = false) {
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + role;
+  const av = document.createElement('div');
+  av.className = 'msg-avatar ' + (role === 'bot' ? 'bot-av' : 'user-av');
+  av.textContent = role === 'bot' ? '💬' : '👤';
+  const wrap = document.createElement('div');
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  if (isHtml) bubble.innerHTML = escapeAndFormat(content);
+  else bubble.textContent = content;
+  const time = document.createElement('div');
+  time.className = 'msg-time';
+  time.textContent = new Date().toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
+  wrap.appendChild(bubble);
+  wrap.appendChild(time);
+  row.appendChild(av);
+  row.appendChild(wrap);
+  chatWindow.appendChild(row);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  incStat('statMsg');
+  if (window.saveLangStatToFirebase) window.saveLangStatToFirebase('message');
 }
 
-function applyLangFromStorage(){
-  document.documentElement.lang = lang === "RU" ? "ru" : "en";
-  document.getElementById("btnRU").classList.toggle("active", lang === "RU");
-  document.getElementById("btnEN").classList.toggle("active", lang === "EN");
-  document.getElementById("userInput").placeholder = t("input");
-  document.getElementById("sendBtn").textContent = t("send");
-  document.getElementById("voiceBtn").textContent = t("voice");
-  document.getElementById("clearBtn").textContent = t("clear");
-  document.getElementById("exitBtn").textContent = t("exit");
-  document.querySelector("h1").textContent = UI[lang].title;
+// FIXED: escape first, then apply formatting spans (same double-encoding bug as math bot)
+function escapeAndFormat(text) {
+  let s = String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Emoji-led lines → pink section headers
+  s = s.replace(/((?:📘|🔹|✏️|📝|📖|✅|⚠️|💡|📌|📊|🌐|❌|✨|🎯)[^\n]+)/g,
+    '<span class="section-head">$1</span>');
+
+  // Bold **text**
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+
+  // Newlines
+  s = s.replace(/\n/g, '<br>');
+
+  return s;
 }
 
-window.onload = () => {
-  applyThemeFromStorage();
-  applyLangFromStorage();
-  renderSavedChat();
+function showThinking() {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.id = 'thinkRow';
+  const av = document.createElement('div');
+  av.className = 'msg-avatar bot-av';
+  av.textContent = '💬';
+  const b = document.createElement('div');
+  b.className = 'thinking-bubble';
+  for (let i = 0; i < 3; i++) {
+    const d = document.createElement('div');
+    d.className = 't-dot';
+    b.appendChild(d);
+  }
+  row.appendChild(av);
+  row.appendChild(b);
+  chatWindow.appendChild(row);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+function hideThinking() {
+  const el = document.getElementById('thinkRow');
+  if (el) el.remove();
+}
+
+function incStat(id) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = parseInt(el.textContent || '0') + 1;
+}
+
+// ══════════════════════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════════════════════
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sbOverlay');
+  const open = sb.classList.toggle('open');
+  ov.classList.toggle('show', open);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════════
+// SEND
+// ══════════════════════════════════════════════════════
+window.sendMessage = async function() {
+  if (isBusy) return;
+  const text = msgInput.value.trim();
+  if (!text) return;
+  isBusy = true;
+  sendBtn.disabled = true;
+  addMessage('user', text);
+  msgInput.value = '';
+  msgInput.style.height = 'auto';
+  if (window.innerWidth <= 900) closeSidebar();
+  await handleMessage(text);
+  isBusy = false;
+  sendBtn.disabled = false;
 };
+
+msgInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+msgInput.addEventListener('input', () => {
+  msgInput.style.height = 'auto';
+  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+});
+
+window.clearInput = () => {
+  msgInput.value = '';
+  msgInput.style.height = 'auto';
+  msgInput.focus();
+};
+
+window.ex = s => {
+  msgInput.value = s;
+  msgInput.dispatchEvent(new Event('input'));
+  msgInput.focus();
+  if (window.innerWidth <= 900) closeSidebar();
+};
+
+window.clearChat = () => {
+  chatWindow.innerHTML = '';
+  const wb = document.createElement('div');
+  wb.className = 'welcome';
+  wb.innerHTML = `
+    <div class="welcome-title">💬 ${t('wTitle')}</div>
+    <div class="welcome-sub">${t('wSub')}</div>
+    <div class="welcome-chips">
+      <span class="wchip wchip-a" onclick="ex('${LANG==='RU'?'Доклад пчёлы':'Report bees'}')">${LANG==='RU'?'📚 Доклад пчёлы':'📚 Report bees'}</span>
+      <span class="wchip wchip-g" onclick="ex('${LANG==='RU'?'Проверь: I goes to school.':'Check: I goes to school.'}')">${LANG==='RU'?'✍️ Проверить':'✍️ Check text'}</span>
+      <span class="wchip wchip-c" onclick="ex('${LANG==='RU'?'Переведи: Привет мир':'Translate: Привет мир'}')">${LANG==='RU'?'🌐 Перевести':'🌐 Translate'}</span>
+      <span class="wchip wchip-p" onclick="ex('${LANG==='RU'?'Напиши сочинение: Осень':'Write essay: Autumn'}')">${LANG==='RU'?'✏️ Сочинение':'✏️ Essay'}</span>
+      <span class="wchip wchip-v" onclick="ex('${LANG==='RU'?'Объясни правило: Past Simple':'Explain rule: Past Simple'}')">${LANG==='RU'?'📖 Правило':'📖 Rule'}</span>
+    </div>`;
+  chatWindow.appendChild(wb);
+  showToast(t('cleared'));
+};
+
+// ══════════════════════════════════════════════════════
+// VOICE
+// ══════════════════════════════════════════════════════
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const micBtn = document.getElementById('micBtn');
+if (SR) {
+  const rec = new SR();
+  rec.interimResults = false;
+  let isRec = false;
+  micBtn.addEventListener('click', () => {
+    if (isRec) { rec.stop(); return; }
+    rec.lang = LANG === 'RU' ? 'ru-RU' : 'en-US';
+    try {
+      rec.start();
+      isRec = true;
+      micBtn.classList.add('rec');
+      micBtn.textContent = '⏹';
+      showToast(t('micStart'));
+    } catch { showToast(t('micErr')); }
+  });
+  rec.addEventListener('result', e => {
+    msgInput.value = e.results[0][0].transcript;
+    msgInput.dispatchEvent(new Event('input'));
+  });
+  rec.addEventListener('end', () => { isRec = false; micBtn.classList.remove('rec'); micBtn.textContent = '🎤'; });
+  rec.addEventListener('error', () => { isRec = false; micBtn.classList.remove('rec'); micBtn.textContent = '🎤'; showToast(t('micErr')); });
+} else {
+  micBtn.style.display = 'none';
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+LANG = localStorage.getItem('fmine_lang') || 'RU';
+document.getElementById('lpRU').classList.toggle('on', LANG === 'RU');
+document.getElementById('lpEN').classList.toggle('on', LANG === 'EN');
+applyTranslations();
+setAiStatus('ready');
+
+setTimeout(() => {
+  addMessage('bot', LANG === 'RU'
+    ? 'Привет! 👋 Я языковой бот F‑Mine на базе AI.\n\nЯ умею:\n📚 Писать доклады и рефераты\n✍️ Проверять грамматику и стиль\n🌐 Переводить тексты\n✏️ Писать сочинения\n📝 Делать пересказы\n✨ Улучшать тексты\n📖 Объяснять правила языка\n\nПопробуй написать: "Доклад пчёлы" или "Проверь: I goes to school"'
+    : "Hello! 👋 I'm the F‑Mine Language Bot powered by AI.\n\nI can:\n📚 Write reports and essays\n✍️ Check grammar and style\n🌐 Translate texts\n✏️ Write compositions\n📝 Create summaries\n✨ Improve your texts\n📖 Explain grammar rules\n\nTry: \"Report bees\" or \"Check: I goes to school\"");
+}, 300);
 </script>
-<script src="pomo-shared.js"></script>
 </body>
 </html>
