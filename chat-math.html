@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -41,31 +42,37 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
-/* HEADER */
 .hd{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
   padding:12px clamp(12px,3vw,24px);background:rgba(4,5,13,.88);
   backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
-  border-bottom:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,.85),0 0 60px rgba(167,139,250,.07);gap:10px}
+  border-bottom:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,.85),0 0 60px rgba(167,139,250,.07);gap:10px;flex-wrap:wrap}
 .logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;text-decoration:none;display:flex;align-items:center;flex-shrink:0}
 .logo-f{color:var(--a);text-shadow:0 0 28px var(--ag)}
 .logo-dot{width:5px;height:5px;background:var(--v);border-radius:50%;margin:0 3px;align-self:center;margin-bottom:4px;animation:pdot 2s ease-in-out infinite}
 @keyframes pdot{0%,100%{box-shadow:0 0 10px var(--vg)}50%{box-shadow:0 0 26px rgba(167,139,250,.8)}}
 .logo-mine{color:var(--text)}
-.hd-right{display:flex;gap:6px;align-items:center}
+.hd-right{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .lang-pill{display:flex;align-items:center;background:var(--glass2);border:1.5px solid var(--border2);border-radius:999px;padding:3px;gap:2px}
 .lp-btn{padding:4px 12px;border:none;border-radius:999px;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;transition:var(--ease);color:var(--text3);background:transparent}
 .lp-btn.on{background:linear-gradient(135deg,var(--v),var(--v2));color:#fff;box-shadow:0 2px 14px var(--vg)}
 .lp-btn:not(.on):hover{color:var(--text);background:var(--glass3)}
-.hd-btn{padding:6px 13px;border:1.5px solid var(--border2);border-radius:9px;background:var(--glass);color:var(--text2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:var(--ease)}
+.hd-btn{padding:6px 13px;border:1.5px solid var(--border2);border-radius:9px;background:var(--glass);color:var(--text2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:var(--ease);white-space:nowrap}
 .hd-btn:hover{background:var(--glass3);border-color:var(--v);color:var(--v)}
 .hd-btn:active{transform:scale(.92)}
+
+/* EXPLAIN TOGGLE */
+.explain-toggle{display:flex;align-items:center;gap:6px;padding:4px 10px;border:1.5px solid var(--border2);border-radius:999px;background:var(--glass);cursor:pointer;transition:var(--ease);user-select:none}
+.explain-toggle.on{border-color:var(--a);background:rgba(251,191,36,.08)}
+.explain-toggle .et-icon{font-size:14px;transition:var(--ease)}
+.explain-toggle.on .et-icon{color:var(--a)}
+.explain-toggle .et-label{font-size:11px;font-weight:700;color:var(--text3);transition:var(--ease)}
+.explain-toggle.on .et-label{color:var(--a)}
+.explain-toggle:hover{border-color:var(--a)}
+
 .sb-toggle{display:none;width:36px;height:36px;border:1.5px solid var(--border2);border-radius:9px;background:var(--glass);color:var(--text2);font-size:16px;cursor:pointer;transition:var(--ease);align-items:center;justify-content:center}
 .sb-toggle:hover{border-color:var(--v);color:var(--v)}
 
-/* LAYOUT */
 .layout{display:grid;grid-template-columns:var(--sbw) 1fr;height:calc(100vh - 57px);position:relative;z-index:1}
-
-/* SIDEBAR */
 .sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;box-shadow:2px 0 40px rgba(0,0,0,.5);width:var(--sbw)}
 .sidebar-inner{overflow-y:auto;flex:1;padding-bottom:16px}
 .sb-section{padding:14px 14px 6px}
@@ -84,19 +91,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .stat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff}
 .stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
 
-/* CHAT */
 .chat-main{display:flex;flex-direction:column;height:100%;overflow:hidden;min-width:0}
 .chat-window{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px clamp(10px,3vw,24px);display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
 .chat-window::-webkit-scrollbar{width:4px}
 .chat-window::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
-/* WELCOME */
 .welcome{background:var(--bg3);border:1.5px solid rgba(167,139,250,.2);border-radius:18px;padding:20px;position:relative;overflow:hidden;animation:fadeUp .5s ease both}
 .welcome::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.12),transparent 70%);pointer-events:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .welcome-title{font-family:'Syne',sans-serif;font-size:clamp(16px,3vw,23px);font-weight:800;color:#fff;margin-bottom:5px;position:relative;z-index:1}
 .welcome-sub{font-size:12px;color:var(--text2);line-height:1.6;position:relative;z-index:1}
 .welcome-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;position:relative;z-index:1}
+.welcome-tip{margin-top:10px;font-size:11px;color:var(--text3);font-style:italic;position:relative;z-index:1}
+.welcome-tip b{color:var(--a);font-style:normal}
 .wchip{padding:4px 11px;border-radius:999px;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:var(--ease);border:1px solid;font-weight:500}
 .wchip-v{color:var(--v);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.07)}
 .wchip-c{color:var(--c);border-color:rgba(103,232,249,.3);background:rgba(103,232,249,.06)}
@@ -105,7 +112,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .wchip-a{color:var(--a);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.06)}
 .wchip:hover{transform:translateY(-2px);filter:brightness(1.2)}
 
-/* MESSAGES */
 .msg-row{display:flex;gap:8px;align-items:flex-end;animation:msgIn .28s ease both}
 @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .msg-row.user{flex-direction:row-reverse}
@@ -119,18 +125,21 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .msg-row.bot .msg-time{text-align:left}
 .msg-row.user .msg-time{text-align:right}
 
-/* THINKING */
 .thinking-bubble{display:flex;align-items:center;gap:5px;padding:11px 15px;border-radius:15px;border-bottom-left-radius:3px;background:var(--bg3);border:1.5px solid rgba(167,139,250,.2)}
 .t-dot{width:7px;height:7px;border-radius:50%;background:var(--v);animation:tdot 1.2s ease-in-out infinite}
 .t-dot:nth-child(2){animation-delay:.18s;background:var(--c)}
 .t-dot:nth-child(3){animation-delay:.36s;background:var(--p)}
 @keyframes tdot{0%,80%,100%{transform:scale(.35);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-/* GRAPH inline */
 .graph-msg-wrap{max-width:min(82%,700px);border-radius:14px;overflow:hidden;background:#06080f;border:1.5px solid rgba(167,139,250,.25);box-shadow:var(--sh-md)}
 .graph-msg-wrap canvas{display:block;width:100%;height:auto}
 
-/* INPUT */
+/* EXPLAIN BLOCK */
+.explain-block{background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:10px 13px;margin:8px 0;font-size:13px;line-height:1.6}
+.explain-block .eb-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--a);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.explain-block .eb-body{color:var(--text2);font-size:12.5px}
+.explain-block .eb-body b{color:var(--text)}
+
 .input-bar{padding:12px clamp(10px,3vw,24px);background:rgba(4,5,13,.92);border-top:1px solid var(--border)}
 .input-wrap{display:flex;align-items:flex-end;gap:7px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:15px;padding:6px 7px 6px 14px;transition:var(--ease)}
 .input-wrap:focus-within{border-color:rgba(167,139,250,.5);box-shadow:var(--sh-gv)}
@@ -148,15 +157,26 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .ib-send:active{transform:scale(.92)}
 .ib-send:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 
-/* TOAST */
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(16px);background:#0c0f1e;border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:9px 22px;font-size:13px;font-weight:700;opacity:0;transition:all .3s ease;z-index:9999;pointer-events:none;box-shadow:0 16px 50px rgba(0,0,0,.8)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* MOBILE OVERLAY */
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;backdrop-filter:blur(4px)}
 .sb-overlay.show{display:block}
 
-/* RESPONSIVE */
+/* SETTINGS MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;padding:24px;width:min(420px,90vw);box-shadow:var(--sh-lg)}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:16px}
+.modal-row{margin-bottom:12px}
+.modal-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:4px}
+.modal-input{width:100%;padding:8px 12px;border:1.5px solid var(--border2);border-radius:9px;background:var(--bg3);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;outline:none;transition:var(--ease)}
+.modal-input:focus{border-color:var(--v)}
+.modal-btn{padding:8px 20px;border:none;border-radius:9px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:var(--ease)}
+.modal-btn.primary{background:linear-gradient(135deg,var(--v),var(--v2));color:#fff}
+.modal-btn.secondary{background:var(--glass2);border:1px solid var(--border2);color:var(--text2)}
+.modal-btn:hover{filter:brightness(1.1)}
+
 @media(max-width:900px){
   .sb-toggle{display:flex}
   .layout{grid-template-columns:1fr!important}
@@ -170,6 +190,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   .msg-bubble{font-size:13px;max-width:91%}
   .graph-msg-wrap{max-width:95%}
   .hd-btn.back-lbl{display:none}
+  .explain-toggle .et-label{display:none}
 }
 </style>
 </head>
@@ -185,12 +206,41 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       <button class="lp-btn on" id="lpRU" onclick="setLang('RU')">RU</button>
       <button class="lp-btn" id="lpEN" onclick="setLang('EN')">EN</button>
     </div>
+    <!-- EXPLAIN MODE TOGGLE -->
+    <div class="explain-toggle" id="explainToggle" onclick="toggleExplainMode()" title="Режим объяснений">
+      <span class="et-icon">💡</span>
+      <span class="et-label" id="explainLabel">Объясняй</span>
+    </div>
+    <button class="hd-btn" onclick="openSettings()" title="Настройки">⚙</button>
     <button class="hd-btn" onclick="clearChat()">🗑</button>
     <button class="hd-btn back-lbl" onclick="location.href='lobby.html'" id="backBtn">⬅ Лобби</button>
   </div>
 </header>
 
 <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-box">
+    <div class="modal-title" id="settingsTitle">⚙ Настройки</div>
+    <div class="modal-row">
+      <div class="modal-label" id="apiKeyLabel">Claude API Key (необязательно)</div>
+      <input class="modal-input" id="apiKeyInput" type="password" placeholder="sk-ant-...">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label" id="modelLabel">Модель</div>
+      <select class="modal-input" id="modelSelect">
+        <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+        <option value="claude-opus-4-1-20250805">Claude Opus 4</option>
+        <option value="claude-haiku-4-20250805">Claude Haiku 4</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+      <button class="modal-btn secondary" onclick="closeSettings()" id="settingsCancel">Отмена</button>
+      <button class="modal-btn primary" onclick="saveSettings()" id="settingsSave">Сохранить</button>
+    </div>
+  </div>
+</div>
 
 <div class="layout" id="layout">
   <aside class="sidebar" id="sidebar">
@@ -227,6 +277,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       <div class="welcome" id="welcomeBanner">
         <div class="welcome-title">🤖 <span id="wTitle">Математика Бот — 11 класс</span></div>
         <div class="welcome-sub" id="wSub">Задай любой вопрос — решу и объясню каждый шаг. Уравнения любого типа, неравенства, производные, интегралы, системы, пределы, комбинаторика, геометрия, графики и многое другое.</div>
+        <div class="welcome-tip" id="wTip">💡 Напиши <b>"объясни подробнее"</b> перед задачей для детального разбора или включи кнопку <b>💡 Объясняй</b> вверху.</div>
         <div class="welcome-chips">
           <span class="wchip wchip-v" onclick="ex('x^2 - 5x + 6 = 0')">x²−5x+6=0</span>
           <span class="wchip wchip-c" onclick="ex('производная x^3 + 2x')">d/dx x³+2x</span>
@@ -254,7 +305,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 // ══════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════
-let LANG='RU', isBusy=false;
+let LANG='RU', isBusy=false, explainMode=false;
+let settings=JSON.parse(localStorage.getItem('fmine_settings')||'{"apiKey":"","model":"claude-sonnet-4-20250514"}');
 let stats=JSON.parse(localStorage.getItem('fmine_math_stats')||'{"messages":0,"level":1,"solved":0}');
 const chatWindow=document.getElementById('chatWindow');
 const msgInput=document.getElementById('msgInput');
@@ -271,10 +323,25 @@ const T={
     sbS:'Системы',sbLim:'Пределы',sbComb:'Комбинаторика',sbGeom:'Геометрия',
     sbPct:'Проценты',sbFact:'Разложение',
     wTitle:'Математика Бот — 11 класс',
-    wSub:'Задай любой вопрос — решу и объясню каждый шаг. Уравнения любого типа, неравенства, производные, интегралы, системы, пределы, комбинаторика, геометрия, графики и многое другое.',
+    wSub:'Задай любой вопрос — решу и объясню каждый шаг.',
+    wTip:'💡 Напиши <b>"объясни подробнее"</b> перед задачей для детального разбора или включи кнопку <b>💡 Объясняй</b> вверху.',
     placeholder:'Напиши уравнение, задачу или вопрос...',
+    explainLabel:'Объясняй',explainLabelOff:'Объясняй',
     levelUp:l=>`🎉 Уровень повышен до ${l}!`,
-    cleared:'🗑 Чат очищен',micStart:'🎤 Говори...',micErr:'❌ Ошибка'},
+    cleared:'🗑 Чат очищен',micStart:'🎤 Говори...',micErr:'❌ Ошибка',
+    settingsTitle:'⚙ Настройки',apiKeyLabel:'Claude API Key (необязательно)',
+    modelLabel:'Модель',settingsCancel:'Отмена',settingsSave:'Сохранить',
+    settingsSaved:'✅ Настройки сохранены',
+    explainIntro:'📖 Сначала разберём что это за задача, а потом решим пошагово.',
+    explainProblem:'📋 Что нам дано:',
+    explainGoal:'🎯 Что нужно найти:',
+    explainMethod:'🔧 Какой метод применим:',
+    explainConcept:'💡 Концепция:',
+    explainWarning:'⚠️ На что обратить внимание:',
+    explainNow:'📝 Теперь решим:',
+    explainMore:'💡 Объясню подробнее:',
+    errorTitle:'❌ Не удалось решить',
+    errorHint:'Попробуй переформулировать или проверь синтаксис.'},
   EN:{backBtn:'⬅ Lobby',statMsg:'msgs',statLvl:'level',statSolv:'solved',
     sbTopics:'Topics',sbEx:'Examples',
     sbQ:'Quadratic',sbT:'Trigonometry',sbE:'Exponential',sbL:'Logarithms',
@@ -282,10 +349,25 @@ const T={
     sbS:'Systems',sbLim:'Limits',sbComb:'Combinatorics',sbGeom:'Geometry',
     sbPct:'Percentages',sbFact:'Factoring',
     wTitle:'Math Bot — Grade 11',
-    wSub:'Ask any question — I will solve and explain every step. Equations, inequalities, derivatives, integrals, systems, limits, combinatorics, geometry, graphs and more.',
+    wSub:'Ask any question — I will solve and explain every step.',
+    wTip:'💡 Type <b>"explain more"</b> before a problem for detailed breakdown or enable <b>💡 Explain</b> button above.',
     placeholder:'Type an equation, problem or question...',
+    explainLabel:'Explain',explainLabelOff:'Explain',
     levelUp:l=>`🎉 Level up! Now level ${l}!`,
-    cleared:'🗑 Chat cleared',micStart:'🎤 Speak now...',micErr:'❌ Error'}
+    cleared:'🗑 Chat cleared',micStart:'🎤 Speak now...',micErr:'❌ Error',
+    settingsTitle:'⚙ Settings',apiKeyLabel:'Claude API Key (optional)',
+    modelLabel:'Model',settingsCancel:'Cancel',settingsSave:'Save',
+    settingsSaved:'✅ Settings saved',
+    explainIntro:'📖 Let me first explain what this problem is about, then solve it step by step.',
+    explainProblem:'📋 What we are given:',
+    explainGoal:'🎯 What we need to find:',
+    explainMethod:'🔧 Method to use:',
+    explainConcept:'💡 Concept:',
+    explainWarning:'⚠️ Watch out for:',
+    explainNow:'📝 Now let\'s solve it:',
+    explainMore:'💡 Let me explain in more detail:',
+    errorTitle:'❌ Could not solve',
+    errorHint:'Try rephrasing or check the syntax.'}
 };
 function t(k,...a){const fn=T[LANG][k];return typeof fn==='function'?fn(...a):fn||k}
 
@@ -317,9 +399,12 @@ function applyTranslations(){
     sbS:'sbS',sbLim:'sbLim',sbComb:'sbComb',sbGeom:'sbGeom',sbPct:'sbPct',sbFact:'sbFact',
     wTitle:'wTitle',wSub:'wSub'};
   for(const[id,key]of Object.entries(map)){const el=document.getElementById(id);if(el)el.textContent=t(key)}
+  const wTip=document.getElementById('wTip');if(wTip)wTip.innerHTML=t('wTip');
   msgInput.placeholder=t('placeholder');
+  const el=document.getElementById('explainLabel');if(el)el.textContent=t('explainLabel');
   renderQuickList();
 }
+
 function renderQuickList(){
   document.getElementById('quickList').innerHTML=
     EXAMPLES[LANG].map(e=>`<div class="qex" onclick="ex(${JSON.stringify(e)})">${e}</div>`).join('');
@@ -332,7 +417,43 @@ function updateStatUI(){
 }
 
 // ══════════════════════════════════════════════════════
-// SIDEBAR (mobile)
+// EXPLAIN MODE
+// ══════════════════════════════════════════════════════
+function toggleExplainMode(){
+  explainMode=!explainMode;
+  const el=document.getElementById('explainToggle');
+  el.classList.toggle('on',explainMode);
+  showToast(explainMode?(LANG==='RU'?'💡 Режим объяснений включён':'💡 Explain mode ON'):(LANG==='RU'?'💡 Режим объяснений выключен':'💡 Explain mode OFF'));
+}
+
+function wantsExplain(text){
+  const lo=text.toLowerCase();
+  const phrases=LANG==='RU'
+    ?['объясни подробнее','объясни подробно','разбери подробно','разъясни','подробно','подробнее','объясни шаг за шагом','объясни каждый шаг','подробное решение','разбор','подробный разбор','объясни полностью','объясни всё','детально','подробное объяснение']
+    :['explain more','explain in detail','explain fully','explain step by step','detailed explanation','walk me through','break it down','explain thoroughly','detailed solution','explain completely','explain everything','in detail','full explanation','step by step'];
+  return phrases.some(p=>lo.includes(p));
+}
+
+function extractProblem(text){
+  const lo=text.toLowerCase();
+  const sepPhrases=LANG==='RU'
+    ?['объясни подробнее','объясни подробно','разбери подробно','разъясни','подробно','подробнее','объясни шаг за шагом','объясни каждый шаг','подробное решение','разбор','подробный разбор','объясни полностью','объясни всё','детально','подробное объяснение']
+    :['explain more','explain in detail','explain fully','explain step by step','detailed explanation','walk me through','break it down','explain thoroughly','detailed solution','explain completely','explain everything','in detail','full explanation','step by step'];
+  let result=text;
+  for(const p of sepPhrases){
+    const idx=lo.indexOf(p);
+    if(idx>=0){
+      // Remove the phrase and surrounding punctuation
+      result=result.substring(0,idx).replace(/[.,;:!?]+$/,'').trim()
+                 +result.substring(idx+p.length).replace(/^[.,;:!?]+/,'').trim();
+      break;
+    }
+  }
+  return result.trim()||text;
+}
+
+// ══════════════════════════════════════════════════════
+// SIDEBAR
 // ══════════════════════════════════════════════════════
 function toggleSidebar(){
   const sb=document.getElementById('sidebar');
@@ -343,6 +464,28 @@ function toggleSidebar(){
 function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sbOverlay').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════════
+function openSettings(){
+  document.getElementById('apiKeyInput').value=settings.apiKey||'';
+  document.getElementById('modelSelect').value=settings.model||'claude-sonnet-4-20250514';
+  document.getElementById('settingsTitle').textContent=t('settingsTitle');
+  document.getElementById('apiKeyLabel').textContent=t('apiKeyLabel');
+  document.getElementById('modelLabel').textContent=t('modelLabel');
+  document.getElementById('settingsCancel').textContent=t('settingsCancel');
+  document.getElementById('settingsSave').textContent=t('settingsSave');
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings(){document.getElementById('settingsModal').classList.remove('show')}
+function saveSettings(){
+  settings.apiKey=document.getElementById('apiKeyInput').value.trim();
+  settings.model=document.getElementById('modelSelect').value;
+  localStorage.setItem('fmine_settings',JSON.stringify(settings));
+  closeSettings();
+  showToast(t('settingsSaved'));
 }
 
 // ══════════════════════════════════════════════════════
@@ -386,7 +529,6 @@ function normalizeForGraph(e){
     .replace(/[−–—]/g,'-').replace(/×/g,'*').replace(/,/g,'.').replace(/\s+/g,'')
     .replace(/x²/g,'x^2').replace(/x³/g,'x^3').replace(/x⁴/g,'x^4')
     .replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4')
-    .replace(/x\*x\*x\*x/g,'x^4').replace(/x\*x\*x/g,'x^3').replace(/x\*x/g,'x^2')
     .replace(/\^/g,'**')
     .replace(/(\d)(x)/g,'$1*$2').replace(/x(\d)/g,'x*$1')
     .replace(/(\d)\(/g,'$1*(').replace(/\)(\d)/g,')*$1')
@@ -416,15 +558,12 @@ function drawGraphInline(rawExpr,labelExpr){
   const w=W,h=H,scale=28;
 
   ctx.fillStyle='#06080f';ctx.fillRect(0,0,w,h);
-  // Grid
   ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
   for(let x=0;x<=w;x+=scale){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
   for(let y=0;y<=h;y+=scale){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
-  // Axes
   ctx.strokeStyle='rgba(167,139,250,.55)';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
   ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.stroke();
-  // Tick labels
   ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='8px "DM Mono",monospace';
   for(let i=-9;i<=9;i++){
     if(i===0)continue;
@@ -434,7 +573,6 @@ function drawGraphInline(rawExpr,labelExpr){
   ctx.fillStyle='rgba(167,139,250,.6)';ctx.font='11px "DM Mono",monospace';
   ctx.fillText('x',w-12,h/2-6);ctx.fillText('y',w/2+6,14);
 
-  // Compile
   let fn;
   try{
     fn=new Function('x',`
@@ -445,11 +583,10 @@ function drawGraphInline(rawExpr,labelExpr){
     fn(1);
   }catch(e){
     row.remove();
-    addMessage('bot',`❌ Не удалось построить график: "${labelExpr}"\n${e.message}`);
+    addMessage('bot',`❌ ${LANG==='RU'?'Не удалось построить график':'Could not plot'}: "${labelExpr}"\n${e.message}`);
     return;
   }
 
-  // Draw
   ctx.lineWidth=2.5;
   const grad=ctx.createLinearGradient(0,0,w,0);
   grad.addColorStop(0,'rgba(167,139,250,1)');
@@ -480,61 +617,752 @@ function detectGraph(orig){
   if(mEq){const label=mEq[1].trim();return{label,expr:normalizeForGraph(label)}}
   const bare=orig.replace(/график|начерти|построй|нарисуй|graph|plot|draw/gi,'')
                  .replace(/y\s*=/i,'').trim();
-  return bare?{label:bare,expr:normalizeForGraph(bare)}:{label:null};
+  return bare?{label:bare,expr:normalizeForGraph(bare)}:null;
 }
 
 // ══════════════════════════════════════════════════════
-// CLAUDE AI SOLVER
+// AI SOLVER
 // ══════════════════════════════════════════════════════
-async function solveWithAI(userText){
+async function solveWithAI(userText, isDetailed){
   const isEN=LANG==='EN';
+  const apiKey=settings.apiKey;
+  
+  let explanationPreamble='';
+  if(isDetailed||explainMode){
+    explanationPreamble=isEN
+      ?`\n\nIMPORTANT: First, provide a DETAILED EXPLANATION of what this problem is about:\n- What type of problem is this?\n- What concepts are involved?\n- What do we need to find?\n- What method will we use and why?\n- Any warnings or common mistakes?\n\nThen proceed with the step-by-step solution.`
+      :`\n\nВАЖНО: Сначала предоставь ПОДРОБНОЕ ОБЪЯСНЕНИЕ что это за задача:\n- Какой это тип задачи?\n- Какие концепции задействованы?\n- Что нужно найти?\n- Какой метод применим и почему?\n- Какие есть подводные камни?\n\nЗатом реши пошагово.`;
+  }
+
   const sys=isEN
-    ?`You are an expert math tutor for grade 11 (ages 16-17). Solve all problems completely with detailed step-by-step explanations.
+    ?`You are an expert math tutor for grade 11 (ages 16-17). Your goal is to teach students by solving problems completely with detailed step-by-step explanations. Be friendly and encouraging.
 
 FORMATTING RULES:
-- Numbered steps: "Step 1:", "Step 2:", etc.
-- For equations: show discriminant calculation, all intermediate algebra
-- For derivatives: state the rule (power rule, chain rule, etc), then apply
-- For integrals: state the formula used, then integrate term by term
-- For systems: show the method (substitution/elimination), all steps
-- For limits: show substitution or L'Hopital if needed
-- For combinatorics: show the formula, then calculate
-- For geometry: draw on known formulas, show substitution
-- For word problems: define variables → write equations → solve → interpret
-- Final answer on its own line: "Answer: [result]"
-- Use Unicode: ², ³, √, ±, ≤, ≥, π, ∞, ∫, →
-- Keep explanations clear and educational, not just mechanical
-- If not a math question: "This is not a math problem. Please ask a math question."`
-    :`Ты эксперт-репетитор по математике для учеников 11 класса (16-17 лет). Решай все задачи полностью с подробными пошаговыми объяснениями.
+1. NUMBERED STEPS: Always use "Step 1:", "Step 2:", etc.
+2. SHOW ALL WORK: Don't skip any steps
+3. EXPLAIN CONCEPTS: Briefly explain what method/rule you use
+4. USE PROPER MATH: Write ², ³, √, ±, ≤, ≥, π, ∞, ∫, →, etc.
+5. HIGHLIGHT ANSWER: "✓ Answer: [result]" on separate line
+6. FOR EQUATIONS: Show discriminant, roots, verification
+7. FOR DERIVATIVES: Name the rule, apply step-by-step
+8. FOR INTEGRALS: State formula, integrate term-by-term
+9. FOR SYSTEMS: Show method, each substitution
+10. FOR GRAPHS: Describe behavior, asymptotes, intercepts
+11. FOR WORD PROBLEMS: Define variables → equations → solve → check
+12. BE CLEAR AND ENCOURAGING
 
-ПРАВИЛА ФОРМАТИРОВАНИЯ:
-- Нумерованные шаги: "Шаг 1:", "Шаг 2:", и т.д.
-- Для уравнений: показывай вычисление дискриминанта, всю промежуточную алгебру
-- Для производных: называй правило (степенное, цепное и т.д.), потом применяй
-- Для интегралов: называй формулу, потом интегрируй почленно
-- Для систем: показывай метод (подстановка/сложение), все шаги
-- Для пределов: показывай подстановку или правило Лопиталя при необходимости
-- Для комбинаторики: показывай формулу, потом вычисляй
-- Для геометрии: опирайся на известные формулы, показывай подстановку
-- Для текстовых задач: обозначь переменные → составь уравнения → реши → интерпретируй
-- Итоговый ответ на отдельной строке: "Ответ: [результат]"
-- Используй символы: ², ³, √, ±, ≤, ≥, π, ∞, ∫, →
-- Объяснения должны быть понятными и образовательными
-- Если вопрос не математический: "Это не математическая задача. Задай математический вопрос."`;
+${explanationPreamble}
 
-  const resp=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:1500,
-      system:sys,
-      messages:[{role:'user',content:userText}]
-    })
-  });
-  if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${resp.status}`)}
-  const data=await resp.json();
-  return data.content?.map(b=>b.text||'').join('')||'';
+If the question isn't mathematical, politely redirect.`
+    :`Ты опытный репетитор по математике для учеников 11 класса. Учи, решая задачи с подробными пошаговыми объяснениями. Будь дружелюбным.
+
+ПРАВИЛА:
+1. НУМЕРОВАННЫЕ ШАГИ: "Шаг 1:", "Шаг 2:" и т.д.
+2. ПОКАЗЫВАЙ ВСЮ РАБОТУ: Не пропускай шаги
+3. ОБЪЯСНЯЙ КОНЦЕПЦИИ: Какой метод/правило используешь
+4. ПРАВИЛЬНАЯ МАТЕМАТИКА: ², ³, √, ±, ≤, ≥, π, ∞, ∫, →
+5. ВЫДЕЛИ ОТВЕТ: "✓ Ответ: [результат]" на отдельной строке
+6. УРАВНЕНИЯ: Дискриминант, корни, проверка
+7. ПРОИЗВОДНЫЕ: Называй правило, применяй пошагово
+8. ИНТЕГРАЛЫ: Формула, почленно
+9. СИСТЕМЫ: Метод, подстановки
+10. ГРАФИКИ: Поведение, асимптоты
+11. ТЕКСТОВЫЕ ЗАДАЧИ: Переменные → уравнения → решение → проверка
+12. БУДЬ ЯСНЫМ И ПОДДЕРЖИВАЮЩИМ
+
+${explanationPreamble}
+
+Если вопрос не математический, вежливо перенаправь.`;
+
+  if(!apiKey){
+    // No API key - use local solver
+    return createLocalSolution(userText, isDetailed||explainMode);
+  }
+
+  try {
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01'
+      },
+      body:JSON.stringify({
+        model:settings.model||'claude-sonnet-4-20250514',
+        max_tokens:3000,
+        system:sys,
+        messages:[{role:'user',content:userText}]
+      })
+    });
+    
+    if(!resp.ok){
+      const e=await resp.json().catch(()=>({}));
+      console.warn('API error:', resp.status, e);
+      return createLocalSolution(userText, isDetailed||explainMode);
+    }
+    
+    const data=await resp.json();
+    return data.content?.map(b=>b.text||'').join('')||'';
+  } catch(err) {
+    console.warn('AI fetch error, falling back to local:', err.message);
+    return createLocalSolution(userText, isDetailed||explainMode);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// LOCAL SOLVER (Fixed & Enhanced)
+// ══════════════════════════════════════════════════════
+function createLocalSolution(userText, detailed){
+  const isEN=LANG==='EN';
+  const lo=userText.toLowerCase().replace(/[−–—]/g,'-').replace(/,/g,'.');
+  let result='';
+
+  // === QUADRATIC EQUATIONS ===
+  if(lo.includes('x^2')||lo.includes('x²')||lo.includes('x**2')){
+    const m=userText.match(/(-?\d*\.?\d*)\*?x\s*\^?\s*2\s*([+-]\s*\d*\.?\d*)\*?x\s*([+-]\s*\d*\.?\d*)\s*=\s*(-?\d*\.?\d*)/);
+    if(m){
+      let a=parseFloat(m[1])||(m[1]===''||m[1]==='+'?1:m[1]==='-'?-1:0);
+      let b=parseFloat(m[2].replace(/\s/g,''));
+      let c=parseFloat(m[3].replace(/\s/g,''));
+      let rhs=parseFloat((m[4]||'0').replace(/\s/g,''));
+      // Fix: if m[1] is empty, a is 1
+      if(m[1]===''||m[1]==='+')a=1;
+      if(m[1]==='-')a=-1;
+      if(m[2]===''||m[2]==='+')b=1;
+      if(m[2]==='-')b=-1;
+      if(m[3]===''||m[3]==='+')c=1;
+      if(m[3]==='-')c=-1;
+      c-=rhs;
+      if(a!==0) return solveQuadraticLocal(a,b,c,detailed);
+    }
+    // Simpler pattern
+    const m2=userText.match(/(-?\d*\.?\d*)\*?x\s*\^?\s*2/);
+    if(m2&&!userText.includes('x^3')&&!userText.includes('x^4')){
+      // Try to extract coefficients more loosely
+      const eq=userText.replace(/\s+/g,'').replace(/−/g,'-');
+      const parts=eq.split('=');
+      const lhsCoeffs=extractCoeffs(parts[0]||eq);
+      const rhsCoeffs=extractCoeffs(parts[1]||'0');
+      const a=lhsCoeffs[2]-rhsCoeffs[2];
+      const b=lhsCoeffs[1]-rhsCoeffs[1];
+      const c=lhsCoeffs[0]-rhsCoeffs[0];
+      if(a!==0) return solveQuadraticLocal(a,b,c,detailed);
+    }
+  }
+
+  // === LINEAR EQUATIONS ===
+  if((lo.includes('x')||lo.includes('y'))&&!lo.includes('x^')&&!lo.includes('x²')&&!lo.includes('x**')){
+    const eq=userText.replace(/\s+/g,'').replace(/−/g,'-');
+    const parts=eq.split('=');
+    const lhsCoeffs=extractCoeffs(parts[0]||eq);
+    const rhsCoeffs=extractCoeffs(parts[1]||'0');
+    const b=lhsCoeffs[1]-rhsCoeffs[1];
+    const c=lhsCoeffs[0]-rhsCoeffs[0];
+    if(b!==0) return solveLinearLocal(b,c,detailed);
+  }
+
+  // === EXPONENTIAL ===
+  const expM=userText.match(/(\d+\.?\d*)\s*\^\s*x\s*=\s*(\d+\.?\d*)/);
+  if(expM){
+    const base=parseFloat(expM[1]),rhs=parseFloat(expM[2]);
+    if(base>0&&base!==1&&rhs>0) return solveExponentialLocal(base,rhs,detailed);
+  }
+
+  // === LOGARITHM ===
+  const logM=userText.match(/log(\d+)\s*\(\s*(\d+\.?\d*)\s*\)/i);
+  if(logM){
+    const base=parseFloat(logM[1]),arg=parseFloat(logM[2]);
+    if(base>0&&base!==1&&arg>0) return solveLogarithmLocal(base,arg,detailed);
+  }
+
+  // === COMBINATORICS ===
+  const combM=userText.match(/c\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+  if(combM){
+    const n=parseInt(combM[1]),k=parseInt(combM[2]);
+    if(n>=k&&k>=0) return solveCombinatoricsLocal(n,k,detailed);
+  }
+
+  // === PERCENTAGE ===
+  const pctM=userText.match(/(\d+\.?\d*)\s*%\s*(?:от|из|of|from)?\s*(\d+\.?\d*)/i);
+  if(pctM){
+    const pct=parseFloat(pctM[1]),num=parseFloat(pctM[2]);
+    return solvePercentageLocal(pct,num,detailed);
+  }
+
+  // === FACTORIAL ===
+  const factM=userText.match(/факториал\s+(\d+)/i)||userText.match(/factorial\s+(\d+)/i)||userText.match(/(\d+)\s*!/);
+  if(factM){
+    const n=parseInt(factM[1]);
+    if(n>=0&&n<=170) return solveFactorialLocal(n,detailed);
+  }
+
+  // === AREA CIRCLE ===
+  const circM=userText.match(/площадь\s+(?:круга|окружности)?(?:\s+r\s*=\s*)?(\d+\.?\d*)/i)||userText.match(/area\s+(?:of\s+)?circle(?:\s+r\s*=\s*)?(\d+\.?\d*)/i);
+  if(circM){
+    const r=parseFloat(circM[1]);
+    return solveCircleAreaLocal(r,detailed);
+  }
+
+  // === TRIANGLE AREA (Heron) ===
+  const triM=userText.match(/площадь\s+треугольника.*?(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i)||userText.match(/area\s+(?:of\s+)?triangle.*?(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if(triM){
+    const a=parseFloat(triM[1]),b=parseFloat(triM[2]),c=parseFloat(triM[3]);
+    return solveTriangleAreaLocal(a,b,c,detailed);
+  }
+
+  // === DERIVATIVE (simple power) ===
+  const derivM=userText.match(/(?:производная|derivative)\s+(.+)/i);
+  if(derivM){
+    return solveDerivativeLocal(derivM[1].trim(),detailed);
+  }
+
+  // === INTEGRAL (simple power) ===
+  const intM=userText.match(/(?:интеграл|integral)\s+(.+)/i);
+  if(intM){
+    return solveIntegralLocal(intM[1].trim(),detailed);
+  }
+
+  // === TRIG ===
+  const trigM=userText.match(/(sin|cos|tan)\s*\(\s*x\s*\)\s*=\s*([+-]?\d*\.?\d+)/i);
+  if(trigM){
+    const fn=trigM[1].toLowerCase(),val=parseFloat(trigM[2]);
+    if(fn!=='tan'&&Math.abs(val)<=1) return solveTrigLocal(fn,val,detailed);
+    if(fn==='tan') return solveTrigLocal(fn,val,detailed);
+  }
+
+  // === SYSTEM OF EQUATIONS ===
+  const sysM=userText.match(/(?:система|system)[^:]*/i);
+  if(sysM&&(lo.includes(',')||lo.includes('и')||lo.includes('and')||lo.includes(','))){
+    const sysText=userText.replace(/система|system[^,]*/gi,'').trim();
+    const eqs=sysText.split(',').map(e=>e.trim()).filter(Boolean);
+    if(eqs.length>=2) return solveSystemLocal(eqs,detailed);
+  }
+
+  // === LIMIT ===
+  if(lo.includes('предел')||lo.includes('limit')){
+    return solveLimitLocal(userText,detailed);
+  }
+
+  // === GENERAL MATH EVALUATION ===
+  try{
+    const clean=userText.replace(/[−–—]/g,'-').replace(/×/g,'*').replace(/÷/g,'/').replace(/%/g,'/100').replace(/\s+/g,' ');
+    if(!clean.includes('x')&&!clean.includes('y')&&!clean.includes('z')){
+      const evalResult=evalMathSafe(clean);
+      if(evalResult!==null){
+        return `<b>${isEN?'Calculation':'Вычисление'}</b><br><br>${clean} = <span style="color:var(--g);font-weight:700">✓ ${evalResult}</span>`;
+      }
+    }
+  }catch(e){}
+
+  // === FALLBACK ===
+  return createFallbackResponse(userText,detailed);
+}
+
+function evalMathSafe(expr){
+  try{
+    const sanitized=expr.replace(/[^0-9+\-*/().%\s]/g,'');
+    if(!sanitized.trim())return null;
+    const result=Function('"use strict"; return ('+sanitized+')')();
+    if(typeof result==='number'&&isFinite(result))return result;
+  }catch(e){}
+  return null;
+}
+
+function extractCoeffs(expr){
+  // Returns [const, x_coeff, x2_coeff]
+  const c=[0,0,0];
+  const e=expr.replace(/\s+/g,'').replace(/−/g,'-');
+  // Normalize: add + at start if starts with -
+  let s=e;
+  if(s.startsWith('-'))s='+-'+s.slice(1);
+  else if(!s.startsWith('+')&&!/^\d/.test(s))s='+'+s;
+  
+  // Split by + but keep the sign
+  const terms=[];
+  let current='';
+  for(let i=0;i<s.length;i++){
+    if((s[i]==='+'||s[i]==='-')&&i>0){
+      if(current)terms.push(current);
+      current=s[i];
+    }else{
+      current+=s[i];
+    }
+  }
+  if(current)terms.push(current);
+  
+  for(const term of terms){
+    if(!term)continue;
+    const t=term.trim();
+    // x^2 term
+    const m2=t.match(/^([+-]?\d*\.?\d*)x\s*\^?\s*2$/);
+    if(m2){const v=m2[1]===''||m2[1]==='+'?1:m2[1]==='-'?-1:parseFloat(m2[1]);c[2]+=v;continue}
+    // x term
+    const m1=t.match(/^([+-]?\d*\.?\d*)x$/);
+    if(m1){const v=m1[1]===''||m1[1]==='+'?1:m1[1]==='-'?-1:parseFloat(m1[1]);c[1]+=v;continue}
+    // constant
+    const mc=t.match(/^([+-]?\d+\.?\d*)$/);
+    if(mc){c[0]+=parseFloat(mc[1]);continue}
+  }
+  return c;
+}
+
+function solveQuadraticLocal(a,b,c,detailed){
+  const isEN=LANG==='EN';
+  const D=b*b-4*a*c;
+  let html='';
+  
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainProblem')}</b> ${a}x² + (${b})x + (${c}) = 0<br>
+        <b>${t('explainGoal')}</b> ${isEN?'Find values of x that satisfy the equation':'Найти значения x, при которых уравнение выполняется'}<br>
+        <b>${t('explainConcept')}</b> ${isEN?'This is a quadratic equation. We use the discriminant formula: D = b² - 4ac. If D > 0, two roots; D = 0, one root; D < 0, no real roots.':'Это квадратное уравнение. Используем формулу дискриминанта: D = b² - 4ac. Если D > 0 — два корня, D = 0 — один, D < 0 — нет действительных корней.'}<br>
+        <b>${t('explainWarning')}</b> ${isEN?'Don\'t forget to check the sign of D and verify your answers by substituting back.':'Не забудьте проверить знак D и подставить ответы обратно в уравнение для проверки.'}
+      </div>
+    </div><br>`;
+  }
+  
+  html+=`<b>${isEN?'Quadratic Equation':'Квадратное уравнение'}</b><br><br>`;
+  html+=`${a}x² + (${b})x + (${c}) = 0<br><br>`;
+  html+=`<b style="color:var(--v)">${isEN?'Step 1: Calculate discriminant':'Шаг 1: Вычислим дискриминант'}</b><br>`;
+  html+=`D = b² − 4ac = (${b})² − 4·(${a})·(${c})<br>`;
+  html+=`D = ${b*b} − ${4*a*c} = <span style="color:var(--a);font-weight:700">${D}</span><br><br>`;
+  
+  if(D<0){
+    html+=`<span style="color:var(--r);font-weight:700">✗ ${isEN?'No real roots (D < 0)':'Нет действительных корней (D < 0)'}</span>`;
+  }else if(Math.abs(D)<1e-9){
+    const x=-b/(2*a);
+    html+=`<b style="color:var(--v)">${isEN?'Step 2: One root (D = 0)':'Шаг 2: Один корень (D = 0)'}</b><br>`;
+    html+=`x = −b/(2a) = −(${b})/(2·${a}) = ${-b}/${2*a} = ${x.toFixed(4)}<br>`;
+    if(detailed){
+      html+=`<br><b>${isEN?'Verification':'Проверка'}:</b><br>`;
+      html+=`f(${x.toFixed(4)}) = ${a}·(${x.toFixed(4)})² + (${b})·(${x.toFixed(4)}) + (${c}) = ${(a*x*x+b*x+c).toFixed(4)} ≈ 0 ✓<br>`;
+    }
+    html+=`<br><span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: x = ${x.toFixed(4)}</span>`;
+  }else{
+    const sqrtD=Math.sqrt(D);
+    const x1=(-b+sqrtD)/(2*a);
+    const x2=(-b-sqrtD)/(2*a);
+    html+=`<b style="color:var(--v)">${isEN?'Step 2: Calculate roots':'Шаг 2: Вычислим корни'}</b><br>`;
+    html+=`x = (−b ± √D)/(2a) = (−(${b}) ± √${D})/(2·${a})<br><br>`;
+    html+=`x₁ = (−(${b}) + √${D})/(2·${a}) = (${(-b+sqrtD).toFixed(4)})/(${2*a}) = ${x1.toFixed(4)}<br>`;
+    html+=`x₂ = (−(${b}) − √${D})/(2·${a}) = (${(-b-sqrtD).toFixed(4)})/(${2*a}) = ${x2.toFixed(4)}<br>`;
+    if(detailed){
+      html+=`<br><b>${isEN?'Verification':'Проверка'}:</b><br>`;
+      html+=`f(${x1.toFixed(4)}) = ${(a*x1*x1+b*x1+c).toFixed(4)} ≈ 0 ✓<br>`;
+      html+=`f(${x2.toFixed(4)}) = ${(a*x2*x2+b*x2+c).toFixed(4)} ≈ 0 ✓<br>`;
+    }
+    html+=`<br><span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: x₁ = ${x1.toFixed(4)}, x₂ = ${x2.toFixed(4)}</span>`;
+  }
+  return html;
+}
+
+function solveLinearLocal(b,c,detailed){
+  const isEN=LANG==='EN';
+  const x=-c/b;
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainProblem')}</b> ${b}x + (${c}) = 0<br>
+        <b>${t('explainGoal')}</b> ${isEN?'Find x':'Найти x'}<br>
+        <b>${t('explainConcept')}</b> ${isEN?'Linear equation: move constant to other side, divide by coefficient of x.':'Линейное уравнение: переносим число в другую часть, делим на коэффициент при x.'}
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Linear Equation':'Линейное уравнение'}</b><br><br>`;
+  html+=`${b}x + (${c}) = 0<br><br>`;
+  html+=`<b style="color:var(--v)">${isEN?'Step 1: Isolate x':'Шаг 1: Выразим x'}</b><br>`;
+  html+=`${b}x = ${-c}<br>`;
+  html+=`x = ${-c} / ${b}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: x = ${x.toFixed(4)}</span>`;
+  return html;
+}
+
+function solveExponentialLocal(base,rhs,detailed){
+  const isEN=LANG==='EN';
+  const x=Math.log(rhs)/Math.log(base);
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainProblem')}</b> ${base}^x = ${rhs}<br>
+        <b>${t('explainConcept')}</b> ${isEN?'Take logarithm of both sides with base '+base+', or use natural log: x = ln(rhs)/ln(base).':'Прологарифмируем обе части по основанию '+base+', или используем натуральный логарифм: x = ln(rhs)/ln(base).'}
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Exponential Equation':'Показательное уравнение'}</b><br><br>`;
+  html+=`${base}^x = ${rhs}<br><br>`;
+  html+=`x = log_${base}(${rhs}) = ln(${rhs})/ln(${base})<br>`;
+  html+=`x = ${Math.log(rhs).toFixed(4)} / ${Math.log(base).toFixed(4)}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: x ≈ ${x.toFixed(4)}</span>`;
+  return html;
+}
+
+function solveLogarithmLocal(base,arg,detailed){
+  const isEN=LANG==='EN';
+  const result=Math.log(arg)/Math.log(base);
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainProblem')}</b> log_${base}(${arg})<br>
+        <b>${t('explainConcept')}</b> ${isEN?'log_a(b) asks: "To what power must we raise '+base+' to get '+arg+'?" Using change of base: ln('+arg+')/ln('+base+').':'log_a(b) — вопрос: "В какую степень возвести '+base+' чтобы получить '+arg+'?" Формула перехода: ln('+arg+')/ln('+base+').' }
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Logarithm':'Логарифм'}</b><br><br>`;
+  html+=`log_${base}(${arg}) = ln(${arg})/ln(${base})<br>`;
+  html+=`= ${Math.log(arg).toFixed(4)} / ${Math.log(base).toFixed(4)}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: ${result.toFixed(4)}</span>`;
+  return html;
+}
+
+function solveCombinatoricsLocal(n,k,detailed){
+  const isEN=LANG==='EN';
+  const result=factorial(n)/(factorial(k)*factorial(n-k));
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainProblem')}</b> C(${n},${k})<br>
+        <b>${t('explainConcept')}</b> ${isEN?'Combinations: number of ways to choose k items from n without order. Formula: C(n,k) = n!/(k!·(n-k)!).':'Сочетания: число способов выбрать k элементов из n без учёта порядка. Формула: C(n,k) = n!/(k!·(n-k)!).' }
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Combinations':'Сочетания'}</b><br><br>`;
+  html+=`C(${n},${k}) = ${n}! / (${k}! · ${n-k}!)<br>`;
+  html+=`= ${factorial(n)} / (${factorial(k)} · ${factorial(n-k)})<br>`;
+  html+=`= ${factorial(n)} / ${factorial(k)*factorial(n-k)}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: C(${n},${k}) = ${result}</span>`;
+  return html;
+}
+
+function solvePercentageLocal(pct,num,detailed){
+  const isEN=LANG==='EN';
+  const result=(pct/100)*num;
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainProblem')}</b> ${pct}% ${isEN?'of':'от'} ${num}<br>
+        <b>${t('explainConcept')}</b> ${isEN?'Percent means "per 100". So '+pct+'% = '+pct+'/100 = '+(pct/100)+'. Multiply by the number.':'Процент — это "из 100". '+pct+'% = '+pct+'/100 = '+(pct/100)+'. Умножаем на число.' }
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Percentage':'Процент'}</b><br><br>`;
+  html+=`${pct}% ${isEN?'of':'от'} ${num} = (${pct}/100) × ${num}<br>`;
+  html+=`= ${pct/100} × ${num}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: ${result.toFixed(2)}</span>`;
+  return html;
+}
+
+function solveFactorialLocal(n,detailed){
+  const isEN=LANG==='EN';
+  const result=factorial(n);
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainConcept')}</b> ${isEN?'n! = n × (n-1) × (n-2) × ... × 2 × 1. Factorial counts permutations of n items.':'n! = n × (n-1) × (n-2) × ... × 2 × 1. Факториал — число перестановок n элементов.'}
+      </div>
+    </div><br>`;
+  }
+  const terms=[];for(let i=n;i>=1;i--)terms.push(i);
+  html+=`<b>${isEN?'Factorial':'Факториал'}</b><br><br>`;
+  html+=`${n}! = ${terms.join(' × ')}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: ${n}! = ${result}</span>`;
+  return html;
+}
+
+function solveCircleAreaLocal(r,detailed){
+  const isEN=LANG==='EN';
+  const area=Math.PI*r*r;
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainConcept')}</b> ${isEN?'Area of circle = π × r². π ≈ 3.14159...':'Площадь круга = π × r². π ≈ 3.14159...'}
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Circle Area':'Площадь круга'}</b><br><br>`;
+  html+=`S = π × r² = π × ${r}² = π × ${r*r}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: S ≈ ${area.toFixed(4)}</span>`;
+  return html;
+}
+
+function solveTriangleAreaLocal(a,b,c,detailed){
+  const isEN=LANG==='EN';
+  const p=(a+b+c)/2;
+  const area=Math.sqrt(p*(p-a)*(p-b)*(p-c));
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainConcept')}</b> ${isEN?'Heron\'s formula: S = √(p(p-a)(p-b)(p-c)) where p = (a+b+c)/2 is the semiperimeter.':'Формула Герона: S = √(p(p-a)(p-b)(p-c)), где p = (a+b+c)/2 — полупериметр.'}
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Triangle Area (Heron\'s formula)':'Площадь треугольника (Герон)'}</b><br><br>`;
+  html+=`p = (${a}+${b}+${c})/2 = ${p}<br>`;
+  html+=`S = √(${p}·(${p-a})·(${p-b})·(${p-c}))<br>`;
+  html+=`S = √${p*(p-a)*(p-b)*(p-c)}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: S ≈ ${area.toFixed(4)}</span>`;
+  return html;
+}
+
+function solveDerivativeLocal(expr,detailed){
+  const isEN=LANG==='EN';
+  // Simple power rule parser
+  const terms=expr.replace(/\s+/g,'').split('+').filter(Boolean).map(t=>{
+    // Handle subtraction
+    return t.replace(/-/g,'+-');
+  }).join('+').split('+').filter(Boolean);
+  
+  let deriv='';
+  for(const term of terms){
+    if(!term)continue;
+    // a*x^n
+    const m=term.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
+    if(m){
+      const a=m[1]===''||m[1]==='+'?1:m[1]==='-'?-1:parseFloat(m[1]);
+      const n=parseInt(m[2]);
+      const da=a*n;
+      const dn=n-1;
+      if(dn===0) deriv+=(deriv?'+':'')+da;
+      else if(dn===1) deriv+=(deriv?'+':'')+(da===1?'':da===-1?'-':'')+ (da!==1&&da!==-1?'x':'x');
+      else deriv+=(deriv?'+':'')+(da===1?'':da===-1?'-':'')+ (da!==1&&da!==-1?'x':'x')+'^'+dn;
+      continue;
+    }
+    // a*x
+    const m2=term.match(/^([+-]?\d*\.?\d*)\*?x$/);
+    if(m2){
+      const a=m2[1]===''||m2[1]==='+'?1:m2[1]==='-'?-1:parseFloat(m2[1]);
+      deriv+=(deriv?'+':'')+a;
+      continue;
+    }
+    // constant
+    const mc=term.match(/^([+-]?\d+\.?\d*)$/);
+    if(mc) continue; // derivative of constant is 0
+  }
+  
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainConcept')}</b> ${isEN?'Power rule: d/dx[x^n] = n·x^(n-1). Apply to each term separately.':'Правило степенной функции: d/dx[x^n] = n·x^(n-1). Применяем к каждому члену отдельно.'}
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Derivative':'Производная'}</b><br><br>`;
+  html+=`f(x) = ${expr}<br>`;
+  html+=`f\'(x) = ${deriv}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: f\'(x) = ${deriv}</span>`;
+  return html;
+}
+
+function solveIntegralLocal(expr,detailed){
+  const isEN=LANG==='EN';
+  // Simple power rule parser for integrals
+  const terms=expr.replace(/\s+/g,'').split('+').filter(Boolean).map(t=>t.replace(/-/g,'+-')).join('+').split('+').filter(Boolean);
+  
+  let integral='';
+  for(const term of terms){
+    if(!term)continue;
+    const m=term.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
+    if(m){
+      const a=m[1]===''||m[1]==='+'?1:m[1]==='-'?-1:parseFloat(m[1]);
+      const n=parseInt(m[2]);
+      const na=a/(n+1);
+      const nn=n+1;
+      if(nn===1) integral+=(integral?'+':'')+(na===1?'x':na===-1?'-x':na.toFixed(4)+'x');
+      else integral+=(integral?'+':'')+(na===1?'':na===-1?'-':'')+ (na!==1&&na!==-1?na.toFixed(4)+'':'')+ 'x^'+nn;
+      continue;
+    }
+    const m2=term.match(/^([+-]?\d*\.?\d*)\*?x$/);
+    if(m2){
+      const a=m2[1]===''||m2[1]==='+'?1:m2[1]==='-'?-1:parseFloat(m2[1]);
+      const na=a/2;
+      integral+=(integral?'+':'')+(na===1?'':na===-1?'-':'')+ (na!==1&&na!==-1?na.toFixed(4)+'':'')+ 'x^2';
+      continue;
+    }
+    const mc=term.match(/^([+-]?\d+\.?\d*)$/);
+    if(mc){
+      const a=parseFloat(mc[1]);
+      integral+=(integral?'+':'')+a+'x';
+      continue;
+    }
+  }
+  
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainConcept')}</b> ${isEN?'Power rule for integration: ∫x^n dx = x^(n+1)/(n+1) + C. Apply to each term.':'Формула интегрирования: ∫x^n dx = x^(n+1)/(n+1) + C. Применяем к каждому члену.'}
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Integral':'Интеграл'}</b><br><br>`;
+  html+=`∫(${expr}) dx = ${integral} + C<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: ${integral} + C</span>`;
+  return html;
+}
+
+function solveTrigLocal(fn,val,detailed){
+  const isEN=LANG==='EN';
+  let angle;
+  if(fn==='sin')angle=Math.asin(val);
+  else if(fn==='cos')angle=Math.acos(val);
+  else angle=Math.atan(val);
+  
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainProblem')}</b> ${fn}(x) = ${val}<br>
+        <b>${t('explainConcept')}</b> ${isEN?'Use inverse trig function: x = arc'+fn+'('+val+'). Remember the general solution includes all periodic copies.':'Используем обратную тригонометрическую функцию: x = arc'+fn+'('+val+'). Не забываем общее решение с учётом периода.'}
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'Trigonometric Equation':'Тригонометрическое уравнение'}</b><br><br>`;
+  html+=`${fn}(x) = ${val}<br>`;
+  html+=`x = arc${fn}(${val}) = ${angle.toFixed(4)} ${isEN?'rad':'рад'}<br><br>`;
+  
+  if(fn==='sin'){
+    html+=`${isEN?'General solution':'Общее решение'}:<br>`;
+    html+=`x₁ = ${angle.toFixed(4)} + 2πn<br>`;
+    html+=`x₂ = π − ${angle.toFixed(4)} + 2πn<br>`;
+    html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: x = ${angle.toFixed(4)} + 2πn, π − ${angle.toFixed(4)} + 2πn, n ∈ ℤ</span>`;
+  }else if(fn==='cos'){
+    html+=`${isEN?'General solution':'Общее решение'}: x = ±${angle.toFixed(4)} + 2πn, n ∈ ℤ<br>`;
+    html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: x = ±${angle.toFixed(4)} + 2πn, n ∈ ℤ</span>`;
+  }else{
+    html+=`${isEN?'General solution':'Общее решение'}: x = ${angle.toFixed(4)} + πn, n ∈ ℤ<br>`;
+    html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: x = ${angle.toFixed(4)} + πn, n ∈ ℤ</span>`;
+  }
+  return html;
+}
+
+function solveSystemLocal(eqs,detailed){
+  const isEN=LANG==='EN';
+  // Simple 2x2 system: ax+by=c, dx+ey=f
+  const parseEq=(eq)=>{
+    const sides=eq.split('=');
+    if(sides.length<2)return null;
+    const lhs=sides[0].replace(/\s+/g,'').replace(/−/g,'-');
+    const rhs=sides[1].replace(/\s+/g,'').replace(/−/g,'-');
+    const rhsNum=parseFloat(rhs)||0;
+    
+    // Extract x and y coefficients from LHS
+    let xCoeff=0,yCoeff=0;
+    let temp=lhs;
+    // x coefficient
+    const xm=temp.match(/([+-]?\d*\.?\d*)x(?!\w)/);
+    if(xm){
+      const v=xm[1];
+      xCoeff=v===''||v==='+'?1:v==='-'?-1:parseFloat(v);
+    }
+    // y coefficient
+    const ym=temp.match(/([+-]?\d*\.?\d*)y(?!\w)/);
+    if(ym){
+      const v=ym[1];
+      yCoeff=v===''||v==='+'?1:v==='-'?-1:parseFloat(v);
+    }
+    // constant on LHS (without x or y)
+    const rest=temp.replace(/([+-]?\d*\.?\d*)x/g,'').replace(/([+-]?\d*\.?\d*)y/g,'');
+    const constM=rest.match(/^([+-]?\d+\.?\d*)$/);
+    const lhsConst=constM?parseFloat(constM[1]):0;
+    
+    return {a:xCoeff,b:yCoeff,c:rhsNum-lhsConst};
+  };
+  
+  const eq1=parseEq(eqs[0]);
+  const eq2=parseEq(eqs[1]);
+  if(!eq1||!eq2)return null;
+  
+  const det=eq1.a*eq2.b-eq1.b*eq2.a;
+  if(Math.abs(det)<1e-9){
+    return `<b>${isEN?'System':'Система'}</b><br><br>${isEN?'No unique solution (determinant = 0)':'Нет единственного решения (детерминант = 0)'}`;
+  }
+  
+  const x=(eq1.c*eq2.b-eq1.b*eq2.c)/det;
+  const y=(eq1.a*eq2.c-eq1.c*eq2.a)/det;
+  
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainIntro')}</div>
+      <div class="eb-body">
+        <b>${t('explainConcept')}</b> ${isEN?'Cramer\'s method: det = a₁b₂ - a₂b₁. x = (c₁b₂-c₂b₁)/det, y = (a₁c₂-a₂c₁)/det.':'Метод Крамера: det = a₁b₂ - a₂b₁. x = (c₁b₂-c₂b₁)/det, y = (a₁c₂-a₂c₁)/det.'}
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${isEN?'System of Equations':'Система уравнений'}</b><br><br>`;
+  html+=`${eq1.a}x + ${eq1.b}y = ${eq1.c}<br>`;
+  html+=`${eq2.a}x + ${eq2.b}y = ${eq2.c}<br><br>`;
+  html+=`det = (${eq1.a})·(${eq2.b}) − (${eq2.a})·(${eq1.b}) = ${det}<br><br>`;
+  html+=`x = ${((eq1.c*eq2.b-eq1.b*eq2.c)).toFixed(4)} / ${det} = ${x.toFixed(4)}<br>`;
+  html+=`y = ${((eq1.a*eq2.c-eq1.c*eq2.a)).toFixed(4)} / ${det} = ${y.toFixed(4)}<br>`;
+  html+=`<span style="color:var(--g);font-weight:700">✓ ${isEN?'Answer':'Ответ'}: x = ${x.toFixed(4)}, y = ${y.toFixed(4)}</span>`;
+  return html;
+}
+
+function solveLimitLocal(text,detailed){
+  const isEN=LANG==='EN';
+  return `<b>${isEN?'Limit':'Предел'}</b><br><br>${isEN?'For limits, please provide the expression and what x approaches. Example: "limit (x^2-1)/(x-1) as x→1"':'Для пределов укажите выражение и к чему стремится x. Пример: "предел (x^2-1)/(x-1) при x→1"'}`;
+}
+
+function createFallbackResponse(userText,detailed){
+  const isEN=LANG==='EN';
+  let html='';
+  if(detailed){
+    html+=`<div class="explain-block">
+      <div class="eb-title">📖 ${t('explainMore')}</div>
+      <div class="eb-body">
+        ${isEN
+          ?`I couldn't fully parse this problem automatically. Here's how to get the best results:<br><br>
+           • <b>Equations:</b> "x^2 - 5x + 6 = 0"<br>
+           • <b>Derivatives:</b> "производная x^3 + 2x"<br>
+           • <b>Integrals:</b> "интеграл 3x^2 + 2x"<br>
+           • <b>Systems:</b> "система: 2x+y=5, x-y=1"<br>
+           • <b>Graphs:</b> "график y = sin(x)"<br>
+           • <b>Combinatorics:</b> "C(10,3)"<br>
+           • <b>Logarithms:</b> "log2(x) = 4"<br>
+           • <b>Exponential:</b> "2^x = 16"<br><br>
+           <i>For complex problems, connect to Claude API in ⚙ settings for full AI solutions.</i>`
+          :`Я не смог автоматически распознать эту задачу. Вот как получать лучшие результаты:<br><br>
+           • <b>Уравнения:</b> "x^2 - 5x + 6 = 0"<br>
+           • <b>Производные:</b> "производная x^3 + 2x"<br>
+           • <b>Интегралы:</b> "интеграл 3x^2 + 2x"<br>
+           • <b>Системы:</b> "система: 2x+y=5, x-y=1"<br>
+           • <b>Графики:</b> "график y = sin(x)"<br>
+           • <b>Комбинаторика:</b> "C(10,3)"<br>
+           • <b>Логарифмы:</b> "log2(x) = 4"<br>
+           • <b>Показательные:</b> "2^x = 16"<br><br>
+           <i>Для сложных задач подключите Claude API в ⚙ настройках для полноценных ИИ-решений.</i>`}
+      </div>
+    </div><br>`;
+  }
+  html+=`<b>${t('errorTitle')}</b><br><br>`;
+  html+=`${t('errorHint')}<br><br>`;
+  html+=`${isEN?'Try these formats':'Попробуйте эти форматы'}:<br>`;
+  html+=`• x^2 - 5x + 6 = 0<br>`;
+  html+=`• производная x^3 + 2x<br>`;
+  html+=`• график y = sin(x)<br>`;
+  return html;
 }
 
 // ══════════════════════════════════════════════════════
@@ -542,103 +1370,23 @@ FORMATTING RULES:
 // ══════════════════════════════════════════════════════
 function fmtAI(text){
   let s=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  // Answer line
-  s=s.replace(/(✓?\s*Ответ\s*:|✓?\s*Answer\s*:)(.+)/g,
+  s=s.replace(/(✓?\s*Ответ\s*:|✓?\s*Answer\s*:)(.+(?:<br>)?)/g,
     '<span style="color:var(--g);font-weight:800;font-size:14.5px">$1$2</span>');
-  // Step headers
   s=s.replace(/(Шаг\s*\d+:|Step\s*\d+:)/g,'<b style="color:var(--v)">$1</b>');
-  // Inline code
+  s=s.replace(/(Способ|Метод|Method|Formula|Формула)[:：]/g,'<b style="color:var(--c)">$1:</b>');
   s=s.replace(/`([^`]+)`/g,'<code style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);border-radius:5px;padding:1px 6px;font-family:\'DM Mono\',monospace;font-size:12px;color:var(--c)">$1</code>');
-  // D = ... amber
   s=s.replace(/(D\s*=\s*[^<\n]+)/g,'<span style="color:var(--a)">$1</span>');
-  // Newlines
   s=s.replace(/\n/g,'<br>');
   return s;
 }
 
 // ══════════════════════════════════════════════════════
-// LOCAL FALLBACK (offline / API error)
-// ══════════════════════════════════════════════════════
-function normLocal(s){
-  return String(s).toLowerCase()
-    .replace(/[−–—]/g,'-').replace(/×/g,'*').replace(/,/g,'.')
-    .replace(/x²/g,'x^2').replace(/x³/g,'x^3').replace(/x⁴/g,'x^4')
-    .replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4')
-    .replace(/x\*x\*x\*x/g,'x^4').replace(/x\*x\*x/g,'x^3').replace(/x\*x/g,'x^2')
-    .replace(/\s+/g,'')
-    .replace(/(\d)(x)/g,'$1*$2').replace(/x(\d)/g,'x*$1')
-    .replace(/(\d)\(/g,'$1*(').replace(/\)(\d)/g,')*$1');
-}
-function parsePolyLocal(expr){
-  expr=String(expr).replace(/\s+/g,'').replace(/-/g,'+-');
-  if(expr.startsWith('+'))expr=expr.slice(1);
-  const c={4:0,3:0,2:0,1:0,0:0};
-  for(const term of expr.split('+').filter(Boolean)){
-    let m;
-    m=term.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
-    if(m){const p=parseInt(m[2]);if(p in c){const a=m[1];c[p]+=(a===''||a==='+'?1:a==='-'?-1:parseFloat(a))};continue}
-    m=term.match(/^([+-]?\d*\.?\d*)\*?x$/);
-    if(m){const a=m[1];c[1]+=(a===''||a==='+'?1:a==='-'?-1:parseFloat(a));continue}
-    if(/^[+-]?\d*\.?\d+$/.test(term)){const v=parseFloat(term);if(!isNaN(v))c[0]+=v}
-  }
-  return c;
-}
-function factorial(n){if(n<0)return NaN;if(n<=1)return 1;let r=1;for(let i=2;i<=n;i++)r*=i;return r}
-
-function localFallback(orig){
-  const text=normLocal(orig);
-  const isEN=LANG==='EN';
-
-  // Combinatorics
-  const combM=text.match(/c\((\d+),(\d+)\)/i);
-  if(combM){
-    const n=parseInt(combM[1]),k=parseInt(combM[2]);
-    if(n>=k){const r=factorial(n)/(factorial(k)*factorial(n-k));
-      return `<b>C(${n},${k})</b> = ${n}! / (${k}! · ${n-k}!) = <span style="color:var(--g);font-weight:700">${r}</span>`}
-  }
-  // Quadratic / linear
-  const parts=text.split('=');
-  const l=parsePolyLocal(parts[0]||text),r=parsePolyLocal(parts[1]||'0');
-  const a=l[2]-r[2],b=l[1]-r[1],c=l[0]-r[0];
-  if(a!==0){
-    const D=b*b-4*a*c;
-    let s=`<b>${isEN?'Quadratic':'Квадратное уравнение'}</b><br>${a}x² ${b>=0?'+':'-'}${Math.abs(b)}x ${c>=0?'+':'-'}${Math.abs(c)} = 0<br><br>`;
-    s+=`<span style="color:var(--a)">D = ${b}² − 4·${a}·${c} = <b>${D.toFixed(2)}</b></span><br><br>`;
-    if(D<0)s+=`<span style="color:var(--r)">${isEN?'No real roots':'Нет действительных корней'} (D&lt;0)</span>`;
-    else if(Math.abs(D)<1e-9)s+=`<span style="color:var(--g);font-weight:700">x = ${(-b/(2*a)).toFixed(4)}</span>`;
-    else{const x1=(-b+Math.sqrt(D))/(2*a),x2=(-b-Math.sqrt(D))/(2*a);
-      s+=`<span style="color:var(--g);font-weight:700">x₁ = ${x1.toFixed(4)}<br>x₂ = ${x2.toFixed(4)}</span>`}
-    return s;
-  }
-  if(b!==0)return `<b>${isEN?'Linear':'Линейное'}</b><br><span style="color:var(--g);font-weight:700">x = ${(-c/b).toFixed(4)}</span>`;
-  // Exponential
-  const expM=text.match(/(-?\d+(?:\.\d+)?)\^x=(-?\d+(?:\.\d+)?)/);
-  if(expM){const base=parseFloat(expM[1]),rhs=parseFloat(expM[2]);
-    if(base>0&&base!==1&&rhs>0)return `<b>${isEN?'Exponential':'Показательное'}</b><br>${base}^x = ${rhs}<br><span style="color:var(--g);font-weight:700">x = ${(Math.log(rhs)/Math.log(base)).toFixed(4)}</span>`}
-  // Log compute
-  const lcM=text.match(/log(\d+)\((\d+(?:\.\d+)?)\)/);
-  if(lcM){const base=parseFloat(lcM[1]),arg=parseFloat(lcM[2]);
-    return `<b>log_${base}(${arg})</b> = <span style="color:var(--g);font-weight:700">${(Math.log(arg)/Math.log(base)).toFixed(4)}</span>`}
-  // Trig
-  if(text.includes('sin')||text.includes('cos')||text.includes('tan')){
-    const trig=text.includes('sin')?'sin':text.includes('cos')?'cos':'tan';
-    const kM=text.match(/=(-?\d*\.?\d+)/);const k=kM?parseFloat(kM[1]):NaN;
-    if(!isNaN(k)&&(trig==='tan'||Math.abs(k)<=1)){
-      let g='';
-      if(trig==='sin'){const a=Math.asin(k);g=`x = ${a.toFixed(4)} + 2πn<br>x = π − ${a.toFixed(4)} + 2πn`}
-      else if(trig==='cos')g=`x = ±${Math.acos(k).toFixed(4)} + 2πn`;
-      else g=`x = ${Math.atan(k).toFixed(4)} + πn`;
-      return `<b>${trig}(x) = ${k}</b><br><span style="color:var(--g);font-weight:700">${g}</span>`}
-  }
-  return null;
-}
-
-// ══════════════════════════════════════════════════════
-// SEND
+// SEND MESSAGE
 // ══════════════════════════════════════════════════════
 window.sendMessage=async function(){
   if(isBusy)return;
-  const text=msgInput.value.trim();if(!text)return;
+  let text=msgInput.value.trim();
+  if(!text)return;
   isBusy=true;sendBtn.disabled=true;
   addMessage('user',text);
   msgInput.value='';msgInput.style.height='auto';
@@ -647,32 +1395,41 @@ window.sendMessage=async function(){
   if(stats.messages%10===0){stats.level++;addMessage('bot',t('levelUp',stats.level))}
   saveStats();updateStatUI();
 
+  // Detect "explain more" keyword
+  const wantsDetailed=wantsExplain(text);
+  const problemText=extractProblem(text);
+  
   // Graph — local, fast
-  const gi=detectGraph(text);
+  const gi=detectGraph(problemText);
   if(gi){
     if(!gi.label){
       addMessage('bot',LANG==='RU'?'Напиши функцию: y = x^2 + 2x или y = sin(x)':'Write: y = x^2 + 2x or y = sin(x)');
       isBusy=false;sendBtn.disabled=false;return;
     }
     addMessage('bot',LANG==='RU'?`📊 Строю график y = ${gi.label}...`:`📊 Plotting y = ${gi.label}...`);
-    setTimeout(()=>{drawGraphInline(gi.expr,gi.label);isBusy=false;sendBtn.disabled=false},160);
+    setTimeout(()=>{
+      drawGraphInline(gi.expr,gi.label);
+      isBusy=false;sendBtn.disabled=false;
+    },160);
     return;
   }
 
-  // AI
+  // AI or Local
   showThinking();
   try{
-    const aiText=await solveWithAI(text);
+    const result=await solveWithAI(problemText, wantsDetailed);
     hideThinking();
-    addMessage('bot',fmtAI(aiText),true);
+    
+    // If the result looks like HTML (from local solver) or plain text (from AI)
+    if(result.includes('<')&&result.includes('>')){
+      addMessage('bot',result,true);
+    }else{
+      addMessage('bot',fmtAI(result),true);
+    }
     stats.solved++;saveStats();updateStatUI();
   }catch(e){
     hideThinking();
-    const fb=localFallback(text);
-    if(fb){addMessage('bot',fb,true)}
-    else addMessage('bot',LANG==='RU'
-      ?`❌ Нет соединения. Убедись что ты в сети.\n(${e.message})`
-      :`❌ No connection. Check your internet.\n(${e.message})`);
+    addMessage('bot',`${t('errorTitle')}: ${e.message}<br><br>${t('errorHint')}`);
   }
   isBusy=false;sendBtn.disabled=false;
 };
@@ -689,6 +1446,7 @@ window.clearChat=()=>{
   const wb=document.createElement('div');wb.className='welcome';
   wb.innerHTML=`<div class="welcome-title">🤖 ${t('wTitle')}</div>
     <div class="welcome-sub">${t('wSub')}</div>
+    <div class="welcome-tip">${t('wTip')}</div>
     <div class="welcome-chips">
       <span class="wchip wchip-v" onclick="ex('x^2 - 5x + 6 = 0')">x²−5x+6=0</span>
       <span class="wchip wchip-c" onclick="ex('производная x^3 + 2x')">d/dx x³+2x</span>
@@ -722,12 +1480,16 @@ function showToast(msg){
   setTimeout(()=>el.classList.remove('show'),2600);
 }
 
+function factorial(n){if(n<0)return NaN;if(n<=1)return 1;let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+
 // INIT
 LANG=localStorage.getItem('fmine_lang')||'RU';
 document.getElementById('lpRU').classList.toggle('on',LANG==='RU');
 document.getElementById('lpEN').classList.toggle('on',LANG==='EN');
 applyTranslations();updateStatUI();renderQuickList();
 
+// Update explain toggle label
+document.getElementById('explainLabel').textContent=t('explainLabel');
 </script>
 </body>
 </html>
