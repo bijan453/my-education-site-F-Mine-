@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
+<head> <script src="https://cdn.jsdelivr.net/npm/mathjs@12.2.1/lib/browser/math.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.min.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>F‑Mine · Математика Бот</title>
@@ -1992,48 +1995,78 @@ function createLocalSolution(userText, detailed){
     }
   }
 
-  // 3. DERIVATIVE
-  var dvm=lo.match(/(?:производная|derivative)\s+(.+)/);
-  if(dvm&&dvm[1].trim()){
-    var dexpr=dvm[1].trim().replace(/\s+/g,'');var dterms=dexpr.replace(/-/g,'+-').split('+').filter(Boolean);
-    var dderiv='';var dsteps=[];
-    for(var di=0;di<dterms.length;di++){
-      var dt=dterms[di];
-      var dtm=dt.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
+// 3. DERIVATIVE (SMART SYMBOLIC + FALLBACK)
+var dvm = lo.match(/(?:производная|derivative)\s+(.+)/);
+if (dvm && dvm[1].trim()) {
+  var dexpr = dvm[1].trim();
+  try {
+    if (typeof nerdamer === 'undefined') throw new Error('nerdamer not loaded');
+    var derivResult = nerdamer.diff(dexpr, 'x').toString();
+    var steps = [
+      'f(x) = ' + dexpr,
+      isEN() ? "Apply differentiation rules (power, product, chain, trig, exp, log)" : "Применяем правила дифференцирования (степенное, произведения, цепное, триг., эксп., лог.)",
+      "f'(x) = " + derivResult
+    ];
+    if (detailed) return renderExplain(isEN()?'Derivative':'Производная',
+      isEN()?'Symbolic differentiation handles complex functions automatically.':'Символьное дифференцирование автоматически работает со сложными функциями.',
+      steps, "f'(x) = " + derivResult, null);
+    return '<b>'+(isEN()?'Derivative':'Производная')+'</b><br>f(x)='+dexpr+'<br><span style="color:var(--g);font-weight:700">✓ f\'(x)='+derivResult+'</span>';
+  } catch(e) {
+    // FALLBACK: your original regex polynomial solver
+    var dterms = dexpr.replace(/\s+/g,'').replace(/-/g,'+-').split('+').filter(Boolean);
+    var dderiv = ''; var dsteps = [];
+    for(var di=0; di<dterms.length; di++){
+      var dt = dterms[di];
+      var dtm = dt.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
       if(dtm){var da=dtm[1]===''||dtm[1]==='+'?1:dtm[1]==='-'?-1:parseFloat(dtm[1]);var dn=parseInt(dtm[2]);var dda=da*dn;var ddn=dn-1;
-        var dr=ddn===0?String(dda):ddn===1?(dda===1?'':dda===-1?'-':dda)+'x':(dda===1?'':dda===-1?'-':dda)+'x^'+ddn;
-        dsteps.push(da+'x^'+dn+'→'+dr);dderiv+=(dderiv?'+':'')+dr;continue}
+      var dr=ddn===0?String(dda):ddn===1?(dda===1?'':dda===-1?'-':dda)+'x':(dda===1?'':dda===-1?'-':dda)+'x^'+ddn;
+      dsteps.push(da+'x^'+dn+'→'+dr);dderiv+=(dderiv?'+':'')+dr;continue}
       var dtm2=dt.match(/^([+-]?\d*\.?\d*)\*?x$/);
       if(dtm2){var da2=dtm2[1]===''||dtm2[1]==='+'?1:dtm2[1]==='-'?-1:parseFloat(dtm2[1]);dsteps.push(da2+'x→'+da2);dderiv+=(dderiv?'+':'')+da2;continue}
       var dtc=dt.match(/^([+-]?\d+\.?\d*)$/);
       if(dtc){dsteps.push(dtc[1]+'→0');continue}
     }
-    if(detailed)return renderExplain(isEN()?'Derivative':'Производная',isEN()?'Power rule: d/dx[xⁿ]=n·xⁿ⁻¹. Apply to each term.':'Степенное правило: d/dx[xⁿ]=n·xⁿ⁻¹. К каждому члену.',dsteps,'f\'(x)='+(dderiv||'0'),null);
-    return '<b>'+(isEN()?'Derivative':'Производная')+'</b><br>f(x)='+dexpr+'<br><span style="color:var(--g);font-weight:700">✓ f\'(x)='+(dderiv||'0')+'</span>';
+    if(detailed)return renderExplain(isEN()?'Derivative':'Производная',isEN()?'Power rule: d/dx[xⁿ]=n·xⁿ⁻¹.':'Степенное правило: d/dx[xⁿ]=n·xⁿ⁻¹.',dsteps,'f\'(x)='+(dderiv||'0'),null);
+    return '<b>'+(isEN()?'Derivative':'Производная')+'</b><br>f(x)='+dexpr.replace(/\s+/g,'')+'<br><span style="color:var(--g);font-weight:700">✓ f\'(x)='+(dderiv||'0')+'</span>';
   }
+}
 
-  // 4. INTEGRAL
-  var intm=lo.match(/(?:интеграл|integral)\s+(.+)/);
-  if(intm&&intm[1].trim()){
-    var iexpr=intm[1].trim().replace(/\s+/g,'');var iterms=iexpr.replace(/-/g,'+-').split('+').filter(Boolean);
-    var iinteg='';var isteps=[];
-    for(var ii=0;ii<iterms.length;ii++){
-      var it=iterms[ii];
-      var itm=it.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
+// 4. INTEGRAL (SMART SYMBOLIC + FALLBACK)
+var intm = lo.match(/(?:интеграл|integral)\s+(.+)/);
+if (intm && intm[1].trim()) {
+  var iexpr = intm[1].trim();
+  try {
+    if (typeof nerdamer === 'undefined') throw new Error('nerdamer not loaded');
+    var integResult = nerdamer.integrate(iexpr, 'x').toString();
+    var steps = [
+      'f(x) = ' + iexpr,
+      isEN() ? "Apply integration rules (power, substitution, trig, etc.)" : "Применяем правила интегрирования (степенное, замена, триг. и т.д.)",
+      "∫f(x)dx = " + integResult + " + C"
+    ];
+    if (detailed) return renderExplain(isEN()?'Integral':'Интеграл',
+      isEN()?'Symbolic integration finds the antiderivative. +C is the constant of integration.':'Символьное интегрирование находит первообразную. +C — константа интегрирования.',
+      steps, integResult + " + C", isEN()?'Don\'t forget +C!':'Не забудьте +C!');
+    return '<b>'+(isEN()?'Integral':'Интеграл')+'</b><br>∫('+iexpr+')dx = <span style="color:var(--g);font-weight:700">✓ '+integResult+' + C</span>';
+  } catch(e) {
+    // FALLBACK: your original regex polynomial solver
+    var iterms = iexpr.replace(/\s+/g,'').replace(/-/g,'+-').split('+').filter(Boolean);
+    var iinteg = ''; var isteps = [];
+    for(var ii=0; ii<iterms.length; ii++){
+      var it = iterms[ii];
+      var itm = it.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
       if(itm){var ia=itm[1]===''||itm[1]==='+'?1:itm[1]==='-'?-1:parseFloat(itm[1]);var in2=parseInt(itm[2]);var ina=ia/(in2+1);
-        var ir=(ina===1?'':ina===-1?'-':ina.toFixed(3))+'x^'+(in2+1);
-        isteps.push(ia+'x^'+in2+'→'+ir);iinteg+=(iinteg?'+':'')+ir;continue}
+      var ir=(ina===1?'':ina===-1?'-':ina.toFixed(3))+'x^'+(in2+1);
+      isteps.push(ia+'x^'+in2+'→'+ir);iinteg+=(iinteg?'+':'')+ir;continue}
       var itm2=it.match(/^([+-]?\d*\.?\d*)\*?x$/);
       if(itm2){var ia2=itm2[1]===''||itm2[1]==='+'?1:itm2[1]==='-'?-1:parseFloat(itm2[1]);var ina2=ia2/2;
-        isteps.push(ia2+'x→'+(ina2===1?'':ina2===-1?'-':ina2.toFixed(3))+'x²');iinteg+=(iinteg?'+':'')+(ina2===1?'':ina2===-1?'-':ina2.toFixed(3))+'x^2';continue}
+      isteps.push(ia2+'x→'+(ina2===1?'':ina2===-1?'-':ina2.toFixed(3))+'x²');iinteg+=(iinteg?'+':'')+(ina2===1?'':ina2===-1?'-':ina2.toFixed(3))+'x^2';continue}
       var itc=it.match(/^([+-]?\d+\.?\d*)$/);
       if(itc){isteps.push(itc[1]+'→'+itc[1]+'x');iinteg+=(iinteg?'+':'')+itc[1]+'x';continue}
     }
-    if(detailed)return renderExplain(isEN()?'Integral':'Интеграл',isEN()?'∫xⁿdx=xⁿ⁺¹/(n+1)+C. Apply to each term.':'∫xⁿdx=xⁿ⁺¹/(n+1)+C. К каждому члену.',isteps,iinteg+' + C',isEN()?'Don\'t forget +C!':'Не забудьте +C!');
-    return '<b>'+(isEN()?'Integral':'Интеграл')+'</b><br>∫('+iexpr+')dx='+iinteg+'+C<br><span style="color:var(--g);font-weight:700">✓ '+iinteg+'+C</span>';
+    if(detailed)return renderExplain(isEN()?'Integral':'Интеграл',isEN()?'∫xⁿdx=xⁿ⁺¹/(n+1)+C.':'∫xⁿdx=xⁿ⁺¹/(n+1)+C.',isteps,iinteg+' + C',isEN()?'Don\'t forget +C!':'Не забудьте +C!');
+    return '<b>'+(isEN()?'Integral':'Интеграл')+'</b><br>∫('+iexpr.replace(/\s+/g,'')+')dx='+iinteg+'+C<br><span style="color:var(--g);font-weight:700">✓ '+iinteg+'+C</span>';
   }
-
-  // 5. PERCENTAGE
+}
   var pctm=lo.match(/(\d+\.?\d*)\s*%\s*(?:от|из|of|from)?\s*(\d+\.?\d*)/);
   if(pctm){var pp=parseFloat(pctm[1]),pn=parseFloat(pctm[2]);var pr=(pp/100)*pn;
     if(detailed)return renderExplain(isEN()?'Percentage':'Процент',isEN()?'x% means x/100. Multiply by the number.':'x%=x/100. Умножаем на число.',[pp+'%='+pp+'/100='+(pp/100),(pp/100)+'×'+pn+'='+pr.toFixed(2)],pr.toFixed(2),null);
