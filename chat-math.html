@@ -270,7 +270,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="mega-toggle" id="megaToggle" onclick="toggleMegaMode()" title="Мега Режим Объяснений">
       <span class="mt-icon">🧠</span>
       <span class="mt-label" id="megaLabel">Мега</span>
-      <span class="mt-count" id="megaCount">10</span>
+      <span class="mt-count" id="megaCount">∞</span>
     </div>
     <div class="explain-toggle" id="explainToggle" onclick="toggleExplainMode()" title="Режим объяснений">
       <span class="et-icon">💡</span>
@@ -394,7 +394,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 // STATE
 // ══════════════════════════════════════════════════════
 var LANG='RU', isBusy=false, explainMode=false, megaMode=false;
-var megaUses=parseInt(localStorage.getItem('fmine_mega_uses')||'10');
+var megaUses=999999; // Unlimited smart thinking
 var settings=JSON.parse(localStorage.getItem('fmine_settings')||'{"apiKey":"","model":"claude-sonnet-4-20250514"}');
 var stats=JSON.parse(localStorage.getItem('fmine_math_stats')||'{"messages":0,"level":1,"solved":0}');
 var chatWindow=document.getElementById('chatWindow');
@@ -864,14 +864,13 @@ function toggleMegaMode(){
   megaMode=true;document.getElementById('megaToggle').classList.add('on');sendBtn.classList.add('mega-send');showToast(t('megaOn'));
 }
 function useMega(){
+  // Unlimited - no decrement needed
   if(megaUses<=0)return false;
-  megaUses--;localStorage.setItem('fmine_mega_uses',megaUses);
-  document.getElementById('megaCount').textContent=megaUses;
-  if(megaUses<=0){megaMode=false;document.getElementById('megaToggle').classList.remove('on');document.getElementById('megaToggle').classList.add('exhausted');sendBtn.classList.remove('mega-send')}
-  else{showToast(t('megaRemaining',megaUses))}
+  // megaUses--; localStorage.setItem('fmine_mega_uses',megaUses);
+  document.getElementById('megaCount').textContent='∞';
   return true;
 }
-function updateMegaUI(){document.getElementById('megaCount').textContent=megaUses;if(megaUses<=0)document.getElementById('megaToggle').classList.add('exhausted')}
+function updateMegaUI(){document.getElementById('megaCount').textContent='∞';if(megaUses<=0)document.getElementById('megaToggle').classList.add('exhausted')}
 
 // ══════════════════════════════════════════════════════
 // MEGA HELPERS
