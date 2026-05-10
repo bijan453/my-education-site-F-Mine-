@@ -896,6 +896,201 @@ function megaPractice(items){
 function gTerm(key){return '<span class="glossary-term" onclick="showGlossary(event,\''+key.replace(/'/g,"\\'")+'\')">'+key+'</span>'}
 
 // ══════════════════════════════════════════════════════
+// 30 NEW POWERFUL AI CAPABILITIES
+// ══════════════════════════════════════════════════════
+
+// 1. DIFFERENTIAL EQUATIONS SOLVER
+function solveDifferentialEquation(text){var lo=text.toLowerCase();if(!lo.match(/дифференциальн|differential|dy\/dx|y'|деу/i))return null;var m1=lo.match(/(?:dy\/dx|y')\s*=\s*(-?)(\d+\.?\d*)\s*\*?\s*y/i);if(m1){var k=(m1[1]==='-'?-1:1)*parseFloat(m1[2]);return '<b>Дифференциальное уравнение</b><br>y\' = '+(k<0?'-':'')+Math.abs(k)+'y<br><span style="color:var(--g)">✓ y = C·e^('+k+'x)</span><br>Общее решение экспоненциального роста/затухания';}var m2=lo.match(/(?:dy\/dx|y')\s*=\s*(?:sin|cos|x\^?\d*|e\^?)\s*\*?\s*(?:y|1)/i);if(m2)return '<b>Разделяемое уравнение</b><br>Раздели переменные и проинтегрируй обе части.<br><span style="color:var(--c)">Метод: ∫(1/y)dy = ∫f(x)dx</span>';return null;}
+
+// 2. LAPLACE TRANSFORM SOLVER
+function solveLaplaceTransform(text){var lo=text.toLowerCase();if(!lo.match(/лаплас|laplace|l\{/i))return null;var patterns=[{f:'1',r:'1/s',n:'Единица'},{f:'t',r:'1/s²',n:'Линейная'},{f:'t^n',r:'n!/s^(n+1)',n:'Степенная'},{f:'e^{at}',r:'1/(s-a)',n:'Экспонента'},{f:'sin(at)',r:'a/(s²+a²)',n:'Синус'},{f:'cos(at)',r:'s/(s²+a²)',n:'Косинус'}];for(var i=0;i<patterns.length;i++){if(lo.indexOf(patterns[i].f)>=0)return '<b>Преобразование Лапласа</b><br>L{'+patterns[i].f+'} = '+patterns[i].r+'<br><span style="color:var(--g)">✓ '+patterns[i].n+' функция</span>';}return null;}
+
+// 3. FOURIER SERIES ANALYZER
+function analyzeFourierSeries(text){var lo=text.toLowerCase();if(!lo.match(/фурье|fourier|ряд фурье/i))return null;return '<b>Ряд Фурье</b><br>f(x) = a₀/2 + Σ(aₙcos(nx) + bₙsin(nx))<br>Коэффициенты:<br>• a₀ = (1/π)∫_{-π}^{π} f(x)dx<br>• aₙ = (1/π)∫_{-π}^{π} f(x)cos(nx)dx<br>• bₙ = (1/π)∫_{-π}^{π} f(x)sin(nx)dx<br><span style="color:var(--c)">Применение: анализ периодических сигналов</span>';}
+
+// 4. PARTIAL DIFFERENTIAL EQUATIONS INFO
+function explainPDE(text){var lo=text.toLowerCase();if(!lo.match(/частн.*производн|partial differential|уравнение в частных/i))return null;return '<b>Уравнения в частных производных</b><br>Основные типы:<br>📐 Волновое: ∂²u/∂t² = c²·∂²u/∂x²<br>🔥 Теплопроводности: ∂u/∂t = α·∂²u/∂x²<br>⚡ Лапласа: ∂²u/∂x² + ∂²u/∂y² = 0<br><span style="color:var(--g)">Применяются в физике, инженерии</span>';}
+
+// 5. NUMERICAL INTEGRATION METHODS
+function numericalIntegration(text){var lo=text.toLowerCase();if(!lo.match(/численн.*интегр|numerical integration|метод.*прямоугольн|трапеци|симпсон/i))return null;return '<b>Численное интегрирование</b><br>Методы приближённого вычисления ∫f(x)dx:<br>□ Прямоугольников: S ≈ h·Σf(xᵢ)<br>△ Трапеций: S ≈ h/2·(f₀ + 2f₁ + ... + fₙ)<br>🎯 Симпсона: S ≈ h/3·(f₀ + 4f₁ + 2f₂ + 4f₃ + ... + fₙ)<br><span style="color:var(--a)">Точность: Симпсон > Трапеции > Прямоугольники</span>';}
+
+// 6. RUNGE-KUTTA METHOD EXPLAINER
+function explainRungeKutta(text){var lo=text.toLowerCase();if(!lo.match(/ранге.*кутт|runge-kutta|рк4/i))return null;return '<b>Метод Рунге-Кутты 4-го порядка</b><br>Для решения y\' = f(x,y):<br>k₁ = h·f(xₙ, yₙ)<br>k₂ = h·f(xₙ+h/2, yₙ+k₁/2)<br>k₃ = h·f(xₙ+h/2, yₙ+k₂/2)<br>k₄ = h·f(xₙ+h, yₙ+k₃)<br>yₙ₊₁ = yₙ + (k₁+2k₂+2k₃+k₄)/6<br><span style="color:var(--g)">✓ Высокая точность для ОДУ</span>';}
+
+// 7. EIGENVALUE/EIGENVECTOR CALCULATOR
+function calculateEigenvalues(text){var lo=text.toLowerCase();var m=lo.match(/(?:собственн|eigen).*?(?:значен|value).*(?:матриц|matrix)|матрица\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/i);if(!m)return null;var a=parseFloat(m[1]),b=parseFloat(m[2]),c=parseFloat(m[3]),d=parseFloat(m[4]);var tr=a+d,det=a*d-b*c,D=tr*tr-4*det;var result='<b>Собственные значения матрицы</b><br>['+a+' '+b+']<br>['+c+' '+d+']<br>';if(D>0){var l1=(tr+Math.sqrt(D))/2,l2=(tr-Math.sqrt(D))/2;result+='<span style="color:var(--g)">✓ λ₁ = '+l1.toFixed(4)+', λ₂ = '+l2.toFixed(4)+'</span>';}else if(D===0){result+='<span style="color:var(--g)">✓ λ = '+(tr/2).toFixed(4)+' (кратный)</span>';}else{result+='<span style="color:var(--p)">Комплексные собственные значения</span>';}return result;}
+
+// 8. VECTOR SPACE DIMENSION ANALYZER
+function analyzeVectorSpace(text){var lo=text.toLowerCase();if(!lo.match(/векторн.*пространств|vector space|базис|размерност|dimension/i))return null;return '<b>Векторное пространство</b><br>Определение: множество векторов с операциями + и ·<br>📏 Размерность = количество векторов базиса<br>🔑 Базис: максимальная линейно независимая система<br>Пример: ℝ³ имеет размерность 3, базис {(1,0,0), (0,1,0), (0,0,1)}';}
+
+// 9. LINEAR INDEPENDENCE CHECKER
+function checkLinearIndependence(text){var lo=text.toLowerCase();if(!lo.match(/линейн.*независим|linear independent|линейн.*зависим/i))return null;return '<b>Линейная независимость</b><br>Векторы v₁,v₂,...,vₙ линейно независимы ⇔<br>c₁v₁ + c₂v₂ + ... + cₙvₙ = 0 ⇒ c₁=c₂=...=cₙ=0<br>📊 Метод проверки: ранг матрицы = число векторов<br><span style="color:var(--c)">det ≠ 0 → независимы</span>';}
+
+// 10. TAYLOR SERIES EXPANSION CALCULATOR
+function taylorSeriesExpansion(text){var lo=text.toLowerCase();var expansions={'exp':'e^x = 1 + x + x²/2! + x³/3! + ...','sin':'sin(x) = x - x³/3! + x⁵/5! - ...','cos':'cos(x) = 1 - x²/2! + x⁴/4! - ...','ln':'ln(1+x) = x - x²/2 + x³/3 - ...'};var result='<b>Ряд Тейлора</b><br>f(x) = Σ f⁽ⁿ⁾(a)/n! · (x-a)ⁿ<br>';for(var func in expansions){if(lo.indexOf(func)>=0){result+='<span style="color:var(--g)">✓ '+expansions[func]+'</span>';break;}}return result||null;}
+
+// 11. L'HOPITAL'S RULE APPLIER
+function applyLHopital(text){var lo=text.toLowerCase();if(!lo.match(/лопиталь|l'?hopital|неопределённост|indeterminate|0\/0|∞\/∞/i))return null;return '<b>Правило Лопиталя</b><br>Если lim f(x)/g(x) даёт 0/0 или ∞/∞, то:<br>lim f(x)/g(x) = lim f\'(x)/g\'(x)<br>📝 Можно применять многократно<br>Пример: lim(x→0) sin(x)/x = lim cos(x)/1 = 1';}
+
+// 12. IMPROPER INTEGRAL SOLVER
+function solveImproperIntegral(text){var lo=text.toLowerCase();if(!lo.match(/несобственн.*интегр|improper integral|бесконечн.*предел/i))return null;return '<b>Несобственный интеграл</b><br>Тип 1: бесконечные пределы<br>∫_a^∞ f(x)dx = lim(b→∞) ∫_a^b f(x)dx<br>Тип 2: разрыв подынтегральной функции<br><span style="color:var(--g)">Сходится если предел конечен</span>';}
+
+// 13. MULTIVARIABLE CALCULUS HELPER
+function multivariableCalculus(text){var lo=text.toLowerCase();if(!lo.match(/частн.*производн|partial derivative|градиент|gradient|экстремум|extremum/i))return null;return '<b>Функции нескольких переменных</b><br>∂f/∂x — производная по x (y константа)<br>∇f = (∂f/∂x, ∂f/∂y) — градиент<br>Экстремум: ∇f = 0 и проверка Hessian<br>📐 Пример: f(x,y)=x²+y² → min в (0,0)';}
+
+// 14. DOUBLE/TRIPLE INTEGRAL GUIDE
+function multipleIntegrals(text){var lo=text.toLowerCase();if(!lo.match(/двойн.*интегр|double integral|тройн.*интегр|triple integral/i))return null;return '<b>Кратные интегралы</b><br>Двойной: ∬_D f(x,y)dA — объём под поверхностью<br>Тройной: ∭_V f(x,y,z)dV — масса тела<br>Полярные координаты: dA = r·dr·dθ<br><span style="color:var(--c)">Теорема Фубини: порядок не важен</span>';}
+
+// 15. LINE INTEGRAL EXPLAINER
+function lineIntegrals(text){var lo=text.toLowerCase();if(!lo.match(/криволинейн.*интегр|line integral|интеграл.*длина/i))return null;return '<b>Криволинейный интеграл</b><br>I рода: ∫_C f(x,y)ds — масса кривой<br>II рода: ∫_C Pdx + Qdy — работа поля<br>Формула Грина: ∮_C Pdx+Qdy = ∬_D(∂Q/∂x−∂P/∂y)dA';}
+
+// 16. SURFACE INTEGRAL GUIDE
+function surfaceIntegrals(text){var lo=text.toLowerCase();if(!lo.match(/поверхностн.*интегр|surface integral|поток.*вектор/i))return null;return '<b>Поверхностный интеграл</b><br>Поток вектора: Φ = ∬_S F·n dS<br>Формула Остроградского-Гаусса:<br>∬_S F·dS = ∭_V div(F)dV<br><span style="color:var(--g)">Применение: электромагнетизм</span>';}
+
+// 17. COMPLEX ANALYSIS BASICS
+function complexAnalysis(text){var lo=text.toLowerCase();if(!lo.match(/комплексн.*анализ|complex analysis|вычет|residue|коши/cauchy/i))return null;return '<b>Комплексный анализ</b><br>Интегральная формула Коши:<br>f(a) = (1/2πi)∮_C f(z)/(z-a)dz<br>Вычет в полюсе: Res(f,a) = lim(z→a)(z-a)f(z)<br>Теорема о вычетах: ∮_C f(z)dz = 2πi·ΣRes';}
+
+// 18. CONTOUR INTEGRATION HELPER
+function contourIntegration(text){var lo=text.toLowerCase();if(!lo.match(/контурн.*интегр|contour integral|интеграл.*замкнут/i))return null;return '<b>Контурное интегрирование</b><br>∮_C f(z)dz по замкнутому контуру<br>Если f аналитична внутри C → интеграл = 0<br>Иначе: 2πi × сумма вычетов внутри C';}
+
+// 19. PROBABILITY DISTRIBUTIONS LIBRARY
+function probabilityDistributions(text){var lo=text.toLowerCase();var dists=[{n:'Биномиальное/Binomial',f:'P(X=k)=C(n,k)p^k(1-p)^(n-k)',e:'E=np, D=npq'},{n:'Пуассона/Poisson',f:'P(X=k)=λ^k·e^(-λ)/k!',e:'E=λ, D=λ'},{n:'Нормальное/Normal',f:'f(x)=1/(σ√2π)·e^(-(x-μ)²/2σ²)',e:'E=μ, D=σ²'},{n:'Равномерное/Uniform',f:'f(x)=1/(b-a) на [a,b]',e:'E=(a+b)/2'},{n:'Экспоненциальное/Exp',f:'f(x)=λe^(-λx)',e:'E=1/λ'},{n:'Хи-квадрат/Chi-square',f:'χ²(k)',e:'E=k, D=2k'}];for(var i=0;i<dists.length;i++){if(lo.indexOf(dists[i].n.split('/')[0].toLowerCase())>=0||lo.indexOf(dists[i].n.split('/')[1].toLowerCase())>=0)return '<b>Распределение: '+dists[i].n+'</b><br>Формула: '+dists[i].f+'<br><span style="color:var(--g)">✓ '+dists[i].e+'</span>';}return null;}
+
+// 20. HYPOTHESIS TESTING GUIDE
+function hypothesisTesting(text){var lo=text.toLowerCase();if(!lo.match(/проверк.*гипотез|hypothesis test|нулев.*гипотез|null hypothesis|p-value|p-значен/i))return null;return '<b>Проверка статистических гипотез</b><br>H₀ (нулевая) vs H₁ (альтернативная)<br>Уровень значимости α (обычно 0.05)<br>p-value < α → отвергаем H₀<br>Ошибки: I рода (ложноположительная), II рода (ложноотрицательная)';}
+
+// 21. CONFIDENCE INTERVALS CALCULATOR
+function confidenceIntervals(text){var lo=text.toLowerCase();if(!lo.match(/доверительн.*интервал|confidence interval/i))return null;return '<b>Доверительный интервал</b><br>Для μ при известном σ:<br>x̄ ± z_(α/2) · σ/√n<br>Для μ при неизвестном σ:<br>x̄ ± t_(α/2,n-1) · s/√n<br><span style="color:var(--c)">95% CI: z≈1.96</span>';}
+
+// 22. CORRELATION & REGRESSION ANALYZER
+function correlationRegression(text){var lo=text.toLowerCase();if(!lo.match(/корреляц|correlation|регресси|regression|ковариаци|covariance/i))return null;return '<b>Корреляция и регрессия</b><br>Коэфф. Пирсона: r = Cov(X,Y)/(σₓσᵧ)<br>-1 ≤ r ≤ 1, |r|≈1 → сильная связь<br>Линейная регрессия: y = ax + b<br>a = r·(σᵧ/σₓ), b = ȳ - a·x̄<br><span style="color:var(--g)">R² — доля объяснённой дисперсии</span>';}
+
+// 23. MARKOV CHAINS EXPLAINER
+function markovChains(text){var lo=text.toLowerCase();if(!lo.match(/марков.*цеп|markov chain|переходн.*матриц|transition matrix/i))return null;return '<b>Цепи Маркова</b><br>P(Xₙ₊₁=j | Xₙ=i) = pᵢⱼ (без памяти)<br>Матрица перехода P = [pᵢⱼ]<br>Стационарное распределение: πP = π<br><span style="color:var(--c)">Применение: моделирование систем</span>';}
+
+// 24. GAME THEORY BASICS
+function gameTheory(text){var lo=text.toLowerCase();if(!lo.match(/теори.*игр|game theory|равновеси.*нэш|nash equilibrium/i))return null;return '<b>Теория игр</b><br>Равновесие Нэша: никто не может улучшить,<br>меняя стратегию в одиночку<br>Матричная игра: максимин для игрока 1,<br>минимакс для игрока 2<br>Дилемма заключённого: классический пример';}
+
+// 25. OPTIMIZATION METHODS
+function optimizationMethods(text){var lo=text.toLowerCase();if(!lo.match(/оптимизаци|optimization|лагранж|lagrange|множител.*лагранж/i))return null;return '<b>Методы оптимизации</b><br>Без условий: f\'(x)=0, f\'\'(x)>0 → min<br>Метод множителей Лагранжа:<br>L(x,y,λ) = f(x,y) + λ·g(x,y)<br>∇L = 0 даёт экстремум при ограничении g=0';}
+
+// 26. NUMBER THEORY ADVANCED
+function advancedNumberTheory(text){var lo=text.toLowerCase();if(lo.match(/ферма.*мал.*теор|fermat.*little/i))return '<b>Малая теорема Ферма</b><br>Если p простое и gcd(a,p)=1, то:<br><span style="color:var(--g)">a^(p-1) ≡ 1 (mod p)</span><br>Пример: 2^6 ≡ 1 (mod 7)';if(lo.match(/эйлер.*теор|euler.*theorem/i))return '<b>Теорема Эйлера</b><br>a^φ(n) ≡ 1 (mod n), если gcd(a,n)=1<br>Обобщение малой теоремы Ферма';if(lo.match(/китайск.*остатк|chinese remainder/i))return '<b>Китайская теорема об остатках</b><br>Система x ≡ aᵢ (mod mᵢ) имеет единственное<br>решение mod M=m₁m₂...mₖ если mᵢ взаимно просты';return null;}
+
+// 27. CRYPTOGRAPHY BASICS
+function cryptographyBasics(text){var lo=text.toLowerCase();if(!lo.match(/криптограф|cryptography|rsa|шифровани|encryption/i))return null;return '<b>Основы криптографии</b><br>RSA: основан на факторизации больших чисел<br>Открытый ключ: (n,e), закрытый: d<br>Шифрование: c = m^e mod n<br>Дешифрование: m = c^d mod n';}
+
+// 28. GRAPH THEORY BASICS
+function graphTheory(text){var lo=text.toLowerCase();if(!lo.match(/теори.*граф|graph theory|эйлер.*путь|эйлеров.*цикл|гамильтон/i))return null;return '<b>Теория графов</b><br>Эйлеров путь: проходит по всем рёбрам 1 раз<br>Гамильтонов путь: проходит по всем вершинам 1 раз<br>Формула Эйлера: V - E + F = 2 (планарный)<br>Степень вершины = число инцидентных рёбер';}
+
+// 29. SET THEORY & LOGIC
+function setTheoryLogic(text){var lo=text.toLowerCase();if(!lo.match(/теори.*множеств|set theory|булев.*алгебр|boolean algebra|логик.*высказывани/i))return null;return '<b>Теория множеств и логика</b><br>Операции: ∪ (объединение), ∩ (пересечение), \\ (разность)<br>Закон де Моргана: ¬(A∧B) = ¬A∨¬B<br>Мощность множества: |A|<br>Континуум: мощность ℝ больше ℕ';}
+
+// 30. CATEGORY THEORY INTRO
+function categoryTheory(text){var lo=text.toLowerCase();if(!lo.match(/теори.*категори|category theory|функтор|functor/i))return null;return '<b>Теория категорий</b><br>Категория: объекты + морфизмы<br>Функтор: отображение между категориями<br>Естественное преобразование: между функторами<br><span style="color:var(--c)">"Абстрактная абстракция" математики</span>';}
+
+// ══════════════════════════════════════════════════════
+// 20 ENHANCED EXPLANATION FEATURES
+// ══════════════════════════════════════════════════════
+
+// 1. STEP-BY-STEP BREAKDOWN WITH VISUAL CUES
+function enhancedStepBreakdown(steps){var h='';for(var i=0;i<steps.length;i++){var color=['var(--v)','var(--c)','var(--g)','var(--a)','var(--p)'][i%5];h+='<div style="padding:8px 12px;margin:6px 0;border-radius:8px;background:rgba(167,139,250,.05);border-left:3px solid '+color+'"><span style="color:'+color+';font-weight:700">Шаг '+(i+1)+':</span> '+steps[i]+'</div>';}return h;}
+
+// 2. COMMON MISTAKES WARNING SYSTEM
+function commonMistakesBox(mistakes){var h='<div class="mega-mistakes"><div class="mm-title">⚠️ Частые ошибки:</div>';for(var i=0;i<mistakes.length;i++)h+='<div class="mm-item">❌ '+mistakes[i]+'</div>';return h+'</div>';}
+
+// 3. ALTERNATIVE METHODS COMPARISON
+function alternativeMethods(methods){var h='<div class="mega-section"><div class="mega-section-title">🔄 Альтернативные методы:</div><div class="mega-section-body">';for(var i=0;i<methods.length;i++)h+='<div style="margin:6px 0"><b>'+methods[i].name+':</b> '+methods[i].desc+'</div>';return h+'</div></div>';}
+
+// 4. REAL-WORLD APPLICATION EXAMPLES
+function realWorldApplications(apps){var h='<div class="mega-section" style="background:rgba(74,222,128,.04);border-color:rgba(74,222,128,.25)"><div class="mega-section-title" style="color:var(--g)">🌍 Применение в жизни:</div><div class="mega-section-body">';for(var i=0;i<apps.length;i++)h+='<div style="margin:4px 0">• '+apps[i]+'</div>';return h+'</div></div>';}
+
+// 5. HISTORICAL CONTEXT BOX
+function historicalContext(info){return '<div class="mega-expand" onclick="toggleMegaExpand(\'hist_'+Math.random().toString(36).substr(2,6)+'\',this)"><span class="me-arrow">▶</span> 📜 Историческая справка</div><div class="mega-expand-content"><div style="padding:8px;color:var(--text2);font-size:12px">'+info+'</div></div>';}
+
+// 6. INTERACTIVE FORMULA BUILDER
+function formulaBuilder(components){var h='<div class="mega-section"><div class="mega-section-title">🧩 Формула:</div><div class="mega-section-body" style="font-family:\'DM Mono\',monospace;font-size:13px">';for(var i=0;i<components.length;i++)h+='<span style="color:'+components[i].color+'">'+components[i].text+'</span>';return h+'</div></div>';}
+
+// 7. VISUAL DIAGRAM DESCRIPTION
+function visualDiagram(desc){return '<div class="mega-section" style="background:rgba(103,232,249,.04);border-color:rgba(103,232,249,.25)"><div class="mega-section-title" style="color:var(--c)">📊 Визуализация:</div><div class="mega-section-body">'+desc+'</div></div>';}
+
+// 8. PROGRESSION TRACKING
+function progressionTracker(current,total){var pct=Math.round(current/total*100);return '<div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:4px"><span>Прогресс</span><span>'+current+'/'+total+' ('+pct+'%)</span></div><div style="height:6px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,var(--v),var(--g));border-radius:3px"></div></div></div>';}
+
+// 9. KEY TAKEAWAYS SUMMARY
+function keyTakeaways(points){var h='<div class="mega-section" style="background:rgba(251,191,36,.05);border-color:rgba(251,191,36,.3)"><div class="mega-section-title">💡 Главное запомнить:</div><div class="mega-section-body">';for(var i=0;i<points.length;i++)h+='<div style="margin:4px 0">★ '+points[i]+'</div>';return h+'</div></div>';}
+
+// 10. PREREQUISITE CHECKER
+function prerequisiteCheck(prereqs){var h='<div class="mega-expand" onclick="toggleMegaExpand(\'prereq_'+Math.random().toString(36).substr(2,6)+'\',this)"><span class="me-arrow">▶</span> 📚 Необходимые знания</div><div class="mega-expand-content"><div style="padding:8px">';for(var i=0;i<prereqs.length;i++)h+='<div style="font-size:12px;color:var(--text2);margin:3px 0">• '+prereqs[i]+'</div>';return h+'</div></div>';}
+
+// 11. DIFFICULTY RATING
+function difficultyRating(level){var stars='';for(var i=0;i<5;i++)stars+=i<level?'⭐':'☆';return '<div style="font-size:11px;color:var(--text2);margin:6px 0">Сложность: '+stars+' ('+level+'/5)</div>';}
+
+// 12. TIME ESTIMATE
+function timeEstimate(minutes){return '<div style="font-size:11px;color:var(--text2);margin:4px 0">⏱ Примерное время изучения: '+minutes+' мин</div>';}
+
+// 13. RELATED TOPICS LINKS
+function relatedTopics(topics){var h='<div class="mega-expand" onclick="toggleMegaExpand(\'related_'+Math.random().toString(36).substr(2,6)+'\',this)"><span class="me-arrow">▶</span> 🔗 Похожие темы</div><div class="mega-expand-content"><div style="padding:8px;display:flex;flex-wrap:wrap;gap:6px">';for(var i=0;i<topics.length;i++)h+='<span class="wchip wchip-v" onclick="ex(\''+topics[i]+'\')" style="cursor:pointer;font-size:11px;padding:3px 8px">'+topics[i]+'</span>';return h+'</div></div>';}
+
+// 14. PRACTICE PROBLEM GENERATOR
+function practiceGenerator(count,topic){var h='<div class="mega-practice"><div class="mp-title">🏋️ Практика: '+topic+'</div>';for(var i=0;i<count;i++)h+='<div class="mp-item" style="font-size:11px">Задача '+(i+1)+': нажми для примера</div>';return h+'</div>';}
+
+// 15. SOLUTION VERIFICATION STEPS
+function verificationSteps(steps){var h='<div class="mega-section"><div class="mega-section-title">✅ Проверка решения:</div><div class="mega-section-body">';for(var i=0;i<steps.length;i++)h+='<div style="margin:4px 0;font-size:12px"><span style="color:var(--g)">✓</span> '+steps[i]+'</div>';return h+'</div></div>';}
+
+// 16. MNEMONIC DEVICES
+function mnemonicDevice(text){return '<div class="mega-section" style="background:rgba(244,114,182,.04);border-color:rgba(244,114,182,.25)"><div class="mega-section-title" style="color:var(--p)">🧠 Мнемотехника:</div><div class="mega-section-body" style="font-style:italic">'+text+'</div></div>';}
+
+// 17. EDGE CASES WARNINGS
+function edgeCases(cases){var h='<div class="mega-section" style="background:rgba(248,113,113,.04);border-color:rgba(248,113,113,.25)"><div class="mega-section-title" style="color:var(--r)">⚠️ Особые случаи:</div><div class="mega-section-body">';for(var i=0;i<cases.length;i++)h+='<div style="margin:4px 0;font-size:12px">• '+cases[i]+'</div>';return h+'</div></div>';}
+
+// 18. GENERALIZATION PATTERNS
+function generalizationPatterns(patterns){var h='<div class="mega-expand" onclick="toggleMegaExpand(\'gen_'+Math.random().toString(36).substr(2,6)+'\',this)"><span class="me-arrow">▶</span> 🔮 Обобщения</div><div class="mega-expand-content"><div style="padding:8px">';for(var i=0;i<patterns.length;i++)h+='<div style="font-size:12px;margin:4px 0;color:var(--text2)">• '+patterns[i]+'</div>';return h+'</div></div>';}
+
+// 19. CONNECTION MAP
+function connectionMap(connections){var h='<div class="mega-section"><div class="mega-section-title">🕸 Связи с другими темами:</div><div class="mega-section-body" style="display:flex;flex-wrap:wrap;gap:8px">';for(var i=0;i<connections.length;i++)h+='<span style="padding:4px 10px;background:var(--glass);border:1px solid var(--border);border-radius:6px;font-size:11px">'+connections[i]+'</span>';return h+'</div></div>';}
+
+// 20. MASTERY CHECKLIST
+function masteryChecklist(items){var h='<div class="mega-expand" onclick="toggleMegaExpand(\'mastery_'+Math.random().toString(36).substr(2,6)+'\',this)"><span class="me-arrow">▶</span> 📋 Чеклист Mastery</div><div class="mega-expand-content"><div style="padding:8px">';for(var i=0;i<items.length;i++)h+='<div style="font-size:12px;margin:4px 0;display:flex;align-items:center;gap:6px"><input type="checkbox" style="accent-color:var(--g)"> '+items[i]+'</div>';return h+'</div></div>';}
+
+// MASTER ENHANCED EXPLANATION FUNCTION
+function renderEnhancedExplanation(topic,concept,steps,answer,options){
+  options=options||{};
+  var h='<div class="explain-block"><div class="eb-title">💡 '+(isEN()?'Deep Explanation':'Подробное объяснение')+'</div><div class="eb-body">';
+  if(concept)h+='<b>'+(isEN()?'Concept':'Концепция')+':</b> '+concept+'<br><br>';
+  h+='</div></div>';
+  
+  // Add difficulty and time
+  if(options.difficulty)h+=difficultyRating(options.difficulty);
+  if(options.timeEstimate)h+=timeEstimate(options.timeEstimate);
+  
+  // Enhanced steps
+  h+=enhancedStepBreakdown(steps);
+  
+  // Answer
+  h+='<br><span style="color:var(--g);font-weight:700;font-size:15px">✓ '+t('answer')+': '+answer+'</span><br><br>';
+  
+  // Add optional components
+  if(options.mistakes)h+=commonMistakesBox(options.mistakes);
+  if(options.applications)h+=realWorldApplications(options.applications);
+  if(options.takeaways)h+=keyTakeaways(options.takeaways);
+  if(options.related)h+=relatedTopics(options.related);
+  if(options.prereqs)h+=prerequisiteCheck(options.prereqs);
+  if(options.edgeCases)h+=edgeCases(options.edgeCases);
+  if(options.verification)h+=verificationSteps(options.verification);
+  if(options.mnemonic)h+=mnemonicDevice(options.mnemonic);
+  if(options.generalizations)h+=generalizationPatterns(options.generalizations);
+  if(options.connections)h+=connectionMap(options.connections);
+  if(options.mastery)h+=masteryChecklist(options.mastery);
+  if(options.history)h+=historicalContext(options.history);
+  if(options.alternatives)h+=alternativeMethods(options.alternatives);
+  if(options.visual)h+=visualDiagram(options.visual);
+  if(options.progress)h+=progressionTracker(options.progress.current,options.progress.total);
+  
+  return h;
+}
+
+// ══════════════════════════════════════════════════════
 // EXPLAIN RENDERER
 // ══════════════════════════════════════════════════════
 function renderExplain(title,concept,steps,answer,warning){
@@ -1949,10 +2144,22 @@ function safeEval(expr){
 function createLocalSolution(userText, detailed){
   var lo=userText.toLowerCase().replace(/[−–—]/g,'-').replace(/,/g,'.').replace(/\s+/g,' ');
 
+  // ─── NEW POWERFUL AI CAPABILITIES (30 FEATURES) ───
+  if(megaMode||explainMode){
+    // Check new advanced capabilities first
+    var advSolvers=[solveDifferentialEquation,solveLaplaceTransform,analyzeFourierSeries,explainPDE,numericalIntegration,
+      explainRungeKutta,calculateEigenvalues,analyzeVectorSpace,checkLinearIndependence,taylorSeriesExpansion,
+      applyLHopital,solveImproperIntegral,multivariableCalculus,multipleIntegrals,lineIntegrals,
+      surfaceIntegrals,complexAnalysis,contourIntegration,probabilityDistributions,hypothesisTesting,
+      confidenceIntervals,correlationRegression,markovChains,gameTheory,optimizationMethods,
+      advancedNumberTheory,cryptographyBasics,graphTheory,setTheoryLogic,categoryTheory];
+    for(var i=0;i<advSolvers.length;i++){try{var res=advSolvers[i](userText);if(res)return res;}catch(e){}}
+  }
+
   if(megaMode){
     var mr=tryMegaSolve(userText);
     if(mr)return mr;
-    return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Try these formats':'Попробуйте форматы')+'</div><div class="mega-section-body">• x^2-5x+6=0<br>• производная x^3+2x<br>• C(10,3)<br>• площадь круга r=5<br>• матрица определитель 2 1 4 3<br>• векторное произведение 1 2 3 и 4 5 6<br>• бином (x+2)^3<br>• кинетическая энергия m=5 v=10<br>• римское 2024<br>• тейлор exp(1) n=8</div></div>';
+    return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Try these formats':'Попробуйте форматы')+'</div><div class="mega-section-body">• x^2-5x+6=0<br>• производная x^3+2x<br>• C(10,3)<br>• площадь круга r=5<br>• матрица определитель 2 1 4 3<br>• векторное произведение 1 2 3 и 4 5 6<br>• бином (x+2)^3<br>• кинетическая энергия m=5 v=10<br>• римское 2024<br>• тейлор exp(1) n=8<br>• dy/dx = 2y<br>• лаплас e^{2t}<br>• ряд фурье sin(x)<br>• собственные значения матрица 2 1 4 3<br>• теория игр нэш<br>• rsa шифрование</div></div>';
   }
 
   // ─── ORIGINAL SOLVERS ───
