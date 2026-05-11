@@ -2550,6 +2550,23 @@ var fn;try{fn=new Function('x','const {sin,cos,tan,asin,acos,atan,log,log2,log10
 ctx.lineWidth=2.5;var grad=ctx.createLinearGradient(0,0,w,0);grad.addColorStop(0,'rgba(167,139,250,1)');grad.addColorStop(.5,'rgba(103,232,249,1)');grad.addColorStop(1,'rgba(244,114,182,1)');ctx.strokeStyle=grad;ctx.beginPath();
 var penDown=false,prevPy=null;for(var px=0;px<=w;px+=0.8){var mx=(px-w/2)/scale;var y;try{y=fn(mx)}catch(e2){penDown=false;continue}if(!isFinite(y)||isNaN(y)){penDown=false;continue}var py=h/2-y*scale;if(prevPy!==null&&Math.abs(py-prevPy)>h*0.75)penDown=false;prevPy=py;if(!penDown){ctx.moveTo(px,py);penDown=true}else ctx.lineTo(px,py)}ctx.stroke();
 ctx.fillStyle='rgba(103,232,249,.85)';ctx.font='bold 11px "DM Mono",monospace';ctx.fillText('y = '+labelExpr,10,20);
+
+// ══════════════════════════════════════════════════════
+// NEW: GRAPH ANALYSIS & EXPLANATION
+// ══════════════════════════════════════════════════════
+setTimeout(function(){
+var graphAnalysis=analyzeAndExplainGraph(fn,labelExpr,w,h,scale);
+if(graphAnalysis){
+var expRow=document.createElement('div');expRow.className='msg-row bot';
+var expAv=document.createElement('div');expAv.className='msg-avatar bot-av';expAv.textContent='📊';
+var expWrap=document.createElement('div');var expBubble=document.createElement('div');expBubble.className='msg-bubble';
+expBubble.innerHTML=graphAnalysis;
+var expTime=document.createElement('div');expTime.className='msg-time';expTime.textContent=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+expWrap.appendChild(expBubble);expWrap.appendChild(expTime);expRow.appendChild(expAv);expRow.appendChild(expWrap);
+chatWindow.appendChild(expRow);chatWindow.scrollTop=chatWindow.scrollHeight;
+}
+},100);
+
 stats.solved++;saveStats();updateStatUI();
 }
 function detectGraph(orig){
@@ -2558,6 +2575,189 @@ var mEq=orig.match(/y\s*=\s*([^\n\r,;]+)/i);if(mEq){var label=mEq[1].trim();retu
 var bare=orig.replace(/график|начерти|построй|нарисуй|graph|plot|draw/gi,'').replace(/y\s*=/i,'').trim();
 return bare?{label:bare,expr:normalizeForGraph(bare)}:null;
 }
+
+// ══════════════════════════════════════════════════════
+// NEW: GRAPH ANALYSIS & EXPLANATION FUNCTION (GRADES 7-11)
+// ══════════════════════════════════════════════════════
+function analyzeAndExplainGraph(fn,labelExpr,w,h,scale){
+try{
+var centerX=w/2,centerY=h/2;
+var xRangeMin=-centerX/scale,xRangeMax=(w-centerX)/scale;
+var yRangeMax=centerY/scale,yRangeMin=-(h-centerY)/scale;
+
+// Find key points
+var zeros=[],extremums=[],yInt=null;
+var step=0.1;
+var prevY=fn(xRangeMin),prevX=xRangeMin;
+
+for(var x=xRangeMin+step;x<=xRangeMax;x+=step){
+var currY=fn(x);
+if(!isFinite(currY)||isNaN(currY)){prevY=currY;prevX=x;continue;}
+
+// Y-intercept (x=0)
+if(Math.abs(x)<step*2)yInt=currY;
+
+// Zeros (crosses x-axis)
+if(prevY*currY<0){
+var zeroX=prevX+(0-prevY)*(x-prevX)/(currY-prevY);
+zeros.push(zeroX);
+}
+
+// Extremums (sign change of derivative approximation)
+if(x>xRangeMin+step*2){
+var prevPrevY=fn(prevX-step);
+var prevSlope=(prevY-prevPrevY)/step;
+var currSlope=(currY-prevY)/step;
+if(prevSlope*currSlope<0&&Math.abs(currSlope)>0.01){
+extremums.push({x:prevX,y:prevY,type:prevSlope>0?'max':'min'});
+}
+}
+prevY=currY;prevX=x;
+}
+
+// Remove duplicates (within 0.5 units)
+zeros=zeros.filter(function(z,i){return zeros.indexOf(z)>i||Math.abs(z-zeros[i-1])>0.5});
+extremums=extremums.filter(function(e,i){return extremums.indexOf(e)>i||Math.abs(e.x-extremums[i-1].x)>0.5});
+
+// Detect function type
+var lo=labelExpr.toLowerCase();
+var funcType='unknown';
+var funcName=isEN()?'Function':'Функция';
+if(lo.indexOf('x^2')>=0||lo.indexOf('x²')>=0||lo.indexOf('x**2')>=0){funcType='quadratic';funcName=isEN()?'Quadratic Function (Parabola)':'Квадратичная функция (парабола)';}
+else if(lo.indexOf('x^3')>=0||lo.indexOf('x³')>=0||lo.indexOf('x**3')>=0){funcType='cubic';funcName=isEN()?'Cubic Function':'Кубическая функция';}
+else if(lo.indexOf('sin')>=0){funcType='trig';funcName=isEN()?'Trigonometric Function (Sine/Cosine)':'Тригонометрическая функция (синус/косинус)';}
+else if(lo.indexOf('cos')>=0){funcType='trig';funcName=isEN()?'Trigonometric Function (Cosine)':'Тригонометрическая функция (косинус)';}
+else if(lo.indexOf('tan')>=0||lo.indexOf('tg')>=0){funcType='trig';funcName=isEN()?'Tangent Function':'Функция тангенс';}
+else if(lo.indexOf('sqrt')>=0||lo.indexOf('√')>=0){funcType='root';funcName=isEN()?'Square Root Function':'Функция квадратного корня';}
+else if(lo.indexOf('log')>=0||lo.indexOf('ln')>=0){funcType='log';funcName=isEN()?'Logarithmic Function':'Логарифмическая функция';}
+else if(lo.indexOf('exp')>=0||lo.indexOf('e^')>=0||lo.indexOf('2^')>=0||lo.indexOf('3^')>=0||lo.indexOf('10^')>=0){funcType='exp';funcName=isEN()?'Exponential Function':'Показательная функция';}
+else if(lo.indexOf('1/x')>=0||lo.indexOf('/x')>=0){funcType='rational';funcName=isEN()?'Rational Function (Hyperbola)':'Дробно-рациональная функция (гипербола)';}
+else if(lo.indexOf('|x|')>=0||lo.indexOf('abs')>=0){funcType='abs';funcName=isEN()?'Absolute Value Function':'Функция модуль';}
+else if(lo.indexOf('x')>=0&&lo.indexOf('^')<0){funcType='linear';funcName=isEN()?'Linear Function':'Линейная функция';}
+
+// Build explanation
+var html='<div class="explain-block" style="border-color:var(--cg);background:rgba(103,232,249,.04)">';
+html+='<div class="eb-title" style="color:var(--c)">📊 '+funcName+'</div>';
+html+='<div class="eb-body">';
+
+// Basic properties
+html+='<b>'+t('answer')+':</b> ';
+if(funcType==='quadratic'){
+html+=(isEN()?'Parabola opening ':'Парабола, ветви ')+(zeros.length===2?(isEN()?'up/down, crosses x-axis at 2 points':'вверх/вниз, пересекает ось x в 2 точках'):(zeros.length===1?(isEN()?'touches x-axis at one point':'касается оси x в одной точке'):(isEN()?'does not cross x-axis':'не пересекает ось x')));
+}else if(funcType==='linear'){
+html+=(isEN()?'Straight line':'Прямая линия');
+if(yInt!==null)html+=' with y-intercept <b style="color:var(--v)">'+yInt.toFixed(2)+'</b>';
+}else if(funcType==='trig'){
+html+=(isEN()?'Periodic wave with amplitude and period':'Периодическая волна с амплитудой и периодом');
+}else if(funcType==='exp'){
+html+=(isEN()?'Exponential growth/decay curve':'Кривая экспоненциального роста/убывания');
+}else if(funcType==='log'){
+html+=(isEN()?'Logarithmic curve, defined for x>0':'Логарифмическая кривая, определена при x>0');
+}else if(funcType==='root'){
+html+=(isEN()?'Square root curve, defined for x≥0':'Кривая квадратного корня, определена при x≥0');
+}else if(funcType==='rational'){
+html+=(isEN()?'Hyperbola with asymptotes':'Гипербола с асимптотами');
+}else if(funcType==='abs'){
+html+=(isEN()?'V-shaped graph with vertex':'V-образный график с вершиной');
+}else if(funcType==='cubic'){
+html+=(isEN()?'S-shaped cubic curve':'S-образная кубическая кривая');
+}else{
+html+=(isEN()?'See the plotted curve above':'Смотрите график выше');
+}
+html+='<br><br>';
+
+// Key features
+if(zeros.length>0){
+html+='<b>'+(isEN()?'Zeros (x-intercepts)':'Нули функции (пересечения с осью x)')+'</b>: ';
+html+=zeros.map(function(z){return '<span style="color:var(--g)">x≈'+z.toFixed(2)+'</span>'}).join(', ');
+html+='<br>';
+}
+
+if(extremums.length>0){
+html+='<b>'+(isEN()?'Extremum points':'Точки экстремума')+'</b>: ';
+extremums.forEach(function(e){
+html+='<span style="color:'+ (e.type==='max'?'var(--p)':'var(--v)')+'">('+e.x.toFixed(2)|)+' | '+ (e.type===isEN()?'max':'макс') +')</span> ';
+});
+html+='<br>';
+}
+
+if(yInt!==null&&funcType!=='linear'){
+html+='<b>'+(isEN()?'Y-intercept':'Пересечение с осью Y')+'</b>: <span style="color:var(--c)">y≈'+yInt.toFixed(2)+'</span><br>';
+}
+
+// Domain & Range hints
+html+='<br><b>'+(isEN()?'Domain':'Область определения')+'</b>: ';
+if(funcType==='log'||funcType==='root'||funcType==='rational'){
+if(funcType==='log')html+=(isEN()?'x > 0':'x > 0');
+else if(funcType==='root')html+=(isEN()?'x ≥ 0 (expression under root must be non-negative)':'x ≥ 0 (выражение под корнем должно быть ≥ 0)');
+else if(funcType==='rational')html+=(isEN()?'x ≠ 0 (denominator cannot be zero)':'x ≠ 0 (знаменатель не может быть равен 0)');
+}else{
+html+=(isEN()?'All real numbers (−∞, +∞)':'Все действительные числа (−∞, +∞)');
+}
+
+html+=' | <b>'+(isEN()?'Range':'Область значений')+'</b>: ';
+if(funcType==='quadratic'){
+html+=(extremums.length>0?(extremums[0].type==='min'?(isEN()?'[y₀, +∞) where y₀ is minimum value':'[y₀, +∞), где y₀ — минимум'):(isEN()?'(−∞, y₀] where y₀ is maximum value':'(−∞, y₀], где y₀ — максимум')):(isEN()?'Depends on coefficients':'Зависит от коэффициентов'));
+}else if(funcType==='linear'){
+html+=(isEN()?'All real numbers (−∞, +∞)':'Все действительные числа (−∞, +∞)');
+}else if(funcType==='trig'){
+html+=(isEN()?'Typically [−A, A] where A is amplitude':'Обычно [−A, A], где A — амплитуда');
+}else if(funcType==='exp'){
+html+=(isEN()?'(0, +∞) for standard exponential':'(0, +∞) для стандартной экспоненты');
+}else if(funcType==='log'){
+html+=(isEN()?'All real numbers (−∞, +∞)':'Все действительные числа (−∞, +∞)');
+}else if(funcType==='root'){
+html+=(isEN()?'[0, +∞) for standard square root':'[0, +∞) для стандартного корня');
+}else if(funcType==='abs'){
+html+=(isEN()?'[0, +∞) or shifted':'[0, +∞) или смещённая');
+}else{
+html+=(isEN()?'Depends on function type':'Зависит от типа функции');
+}
+
+html+='</div></div>';
+
+// Grade level tips
+html+='<div class="mega-section" style="margin-top:8px">';
+html+='<div class="mega-section-title">🎓 '+(isEN()?'Grade Level Insights':'Что знать по классам')+'</div>';
+html+='<div class="mega-section-body" style="font-size:11.5px">';
+
+if(funcType==='linear'){
+html+='<b>'+ (isEN()?'Grades 7-8':'7-8 класс') +'</b>: y=kx+b form, slope k, y-intercept b<br>';
+html+='<b>'+ (isEN()?'Grade 9':'9 класс') +'</b>: Systems of linear equations, parallel/perpendicular lines<br>';
+}else if(funcType==='quadratic'){
+html+='<b>'+ (isEN()?'Grade 8':'8 класс') +'</b>: y=ax²+bx+c, parabola shape<br>';
+html+='<b>'+ (isEN()?'Grade 9':'9 класс') +'</b>: Discriminant D=b²−4ac, Vieta\\'s theorem<br>';
+html+='<b>'+ (isEN()?'Grade 10-11':'10-11 класс') +'</b>: Vertex form, optimization problems<br>';
+}else if(funcType==='trig'){
+html+='<b>'+ (isEN()?'Grade 9':'9 класс') +'</b>: Unit circle, sin/cos/tan values<br>';
+html+='<b>'+ (isEN()?'Grade 10':'10 класс') +'</b>: Trig identities, graphs, periodicity<br>';
+html+='<b>'+ (isEN()?'Grade 11':'11 класс') +'</b>: Inverse trig, trig equations<br>';
+}else if(funcType==='exp'||funcType==='log'){
+html+='<b>'+ (isEN()?'Grade 9':'9 класс') +'</b>: Exponent rules, powers<br>';
+html+='<b>'+ (isEN()?'Grade 10-11':'10-11 класс') +'</b>: Exponential/logarithmic equations, natural log ln, base e<br>';
+}else if(funcType==='root'){
+html+='<b>'+ (isEN()?'Grade 8':'8 класс') +'</b>: Square root definition<br>';
+html+='<b>'+ (isEN()?'Grade 10-11':'10-11 класс') +'</b>: Domain restrictions, transformations<br>';
+}else if(funcType==='rational'){
+html+='<b>'+ (isEN()?'Grade 9':'9 класс') +'</b>: Rational expressions, asymptotes<br>';
+html+='<b>'+ (isEN()?'Grade 10-11':'10-11 класс') +'</b>: Limits, behavior near asymptotes<br>';
+}else if(funcType==='abs'){
+html+='<b>'+ (isEN()?'Grade 8-9':'8-9 класс') +'</b>: Absolute value definition, piecewise form<br>';
+html+='<b>'+ (isEN()?'Grade 10-11':'10-11 класс') +'</b>: Absolute value equations/inequalities<br>';
+}else if(funcType==='cubic'){
+html+='<b>'+ (isEN()?'Grade 10-11':'10-11 класс') +'</b>: Cubic polynomials, inflection points, derivatives<br>';
+}
+
+html+='</div></div>';
+
+return html;
+
+}catch(err){
+console.warn('Graph analysis error:',err.message);
+return null;
+}
+}
+
 // ══════════════════════════════════════════════════════
 // AI SOLVER
 // ══════════════════════════════════════════════════════
