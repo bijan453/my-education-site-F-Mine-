@@ -3040,61 +3040,8 @@ return {text:responseText,html:extraHTML,graph:showGraph,expr:graphExpr};
 }
 
 // ==========================================
-// OVERRIDE SEND MESSAGE WITH NEW ENGINE
+// ENHANCED WELCOME MESSAGE
 // ==========================================
-
-var originalSendMessage=sendMessage;
-sendMessage=function(){
-var message=msgInput.value.trim();
-if(!message)return;
-
-// Add user message
-var userDiv=document.createElement('div');
-userDiv.className='message user-message';
-userDiv.textContent=message;
-chatWindow.appendChild(userDiv);
-
-msgInput.value='';
-msgInput.style.height='auto';
-
-// Loading indicator
-var loadDiv=document.createElement('div');
-loadDiv.className='message bot-message';
-loadDiv.id='loading-'+Date.now();
-loadDiv.innerHTML='<span class="typing-indicator">Thinking...</span>';
-chatWindow.appendChild(loadDiv);
-chatWindow.scrollTop=chatWindow.scrollHeight;
-
-setTimeout(function(){
-var loadEl=document.getElementById(loadDiv.id);
-if(loadEl)loadEl.remove();
-
-var response=getEnhancedResponse(message);
-
-var botDiv=document.createElement('div');
-botDiv.className='message bot-message';
-botDiv.innerHTML=response.text+response.html;
-chatWindow.appendChild(botDiv);
-
-// Handle graphing
-if(response.graph&&response.expr){
-setTimeout(function(){
-try{
-msgInput.value='graph '+response.expr;
-// Existing graph logic will handle this
-}catch(e){console.error('Graph trigger error:',e);}
-},500);
-}
-
-chatWindow.scrollTop=chatWindow.scrollHeight;
-
-// Update stats
-stats.messages++;
-if(stats.messages%10===0){stats.level++;document.getElementById('statLvl').textContent=stats.level;}
-saveStats();
-
-},600);
-};
 
 // Welcome message enhancement
 var welcomeCheck=setInterval(function(){
