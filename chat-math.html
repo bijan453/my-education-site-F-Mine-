@@ -40,7 +40,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   background-image:radial-gradient(ellipse 80% 60% at 5% 0%,rgba(167,139,250,.1) 0%,transparent 55%),
     radial-gradient(ellipse 60% 45% at 95% 95%,rgba(103,232,249,.07) 0%,transparent 52%),
     radial-gradient(ellipse 45% 35% at 50% 50%,rgba(244,114,182,.04) 0%,transparent 60%);
-  -webkit-font-smoothing:antialiased}
+  -webkit-font-smoothing:antialiased; animation: pageIn 0.5s ease both;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:180px 180px;opacity:.022}
@@ -357,7 +357,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   </aside>
 
   <div class="chat-main">
-    <div class="chat-window" id="chatWindow">
+    <div class="chat-window" id="chatWindow"><button id="scrollBottomBtn" onclick="chatWindow.scrollTo({top:chatWindow.scrollHeight,behavior:'smooth'})" style="display:none; position:fixed; bottom:100px; right:20px; z-index:200; background:var(--v); color:#fff; border:none; border-radius:50%; width:36px; height:36px; font-size:18px; cursor:pointer; box-shadow:var(--sh-btn);">↓</button>
       <div class="welcome" id="welcomeBanner">
         <div class="welcome-title">🤖 <span id="wTitle">Математика Бот — 11 класс</span></div>
         <div class="welcome-sub" id="wSub">Задай любой вопрос — решу и объясню каждый шаг.</div>
@@ -917,32 +917,43 @@ function factorial(n){if(n<0)return NaN;if(n<=1)return 1;var r=1;for(var i=2;i<=
 // ORIGINAL MEGA SOLVERS
 // ══════════════════════════════════════════════════════
 function megaSolveQuadratic(a,b,c){
-  var D=b*b-4*a*c;var sqrtD=Math.sqrt(Math.abs(D));var h='';
+  var D=b*b-4*a*c;var sqrtD=Math.sqrt(Math.abs(D));
+  var xv=-b/(2*a);var yv=c-b*b/(4*a); // vertex
+  var h='';
   h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Understanding This Problem':'Разбираем задачу')+'</div>';
   h+='<div class="mega-section-body">'+(isEN()?'We have a':'У нас')+' '+gTerm(isEN()?'quadratic equation':'квадратное уравнение')+': <b>'+a+'x² + ('+b+')x + ('+c+') = 0</b><br><br>';
-  h+=(isEN()?'Our':'Наши')+' '+gTerm(isEN()?'coefficients':'коэффициенты')+': a='+a+', b='+b+', c='+c+'</div></div>';
+  h+=(isEN()?'Our':'Наши')+' '+gTerm(isEN()?'coefficients':'коэффициенты')+': a='+a+', b='+b+', c='+c+'<br>';
+  h+=(isEN()?'Parabola opens ':'Парабола открыта ')+(a>0?(isEN()?'upward ↑':'вверх ↑'):(isEN()?'downward ↓':'вниз ↓'))+', '+(isEN()?'vertex at':'вершина')+'('+xv.toFixed(3)+', '+yv.toFixed(3)+')</div></div>';
   h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step 1: Discriminant':'Шаг 1: Дискриминант')+'</div>';
-  h+='<div class="mega-section-body">'+gTerm(isEN()?'discriminant':'дискриминант')+' '+gTerm('D')+' = b²−4ac = ('+b+')²−4·('+a+')·('+c+') = '+b*b+'−'+4*a*c+' = <b style="color:var(--a)">'+D+'</b><br>';
-  if(D>0)h+='✅ D>0 → '+(isEN()?'two roots':'два корня');
-  else if(D===0)h+='⚪ D=0 → '+(isEN()?'one root':'один корень');
-  else h+='❌ D<0 → '+(isEN()?'no real roots':'нет действительных корней');
+  h+='<div class="mega-section-body">'+gTerm(isEN()?'discriminant':'дискриминант')+' '+gTerm('D')+' = b²−4ac = ('+b+')²−4·('+a+')·('+c+') = '+b*b+'−'+(4*a*c)+' = <b style="color:var(--a)">'+D+'</b><br>';
+  if(D>0)h+='✅ D>0 → '+(isEN()?'two real roots':'два действительных корня');
+  else if(D===0)h+='⚪ D=0 → '+(isEN()?'one double root':'один двойной корень');
+  else h+='❌ D<0 → '+(isEN()?'no real roots (complex pair)':'нет действительных корней (комплексная пара)');
   h+='</div></div>';
   h+=megaExpandable(isEN()?'🤔 Why discriminant?':'🤔 Почему дискриминант?',
-    '<div class="mega-section-body">'+(isEN()?'From completing the square: (x+b/2a)²=(b²−4ac)/4a². The sign of D determines everything.':'Из выделения полного квадрата: (x+b/2a)²=(b²−4ac)/4a². Знак D определяет всё.')+'</div>');
+    '<div class="mega-section-body">'+(isEN()?'From completing the square: (x+b/2a)²=(b²−4ac)/4a². The sign of D determines how many times the parabola crosses the x-axis.':'Из выделения полного квадрата: (x+b/2a)²=(b²−4ac)/4a². Знак D определяет, сколько раз парабола пересекает ось x.')+'</div>');
   if(D>=0){
     var x1=(-b+sqrtD)/(2*a);var x2=(-b-sqrtD)/(2*a);
-    h+='<div class="mega-section"><div class="mega-section-title">🎯 '+(isEN()?'Step 2: Roots':'Шаг 2: Корни')+'</div>';
-    h+='<div class="mega-section-body">x = (−b±√D)/(2a)<br>x₁ = '+(-b+sqrtD).toFixed(4)+'/'+(2*a)+' = <b style="color:var(--g)">'+x1.toFixed(4)+'</b><br>';
-    if(D>0)h+='x₂ = '+(-b-sqrtD).toFixed(4)+'/'+(2*a)+' = <b style="color:var(--g)">'+x2.toFixed(4)+'</b>';
+    h+='<div class="mega-section"><div class="mega-section-title">🎯 '+(isEN()?'Step 2: Roots by Formula':'Шаг 2: Корни по формуле')+'</div>';
+    h+='<div class="mega-section-body">x = (−b±√D)/(2a) = ('+(-b)+'±√'+D+')/'+(2*a)+'<br>';
+    h+='x₁ = ('+(-b)+'+'+sqrtD.toFixed(4)+')/'+(2*a)+' = <b style="color:var(--g)">'+x1.toFixed(4)+'</b><br>';
+    if(D>0)h+='x₂ = ('+(-b)+'−'+sqrtD.toFixed(4)+')/'+(2*a)+' = <b style="color:var(--g)">'+x2.toFixed(4)+'</b>';
     h+='</div></div>';
-    h+=megaExpandable(isEN()?'✅ Verification':'✅ Проверка',
-      '<div class="mega-section-body">f('+x1.toFixed(4)+')='+(a*x1*x1+b*x1+c).toFixed(6)+'≈0 ✓'+(D>0?'<br>f('+x2.toFixed(4)+')='+(a*x2*x2+b*x2+c).toFixed(6)+'≈0 ✓':'')+'</div>');
+    h+=megaExpandable(isEN()?"📐 Vieta's formulas check":"📐 Проверка формулами Виета",
+      '<div class="mega-section-body">'+gTerm(isEN()?"Vieta's formulas":"формулы Виета")+':<br>'+
+      'x₁+x₂ = '+(D>0?(x1+x2).toFixed(4):x1.toFixed(4))+' ≈ '+(-b/a).toFixed(4)+' = −b/a ✓<br>'+
+      'x₁·x₂ = '+(D>0?(x1*x2).toFixed(4):x1.toFixed(4))+' ≈ '+(c/a).toFixed(4)+' = c/a ✓</div>');
+    h+=megaExpandable(isEN()?'✅ Verification':'✅ Проверка подстановкой',
+      '<div class="mega-section-body">f('+x1.toFixed(4)+') = '+(a*x1*x1+b*x1+c).toFixed(6)+' ≈ 0 ✓'+(D>0?'<br>f('+x2.toFixed(4)+') = '+(a*x2*x2+b*x2+c).toFixed(6)+' ≈ 0 ✓':'')+'</div>');
     h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': x₁='+x1.toFixed(4)+(D>0?', x₂='+x2.toFixed(4):'')+'</span>';
   }else{
-    h+='<br><span style="color:var(--r);font-weight:800;font-size:15px">✗ '+(isEN()?'No real roots':'Нет корней')+' (D<0)</span>';
+    var re=(-b/(2*a)).toFixed(4);var im=(sqrtD/(2*a)).toFixed(4);
+    h+=megaExpandable(isEN()?'🔮 Complex roots':'🔮 Комплексные корни',
+      '<div class="mega-section-body">x = '+re+' ± '+im+'i<br>('+gTerm(isEN()?'imaginary unit':'мнимая единица')+': i² = −1)</div>');
+    h+='<br><span style="color:var(--r);font-weight:800;font-size:15px">✗ '+(isEN()?'No real roots':'Нет действительных корней')+' (D<0)</span>';
   }
-  h+=megaMistakes(isEN()?['D=b²−4ac (not b²+4ac!)','−b±√D, not b±√D']:['D=b²−4ac (не b²+4ac!)','−b±√D, не b±√D']);
-  h+=megaPractice(['x^2+2x-8=0','3x^2-7x+2=0','x^2-9=0']);
+  h+=megaMistakes(isEN()?['D=b²−4ac (not b²+4ac!)','−b±√D, not b±√D','Divide entire numerator by 2a']:['D=b²−4ac (не b²+4ac!)','−b±√D, не b±√D','Делим весь числитель на 2a']);
+  h+=megaPractice(['x^2+2x-8=0','3x^2-7x+2=0','x^2-9=0','2x^2+4x+2=0']);
   return h;
 }
 
@@ -965,21 +976,30 @@ function megaSolveDerivative(expr){
     var m=term.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
     if(m){var a=m[1]===''||m[1]==='+'?1:m[1]==='-'?-1:parseFloat(m[1]);var n=parseInt(m[2]);var da=a*n;var dn=n-1;
       var res=dn===0?String(da):dn===1?(da===1?'':da===-1?'-':da)+'x':(da===1?'':da===-1?'-':da)+'x^'+dn;
-      steps.push(a+'x^'+n+' → '+a+'·'+n+'·x^'+(n-1)+'='+res);deriv+=(deriv?'+':'')+res;continue}
+      steps.push('<b>'+t('step')+' '+(steps.length+1)+':</b> '+a+'·x^'+n+' → '+a+'·'+n+'·x^'+(n-1)+' = <b style="color:var(--g)">'+res+'</b> ('+gTerm(isEN()?'power rule':'степенное правило')+')');deriv+=(deriv?'+':'')+res;continue}
     var m2=term.match(/^([+-]?\d*\.?\d*)\*?x$/);
     if(m2){var a2=m2[1]===''||m2[1]==='+'?1:m2[1]==='-'?-1:parseFloat(m2[1]);
-      steps.push(a2+'x → '+a2);deriv+=(deriv?'+':'')+a2;continue}
+      steps.push('<b>'+t('step')+' '+(steps.length+1)+':</b> '+a2+'·x → <b style="color:var(--g)">'+a2+'</b> ('+gTerm(isEN()?'power rule':'степенное правило')+': x¹ → 1·x⁰)');deriv+=(deriv?'+':'')+a2;continue}
     var mc=term.match(/^([+-]?\d+\.?\d*)$/);
-    if(mc){steps.push(mc[1]+' → 0 ('+(isEN()?'constant':'константа')+')');continue}
+    if(mc){steps.push('<b>'+t('step')+' '+(steps.length+1)+':</b> '+mc[1]+' → <b style="color:var(--g)">0</b> ('+(isEN()?'constant rule':'константа → 0')+')');continue}
   }
   var h='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Derivative':'Производная')+'</div>';
-  h+='<div class="mega-section-body">'+gTerm(isEN()?'derivative':'производная')+(isEN()?' = rate of change.':' = скорость изменения.')+'<br>f(x)='+expr+'<br><b>d/dx[xⁿ]=n·xⁿ⁻¹</b></div></div>';
+  h+='<div class="mega-section-body">'+gTerm(isEN()?'derivative':'производная')+(isEN()?' measures the instantaneous rate of change (slope of tangent line).':' — мгновенная скорость изменения (наклон касательной).')+'<br>f(x) = '+expr+'<br><b>d/dx[xⁿ] = n·xⁿ⁻¹</b></div></div>';
   h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Steps':'Шаги')+'</div><div class="mega-section-body">';
-  for(var j=0;j<steps.length;j++)h+='<b>'+t('step')+' '+(j+1)+':</b> '+steps[j]+'<br>';
+  for(var j=0;j<steps.length;j++)h+=steps[j]+'<br>';
   h+='</div></div>';
-  h+=megaExpandable(isEN()?'🤔 Why power rule?':'🤔 Почему степенное правило?','<div class="mega-section-body">'+(isEN()?'From limit definition: f\'(x)=lim(h→0)[f(x+h)−f(x)]/h':'Из определения предела: f\'(x)=lim(h→0)[f(x+h)−f(x)]/h')+'</div>');
-  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': f\'(x)='+(deriv||'0')+'</span>';
-  h+=megaPractice(isEN()?['derivative x^4+3x^2-7','derivative 2x^3-5x']:['производная x^4+3x^2-7','производная 2x^3-5x']);
+  h+=megaExpandable(isEN()?'📚 Key derivative rules':'📚 Основные правила дифференцирования',
+    '<div class="mega-section-body">'+
+    'd/dx[xⁿ] = n·xⁿ⁻¹<br>'+
+    'd/dx[eˣ] = eˣ<br>'+
+    'd/dx[ln x] = 1/x<br>'+
+    'd/dx[sin x] = cos x<br>'+
+    'd/dx[cos x] = −sin x<br>'+
+    'd/dx[f·g] = f\'g + fg\' ('+(isEN()?'product rule':'правило произведения')+')<br>'+
+    'd/dx[f(g(x))] = f\'(g)·g\' ('+(isEN()?'chain rule':'правило цепочки')+')</div>');
+  h+=megaExpandable(isEN()?'🤔 Why power rule?':'🤔 Почему степенное правило?','<div class="mega-section-body">'+(isEN()?'From limit definition: f\'(x) = lim(h→0)[f(x+h)−f(x)]/h. Expanding (x+h)ⁿ via binomial theorem gives n·xⁿ⁻¹.':'Из определения предела: f\'(x)=lim(h→0)[f(x+h)−f(x)]/h. Раскладывая (x+h)ⁿ по формуле бинома Ньютона, получаем n·xⁿ⁻¹.')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': f\'(x) = '+(deriv||'0')+'</span>';
+  h+=megaPractice(isEN()?['derivative x^4+3x^2-7','derivative 2x^3-5x','derivative 5x^2+3x-1']:['производная x^4+3x^2-7','производная 2x^3-5x','производная 5x^2+3x-1']);
   return h;
 }
 
@@ -991,30 +1011,58 @@ function megaSolveIntegral(expr){
     var m=term.match(/^([+-]?\d*\.?\d*)\*?x\^(\d+)$/);
     if(m){var a=m[1]===''||m[1]==='+'?1:m[1]==='-'?-1:parseFloat(m[1]);var n=parseInt(m[2]);var na=a/(n+1);
       var res=(na===1?'':na===-1?'-':na.toFixed(3))+'x^'+(n+1);
-      steps.push(a+'x^'+n+' → '+a+'/(n+1)·x^'+(n+1)+'='+res);integ+=(integ?'+':'')+res;continue}
+      steps.push('<b>'+t('step')+' '+(steps.length+1)+':</b> '+a+'x^'+n+' → '+a+'/('+n+'+1)·x^'+(n+1)+' = <b style="color:var(--g)">'+res+'</b>');integ+=(integ?'+':'')+res;continue}
     var m2=term.match(/^([+-]?\d*\.?\d*)\*?x$/);
     if(m2){var a2=m2[1]===''||m2[1]==='+'?1:m2[1]==='-'?-1:parseFloat(m2[1]);var na2=a2/2;
-      steps.push(a2+'x → '+(na2===1?'':na2===-1?'-':na2.toFixed(3))+'x²');integ+=(integ?'+':'')+(na2===1?'':na2===-1?'-':na2.toFixed(3))+'x^2';continue}
+      steps.push('<b>'+t('step')+' '+(steps.length+1)+':</b> '+a2+'·x → '+a2+'/2·x² = <b style="color:var(--g)">'+(na2===1?'':na2===-1?'-':na2.toFixed(3))+'x²</b>');integ+=(integ?'+':'')+(na2===1?'':na2===-1?'-':na2.toFixed(3))+'x^2';continue}
     var mc=term.match(/^([+-]?\d+\.?\d*)$/);
-    if(mc){steps.push(mc[1]+' → '+mc[1]+'x');integ+=(integ?'+':'')+mc[1]+'x';continue}
+    if(mc){steps.push('<b>'+t('step')+' '+(steps.length+1)+':</b> '+mc[1]+' → <b style="color:var(--g)">'+mc[1]+'·x</b> ('+(isEN()?'constant rule':'интеграл константы')+')');integ+=(integ?'+':'')+mc[1]+'x';continue}
   }
   var h='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Integral':'Интеграл')+'</div>';
-  h+='<div class="mega-section-body">'+gTerm(isEN()?'integral':'интеграл')+(isEN()?' = reverse of derivative. Area under curve.':' = обратная к производной. Площадь под кривой.')+'<br><b>∫xⁿdx=xⁿ⁺¹/(n+1)+C</b></div></div>';
-  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Steps':'Шаги')+'</div><div class="mega-section-body">';
-  for(var j=0;j<steps.length;j++)h+='<b>'+t('step')+' '+(j+1)+':</b> '+steps[j]+'<br>';
+  h+='<div class="mega-section-body">'+gTerm(isEN()?'integral':'интеграл')+(isEN()?' reverses differentiation and measures the area under a curve.':' — обратная операция к дифференцированию, измеряет площадь под кривой.')+'<br>∫f(x)dx → find F(x) where F\'(x)=f(x)<br><b>∫xⁿdx = xⁿ⁺¹/(n+1) + C</b></div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Steps (Power Rule)':'Шаги (степенное правило)')+'</div><div class="mega-section-body">';
+  for(var j=0;j<steps.length;j++)h+=steps[j]+'<br>';
   h+='</div></div>';
-  h+=megaExpandable(isEN()?'🤔 Why +C?':'🤔 Почему +C?','<div class="mega-section-body">'+(isEN()?'Derivative of any constant is 0. So F(x)+C all have the same derivative.':'Производная константы = 0. Все F(x)+C имеют одинаковую производную.')+'</div>');
+  h+=megaExpandable(isEN()?'📚 Key integration rules':'📚 Основные формулы интегрирования',
+    '<div class="mega-section-body">'+
+    '∫xⁿ dx = xⁿ⁺¹/(n+1) + C (n ≠ −1)<br>'+
+    '∫1/x dx = ln|x| + C<br>'+
+    '∫eˣ dx = eˣ + C<br>'+
+    '∫sin x dx = −cos x + C<br>'+
+    '∫cos x dx = sin x + C<br>'+
+    '∫k dx = kx + C</div>');
+  h+=megaExpandable(isEN()?'🤔 Why +C?':'🤔 Почему +C?','<div class="mega-section-body">'+(isEN()?'The derivative of any constant is 0, so F(x), F(x)+1, F(x)+42 all have the same derivative. +C represents this family of antiderivatives.':'Производная любой константы равна 0 — поэтому F(x), F(x)+1, F(x)+42 имеют одинаковую производную. +C обозначает семейство первообразных.')+'</div>');
   h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': ∫('+expr+')dx = '+integ+' + C</span>';
-  h+=megaPractice(isEN()?['integral x^3+2x','integral 4x^2-3']:['интеграл x^3+2x','интеграл 4x^2-3']);
+  h+=megaPractice(isEN()?['integral x^3+2x','integral 4x^2-3','integral 5x^4-2x^2+1']:['интеграл x^3+2x','интеграл 4x^2-3','интеграл 5x^4-2x^2+1']);
   return h;
 }
 
 function megaSolvePercentage(pct,num){
-  var result=(pct/100)*num;var h='';
-  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Percentages':'Проценты')+'</div>';
-  h+='<div class="mega-section-body">'+gTerm(isEN()?'percent':'процент')+' = '+(isEN()?'per 100':'из 100')+'. '+pct+'% = '+(pct/100)+'<br>'+(pct/100)+' × '+num+' = <b style="color:var(--g)">'+result.toFixed(2)+'</b></div></div>';
-  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': '+result.toFixed(2)+'</span>';
-  h+=megaPractice(['25% of 800','10% of 1500','50% of 360']);
+  var result=(pct/100)*num;
+  var remaining=num-result;
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Percentage Calculations':'Вычисления с процентами')+'</div>';
+  h+='<div class="mega-section-body">'+gTerm(isEN()?'percent':'процент')+' = '+(isEN()?'parts per 100':'частей из 100')+'. '+pct+'% = '+(pct/100)+'</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Results':'Результаты')+'</div><div class="mega-section-body">';
+  h+='<b>'+t('step')+' 1 '+(isEN()?'(Direct):':'(Прямой):')+'</b> '+pct+'% of '+num+' = '+(pct/100)+' × '+num+' = <b style="color:var(--g)">'+result.toFixed(2)+'</b><br>';
+  h+='<b>'+t('step')+' 2 '+(isEN()?'(Remaining):':'(Остаток):')+'</b> '+num+' − '+result.toFixed(2)+' = <b style="color:var(--c)">'+remaining.toFixed(2)+'</b><br>';
+  h+='<b>'+t('step')+' 3 '+(isEN()?'(Reverse — what % is '+result.toFixed(2)+' of '+num+'?):':'(Обратный — '+result.toFixed(2)+' это сколько % от '+num+'?):')+'</b> ('+result.toFixed(2)+'/'+num+')×100 = <b style="color:var(--a)">'+pct+'%</b>';
+  h+='</div></div>';
+  h+=megaExpandable(isEN()?'📚 Useful percentage formulas':'📚 Полезные формулы для процентов',
+    '<div class="mega-section-body">'+
+    (isEN()?
+    'x% of N = N × x/100<br>'+
+    'What % is A of B? → (A/B)×100<br>'+
+    'Increase by x%: N × (1+x/100)<br>'+
+    'Decrease by x%: N × (1−x/100)<br>'+
+    'Percentage change: (new−old)/old × 100':
+    'x% от N = N × x/100<br>'+
+    'A — это сколько % от B? → (A/B)×100<br>'+
+    'Увеличить на x%: N × (1+x/100)<br>'+
+    'Уменьшить на x%: N × (1−x/100)<br>'+
+    'Изменение в %: (новое−старое)/старое × 100')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': '+pct+'% of '+num+' = '+result.toFixed(2)+'</span>';
+  h+=megaPractice(['25% of 800','10% of 1500','50% of 360','15% of 3400']);
   return h;
 }
 
@@ -1038,29 +1086,82 @@ function megaSolveFactorial(n){
 }
 
 function megaSolveCircleArea(r){
-  var area=Math.PI*r*r;var h='';
-  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Circle Area':'Площадь круга')+'</div>';
-  h+='<div class="mega-section-body">'+gTerm(isEN()?'radius':'радиус')+' r='+r+'<br>S=πr²=π·'+r+'²=π·'+(r*r)+'=<b style="color:var(--g)">'+area.toFixed(4)+'</b></div></div>';
-  h+=megaExpandable(isEN()?'🤔 Why πr²?':'🤔 Почему πr²?','<div class="mega-section-body">'+(isEN()?'Cut circle into sectors, rearrange → rectangle πr × r = πr²':'Разрезаем на секторы → прямоугольник πr×r=πr²')+'</div>');
-  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': S≈'+area.toFixed(4)+'</span>';
+  var area=Math.PI*r*r;var circ=2*Math.PI*r;var diam=2*r;var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Circle — Full Analysis':'Круг — полный анализ')+'</div>';
+  h+='<div class="mega-section-body">'+gTerm(isEN()?'radius':'радиус')+' r = '+r+'<br>';
+  h+=(isEN()?'Diameter: d = 2r = ':'Диаметр: d = 2r = ')+'<b>'+diam+'</b></div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Key Measurements':'Ключевые характеристики')+'</div><div class="mega-section-body">';
+  h+='<b>'+t('step')+' 1 '+(isEN()?'(Area):':'(Площадь):')+'</b> S = π·r² = π·'+r+'² = π·'+(r*r)+' = <b style="color:var(--g)">'+area.toFixed(4)+'</b><br>';
+  h+='<b>'+t('step')+' 2 '+(isEN()?'(Circumference):':'(Длина окружности):')+'</b> C = 2π·r = 2π·'+r+' = <b style="color:var(--c)">'+circ.toFixed(4)+'</b><br>';
+  h+='<b>'+t('step')+' 3 '+(isEN()?'(r from area):':'(r из площади):')+'</b> r = √(S/π) = √('+area.toFixed(4)+'/π) = <b style="color:var(--a)">'+r+'</b> ✓';
+  h+='</div></div>';
+  h+=megaExpandable(isEN()?'🤔 Why πr²?':'🤔 Почему πr²?','<div class="mega-section-body">'+(isEN()?'Imagine cutting a circle into thin rings, unrolling them into triangles — their total area equals πr². Or: integrate 2πr dr from 0 to r.':'Разрежем круг на тонкие кольца, разложим их в треугольник — общая площадь πr². Или: ∫₀ʳ 2πr dr = πr².')+'</div>');
+  h+=megaExpandable(isEN()?'📐 Sector & arc formulas':'📐 Формулы сектора и дуги',
+    '<div class="mega-section-body">'+(isEN()?'Sector area: S = ½r²θ (θ in radians)<br>Arc length: L = rθ<br>For angle α°: S = πr²·α/360':
+    'Площадь сектора: S = ½r²θ (θ в рад.)<br>Длина дуги: L = rθ<br>Для угла α°: S = πr²·α/360')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': S ≈ '+area.toFixed(4)+' | C ≈ '+circ.toFixed(4)+'</span>';
+  h+=megaPractice(isEN()?['area of circle r=7','area of circle r=10','sector area r=5 angle=60']:['площадь круга r=7','площадь круга r=10','площадь сектора r=5 угол=60']);
   return h;
 }
 
 function megaSolveTriangleArea(a,b,c){
-  var p=(a+b+c)/2;var area=Math.sqrt(Math.max(0,p*(p-a)*(p-b)*(p-c)));var h='';
-  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Triangle Area (Heron)':'Площадь треугольника (Герон)')+'</div>';
-  h+='<div class="mega-section-body">'+gTerm(isEN()?"Heron's formula":"формула Герона")+': p=('+a+'+'+b+'+'+c+')/2='+p+'<br>S=√('+p+'·'+(p-a)+'·'+(p-b)+'·'+(p-c)+')=<b style="color:var(--g)">'+area.toFixed(4)+'</b></div></div>';
-  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': S≈'+area.toFixed(4)+'</span>';
+  var p=(a+b+c)/2;var area=Math.sqrt(Math.max(0,p*(p-a)*(p-b)*(p-c)));
+  // Check triangle inequality
+  var valid=(a+b>c)&&(b+c>a)&&(a+c>b);
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Triangle — Heron\'s Formula':'Треугольник — формула Герона')+'</div>';
+  h+='<div class="mega-section-body">'+(isEN()?'Sides: a='+a+', b='+b+', c='+c:'Стороны: a='+a+', b='+b+', c='+c)+'<br>';
+  if(!valid){
+    h+='<b style="color:var(--r)">'+(isEN()?'⚠️ Triangle inequality violated! These sides cannot form a triangle.':'⚠️ Нарушено неравенство треугольника! Такой треугольник не существует.')+'</b></div></div>';
+    return h;
+  }
+  h+=gTerm(isEN()?"Heron's formula":"формула Герона")+': p = (a+b+c)/2</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step-by-step':'Шаг за шагом')+'</div><div class="mega-section-body">';
+  h+='<b>'+t('step')+' 1 '+(isEN()?'(Semiperimeter):':'(Полупериметр):')+'</b> p = ('+a+'+'+b+'+'+c+')/2 = <b>'+p+'</b><br>';
+  h+='<b>'+t('step')+' 2:</b> p−a = '+(p-a)+',  p−b = '+(p-b)+',  p−c = '+(p-c)+'<br>';
+  h+='<b>'+t('step')+' 3:</b> S = √(p·(p−a)·(p−b)·(p−c)) = √('+p+'·'+(p-a)+'·'+(p-b)+'·'+(p-c)+')<br>';
+  h+='= √('+( p*(p-a)*(p-b)*(p-c)).toFixed(4)+') = <b style="color:var(--g)">'+area.toFixed(4)+'</b></div></div>';
+  // Classify triangle
+  var atype='';
+  if(Math.abs(a*a+b*b-c*c)<0.001)atype=isEN()?'Right △ (c is hypotenuse)':'Прямоугольный (c — гипотенуза)';
+  else if(a*a+b*b>c*c&&b*b+c*c>a*a&&a*a+c*c>b*b)atype=isEN()?'Acute △':'Остроугольный';
+  else atype=isEN()?'Obtuse △':'Тупоугольный';
+  h+=megaExpandable(isEN()?'📐 Triangle classification':'📐 Классификация треугольника',
+    '<div class="mega-section-body">'+atype+'<br>'+(isEN()?'Perimeter P = ':'Периметр P = ')+(a+b+c)+'<br>'+(isEN()?'Altitudes: h_a = 2S/a = ':'Высоты: h_a = 2S/a = ')+(2*area/a).toFixed(4)+'</div>');
+  h+=megaExpandable(isEN()?'📚 Other area methods':'📚 Другие методы вычисления площади',
+    '<div class="mega-section-body">'+
+    (isEN()?'• Base × height / 2: S = b·h/2<br>• Two sides + angle: S = ½·a·b·sin(C)<br>• Circumradius: S = abc/(4R)':
+    '• Основание × высота / 2: S = b·h/2<br>• Две стороны + угол: S = ½·a·b·sin(C)<br>• Описанная окружность: S = abc/(4R)')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': S ≈ '+area.toFixed(4)+'</span>';
+  h+=megaPractice(isEN()?['area of triangle 3, 4, 5','area of triangle 5, 12, 13']:['площадь треугольника 3, 4, 5','площадь треугольника 5, 12, 13']);
   return h;
 }
 
 function megaSolveTrig(fn,val){
-  if(fn!=='tan'&&Math.abs(val)>1)return '<b>'+(isEN()?'No solution (|val|>1)':'Нет решений (|val|>1)')+'</b>';
+  if(fn!=='tan'&&Math.abs(val)>1)return '<b>'+(isEN()?'No solution: |val| must be ≤ 1 for sin/cos':'Нет решений: |val| ≤ 1 для sin/cos')+'</b>';
   var angle=fn==='sin'?Math.asin(val):fn==='cos'?Math.acos(val):Math.atan(val);var h='';
-  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Trig Equation':'Тригонометрия')+'</div>';
-  h+='<div class="mega-section-body">'+gTerm(isEN()?'trigonometry':'тригонометрия')+': '+fn+'(x)='+val+'<br>x=arc'+fn+'('+val+')=<b style="color:var(--g)">'+angle.toFixed(4)+' rad</b> ('+(angle*180/Math.PI).toFixed(2)+'°)</div></div>';
-  h+=megaExpandable(isEN()?'🤔 General solution':'🤔 Общее решение','<div class="mega-section-body">'+(fn==='sin'?'x='+angle.toFixed(4)+'+2πn, π−'+angle.toFixed(4)+'+2πn':fn==='cos'?'x=±'+angle.toFixed(4)+'+2πn':'x='+angle.toFixed(4)+'+πn')+', n∈ℤ</div>');
-  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': x≈'+angle.toFixed(4)+' rad</span>';
+  var genSol='';
+  if(fn==='sin'){genSol='x = '+angle.toFixed(4)+' + 2πn  <b>or</b>  x = π − '+angle.toFixed(4)+' + 2πn,  n ∈ ℤ'}
+  else if(fn==='cos'){genSol='x = ±'+angle.toFixed(4)+' + 2πn,  n ∈ ℤ'}
+  else{genSol='x = '+angle.toFixed(4)+' + πn,  n ∈ ℤ'}
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Trig Equation':'Тригонометрическое уравнение')+'</div>';
+  h+='<div class="mega-section-body">'+gTerm(isEN()?'trigonometry':'тригонометрия')+': <b>'+fn+'(x) = '+val+'</b><br>';
+  h+=(isEN()?'Domain check: ':'Проверка области: ');
+  if(fn==='sin')h+='−1 ≤ '+val+' ≤ 1 ✅';
+  else if(fn==='cos')h+='−1 ≤ '+val+' ≤ 1 ✅';
+  else h+=(isEN()?'All reals ✅':'Все действительные ✅');
+  h+='</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Solution':'Решение')+'</div><div class="mega-section-body">';
+  h+='<b>'+t('step')+' 1:</b> '+fn+'(x) = '+val+' → x = arc'+fn+'('+val+')<br>';
+  h+='<b>'+t('step')+' 2:</b> x₀ = <b style="color:var(--g)">'+angle.toFixed(4)+' rad</b> = '+(angle*180/Math.PI).toFixed(2)+'°<br>';
+  h+='<b>'+t('step')+' 3 '+(isEN()?'(General solution):':'(Общее решение):')+'</b> '+genSol;
+  h+='</div></div>';
+  h+=megaExpandable(isEN()?'🤔 Why periodic solutions?':'🤔 Почему бесконечно много решений?',
+    '<div class="mega-section-body">'+(isEN()?'Trig functions repeat with period 2π (sin,cos) or π (tan). Every period, the equation is satisfied again.':'Тригонометрические функции периодичны: период 2π у sin,cos и π у tan. Уравнение выполняется снова каждый период.')+'</div>');
+  h+=megaExpandable(isEN()?'📐 Unit circle reminder':'📐 Единичная окружность',
+    '<div class="mega-section-body">sin(0)=0, sin(π/6)=0.5, sin(π/4)≈0.707, sin(π/3)≈0.866, sin(π/2)=1<br>cos(0)=1, cos(π/3)=0.5, cos(π/2)=0, cos(π)=−1</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': x₀ ≈ '+angle.toFixed(4)+' rad ('+(angle*180/Math.PI).toFixed(2)+'°)</span>';
+  h+=megaPractice(isEN()?['sin(x)=0.5','cos(x)=0','tan(x)=1']:['sin(x)=0.5','cos(x)=0','tan(x)=1']);
   return h;
 }
 
@@ -1094,24 +1195,48 @@ function megaSolveSystem(eqs){
   var e1=parseFn(eqs[0]),e2=parseFn(eqs[1]);
   if(!e1||!e2)return '<b>'+(isEN()?'Could not parse':'Не удалось разобрать')+'</b>';
   var det=e1.a*e2.b-e1.b*e2.a;
-  if(Math.abs(det)<1e-9)return '<b>'+(isEN()?'No unique solution':'Нет единственного решения')+'</b>';
+  if(Math.abs(det)<1e-9){
+    var h0='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'System Analysis':'Анализ системы')+'</div>';
+    h0+='<div class="mega-section-body">det = '+e1.a+'·'+e2.b+' − '+e1.b+'·'+e2.a+' = <b style="color:var(--r)">0</b><br>';
+    h0+=(isEN()?'Since det=0, lines are parallel or coincident → no unique solution.':'det=0: прямые параллельны или совпадают → нет единственного решения.')+'</div></div>';
+    return h0;
+  }
   var x=(e1.c*e2.b-e1.b*e2.c)/det;var y=(e1.a*e2.c-e1.c*e2.a)/det;var h='';
-  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'System of Equations':'Система уравнений')+'</div>';
-  h+='<div class="mega-section-body">① '+e1.a+'x+'+e1.b+'y='+e1.c+'<br>② '+e2.a+'x+'+e2.b+'y='+e2.c+'<br>'+gTerm(isEN()?"Cramer's rule":"метод Крамера")+': det='+det+'</div></div>';
-  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Solution':'Решение')+'</div><div class="mega-section-body">';
-  h+='x=<b style="color:var(--g)">'+x.toFixed(4)+'</b>, y=<b style="color:var(--g)">'+y.toFixed(4)+'</b></div></div>';
-  h+=megaExpandable(isEN()?'✅ Check':'✅ Проверка','<div class="mega-section-body">① '+(e1.a*x+e1.b*y).toFixed(4)+'≈'+e1.c+' ✓<br>② '+(e2.a*x+e2.b*y).toFixed(4)+'≈'+e2.c+' ✓</div>');
-  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': x='+x.toFixed(4)+', y='+y.toFixed(4)+'</span>';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'System of 2 Equations':'Система 2-х уравнений')+'</div>';
+  h+='<div class="mega-section-body">① '+e1.a+'x + '+e1.b+'y = '+e1.c+'<br>② '+e2.a+'x + '+e2.b+'y = '+e2.c+'<br><br>';
+  h+=(isEN()?'Method: ':'Метод: ')+gTerm(isEN()?"Cramer's rule":"метод Крамера")+' ('+(isEN()?'uses determinants':'через определители')+')</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Solution steps':'Шаги решения')+'</div><div class="mega-section-body">';
+  h+='<b>'+t('step')+' 1:</b> det = a₁b₂ − a₂b₁ = '+e1.a+'·'+e2.b+' − '+e1.b+'·'+e2.a+' = <b style="color:var(--a)">'+det+'</b><br>';
+  h+='<b>'+t('step')+' 2:</b> Dₓ = c₁b₂ − b₁c₂ = '+e1.c+'·'+e2.b+' − '+e1.b+'·'+e2.c+' = <b style="color:var(--a)">'+(e1.c*e2.b-e1.b*e2.c).toFixed(4)+'</b><br>';
+  h+='<b>'+t('step')+' 3:</b> D_y = a₁c₂ − c₁a₂ = '+e1.a+'·'+e2.c+' − '+e1.c+'·'+e2.a+' = <b style="color:var(--a)">'+(e1.a*e2.c-e1.c*e2.a).toFixed(4)+'</b><br>';
+  h+='<b>'+t('step')+' 4:</b> x = Dₓ/det = <b style="color:var(--g)">'+x.toFixed(4)+'</b>,  y = D_y/det = <b style="color:var(--g)">'+y.toFixed(4)+'</b>';
+  h+='</div></div>';
+  h+=megaExpandable(isEN()?'✅ Verification':'✅ Проверка подстановкой','<div class="mega-section-body">① '+(e1.a*x+e1.b*y).toFixed(4)+' ≈ '+e1.c+' ✓<br>② '+(e2.a*x+e2.b*y).toFixed(4)+' ≈ '+e2.c+' ✓</div>');
+  h+=megaExpandable(isEN()?'🤔 Substitution method alternative':'🤔 Метод подстановки (альтернатива)',
+    '<div class="mega-section-body">'+(isEN()?'From ①: express x = ('+e1.c+' − '+e1.b+'y)/'+e1.a+'. Substitute into ② to get y, then find x.':'Из ①: x = ('+e1.c+' − '+e1.b+'·y)/'+e1.a+'. Подставить в ② → найти y, затем x.')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': x = '+x.toFixed(4)+', y = '+y.toFixed(4)+'</span>';
+  h+=megaPractice(isEN()?['system: x+y=10, 2x-y=2','system: 3x+2y=12, x-y=1']:['система: x+y=10, 2x-y=2','система: 3x+2y=12, x-y=1']);
   return h;
 }
 
 function megaSolveFibonacci(n){
   if(n<=0||n>50)return '<b>n: 1–50</b>';
-  var a=0,b=1;var seq=[1];for(var i=2;i<=n;i++){var tmp=a+b;a=b;b=tmp;seq.push(b)}var h='';
-  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Fibonacci':'Фибоначчи')+'</div>';
-  h+='<div class="mega-section-body">'+gTerm(isEN()?'fibonacci':'фибоначчи')+': F(1)=1,F(2)=1,F(n)=F(n−1)+F(n−2)<br>'+seq.join(', ')+'<br><br>F('+n+')=<b style="color:var(--g)">'+b+'</b></div></div>';
-  h+=megaExpandable(isEN()?'🤔 In nature':'🤔 В природе','<div class="mega-section-body">🌻 '+(isEN()?'Sunflower spirals':'Спирали подсолнуха')+' 🐚 '+(isEN()?'Nautilus':'Наутилус')+' 🌀 φ≈1.618</div>');
-  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': F('+n+')='+b+'</span>';
+  var a=0,b=1;var seq=[1];for(var i=2;i<=n;i++){var tmp=a+b;a=b;b=tmp;seq.push(b)}
+  var phi=(1+Math.sqrt(5))/2;
+  var binetApprox=Math.round((Math.pow(phi,n)-Math.pow(-phi,-n))/Math.sqrt(5));
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Fibonacci Sequence':'Последовательность Фибоначчи')+'</div>';
+  h+='<div class="mega-section-body">'+gTerm(isEN()?'fibonacci':'фибоначчи')+': F(1)=1, F(2)=1, F(n)=F(n−1)+F(n−2)<br>';
+  h+=(isEN()?'Sequence to n='+n+':':'Последовательность до n='+n+':')+' '+seq.join(', ')+'</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Result':'Результат')+'</div><div class="mega-section-body">';
+  h+='F('+n+') = <b style="color:var(--g)">'+b+'</b><br>';
+  h+=(isEN()?'Ratio F(n)/F(n-1) = ':'Отношение F(n)/F(n-1) = ')+(seq.length>1?(seq[seq.length-1]/seq[seq.length-2]).toFixed(6):1)+' → φ ≈ 1.618034';
+  h+='</div></div>';
+  h+=megaExpandable(isEN()?'📐 Binet\'s Formula (closed-form)':'📐 Формула Бине (явная формула)',
+    '<div class="mega-section-body">F(n) = (φⁿ − ψⁿ)/√5<br>φ = (1+√5)/2 ≈ '+phi.toFixed(6)+'<br>ψ = (1−√5)/2 ≈ '+((1-Math.sqrt(5))/2).toFixed(6)+'<br>F('+n+') via Binet ≈ <b style="color:var(--g)">'+binetApprox+'</b></div>');
+  h+=megaExpandable(isEN()?'🤔 In nature':'🤔 В природе','<div class="mega-section-body">🌻 '+(isEN()?'Sunflower spirals (usually 34 and 55 — Fibonacci!)':'Спирали подсолнуха (обычно 34 и 55 — числа Фибоначчи!')+' 🐚 '+(isEN()?'Nautilus shell':'Раковина наутилуса')+' 🌿 '+(isEN()?'Leaf arrangement':'Листорасположение')+' 🎨 '+(isEN()?'Golden rectangle in art':'Золотой прямоугольник в искусстве')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': F('+n+') = '+b+'</span>';
+  h+=megaPractice(isEN()?['fibonacci 10','fibonacci 20','fibonacci 30']:['фибоначчи 10','фибоначчи 20','фибоначчи 30']);
   return h;
 }
 
@@ -1130,12 +1255,202 @@ function megaSolvePrime(n){
 }
 
 function megaSolveGCD(a,b){
-  var x=a,y=b;var steps=[];while(y){steps.push(x+'='+Math.floor(x/y)+'×'+y+'+'+(x%y));var tmp=y;y=x%y;x=tmp}var h='';
-  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'GCD':'НОД')+'</div>';
-  h+='<div class="mega-section-body">'+gTerm(isEN()?'Euclidean algorithm':'алгоритм Евклида')+':<br>';
-  for(var i=0;i<steps.length;i++)h+=steps[i]+'<br>';
-  h+='<br><b style="color:var(--g)">НОД='+x+'</b></div></div>';
-  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': НОД('+a+','+b+')='+x+'</span>';
+  var x=a,y=b;var steps=[];var iters=0;
+  while(y&&iters<30){var q=Math.floor(x/y);var r=x%y;steps.push(x+' = '+q+'×'+y+' + '+r+(r===0?' ← GCD found!':''));var tmp=y;y=r;x=tmp;iters++}
+  var gcdResult=x;
+  var lcmResult=(a*b)/gcdResult;
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'GCD & LCM':'НОД & НОК')+'</div>';
+  h+='<div class="mega-section-body">'+gTerm(isEN()?'Euclidean algorithm':'алгоритм Евклида')+(isEN()?' — repeatedly replace (a,b) with (b, a mod b) until remainder = 0.':' — многократно заменяем (a,b) → (b, a mod b) до остатка 0.')+'<br>a = '+a+', b = '+b+'</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Euclidean Steps':'Шаги алгоритма Евклида')+'</div><div class="mega-section-body">';
+  for(var i=0;i<steps.length;i++)h+='<b>'+t('step')+' '+(i+1)+':</b> '+steps[i]+'<br>';
+  h+='</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📐 '+(isEN()?'Results':'Результаты')+'</div><div class="mega-section-body">';
+  h+=gTerm(isEN()?'GCD':'НОД')+'('+a+', '+b+') = <b style="color:var(--g)">'+gcdResult+'</b><br>';
+  h+=gTerm(isEN()?'LCM':'НОК')+'('+a+', '+b+') = a×b / GCD = '+a+'×'+b+' / '+gcdResult+' = <b style="color:var(--c)">'+lcmResult+'</b><br>';
+  h+=(isEN()?'Verification: GCD × LCM = ':'Проверка: НОД × НОК = ')+gcdResult+'×'+lcmResult+' = '+(gcdResult*lcmResult)+' = '+a+'×'+b+' ✓';
+  h+='</div></div>';
+  h+=megaExpandable(isEN()?'🤔 Why Euclidean algorithm works':'🤔 Почему работает алгоритм Евклида',
+    '<div class="mega-section-body">'+(isEN()?'Key insight: GCD(a,b) = GCD(b, a mod b). Because any common divisor of a and b also divides a−q·b = r.':'Ключевая идея: НОД(a,b) = НОД(b, a mod b). Любой общий делитель a и b также делит a−q·b = r.')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': GCD='+gcdResult+' | LCM='+lcmResult+'</span>';
+  h+=megaPractice(isEN()?['gcd 48 18','gcd 100 75','gcd 360 240']:['нод 48 18','нод 100 75','нод 360 240']);
+  return h;
+}
+
+// ══════════════════════════════════════════════════════
+// 5 NEW MEGA SOLVER FUNCTIONS
+// ══════════════════════════════════════════════════════
+
+// NEW #1 — Statistics: variance, std dev, full analysis
+function megaSolveStatistics(nums){
+  if(!nums||nums.length===0)return '<b>'+(isEN()?'No numbers provided':'Числа не переданы')+'</b>';
+  var n=nums.length;
+  var sum=0;for(var i=0;i<n;i++)sum+=nums[i];
+  var mean=sum/n;
+  var sorted=nums.slice().sort(function(a,b){return a-b});
+  var median=n%2===0?(sorted[n/2-1]+sorted[n/2])/2:sorted[Math.floor(n/2)];
+  var varSum=0;for(var j=0;j<n;j++)varSum+=(nums[j]-mean)*(nums[j]-mean);
+  var variance=varSum/n;var stddev=Math.sqrt(variance);
+  var min=sorted[0],max=sorted[n-1],range=max-min;
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Full Statistical Analysis':'Полный статистический анализ')+'</div>';
+  h+='<div class="mega-section-body">'+(isEN()?'Dataset: ':'Данные: ')+nums.join(', ')+'<br>n = '+n+'</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Central Tendency':'Меры центра')+'</div><div class="mega-section-body">';
+  h+=gTerm(isEN()?'mean':'среднее')+(isEN()?' x̄ = Σxᵢ/n = ':' x̄ = Σxᵢ/n = ')+sum.toFixed(4)+'/'+n+' = <b style="color:var(--g)">'+mean.toFixed(4)+'</b><br>';
+  h+=gTerm(isEN()?'median':'медиана')+(isEN()?' (middle value) = ':'  (серединное) = ')+'<b style="color:var(--c)">'+median.toFixed(4)+'</b><br>';
+  var modeMap={};for(var k=0;k<n;k++)modeMap[nums[k]]=(modeMap[nums[k]]||0)+1;
+  var maxFreq=Math.max.apply(null,Object.values(modeMap));
+  var modes=Object.keys(modeMap).filter(function(v){return modeMap[v]===maxFreq});
+  h+=gTerm(isEN()?'mode':'мода')+(isEN()?' = ':'  = ')+'<b style="color:var(--a)">'+(maxFreq>1?modes.join(', '):(isEN()?'none (all unique)':'нет (все уникальны)'))+'</b></div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📐 '+(isEN()?'Spread & Variability':'Разброс и вариативность')+'</div><div class="mega-section-body">';
+  h+=gTerm(isEN()?'variance':'дисперсия')+(isEN()?' D = Σ(xᵢ−x̄)²/n = ':' D = Σ(xᵢ−x̄)²/n = ')+'<b style="color:var(--a)">'+variance.toFixed(4)+'</b><br>';
+  h+=gTerm(isEN()?'standard deviation':'среднеквадратичное отклонение')+(isEN()?' σ = √D = ':'  σ = √D = ')+'<b style="color:var(--v)">'+stddev.toFixed(4)+'</b><br>';
+  h+=(isEN()?'Range: ':'Размах: ')+'max−min = '+max+'−'+min+' = <b>'+range.toFixed(4)+'</b></div></div>';
+  h+=megaExpandable(isEN()?'🤔 Why std dev matters':'🤔 Зачем нужно стандартное отклонение',
+    '<div class="mega-section-body">'+(isEN()?'σ tells how spread out the data is. Small σ → data clusters near mean. Large σ → data is spread wide. In a normal distribution, ~68% of data falls within ±1σ of the mean.':'σ показывает разброс данных. Малое σ → данные сгруппированы вблизи среднего. Большое σ → данные разбросаны. В нормальном распределении ~68% данных попадает в ±1σ.')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ x̄='+mean.toFixed(4)+' | σ='+stddev.toFixed(4)+' | median='+median.toFixed(4)+'</span>';
+  h+=megaPractice(isEN()?['mean 2 5 8 10','mean 10 20 30 40 50']:['среднее 2 5 8 10','среднее 10 20 30 40 50']);
+  return h;
+}
+
+// NEW #2 — Law of Sines: solve triangle with angle/side
+function megaLawOfSines(a,A,b){
+  if(A<=0||A>=180||a<=0||b<=0)return '<b>'+(isEN()?'Invalid input: A must be 0°–180°, sides > 0':'Некорректный ввод: A: 0°–180°, стороны > 0')+'</b>';
+  var Arad=A*Math.PI/180;
+  var sinB=b*Math.sin(Arad)/a;
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Law of Sines':'Теорема синусов')+'</div>';
+  h+='<div class="mega-section-body">a/sin(A) = b/sin(B) = c/sin(C)<br>';
+  h+=(isEN()?'Given: a='+a+', A='+A+'°, b='+b:'Дано: a='+a+', A='+A+'°, b='+b)+'</div></div>';
+  if(Math.abs(sinB)>1){
+    h+='<div class="mega-section"><div class="mega-section-title">❌ '+(isEN()?'No solution':'Нет решения')+'</div>';
+    h+='<div class="mega-section-body">'+(isEN()?'sin(B) = '+sinB.toFixed(4)+' > 1 — impossible. No such triangle exists.':'sin(B) = '+sinB.toFixed(4)+' > 1 — невозможно. Такого треугольника не существует.')+'</div></div>';
+    return h;
+  }
+  var B1=Math.asin(sinB)*180/Math.PI;
+  var B2=180-B1;
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Solution Steps':'Шаги решения')+'</div><div class="mega-section-body">';
+  h+='<b>'+t('step')+' 1:</b> sin(B) = b·sin(A)/a = '+b+'·sin('+A+'°)/'+a+' = <b>'+sinB.toFixed(4)+'</b><br>';
+  h+='<b>'+t('step')+' 2:</b> B₁ = arcsin('+sinB.toFixed(4)+') = <b style="color:var(--g)">'+B1.toFixed(2)+'°</b><br>';
+  if(B2<180&&B1+B2<360){
+    h+='<b>'+t('step')+' 3 '+(isEN()?'(ambiguous case):':'(неоднозначный случай):')+'</b> B₂ = 180°−B₁ = <b style="color:var(--c)">'+B2.toFixed(2)+'°</b><br>';
+    var C1=180-A-B1,C2=180-A-B2;
+    if(C1>0){
+      var c1=a*Math.sin(C1*Math.PI/180)/Math.sin(Arad);
+      h+='  → C₁='+C1.toFixed(2)+'°, c₁=<b style="color:var(--g)">'+c1.toFixed(4)+'</b><br>';
+    }
+    if(C2>0){
+      var c2=a*Math.sin(C2*Math.PI/180)/Math.sin(Arad);
+      h+='  → C₂='+C2.toFixed(2)+'°, c₂=<b style="color:var(--c)">'+c2.toFixed(4)+'</b><br>';
+    }
+  }
+  h+='</div></div>';
+  h+=megaExpandable(isEN()?'🤔 When to use Law of Sines':'🤔 Когда применять теорему синусов',
+    '<div class="mega-section-body">'+(isEN()?'Use Law of Sines when you know: AAS (two angles + non-included side) or ASA (two angles + included side). For SAS or SSS use the Law of Cosines.':'Применяют при наличии: ДДС (два угла + прилежащая сторона) или ДСД. При ДДС или ДДД — теорема косинусов.')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ B₁ ≈ '+B1.toFixed(2)+'°</span>';
+  h+=megaPractice(isEN()?['law of sines a=5 A=30 b=7','law of cosines a=5 b=7 gamma=60']:['теорема синусов a=5 A=30 b=7','теорема косинусов a=5 b=7 gamma=60']);
+  return h;
+}
+
+// NEW #3 — Ohm's Law and electrical power calculations
+function megaOhmsLaw(V,I,R){
+  // Accept any 2 of 3: V, I, R
+  var known=0;var vv=V,ii=I,rr=R;
+  if(!isNaN(vv))known++;if(!isNaN(ii))known++;if(!isNaN(rr))known++;
+  if(known<2)return '<b>'+(isEN()?'Provide at least 2 of: V, I, R':'Укажите хотя бы 2 из: V, I, R')+'</b>';
+  if(isNaN(vv)&&!isNaN(ii)&&!isNaN(rr))vv=ii*rr;
+  if(isNaN(ii)&&!isNaN(vv)&&!isNaN(rr))ii=rr>0?vv/rr:NaN;
+  if(isNaN(rr)&&!isNaN(vv)&&!isNaN(ii))rr=ii!==0?vv/ii:NaN;
+  var P=vv*ii;var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?"Ohm's Law":"Закон Ома")+'</div>';
+  h+='<div class="mega-section-body">V = I × R<br>';
+  h+=(isEN()?'V=voltage (V), I=current (A), R=resistance (Ω)':'V=напряжение (В), I=ток (А), R=сопротивление (Ом)')+'</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Calculated Values':'Вычисленные значения')+'</div><div class="mega-section-body">';
+  h+='V = <b style="color:var(--g)">'+(isNaN(vv)?'?':vv.toFixed(4))+' V</b><br>';
+  h+='I = <b style="color:var(--c)">'+(isNaN(ii)?'?':ii.toFixed(4))+' A</b><br>';
+  h+='R = <b style="color:var(--a)">'+(isNaN(rr)?'?':rr.toFixed(4))+' Ω</b><br>';
+  h+='P = V×I = <b style="color:var(--v)">'+(isNaN(P)?'?':P.toFixed(4))+' W</b>';
+  h+='</div></div>';
+  h+=megaExpandable(isEN()?'📚 Power formulas':'📚 Формулы мощности',
+    '<div class="mega-section-body">'+
+    'P = V·I = I²·R = V²/R<br>'+
+    'Energy E = P·t (watts × seconds = joules)<br>'+
+    (isEN()?'Series resistors: R_total = R₁+R₂+...<br>Parallel: 1/R = 1/R₁+1/R₂+...':
+    'Последовательно: R_полн = R₁+R₂+...<br>Параллельно: 1/R = 1/R₁+1/R₂+...')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ V='+(isNaN(vv)?'?':vv.toFixed(4))+'V | I='+(isNaN(ii)?'?':ii.toFixed(4))+'A | R='+(isNaN(rr)?'?':rr.toFixed(4))+'Ω | P='+(isNaN(P)?'?':P.toFixed(4))+'W</span>';
+  h+=megaPractice(isEN()?['ohm V=12 I=2','ohm V=220 R=100','ohm I=0.5 R=50']:['ом V=12 I=2','ом V=220 R=100','ом I=0.5 R=50']);
+  return h;
+}
+
+// NEW #4 — Quadratic Inequality solver
+function megaQuadraticInequality(a,b,c,sign){
+  var D=b*b-4*a*c;var sqrtD=Math.sqrt(Math.abs(D));
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Quadratic Inequality':'Квадратное неравенство')+'</div>';
+  h+='<div class="mega-section-body"><b>'+a+'x² '+(b>=0?'+ ':'')+b+'x '+(c>=0?'+ ':'')+c+' '+sign+' 0</b><br>';
+  h+=gTerm(isEN()?'discriminant':'дискриминант')+' D = '+b+'²−4·'+a+'·'+c+' = <b style="color:var(--a)">'+D+'</b></div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Solution':'Решение')+'</div><div class="mega-section-body">';
+  var x1,x2,sol='';
+  if(D<0){
+    if((a>0&&(sign==='>'))|| (a>0&&sign==='>='))sol=isEN()?'All reals ℝ (D<0, parabola above x-axis)':'Все действительные ℝ (D<0, парабола выше оси x)';
+    else if(a>0&&(sign==='<'||sign==='<='))sol=isEN()?'No solution ∅ (D<0, parabola never below x-axis)':'Нет решений ∅ (D<0, парабола никогда ниже оси x)';
+    else if(a<0&&(sign==='<'||sign==='<='))sol=isEN()?'All reals ℝ':'Все действительные ℝ';
+    else sol=isEN()?'No solution ∅':'Нет решений ∅';
+  } else if(D===0){
+    x1=-b/(2*a);
+    if(sign==='>'||sign==='<')sol=isEN()?'x ≠ '+x1.toFixed(4)+' (all others)':'x ≠ '+x1.toFixed(4);
+    else sol='x ∈ ℝ ('+isEN()?'all reals':'все действительные'+')';
+  } else {
+    var r1=Math.min((-b-sqrtD)/(2*a),(-b+sqrtD)/(2*a));
+    var r2=Math.max((-b-sqrtD)/(2*a),(-b+sqrtD)/(2*a));
+    x1=r1;x2=r2;
+    var eq1=sign.indexOf('=')>=0;
+    if((a>0&&(sign==='>'||sign==='>=')))sol='x '+(eq1?'≤':'<')+' '+r1.toFixed(4)+' or x '+(eq1?'≥':'>')+' '+r2.toFixed(4);
+    else if(a>0&&(sign==='<'||sign==='<='))sol=(eq1?r1.toFixed(4)+' ≤ x ≤ ':r1.toFixed(4)+' < x < ')+r2.toFixed(4);
+    else if(a<0&&(sign==='<'||sign==='<='))sol='x < '+r1.toFixed(4)+' or x > '+r2.toFixed(4);
+    else sol=r1.toFixed(4)+' ≤ x ≤ '+r2.toFixed(4);
+    h+='x₁ = <b style="color:var(--a)">'+r1.toFixed(4)+'</b>,  x₂ = <b style="color:var(--a)">'+r2.toFixed(4)+'</b><br>';
+    h+=(isEN()?'Parabola opens ':'Парабола открыта ')+(a>0?(isEN()?'UP':'ВВЕРХ'):(isEN()?'DOWN':'ВНИЗ'))+'<br><br>';
+  }
+  h+=(isEN()?'Solution set: ':'Множество решений: ')+'<b style="color:var(--g)">'+sol+'</b></div></div>';
+  h+=megaExpandable(isEN()?'🤔 Method: sign analysis':'🤔 Метод: анализ знаков',
+    '<div class="mega-section-body">'+(isEN()?'1. Find roots x₁, x₂. 2. Draw number line. 3. Check sign of ax²+bx+c in each interval. 4. Select intervals satisfying inequality.':'1. Найти корни x₁, x₂. 2. Нарисовать числовую прямую. 3. Определить знак ax²+bx+c на каждом интервале. 4. Выбрать нужные интервалы.')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': '+sol+'</span>';
+  h+=megaPractice(isEN()?['inequality x^2-5x+6>0','inequality x^2-4<0']:['неравенство x^2-5x+6>0','неравенство x^2-4<0']);
+  return h;
+}
+
+// NEW #5 — Number base converter (binary, octal, decimal, hex)
+function megaBaseConverter(num,fromBase,toBase){
+  if(fromBase<2||fromBase>16||toBase<2||toBase>16)return '<b>'+(isEN()?'Bases must be 2–16':'Основания 2–16')+'</b>';
+  var decVal=parseInt(String(num).toLowerCase(),fromBase);
+  if(isNaN(decVal)||decVal<0)return '<b>'+(isEN()?'Invalid number for base '+fromBase:'Неверное число для основания '+fromBase)+'</b>';
+  var result=decVal.toString(toBase).toUpperCase();
+  var baseNames={2:(isEN()?'Binary':'Двоичная'),8:(isEN()?'Octal':'Восьмеричная'),10:(isEN()?'Decimal':'Десятичная'),16:(isEN()?'Hex':'Шестнадцатеричная')};
+  var fromName=baseNames[fromBase]||(isEN()?'Base-'+fromBase:'Основание '+fromBase);
+  var toName=baseNames[toBase]||(isEN()?'Base-'+toBase:'Основание '+toBase);
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Number Base Conversion':'Перевод систем счисления')+'</div>';
+  h+='<div class="mega-section-body">'+(isEN()?'Converting from ':'Перевод из ')+fromName+' ('+fromBase+') → '+toName+' ('+toBase+')<br>';
+  h+=(isEN()?'Input: ':'Ввод: ')+num+' ('+fromBase+')</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step-by-step':'Шаги')+'</div><div class="mega-section-body">';
+  if(fromBase!==10)h+='<b>'+t('step')+' 1 '+(isEN()?'(to decimal):':'(в десятичную):')+'</b> '+num+'('+fromBase+') = '+decVal+'(10)<br>';
+  if(toBase!==10){
+    var divSteps=[];var tmp=decVal;var stepNum=(fromBase!==10)?2:1;
+    while(tmp>0){divSteps.push(tmp+' ÷ '+toBase+' = '+Math.floor(tmp/toBase)+' rem <b>'+tmp%toBase+'</b>');tmp=Math.floor(tmp/toBase)}
+    h+='<b>'+t('step')+' '+stepNum+' '+(isEN()?'(divide by '+toBase+' repeatedly):':'(делим на '+toBase+' последовательно):')+'</b><br>';
+    for(var si=0;si<divSteps.length;si++)h+=divSteps[si]+'<br>';
+    h+=(isEN()?'Read remainders bottom→top: ':'Читаем остатки снизу вверх: ')+'<b style="color:var(--g)">'+result+'</b><br>';
+  } else {
+    h+='<b style="color:var(--g)">'+result+'</b><br>';
+  }
+  h+='</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📐 '+(isEN()?'All Common Bases':'Все основные системы')+'</div><div class="mega-section-body">';
+  h+=decVal+'₁₀ = <b>'+decVal.toString(2).toUpperCase()+'</b>₂ = <b>'+decVal.toString(8).toUpperCase()+'</b>₈ = <b>'+decVal.toString(16).toUpperCase()+'</b>₁₆</div></div>';
+  h+=megaExpandable(isEN()?'🤔 How positional notation works':'🤔 Как работает позиционная запись',
+    '<div class="mega-section-body">'+(isEN()?'Each digit position represents a power of the base. E.g. 1011₂ = 1×2³ + 0×2² + 1×2¹ + 1×2⁰ = 8+0+2+1 = 11₁₀.':'Каждая позиция — степень основания. Например 1011₂ = 1×2³+0×2²+1×2¹+1×2⁰ = 8+0+2+1 = 11₁₀.')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+num+'('+fromBase+') = '+result+'('+toBase+')</span>';
+  h+=megaPractice(isEN()?['255 to binary','convert 255 to base 16','convert 42 from base 10 to base 2']:['255 в двоичн','перевести 255 в hex','перевести 42 из 10 в 2']);
   return h;
 }
 
@@ -1936,6 +2251,35 @@ function tryMegaSolve(text){
   var consa=lo.match(/(?:площадь\s*поверхности\s*конуса|cone\s*surface).*?r\s*=\s*(\d+\.?\d*).*?h\s*=\s*(\d+\.?\d*)/);
   if(consa)return megaSurfaceArea('cone',[parseFloat(consa[1]),parseFloat(consa[2])]);
 
+  // ═══ 5 NEW ROUTES ═══
+  // Statistics full analysis
+  var statfull=lo.match(/(?:статистика|statistics|дисперсия|variance|стандартное|std\s*dev)\s+([\d\s.,+-]+)/i);
+  if(statfull){var sfNums=statfull[1].split(/[\s,]+/).map(Number).filter(function(n){return!isNaN(n)});if(sfNums.length>1)return megaSolveStatistics(sfNums)}
+
+  // Law of sines
+  var los=lo.match(/(?:теорема\s*синусов|law\s*of\s*sines?).*?a\s*=\s*(\d+\.?\d*).*?A\s*=\s*(\d+\.?\d*).*?b\s*=\s*(\d+\.?\d*)/);
+  if(los)return megaLawOfSines(parseFloat(los[1]),parseFloat(los[2]),parseFloat(los[3]));
+
+  // Ohm's law
+  var ohm=lo.match(/(?:закон\s*ома|ohm).*?/i);
+  if(ohm){
+    var oV=lo.match(/v\s*=\s*(-?\d+\.?\d*)/i);var oI=lo.match(/i\s*=\s*(-?\d+\.?\d*)/i);var oR=lo.match(/r\s*=\s*(-?\d+\.?\d*)/i);
+    var ovv=oV?parseFloat(oV[1]):NaN,oii=oI?parseFloat(oI[1]):NaN,orr=oR?parseFloat(oR[1]):NaN;
+    if(!isNaN(ovv)||!isNaN(oii)||!isNaN(orr))return megaOhmsLaw(ovv,oii,orr);
+  }
+
+  // Quadratic inequality
+  var ineqm=lo.match(/(?:неравенство|inequality)\s+(-?\d*\.?\d*)\*?x\s*\^?\s*2\s*([+-]\s*\d*\.?\d*)\*?x\s*([+-]\s*\d*\.?\d*)\s*(>|<|>=|<=)\s*0/);
+  if(ineqm){var ia=ineqm[1]===''||ineqm[1]==='-'?-1:parseFloat(ineqm[1])||1;var ib=parseFloat(ineqm[2].replace(/\s/g,''))||0;var ic=parseFloat(ineqm[3].replace(/\s/g,''))||0;return megaQuadraticInequality(ia,ib,ic,ineqm[4])}
+
+  // Number base converter
+  var basec=lo.match(/(?:перевест|convert)\s+(\d+)\s+(?:из|from)\s*(?:основания|base)?\s*(\d+)\s+(?:в|to)\s*(?:основание|base)?\s*(\d+)/i);
+  if(basec)return megaBaseConverter(basec[1],parseInt(basec[2]),parseInt(basec[3]));
+  var basec2=lo.match(/(\d+)\s+(?:в\s*hex|to\s*hex)/i);
+  if(basec2)return megaBaseConverter(basec2[1],10,16);
+  var basec3=lo.match(/(\d+)\s+(?:в\s*oct|to\s*oct|в\s*восьмер)/i);
+  if(basec3)return megaBaseConverter(basec3[1],10,8);
+
   return null;
 }
 
@@ -2659,7 +3003,7 @@ time.textContent=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-di
 wrap.appendChild(bubble);wrap.appendChild(time);
 row.appendChild(av);row.appendChild(wrap);
 chatWindow.appendChild(row);
-chatWindow.scrollTop=chatWindow.scrollHeight;
+chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
 stats.solved++;saveStats();updateStatUI();
 }catch(e){
 hideThinking();
@@ -2739,6 +3083,14 @@ document.getElementById('lpRU').classList.toggle('on',LANG==='RU');
 document.getElementById('lpEN').classList.toggle('on',LANG==='EN');
 window.setLang=function(l){LANG=l;localStorage.setItem('fmine_lang',l);document.getElementById('lpRU').classList.toggle('on',l==='RU');document.getElementById('lpEN').classList.toggle('on',l==='EN');applyTranslations();showToast(l==='RU'?'🇷🇺 Русский':'🇬🇧 English')};
 applyTranslations();updateStatUI();updateMegaUI();
+chatWindow.addEventListener('scroll', function() {
+    var btn = document.getElementById('scrollBottomBtn');
+    if (chatWindow.scrollTop + chatWindow.clientHeight < chatWindow.scrollHeight - 50) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+});
 </script>
 </body>
 </html>
