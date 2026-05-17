@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head> <script src="https://cdn.jsdelivr.net/npm/mathjs@12.2.1/lib/browser/math.min.js"></script>
@@ -2482,15 +2483,27 @@ function megaProbability(favorable,total){
   h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ P = '+p.toFixed(4)+' ('+(p*100).toFixed(2)+'%)</span>';
   return h;
 }
+function megaSolveVolume(shape,params){
+  var v=0;var label='';var sname=shape;
+  if(shape==='sphere'||shape==='сфера'){v=(4/3)*Math.PI*Math.pow(params[0],3);label='4/3·πr³ = 4/3·π·'+params[0]+'³';sname=isEN()?'Sphere':'Сфера';}
+  else if(shape==='cylinder'||shape==='цилиндр'){v=Math.PI*params[0]*params[0]*params[1];label='πr²h = π·'+params[0]+'²·'+params[1];sname=isEN()?'Cylinder':'Цилиндр';}
+  else if(shape==='cone'||shape==='конус'){v=(1/3)*Math.PI*params[0]*params[0]*params[1];label='1/3·πr²h = 1/3·π·'+params[0]+'²·'+params[1];sname=isEN()?'Cone':'Конус';}
+  else if(shape==='cube'||shape==='куб'){v=Math.pow(params[0],3);label='a³ = '+params[0]+'³';sname=isEN()?'Cube':'Куб';}
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Volume':'Объём')+' — '+sname+'</div>';
+  h+='<div class="mega-section-body">V = '+label+' = <b style="color:var(--g)">'+v.toFixed(4)+'</b></div></div>';
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ V = '+v.toFixed(4)+'</span>';
+  return h;
+}
 
 function megaSurfaceArea(shape,params){
-  var sa=0;var label='';
-  if(shape==='sphere'){sa=4*Math.PI*params[0]*params[0];label='4πr²=4π×'+params[0]+'²'}
-  else if(shape==='cylinder'){sa=2*Math.PI*params[0]*(params[0]+params[1]);label='2πr(r+h)'}
-  else if(shape==='cone'){var l=Math.sqrt(params[0]*params[0]+params[1]*params[1]);sa=Math.PI*params[0]*(params[0]+l);label='πr(r+l)'}
-  else if(shape==='cube'){sa=6*params[0]*params[0];label='6a²=6×'+params[0]+'²'}
+  var sa=0;var label='';var sname=shape;
+  if(shape==='sphere'||shape==='сфера'){sa=4*Math.PI*params[0]*params[0];label='4πr²=4π×'+params[0]+'²';sname=isEN()?'Sphere':'Сфера';}
+  else if(shape==='cylinder'||shape==='цилиндр'){sa=2*Math.PI*params[0]*(params[0]+params[1]);label='2πr(r+h)';sname=isEN()?'Cylinder':'Цилиндр';}
+  else if(shape==='cone'||shape==='конус'){var l=Math.sqrt(params[0]*params[0]+params[1]*params[1]);sa=Math.PI*params[0]*(params[0]+l);label='πr(r+l)';sname=isEN()?'Cone':'Конус';}
+  else if(shape==='cube'||shape==='куб'){sa=6*params[0]*params[0];label='6a²=6×'+params[0]+'²';sname=isEN()?'Cube':'Куб';}
   var h='';
-  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Surface Area':'Площадь поверхности')+'</div>';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Surface Area':'Площадь поверхности')+' — '+sname+'</div>';
   h+='<div class="mega-section-body">S = '+label+' = <b style="color:var(--g)">'+sa.toFixed(4)+'</b></div></div>';
   h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ S = '+sa.toFixed(4)+'</span>';
   return h;
@@ -2572,6 +2585,21 @@ function tryMegaSolve(text){
   // 17. BMI
   var bm=lo.match(/(?:имт|bmi).*?(?:вес|weight)\s*(\d+\.?\d*).*?(?:рост|height)\s*(\d+\.?\d*)/);
   if(bm)return megaSolveBMI(parseFloat(bm[1]),parseFloat(bm[2]));
+
+  // 18. Volume
+  var vm2=lo.match(/(?:объ[ёе]м|volume)\s*(?:of\s+)?(сфера|sphere|конус|cone|цилиндр|cylinder|куб|cube)/);
+  if(vm2){
+    var vshape=vm2[1];
+    var nums=text.match(/(\d+\.?\d*)/g);
+    if(nums&&nums.length>0)return megaSolveVolume(vshape.toLowerCase(),nums.map(function(n){return parseFloat(n)}));
+  }
+  // 19. Surface Area
+  var sam=lo.match(/(?:площадь\s*поверхности|surface\s*area)\s*(?:of\s+)?(сфера|sphere|конус|cone|цилиндр|cylinder|куб|cube)/);
+  if(sam){
+    var sashape=sam[1];
+    var nums2=text.match(/(\d+\.?\d*)/g);
+    if(nums2&&nums2.length>0)return megaSurfaceArea(sashape.toLowerCase(),nums2.map(function(n){return parseFloat(n)}));
+  }
 
   // ═══ 50 NEW ROUTES ═══
   var mdet2=lo.match(/(?:матрица\s*)?(?:определитель|det|determinant)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)/);
@@ -2828,6 +2856,10 @@ function buildSolverRegistry(){
     function(m){return{a:+m[1],b:+m[2]}},function(p){var S=p.a*p.b,P=2*(p.a+p.b);return{answer:'S='+S+', P='+P,steps:['a='+p.a+', b='+p.b,'S=ab='+S,'P=2(a+b)='+P]}},
     'S=ab, P=2(a+b).','Rectangle formulas.','площадь прямоугольника a=5 b=8');
 
+  addGeo('rect_perim','Периметр прямоугольника','Rectangle perimeter',/(?:периметр\s*прямоугольника|rectangle\s*perimeter).*?a\s*=\s*(\d+\.?\d*).*?b\s*=\s*(\d+\.?\d*)|(?:периметр\s*прямоугольника|rectangle\s*perimeter)\s*(\d+\.?\d*)\s*(?:на|x|х)\s*(\d+\.?\d*)/i,
+    function(m){return{a:+(m[1]||m[3]),b:+(m[2]||m[4])}},function(p){var P=2*(p.a+p.b);return{answer:'P='+P,steps:['a='+p.a+', b='+p.b,'P=2(a+b)=2('+p.a+'+'+p.b+')=2·'+(p.a+p.b)+'='+P]}},
+    'P=2(a+b).','Rectangle perimeter formula.','периметр прямоугольника 5 на 3');
+
   addGeo('tri_bh','Площадь треугольника','Triangle area (base×h)',/(?:площадь\s*треугольника\s*(?:основание|base)|triangle\s*area).*?b\s*=\s*(\d+\.?\d*).*?h\s*=\s*(\d+\.?\d*)/i,
     function(m){return{b:+m[1],h:+m[2]}},function(p){var S=0.5*p.b*p.h;return{answer:'S='+fmtN(S),steps:['b='+p.b+', h='+p.h,'S=½bh='+fmtN(S)]}},
     'Площадь через основание и высоту.','Area = half base times height.','площадь треугольника основание b=10 h=4');
@@ -2888,6 +2920,161 @@ function buildSolverRegistry(){
     function(m){return{r:+m[1],deg:+m[2]}},
     function(p){var theta=p.deg*Math.PI/180;var L=p.r*theta;var S=0.5*p.r*p.r*theta;return{answer:'L='+fmtN(L)+', S='+fmtN(S),steps:['θ='+p.deg+'°='+fmtN(theta,4)+' рад','L=rθ='+fmtN(L),'S=½r²θ='+fmtN(S)],viz:GEO_VIZ.circle(p.r)}},
     'L=rθ, S=½r²θ.','Arc length and sector area.','длина дуги r=5 угол=60');
+
+  // ─── 40 NEW FUNCTIONS (BATCH 1: 10 SOLVERS) ───
+  addSolver({id:'fin_compound',cat:'finance',icon:'💸',titleRU:'Сложные проценты',titleEN:'Compound Interest',example:'сложные проценты p=1000 r=5 t=3 n=1',
+    match:function(lo){var m=lo.match(/(?:сложные\s*проценты|compound).*?p\s*=\s*(\d+).*?r\s*=\s*(\d+\.?\d*).*?t\s*=\s*(\d+).*?n\s*=\s*(\d+)/i);return m?{p:+m[1],r:+m[2],t:+m[3],n:+m[4]}:null},
+    solve:function(p,d){var A=p.p*Math.pow(1+(p.r/100)/p.n,p.n*p.t);var steps=['A=P(1+r/n)^(nt)','A='+p.p+'(1+'+(p.r/100)+'/'+p.n+')^('+p.n+'×'+p.t+')','A='+fmtN(A)];
+      if(d)return renderExplain(isEN()?'Compound Interest':'Сложные проценты',isEN()?'A=P(1+r/n)^(nt)':'A=P(1+r/n)^(nt)',steps,'A='+fmtN(A));
+      return solResult(isEN()?'Compound':'Сложный %',steps,'A='+fmtN(A));},
+    mega:function(p){var A=p.p*Math.pow(1+(p.r/100)/p.n,p.n*p.t);return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Compound Interest':'Сложные проценты')+'</div><div class="mega-section-body">A=P(1+r/n)ⁿᵗ = '+p.p+'(1+'+p.r/100+'/'+p.n+')^('+p.n*p.t+') = <b>'+fmtN(A)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ A='+fmtN(A)+'</span>';}
+  });
+
+  addSolver({id:'stat_mean',cat:'statistics',icon:'📊',titleRU:'Среднее значение',titleEN:'Mean',example:'среднее 5 10 15 20',
+    match:function(lo){var m=lo.match(/(?:среднее|mean|average)\s+(?:числа|of)?\s*([\d\s,.\-]+)/i);if(m){var ns=m[1].split(/[\s,]+/).map(parseFloat).filter(function(x){return !isNaN(x)});if(ns.length>0)return{ns:ns}}return null},
+    solve:function(p,d){var sum=p.ns.reduce(function(a,b){return a+b},0);var mean=sum/p.ns.length;var steps=['Sum='+sum+', Count='+p.ns.length,'Mean = '+sum+'/'+p.ns.length+' = '+fmtN(mean)];
+      if(d)return renderExplain(isEN()?'Mean':'Среднее',isEN()?'Sum of elements / Count':'Сумма элементов / Количество',steps,'μ='+fmtN(mean));
+      return solResult(isEN()?'Mean':'Среднее',steps,'μ='+fmtN(mean));},
+    mega:function(p){var sum=p.ns.reduce(function(a,b){return a+b},0);var mean=sum/p.ns.length;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Mean':'Среднее арифметическое')+'</div><div class="mega-section-body">μ = Σx/n = '+sum+'/'+p.ns.length+' = <b>'+fmtN(mean)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ μ='+fmtN(mean)+'</span>';}
+  });
+
+  addSolver({id:'stat_variance',cat:'statistics',icon:'📉',titleRU:'Дисперсия',titleEN:'Variance',example:'дисперсия 2 4 4 4 5 5 7 9',
+    match:function(lo){var m=lo.match(/(?:дисперсия|variance)\s+([\d\s,.\-]+)/i);if(m){var ns=m[1].split(/[\s,]+/).map(parseFloat).filter(function(x){return !isNaN(x)});if(ns.length>0)return{ns:ns}}return null},
+    solve:function(p,d){var sum=p.ns.reduce(function(a,b){return a+b},0);var mean=sum/p.ns.length;var vsum=p.ns.reduce(function(a,b){return a+Math.pow(b-mean,2)},0);var v=(p.ns.length>1)?vsum/(p.ns.length-1):0;var steps=['μ='+fmtN(mean),'Var = Σ(x-μ)²/(n-1) = '+fmtN(vsum)+'/'+(p.ns.length-1),'σ² = '+fmtN(v)];
+      if(d)return renderExplain(isEN()?'Variance':'Дисперсия',isEN()?'Sample variance σ²':'Выборочная дисперсия σ²',steps,'σ²='+fmtN(v));
+      return solResult(isEN()?'Variance':'Дисперсия',steps,'σ²='+fmtN(v));},
+    mega:function(p){var sum=p.ns.reduce(function(a,b){return a+b},0);var mean=sum/p.ns.length;var vsum=p.ns.reduce(function(a,b){return a+Math.pow(b-mean,2)},0);var v=(p.ns.length>1)?vsum/(p.ns.length-1):0;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Variance':'Выборочная дисперсия')+'</div><div class="mega-section-body">μ='+fmtN(mean)+', σ²=Σ(x−μ)²/(n−1) = <b>'+fmtN(v)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ σ²='+fmtN(v)+'</span>';}
+  });
+
+  addSolver({id:'math_lcm_arr',cat:'number',icon:'🧮',titleRU:'НОК нескольких чисел',titleEN:'LCM (many numbers)',example:'нок 12 15 20',
+    match:function(lo){var m=lo.match(/(?:нок|lcm)\s+([\d\s,]+)/i);if(m){var ns=m[1].split(/[\s,]+/).map(parseInt).filter(function(x){return !isNaN(x)&&x>0});if(ns.length>=2)return{ns:ns}}return null},
+    solve:function(p,d){var gcd=function(a,b){return b?gcd(b,a%b):a};var lcm=function(a,b){return a*b/gcd(a,b)};var res=p.ns.reduce(lcm);var steps=['Numbers: '+p.ns.join(', '),'LCM = '+res];
+      if(d)return renderExplain(isEN()?'LCM':'НОК',isEN()?'Least Common Multiple':'Наименьшее общее кратное',steps,'LCM='+res);
+      return solResult('LCM/НОК',steps,'LCM='+res);},
+    mega:function(p){var gcd=function(a,b){return b?gcd(b,a%b):a};var lcm=function(a,b){return a*b/gcd(a,b)};var res=p.ns.reduce(lcm);return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'LCM (Least Common Multiple)':'НОК')+'</div><div class="mega-section-body">LCM('+p.ns.join(', ')+') = <b>'+res+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ LCM = '+res+'</span>';}
+  });
+
+
+  addSolver({id:'math_gcd_arr',cat:'number',icon:'🧮',titleRU:'НОД нескольких чисел',titleEN:'GCD (many numbers)',example:'нод 12 18 24',
+    match:function(lo){var m=lo.match(/(?:нод|gcd)\s+([\d\s,]+)/i);if(m){var ns=m[1].split(/[\s,]+/).map(parseInt).filter(function(x){return !isNaN(x)&&x>0});if(ns.length>=2)return{ns:ns}}return null},
+    solve:function(p,d){var gcd=function(a,b){return b?gcd(b,a%b):a};var res=p.ns.reduce(gcd);var steps=['Numbers: '+p.ns.join(', '),'GCD = '+res];
+      if(d)return renderExplain(isEN()?'GCD':'НОД',isEN()?'Greatest Common Divisor':'Наибольший общий делитель',steps,'GCD='+res);
+      return solResult('GCD/НОД',steps,'GCD='+res);},
+    mega:function(p){var gcd=function(a,b){return b?gcd(b,a%b):a};var res=p.ns.reduce(gcd);return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'GCD (Greatest Common Divisor)':'НОД')+'</div><div class="mega-section-body">GCD('+p.ns.join(', ')+') = <b>'+res+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ GCD = '+res+'</span>';}
+  });
+
+  addSolver({id:'stat_median',cat:'statistics',icon:'📈',titleRU:'Медиана',titleEN:'Median',example:'медиана 5 10 15 20 25',
+    match:function(lo){var m=lo.match(/(?:медиана|median)\s+([\d\s,.\-]+)/i);if(m){var ns=m[1].split(/[\s,]+/).map(parseFloat).filter(function(x){return !isNaN(x)});if(ns.length>0)return{ns:ns}}return null},
+    solve:function(p,d){var sorted=p.ns.slice().sort(function(a,b){return a-b});var mid=Math.floor(sorted.length/2);var res=sorted.length%2!==0?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;
+      var steps=['Sorted: '+sorted.join(', '),'Median = '+fmtN(res)];
+      if(d)return renderExplain(isEN()?'Median':'Медиана',isEN()?'Middle value of sorted dataset':'Среднее значение отсортированного набора',steps,'Med='+fmtN(res));
+      return solResult(isEN()?'Median':'Медиана',steps,'Med='+fmtN(res));},
+    mega:function(p){var sorted=p.ns.slice().sort(function(a,b){return a-b});var mid=Math.floor(sorted.length/2);var res=sorted.length%2!==0?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Median':'Медиана')+'</div><div class="mega-section-body">Sorted: '+sorted.join(', ')+'<br>Median = <b>'+fmtN(res)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ Med='+fmtN(res)+'</span>';}
+  });
+
+  addSolver({id:'stat_mode',cat:'statistics',icon:'📊',titleRU:'Мода',titleEN:'Mode',example:'мода 2 3 3 4 4 4 5',
+    match:function(lo){var m=lo.match(/(?:мода|mode)\s+([\d\s,.\-]+)/i);if(m){var ns=m[1].split(/[\s,]+/).map(parseFloat).filter(function(x){return !isNaN(x)});if(ns.length>0)return{ns:ns}}return null},
+    solve:function(p,d){var counts={};var maxCount=0;var modes=[];for(var i=0;i<p.ns.length;i++){var n=p.ns[i];counts[n]=(counts[n]||0)+1;if(counts[n]>maxCount)maxCount=counts[n];}
+      for(var k in counts){if(counts[k]===maxCount)modes.push(parseFloat(k));}
+      var res=modes.join(', ');
+      var steps=['Frequencies mapped','Max freq = '+maxCount,'Mode = '+res];
+      if(d)return renderExplain(isEN()?'Mode':'Мода',isEN()?'Most frequent value':'Наиболее частое значение',steps,'Mode='+res);
+      return solResult(isEN()?'Mode':'Мода',steps,'Mode='+res);},
+    mega:function(p){var counts={};var maxCount=0;var modes=[];for(var i=0;i<p.ns.length;i++){var n=p.ns[i];counts[n]=(counts[n]||0)+1;if(counts[n]>maxCount)maxCount=counts[n];}for(var k in counts){if(counts[k]===maxCount)modes.push(parseFloat(k));}var res=modes.join(', ');return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Mode':'Мода')+'</div><div class="mega-section-body">Freq max = '+maxCount+'<br>Mode = <b>'+res+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ Mode='+res+'</span>';}
+  });
+
+  addGeo('polygon_area','Площадь прав. многоугольника','Regular Polygon Area',/(?:площадь\s*многоугольника|polygon\s*area).*?(?:sides|n)\s*=\s*(\d+).*?(?:side|a)\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{n:+m[1],a:+m[2]}},
+    function(p){var S=(p.n*p.a*p.a)/(4*Math.tan(Math.PI/p.n));return{answer:'S='+fmtN(S),steps:['n='+p.n+', a='+p.a,'S=(na²)/(4·tan(π/n))='+fmtN(S)]}},
+    'S=(n·a²)/(4·tan(π/n)).','Regular polygon area.','площадь многоугольника n=6 a=5');
+
+  addSolver({id:'geo_dist',cat:'geometry',icon:'📏',titleRU:'Расстояние между точками',titleEN:'Distance P1-P2',example:'расстояние 0 0 3 4',
+    match:function(lo){var m=lo.match(/(?:расстояние|distance)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)/i);return m?{x1:+m[1],y1:+m[2],x2:+m[3],y2:+m[4]}:null},
+    solve:function(p,d){var dx=p.x2-p.x1;var dy=p.y2-p.y1;var dist=Math.sqrt(dx*dx+dy*dy);var steps=['dx='+(p.x2)+'-('+(p.x1)+')='+dx+', dy='+(p.y2)+'-('+(p.y1)+')='+dy,'D=√(dx²+dy²)='+fmtN(dist)];
+      if(d)return renderExplain(isEN()?'Distance':'Расстояние',isEN()?'D=√((x2-x1)²+(y2-y1)²)':'D=√((x2-x1)²+(y2-y1)²)',steps,'D='+fmtN(dist));
+      return solResult(isEN()?'Distance':'Расстояние',steps,'D='+fmtN(dist));},
+    mega:function(p){var dx=p.x2-p.x1;var dy=p.y2-p.y1;var dist=Math.sqrt(dx*dx+dy*dy);return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Distance':'Расстояние')+'</div><div class="mega-section-body">D=√(('+dx+')²+('+dy+')²) = <b>'+fmtN(dist)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ D='+fmtN(dist)+'</span>';}
+  });
+
+  addSolver({id:'geo_midpoint',cat:'geometry',icon:'📍',titleRU:'Середина отрезка',titleEN:'Midpoint',example:'середина 0 0 10 10',
+    match:function(lo){var m=lo.match(/(?:середина|midpoint)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)/i);return m?{x1:+m[1],y1:+m[2],x2:+m[3],y2:+m[4]}:null},
+    solve:function(p,d){var mx=(p.x1+p.x2)/2;var my=(p.y1+p.y2)/2;var res='('+fmtN(mx)+', '+fmtN(my)+')';var steps=['Mx=(x1+x2)/2='+fmtN(mx),'My=(y1+y2)/2='+fmtN(my),'M='+res];
+      if(d)return renderExplain(isEN()?'Midpoint':'Середина отрезка',isEN()?'M=((x1+x2)/2, (y1+y2)/2)':'M=((x1+x2)/2, (y1+y2)/2)',steps,'M='+res);
+      return solResult(isEN()?'Midpoint':'Середина отрезка',steps,'M='+res);},
+    mega:function(p){var mx=(p.x1+p.x2)/2;var my=(p.y1+p.y2)/2;var res='('+fmtN(mx)+', '+fmtN(my)+')';return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Midpoint':'Середина отрезка')+'</div><div class="mega-section-body">M = (('+p.x1+'+'+p.x2+')/2, ('+p.y1+'+'+p.y2+')/2) = <b>'+res+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ M='+res+'</span>';}
+  });
+
+  addSolver({id:'seq_arith_n',cat:'number',icon:'📈',titleRU:'Арифм. прогрессия (n-й член)',titleEN:'Arith sequence (Nth)',example:'арифметическая a1=2 d=3 n=10',
+    match:function(lo){var m=lo.match(/(?:арифметическая|arithmetic).*?a1\s*=\s*(-?\d+\.?\d*).*?d\s*=\s*(-?\d+\.?\d*).*?n\s*=\s*(\d+)/i);return m?{a1:+m[1],d:+m[2],n:+m[3]}:null},
+    solve:function(p,d){var an=p.a1+(p.n-1)*p.d;var steps=['a_n = a1 + (n-1)d','a_'+p.n+' = '+p.a1+' + ('+p.n+'-1)×'+p.d,'a_'+p.n+' = '+fmtN(an)];
+      if(d)return renderExplain(isEN()?'Arithmetic Nth Term':'n-й член арифм. прогрессии',isEN()?'a_n = a1 + (n-1)d':'a_n = a1 + (n-1)d',steps,'a_n='+fmtN(an));
+      return solResult(isEN()?'Arith N-th':'Арифм. n-й',steps,'a_n='+fmtN(an));},
+    mega:function(p){var an=p.a1+(p.n-1)*p.d;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Arithmetic Nth Term':'n-й член арифм. прогрессии')+'</div><div class="mega-section-body">a_n = a1+(n-1)d = '+p.a1+'+'+(p.n-1)+'*'+p.d+' = <b>'+fmtN(an)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ a_'+p.n+'='+fmtN(an)+'</span>';}
+  });
+
+  addSolver({id:'seq_arith_sum',cat:'number',icon:'➕',titleRU:'Сумма арифм. прогрессии',titleEN:'Arith sequence sum',example:'сумма арифметической a1=2 d=3 n=10',
+    match:function(lo){var m=lo.match(/(?:сумма\s*арифметической|arithmetic\s*sum).*?a1\s*=\s*(-?\d+\.?\d*).*?d\s*=\s*(-?\d+\.?\d*).*?n\s*=\s*(\d+)/i);return m?{a1:+m[1],d:+m[2],n:+m[3]}:null},
+    solve:function(p,d){var Sn=(p.n/2)*(2*p.a1+(p.n-1)*p.d);var steps=['S_n = n/2 × (2a1 + (n-1)d)','S_'+p.n+' = '+p.n+'/2 × (2×'+p.a1+' + '+(p.n-1)+'×'+p.d+')','S_'+p.n+' = '+fmtN(Sn)];
+      if(d)return renderExplain(isEN()?'Arithmetic Sum':'Сумма арифм. прогрессии',isEN()?'S_n = n/2 × (2a1 + (n-1)d)':'S_n = n/2 × (2a1 + (n-1)d)',steps,'S_n='+fmtN(Sn));
+      return solResult(isEN()?'Arith Sum':'Арифм. сумма',steps,'S_n='+fmtN(Sn));},
+    mega:function(p){var Sn=(p.n/2)*(2*p.a1+(p.n-1)*p.d);return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Arithmetic Sum':'Сумма арифм. прогрессии')+'</div><div class="mega-section-body">S_n = (n/2)(2a1+(n-1)d) = <b>'+fmtN(Sn)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ S_'+p.n+'='+fmtN(Sn)+'</span>';}
+  });
+
+  addSolver({id:'phys_velocity',cat:'physics',icon:'🏎️',titleRU:'Скорость',titleEN:'Velocity',example:'скорость d=100 t=5',
+    match:function(lo){var m=lo.match(/(?:скорость|velocity).*?(?:d|s)\s*=\s*(\d+\.?\d*).*?t\s*=\s*(\d+\.?\d*)/i);return m?{d:+m[1],t:+m[2]}:null},
+    solve:function(p,d){var v=p.d/p.t;var steps=['v = d/t','v = '+p.d+'/'+p.t,'v = '+fmtN(v)];
+      if(d)return renderExplain(isEN()?'Velocity':'Скорость',isEN()?'Velocity = Distance / Time':'Скорость = Расстояние / Время',steps,'v='+fmtN(v));
+      return solResult(isEN()?'Velocity':'Скорость',steps,'v='+fmtN(v));},
+    mega:function(p){var v=p.d/p.t;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Velocity':'Скорость')+'</div><div class="mega-section-body">v = d/t = '+p.d+'/'+p.t+' = <b>'+fmtN(v)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ v='+fmtN(v)+'</span>';}
+  });
+
+  addSolver({id:'phys_accel',cat:'physics',icon:'🚀',titleRU:'Ускорение',titleEN:'Acceleration',example:'ускорение v1=10 v2=30 t=5',
+    match:function(lo){var m=lo.match(/(?:ускорение|acceleration).*?v1\s*=\s*(\d+\.?\d*).*?v2\s*=\s*(\d+\.?\d*).*?t\s*=\s*(\d+\.?\d*)/i);return m?{v1:+m[1],v2:+m[2],t:+m[3]}:null},
+    solve:function(p,d){var a=(p.v2-p.v1)/p.t;var steps=['a = (v2-v1)/t','a = ('+p.v2+'-'+p.v1+')/'+p.t,'a = '+fmtN(a)];
+      if(d)return renderExplain(isEN()?'Acceleration':'Ускорение',isEN()?'Acceleration = Change in velocity over time':'Ускорение = Изменение скорости / время',steps,'a='+fmtN(a));
+      return solResult(isEN()?'Accel':'Ускорение',steps,'a='+fmtN(a));},
+    mega:function(p){var a=(p.v2-p.v1)/p.t;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Acceleration':'Ускорение')+'</div><div class="mega-section-body">a = (v2-v1)/t = ('+p.v2+'-'+p.v1+')/'+p.t+' = <b>'+fmtN(a)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ a='+fmtN(a)+'</span>';}
+  });
+
+  addSolver({id:'phys_force',cat:'physics',icon:'💪',titleRU:'Сила (2-й закон Ньютона)',titleEN:'Force (Newton)',example:'сила m=10 a=5',
+    match:function(lo){var m=lo.match(/(?:сила|force).*?m\s*=\s*(\d+\.?\d*).*?a\s*=\s*(\d+\.?\d*)/i);return m?{m:+m[1],a:+m[2]}:null},
+    solve:function(p,d){var F=p.m*p.a;var steps=['F = m×a (Newton\'s 2nd law)','F = '+p.m+'×'+p.a,'F = '+fmtN(F)];
+      if(d)return renderExplain(isEN()?'Force':'Сила (Ньютон)',isEN()?'Force = mass × acceleration':'Сила = масса × ускорение',steps,'F='+fmtN(F));
+      return solResult(isEN()?'Force':'Сила',steps,'F='+fmtN(F));},
+    mega:function(p){var F=p.m*p.a;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Force':'Сила')+'</div><div class="mega-section-body">F = m·a = '+p.m+'×'+p.a+' = <b>'+fmtN(F)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ F='+fmtN(F)+'</span>';}
+  });
+
+  addSolver({id:'phys_work',cat:'physics',icon:'🔨',titleRU:'Механическая работа',titleEN:'Work',example:'работа f=50 d=10',
+    match:function(lo){var m=lo.match(/(?:работа|work).*?(?:f|F)\s*=\s*(\d+\.?\d*).*?(?:d|s)\s*=\s*(\d+\.?\d*)/i);return m?{f:+m[1],d:+m[2]}:null},
+    solve:function(p,d){var W=p.f*p.d;var steps=['W = F×d','W = '+p.f+'×'+p.d,'W = '+fmtN(W)];
+      if(d)return renderExplain(isEN()?'Work':'Работа',isEN()?'Work = Force × distance':'Работа = Сила × Расстояние',steps,'W='+fmtN(W));
+      return solResult(isEN()?'Work':'Работа',steps,'W='+fmtN(W));},
+    mega:function(p){var W=p.f*p.d;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Work':'Работа')+'</div><div class="mega-section-body">W = F·d = '+p.f+'×'+p.d+' = <b>'+fmtN(W)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ W='+fmtN(W)+'</span>';}
+  });
+
+  addSolver({id:'math_c_to_f',cat:'physics',icon:'🌡️',titleRU:'Цельсий в Фаренгейт',titleEN:'Celsius to Fahrenheit',example:'цельсий в фаренгейт c=30',
+    match:function(lo){var m=lo.match(/(?:цельсий|celsius).*?(?:в|to).*?(?:фаренгейт|fahrenheit).*?c\s*=\s*(-?\d+\.?\d*)/i);return m?{c:+m[1]}:null},
+    solve:function(p,d){var f=p.c*9/5+32;var steps=['F = C×(9/5)+32','F = '+p.c+'×(9/5)+32','F = '+fmtN(f)];
+      if(d)return renderExplain(isEN()?'Temp Conversion':'Конвертация темп.',isEN()?'F = C×(9/5)+32':'F = C×(9/5)+32',steps,'F='+fmtN(f));
+      return solResult(isEN()?'Fahrenheit':'Фаренгейт',steps,'F='+fmtN(f));},
+    mega:function(p){var f=p.c*9/5+32;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Celsius to Fahrenheit':'В Фаренгейт')+'</div><div class="mega-section-body">F = C×(9/5)+32 = <b>'+fmtN(f)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ F='+fmtN(f)+'</span>';}
+  });
+
+  addSolver({id:'math_f_to_c',cat:'physics',icon:'🌡️',titleRU:'Фаренгейт в Цельсий',titleEN:'Fahrenheit to Celsius',example:'фаренгейт в цельсий f=86',
+    match:function(lo){var m=lo.match(/(?:фаренгейт|fahrenheit).*?(?:в|to).*?(?:цельсий|celsius).*?f\s*=\s*(-?\d+\.?\d*)/i);return m?{f:+m[1]}:null},
+    solve:function(p,d){var c=(p.f-32)*5/9;var steps=['C = (F-32)×(5/9)','C = ('+p.f+'-32)×(5/9)','C = '+fmtN(c)];
+      if(d)return renderExplain(isEN()?'Temp Conversion':'Конвертация темп.',isEN()?'C = (F-32)×(5/9)':'C = (F-32)×(5/9)',steps,'C='+fmtN(c));
+      return solResult(isEN()?'Celsius':'Цельсий',steps,'C='+fmtN(c));},
+    mega:function(p){var c=(p.f-32)*5/9;return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Fahrenheit to Celsius':'В Цельсий')+'</div><div class="mega-section-body">C = (F-32)×(5/9) = <b>'+fmtN(c)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ C='+fmtN(c)+'</span>';}
+  });
+
+  addSolver({id:'seq_geom_n',cat:'number',icon:'📈',titleRU:'Геом. прогрессия (n-й член)',titleEN:'Geom sequence (Nth)',example:'геометрическая b1=2 q=3 n=5',
+    match:function(lo){var m=lo.match(/(?:геометрическая|geometric).*?b1\s*=\s*(-?\d+\.?\d*).*?q\s*=\s*(-?\d+\.?\d*).*?n\s*=\s*(\d+)/i);return m?{b1:+m[1],q:+m[2],n:+m[3]}:null},
+    solve:function(p,d){var bn=p.b1*Math.pow(p.q,p.n-1);var steps=['b_n = b1 × q^(n-1)','b_'+p.n+' = '+p.b1+' × '+p.q+'^('+(p.n-1)+')','b_'+p.n+' = '+fmtN(bn)];
+      if(d)return renderExplain(isEN()?'Geometric Nth Term':'n-й член геом. прогрессии',isEN()?'b_n = b1 × q^(n-1)':'b_n = b1 × q^(n-1)',steps,'b_n='+fmtN(bn));
+      return solResult(isEN()?'Geom N-th':'Геом. n-й',steps,'b_n='+fmtN(bn));},
+    mega:function(p){var bn=p.b1*Math.pow(p.q,p.n-1);return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Geometric Nth Term':'n-й член геом. прогрессии')+'</div><div class="mega-section-body">b_n = b1·qⁿ⁻¹ = '+p.b1+'·'+p.q+'^'+(p.n-1)+' = <b>'+fmtN(bn)+'</b></div></div><br><span style="color:var(--g);font-weight:800">✓ b_'+p.n+'='+fmtN(bn)+'</span>';}
+  });
 
   var volDefs=[
     ['cube_vol','Объём куба','Cube volume','geometry','📦',/(?:объем\s*куба|cube\s*volume).*?a\s*=\s*(\d+\.?\d*)/i,
@@ -3200,6 +3387,11 @@ function smartSolveEquation(raw){
     var eqStr=normalizeMathInput(raw).replace(/\s+/g,'');
     // standardize
     eqStr=eqStr.replace(/²/g,'^2').replace(/³/g,'^3');
+    // FIX DOMAIN IMPLICIT MULTIPLICATION: 2x -> 2*x, x(x) -> x*(x), (x)(x) -> (x)*(x)
+    eqStr=eqStr.replace(/(\d)([A-Za-z])/g,'$1*$2')
+               .replace(/([A-Za-z])\(/g,'$1*(')
+               .replace(/\)(\d|[A-Za-z])/g,')*$1')
+               .replace(/\)\(/g,')*(');
     var sides=eqStr.split('=');
     if(sides.length!==2)return null;
     // Use math.js to solve x symbolically
@@ -4136,6 +4328,44 @@ function initApp(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initApp);
 else initApp();
+</script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
 </script>
 </body>
 </html>
