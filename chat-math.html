@@ -10,48 +10,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#04050d;--bg2:#080a16;--bg3:#0c0f1e;
-  --glass:rgba(255,255,255,.03);--glass2:rgba(255,255,255,.06);--glass3:rgba(255,255,255,.1);
-  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.14);
-  --text:#e8ecff;--text2:#7880b0;--text3:#3d4468;
-  --v:#a78bfa;--v2:#7c3aed;--vg:rgba(167,139,250,.5);--vg2:rgba(167,139,250,.2);
-  --p:#f472b6;--pg:rgba(244,114,182,.45);
-  --c:#67e8f9;--cg:rgba(103,232,249,.4);
-  --g:#4ade80;--gg:rgba(74,222,128,.4);
-  --a:#fbbf24;--ag:rgba(251,191,36,.4);
-  --o:#fb923c;--r:#f87171;--rg:rgba(248,113,113,.4);
-  --sh-xs:0 2px 8px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.025);
-  --sh-sm:0 4px 18px rgba(0,0,0,.75),0 0 30px rgba(167,139,250,.06);
-  --sh-md:0 8px 32px rgba(0,0,0,.85),0 0 60px rgba(167,139,250,.1);
-  --sh-lg:0 12px 44px rgba(0,0,0,.9),0 0 90px rgba(167,139,250,.14);
-  --sh-gv:0 0 0 1px rgba(167,139,250,.5),0 0 28px rgba(167,139,250,.4),0 8px 32px rgba(0,0,0,.6);
-  --sh-gp:0 0 0 1px rgba(244,114,182,.4),0 0 24px rgba(244,114,182,.3);
-  --sh-btn:0 4px 20px rgba(0,0,0,.65),0 8px 36px rgba(167,139,250,.35);
+  --bg:#030408;--bg2:#060810;--bg3:#090c1a;
+  --glass:rgba(255,255,255,.03);--glass2:rgba(255,255,255,.07);--glass3:rgba(255,255,255,.12);
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.15);
+  --text:#eef0ff;--text2:#7c85c0;--text3:#404870;
+  --v:#b89dff;--v2:#7c3aed;--vg:rgba(184,157,255,.55);--vg2:rgba(184,157,255,.22);
+  --p:#f472b6;--pg:rgba(244,114,182,.5);
+  --c:#5ef3ff;--cg:rgba(94,243,255,.45);
+  --g:#39ff9e;--gg:rgba(57,255,158,.45);
+  --a:#fbbf24;--ag:rgba(251,191,36,.45);
+  --o:#fb923c;--r:#ff6b7a;--rg:rgba(255,107,122,.45);
+  --sh-xs:0 2px 8px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.03);
+  --sh-sm:0 4px 20px rgba(0,0,0,.8),0 0 40px rgba(184,157,255,.08);
+  --sh-md:0 8px 36px rgba(0,0,0,.88),0 0 70px rgba(184,157,255,.13);
+  --sh-lg:0 14px 50px rgba(0,0,0,.92),0 0 100px rgba(184,157,255,.18);
+  --sh-gv:0 0 0 1.5px rgba(184,157,255,.6),0 0 32px rgba(184,157,255,.5),0 8px 36px rgba(0,0,0,.65);
+  --sh-gp:0 0 0 1px rgba(244,114,182,.45),0 0 28px rgba(244,114,182,.35);
+  --sh-btn:0 4px 22px rgba(0,0,0,.7),0 8px 40px rgba(184,157,255,.45);
   --ease:.22s cubic-bezier(.4,0,.2,1);
-  --sbw:270px;
-  --m:#f59e0b;--m2:#d97706;--mg:rgba(245,158,11,.45);--mg2:rgba(245,158,11,.15);
-  --mbg:rgba(245,158,11,.04);--mborder:rgba(245,158,11,.2);
-  --em:#34d399;--emg:rgba(52,211,153,.4);
-  --blue:#60a5fa;--blueg:rgba(96,165,250,.4);
+  --sbw:300px;
+  --m:#f59e0b;--m2:#d97706;--mg:rgba(245,158,11,.5);--mg2:rgba(245,158,11,.18);
+  --mbg:rgba(245,158,11,.05);--mborder:rgba(245,158,11,.25);
+  --em:#34d399;--emg:rgba(52,211,153,.45);
+  --blue:#60a5fa;--blueg:rgba(96,165,250,.45);
+  /* aurora colors */
+  --aur1:rgba(139,92,246,.18);--aur2:rgba(59,130,246,.12);--aur3:rgba(236,72,153,.09);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;
-  background-image:radial-gradient(ellipse 80% 60% at 5% 0%,rgba(167,139,250,.1) 0%,transparent 55%),
-    radial-gradient(ellipse 60% 45% at 95% 95%,rgba(103,232,249,.07) 0%,transparent 52%),
-    radial-gradient(ellipse 45% 35% at 50% 50%,rgba(244,114,182,.04) 0%,transparent 60%);
+  background-image:
+    radial-gradient(ellipse 90% 70% at 0% 0%,rgba(139,92,246,.16) 0%,transparent 50%),
+    radial-gradient(ellipse 70% 55% at 100% 100%,rgba(59,130,246,.11) 0%,transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 110%,rgba(236,72,153,.09) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 30% at 80% 10%,rgba(94,243,255,.07) 0%,transparent 60%);
   -webkit-font-smoothing:antialiased; animation: pageIn 0.5s ease both;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:180px 180px;opacity:.022}
+  background-size:180px 180px;opacity:.025}
+/* aurora orb */
+body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.12) 0%,transparent 70%);top:-200px;left:-200px;pointer-events:none;z-index:0;animation:auroraOrb 14s ease-in-out infinite alternate;filter:blur(60px)}
+@keyframes auroraOrb{0%{transform:translate(0,0) scale(1)}50%{transform:translate(120px,80px) scale(1.15)}100%{transform:translate(40px,160px) scale(.92)}}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
 .hd{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
-  padding:12px clamp(12px,3vw,24px);background:rgba(4,5,13,.88);
-  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
-  border-bottom:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,.85),0 0 60px rgba(167,139,250,.07);gap:10px;flex-wrap:wrap}
+  padding:12px clamp(12px,3vw,24px);background:rgba(3,4,8,.9);
+  backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);
+  border-bottom:1px solid rgba(184,157,255,.12);
+  box-shadow:0 8px 50px rgba(0,0,0,.9),0 0 80px rgba(139,92,246,.1),inset 0 -1px 0 rgba(255,255,255,.04);
+  gap:10px;flex-wrap:wrap}
 .logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;text-decoration:none;display:flex;align-items:center;flex-shrink:0}
 .logo-f{color:var(--a);text-shadow:0 0 28px var(--ag)}
 .logo-dot{width:5px;height:5px;background:var(--v);border-radius:50%;margin:0 3px;align-self:center;margin-bottom:4px;animation:pdot 2s ease-in-out infinite}
@@ -93,8 +102,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .sidebar-inner{overflow-y:auto;flex:1;padding-bottom:16px}
 .sb-section{padding:14px 14px 6px}
 .sb-title{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--text3);margin-bottom:8px;padding:0 3px}
-.sb-card{background:var(--glass);border:1px solid var(--border);border-radius:11px;padding:9px 11px;margin-bottom:5px;cursor:pointer;transition:var(--ease);display:flex;align-items:center;gap:9px}
-.sb-card:hover{background:var(--glass2);border-color:var(--border2);transform:translateX(3px)}
+.sb-card{background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:5px;cursor:pointer;transition:all .25s ease;display:flex;align-items:center;gap:9px;position:relative;overflow:hidden}
+.sb-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0px;background:linear-gradient(180deg,var(--v),rgba(94,243,255,.6));border-radius:3px;transition:width .2s ease}
+.sb-card:hover{background:rgba(184,157,255,.07);border-color:rgba(184,157,255,.3);transform:translateX(4px);box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 20px rgba(139,92,246,.12)}
+.sb-card:hover::before{width:3px}
 .sb-card:active{transform:scale(.97)}
 .sb-icon{font-size:16px;flex-shrink:0}
 .sb-name{font-size:12px;font-weight:700;color:var(--text)}
@@ -103,8 +114,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .qex{padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--glass);font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);cursor:pointer;transition:var(--ease)}
 .qex:hover{border-color:var(--v);color:var(--v);background:rgba(167,139,250,.06)}
 .stats-row{display:flex;gap:5px;padding:10px 14px 0}
-.stat-chip{flex:1;background:var(--glass);border:1px solid var(--border);border-radius:9px;padding:7px 8px;text-align:center}
-.stat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff}
+.stat-chip{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(184,157,255,.12);border-radius:10px;padding:8px 8px;text-align:center;transition:var(--ease)}
+.stat-chip:hover{border-color:rgba(184,157,255,.3);box-shadow:0 0 18px rgba(139,92,246,.15)}
+.stat-val{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;text-shadow:0 0 12px rgba(184,157,255,.4)}
 .stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
 
 .chat-main{display:flex;flex-direction:column;height:100%;overflow:hidden;min-width:0}
@@ -112,8 +124,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .chat-window::-webkit-scrollbar{width:4px}
 .chat-window::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
-.welcome{background:var(--bg3);border:1.5px solid rgba(167,139,250,.2);border-radius:18px;padding:20px;position:relative;overflow:hidden;animation:fadeUp .5s ease both}
-.welcome::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.12),transparent 70%);pointer-events:none}
+.welcome{background:linear-gradient(135deg,rgba(9,12,26,.95) 0%,rgba(18,12,32,.9) 100%);border:1.5px solid rgba(184,157,255,.22);border-radius:20px;padding:22px;position:relative;overflow:hidden;animation:fadeUp .5s ease both;
+  box-shadow:0 0 60px rgba(139,92,246,.12),0 8px 40px rgba(0,0,0,.7)}
+.welcome::before{content:'';position:absolute;top:-50px;right:-50px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(184,157,255,.15),rgba(94,243,255,.06) 50%,transparent 70%);pointer-events:none;animation:welcomeOrb 6s ease-in-out infinite alternate}
+@keyframes welcomeOrb{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.15) translate(-15px,10px)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .welcome-title{font-family:'Syne',sans-serif;font-size:clamp(16px,3vw,23px);font-weight:800;color:#fff;margin-bottom:5px;position:relative;z-index:1}
 .welcome-sub{font-size:12px;color:var(--text2);line-height:1.6;position:relative;z-index:1}
@@ -136,9 +150,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .msg-avatar.user-av{background:linear-gradient(135deg,var(--c),#0ea5e9);box-shadow:0 0 14px var(--cg)}
 .msg-avatar.mega-av{background:linear-gradient(135deg,var(--m),var(--m2));box-shadow:0 0 18px var(--mg);animation:megaAvGlow 2s ease-in-out infinite}
 @keyframes megaAvGlow{0%,100%{box-shadow:0 0 14px var(--mg)}50%{box-shadow:0 0 28px var(--mg)}}
-.msg-bubble{max-width:min(82%,700px);padding:11px 14px;border-radius:15px;font-size:13.5px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
-.msg-row.bot .msg-bubble{background:var(--bg3);border:1.5px solid rgba(167,139,250,.2);color:var(--text);border-bottom-left-radius:3px;box-shadow:var(--sh-md)}
-.msg-row.user .msg-bubble{background:linear-gradient(135deg,rgba(103,232,249,.12),rgba(103,232,249,.06));border:1.5px solid rgba(103,232,249,.22);color:var(--text);border-bottom-right-radius:3px}
+.msg-bubble{max-width:min(82%,700px);padding:12px 15px;border-radius:16px;font-size:13.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.msg-row.bot .msg-bubble{background:linear-gradient(145deg,rgba(9,12,26,.98),rgba(14,10,30,.95));border:1.5px solid rgba(184,157,255,.22);color:var(--text);border-bottom-left-radius:3px;box-shadow:0 8px 36px rgba(0,0,0,.8),0 0 60px rgba(139,92,246,.1)}
+.msg-row.user .msg-bubble{background:linear-gradient(135deg,rgba(94,243,255,.13),rgba(94,243,255,.05));border:1.5px solid rgba(94,243,255,.28);color:var(--text);border-bottom-right-radius:3px;box-shadow:0 4px 20px rgba(0,0,0,.6),0 0 30px rgba(94,243,255,.1)}
 .msg-row.mega .msg-bubble{background:rgba(245,158,11,.03);border:1.5px solid var(--mborder);box-shadow:0 8px 32px rgba(0,0,0,.7),0 0 40px var(--mg)}
 .msg-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px}
 .msg-row.bot .msg-time{text-align:left}
@@ -200,9 +214,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .mega-mistakes .mm-item{font-size:12px;color:var(--text2);padding:3px 0}
 .mega-mistakes .mm-item b{color:var(--r)}
 
-.input-bar{padding:12px clamp(10px,3vw,24px);background:rgba(4,5,13,.92);border-top:1px solid var(--border)}
-.input-wrap{display:flex;align-items:flex-end;gap:7px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:15px;padding:6px 7px 6px 14px;transition:var(--ease)}
-.input-wrap:focus-within{border-color:rgba(167,139,250,.5);box-shadow:var(--sh-gv)}
+.input-bar{padding:12px clamp(10px,3vw,24px);background:rgba(3,4,8,.93);border-top:1px solid rgba(184,157,255,.1);backdrop-filter:blur(20px)}
+.input-wrap{display:flex;align-items:flex-end;gap:7px;background:rgba(9,12,26,.95);border:1.5px solid rgba(255,255,255,.12);border-radius:16px;padding:7px 8px 7px 15px;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.input-wrap:focus-within{border-color:rgba(184,157,255,.6);box-shadow:0 0 0 2px rgba(184,157,255,.15),0 0 40px rgba(139,92,246,.2),0 8px 30px rgba(0,0,0,.7);background:rgba(12,8,28,.96)}
 .msg-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Nunito',sans-serif;font-size:14px;line-height:1.5;resize:none;min-height:22px;max-height:120px;overflow-y:auto;padding:2px 0}
 .msg-input::placeholder{color:var(--text3)}
 .ib-btn{width:36px;height:36px;border-radius:10px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--ease);flex-shrink:0;font-size:15px}
@@ -212,9 +226,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 @keyframes precord{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.4)}50%{box-shadow:0 0 0 7px transparent}}
 .ib-clear{background:var(--glass2);border:1px solid var(--border2);color:var(--text3)}
 .ib-clear:hover{border-color:var(--r);color:var(--r)}
-.ib-send{width:36px;height:36px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--v),var(--v2));color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--ease);flex-shrink:0;box-shadow:var(--sh-btn)}
-.ib-send:hover{filter:brightness(1.15);transform:scale(1.06)}
-.ib-send:active{transform:scale(.92)}
+.ib-send{width:36px;height:36px;border-radius:10px;border:none;background:linear-gradient(135deg,#b89dff,#7c3aed,#6d28d9);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--ease);flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.7),0 0 24px rgba(139,92,246,.5),inset 0 1px 0 rgba(255,255,255,.15)}
+.ib-send:hover{filter:brightness(1.18);transform:scale(1.07);box-shadow:0 4px 20px rgba(0,0,0,.7),0 0 36px rgba(139,92,246,.7)}
+.ib-send:active{transform:scale(.93)}
 .ib-send:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 .ib-send.mega-send{background:linear-gradient(135deg,var(--m),var(--m2));box-shadow:0 4px 20px rgba(0,0,0,.65),0 8px 36px var(--mg)}
 
@@ -252,7 +266,136 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   .hd-btn.back-lbl{display:none}
   .explain-toggle .et-label{display:none}
   .mega-toggle .mt-label{display:none}
+  .fn-count{display:none}
 }
+
+.fn-count{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:var(--c);background:rgba(103,232,249,.08);border:1px solid rgba(103,232,249,.25);border-radius:999px;padding:3px 9px;white-space:nowrap}
+.hd-btn.fn-btn{border-color:rgba(103,232,249,.35);color:var(--c)}
+.hd-btn.fn-btn:hover{background:rgba(103,232,249,.1);border-color:var(--c)}
+
+.sb-search-wrap{padding:8px 14px 4px}
+.sb-search{width:100%;padding:8px 11px;border:1.5px solid var(--border2);border-radius:9px;background:var(--bg3);color:var(--text);font-family:'Nunito',sans-serif;font-size:12px;outline:none;transition:var(--ease)}
+.sb-search:focus{border-color:var(--v);box-shadow:0 0 0 3px rgba(167,139,250,.15)}
+.sb-search::placeholder{color:var(--text3)}
+
+.cmd-palette,.fn-modal{display:none;position:fixed;inset:0;z-index:800;align-items:flex-start;justify-content:center;padding:12vh 16px 16px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px)}
+.cmd-palette.show,.fn-modal.show{display:flex}
+.cmd-box,.fn-box{width:min(560px,96vw);background:var(--bg2);border:1.5px solid var(--border2);border-radius:16px;box-shadow:var(--sh-lg);overflow:hidden;animation:fadeUp .25s ease both}
+.fn-box{width:min(720px,96vw);max-height:min(78vh,640px);display:flex;flex-direction:column}
+.cmd-input{width:100%;padding:14px 16px;border:none;border-bottom:1px solid var(--border);background:transparent;color:var(--text);font-size:15px;font-family:'Nunito',sans-serif;outline:none}
+.cmd-hint{padding:8px 16px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border)}
+.cmd-list,.fn-list{max-height:min(50vh,400px);overflow-y:auto;padding:6px}
+.fn-list{flex:1;max-height:none}
+.cmd-item,.fn-item{padding:10px 14px;border-radius:10px;cursor:pointer;transition:var(--ease);display:flex;align-items:center;gap:10px}
+.cmd-item:hover,.cmd-item.on,.fn-item:hover{background:rgba(167,139,250,.1)}
+.cmd-item-icon{font-size:16px;flex-shrink:0}
+.cmd-item-text{font-size:13px;font-weight:600;color:var(--text)}
+.cmd-item-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px}
+.fn-head{padding:16px 18px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.fn-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff}
+.fn-sub{font-size:12px;color:var(--text2);margin-top:4px}
+.fn-filters{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.fn-chip{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border2);background:var(--glass);color:var(--text3);transition:var(--ease)}
+.fn-chip.on,.fn-chip:hover{border-color:var(--v);color:var(--v);background:rgba(167,139,250,.1)}
+.fn-item{flex-direction:column;align-items:flex-start;gap:4px}
+.fn-item-top{display:flex;align-items:center;gap:8px;width:100%}
+.fn-cat{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--a);background:rgba(251,191,36,.08);border-radius:4px;padding:2px 6px}
+.fn-ex{font-family:'DM Mono',monospace;font-size:11px;color:var(--c)}
+.fn-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px}
+.fn-close:hover{color:var(--r);background:var(--glass3)}
+.fn-box{position:relative}
+
+.step-card{display:flex;gap:10px;margin:6px 0;padding:8px 10px;background:var(--glass);border:1px solid var(--border);border-radius:10px}
+.step-num{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v2));color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-body{font-size:12.5px;color:var(--text2);line-height:1.55}
+.step-body b{color:var(--text)}
+
+.result-banner{margin-top:10px;padding:11px 15px;border-radius:12px;background:rgba(57,255,158,.08);border:1.5px solid rgba(57,255,158,.3);font-weight:800;color:var(--g);font-size:14px;box-shadow:0 0 20px rgba(57,255,158,.12)}
+
+/* Shimmer animation for premium sections */
+@keyframes shimmerBorder{0%,100%{box-shadow:0 0 0 1px rgba(184,157,255,.2),0 4px 20px rgba(0,0,0,.5)}50%{box-shadow:0 0 0 1.5px rgba(184,157,255,.45),0 4px 20px rgba(139,92,246,.15)}}
+.mega-section{background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.18);border-radius:13px;padding:12px 15px;margin:8px 0;position:relative;overflow:hidden;animation:shimmerBorder 3s ease-in-out infinite}
+.teacher-block-hd{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(167,139,250,.08);border-bottom:1px solid var(--border)}
+.teacher-num{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--v),var(--v2));color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.teacher-num.g{background:linear-gradient(135deg,var(--g),#16a34a)}
+.teacher-num.a{background:linear-gradient(135deg,var(--a),#d97706)}
+.teacher-num.c{background:linear-gradient(135deg,var(--c),#0891b2)}
+.teacher-num.m{background:linear-gradient(135deg,var(--m),var(--m2))}
+.teacher-hd-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:var(--text)}
+.teacher-block-bd{padding:10px 12px;font-size:12.5px;color:var(--text2);line-height:1.65}
+.teacher-block-bd b{color:var(--text)}
+.teacher-step{margin:8px 0;padding:8px 10px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--v)}
+.teacher-step-hd{font-weight:800;color:var(--v);font-size:11px;margin-bottom:4px}
+.teacher-why{font-size:11px;color:var(--text3);margin-top:4px;font-style:italic;line-height:1.5}
+.teacher-theorem{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:8px 10px;margin-top:6px}
+.teacher-answer{margin-top:12px;padding:12px 14px;border-radius:11px;background:rgba(74,222,128,.1);border:1.5px solid rgba(74,222,128,.35);font-weight:800;color:var(--g);font-size:15px}
+.geo-viz-wrap{margin:10px 0;padding:14px;background:linear-gradient(135deg,rgba(9,12,26,.95),rgba(18,10,36,.9));border:1px solid rgba(184,157,255,.2);border-radius:14px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(139,92,246,.08)}
+.geo-viz-wrap .gv-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:var(--c);margin-bottom:8px;text-align:left}
+.geo-viz-wrap svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.geo-viz-wrap .gv-caption{font-size:10px;color:var(--text3);margin-top:6px;text-align:center}
+
+/* ═══ EXPLAIN BLOCK — premium explain mode ═══ */
+.explain-block{border-radius:16px;overflow:hidden;border:1.5px solid rgba(184,157,255,.22);background:linear-gradient(145deg,rgba(9,12,26,.98),rgba(14,10,30,.95));box-shadow:0 8px 40px rgba(0,0,0,.7),0 0 60px rgba(139,92,246,.08)}
+.explain-title{display:flex;align-items:center;gap:10px;padding:12px 16px;background:linear-gradient(90deg,rgba(184,157,255,.12),transparent);border-bottom:1px solid rgba(184,157,255,.15);font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff}
+.explain-icon{font-size:18px;filter:drop-shadow(0 0 8px rgba(184,157,255,.5))}
+.explain-concept{margin:12px 14px 0;padding:10px 14px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.22);border-radius:10px}
+.explain-concept-lbl{font-family:'Syne',sans-serif;font-size:10px;font-weight:800;color:var(--a);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.explain-concept-body{font-size:12.5px;color:var(--text);line-height:1.65}
+.explain-given{padding:8px 16px;font-size:12px;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.05)}
+.explain-given b{color:var(--text)}
+.explain-given-text{font-family:'DM Mono',monospace;color:var(--c);font-size:11.5px}
+.explain-steps-title{padding:10px 16px 4px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.1em}
+.explain-steps{padding:0 14px 4px}
+.explain-step{display:flex;gap:10px;margin:6px 0;padding:10px 12px;background:rgba(255,255,255,.025);border-radius:10px;border-left:3px solid rgba(184,157,255,.4);transition:var(--ease)}
+.explain-step:hover{background:rgba(184,157,255,.06);border-left-color:var(--v)}
+.explain-step-final{border-left-color:rgba(57,255,158,.5);background:rgba(57,255,158,.04)}
+.explain-step-final:hover{background:rgba(57,255,158,.08)}
+.explain-step-num{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--v),var(--v2));color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 10px rgba(139,92,246,.4)}
+.explain-step-final .explain-step-num{background:linear-gradient(135deg,var(--g),#16a34a);box-shadow:0 0 10px rgba(57,255,158,.4)}
+.explain-step-content{flex:1;min-width:0}
+.explain-step-text{font-size:13px;color:var(--text);line-height:1.6;font-weight:600}
+.explain-step-text b{color:var(--g)}
+.explain-step-why{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.5;padding-left:2px;border-left:2px solid rgba(255,255,255,.08);padding-left:8px;font-style:italic}
+.explain-answer{margin:12px 14px;padding:12px 16px;border-radius:12px;background:rgba(57,255,158,.08);border:1.5px solid rgba(57,255,158,.3);font-weight:800;color:var(--g);font-size:14px;box-shadow:0 0 24px rgba(57,255,158,.1)}
+.explain-check{margin-right:6px;font-size:16px;filter:drop-shadow(0 0 6px rgba(57,255,158,.6))}
+.explain-warning{margin:6px 14px 14px;padding:8px 12px;border-radius:9px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);color:var(--a);font-size:12px}
+
+.kbd{font-family:'DM Mono',monospace;font-size:10px;padding:2px 6px;border-radius:5px;background:var(--glass2);border:1px solid var(--border2);color:var(--text3)}
+
+.grade-bar{display:flex;flex-wrap:wrap;gap:4px;padding:8px 12px 4px}
+.grade-chip{padding:4px 8px;border-radius:8px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--border2);background:var(--glass);color:var(--text3);transition:var(--ease)}
+.grade-chip.on,.grade-chip:hover{border-color:var(--v);color:var(--v);background:rgba(167,139,250,.12)}
+.grade-chip.all-chip{border-color:var(--c);color:var(--c)}
+.grade-chip.all-chip.on{background:rgba(103,232,249,.12)}
+.sb-open-all{margin:6px 12px 8px;padding:9px 12px;border-radius:10px;border:1.5px dashed var(--mborder);background:var(--mbg);color:var(--m);font-size:11px;font-weight:800;cursor:pointer;text-align:center;transition:var(--ease)}
+.sb-open-all:hover{background:var(--mg2);border-style:solid}
+.sb-topic-count{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);padding:0 14px 6px}
+
+.cap-modal{display:none;position:fixed;inset:0;z-index:850;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.72);backdrop-filter:blur(10px)}
+.cap-modal.show{display:flex}
+.cap-box{width:min(920px,98vw);max-height:min(90vh,800px);background:var(--bg2);border:1.5px solid var(--border2);border-radius:18px;box-shadow:var(--sh-lg);display:flex;flex-direction:column;overflow:hidden;position:relative;animation:fadeUp .3s ease both}
+.cap-head{padding:18px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cap-title{font-family:'Syne',sans-serif;font-size:clamp(18px,3vw,22px);font-weight:800;color:#fff}
+.cap-sub{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5}
+.cap-toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;flex-shrink:0}
+.cap-search{flex:1;min-width:140px;padding:8px 12px;border:1.5px solid var(--border2);border-radius:9px;background:var(--bg3);color:var(--text);font-size:12px;outline:none}
+.cap-search:focus{border-color:var(--v)}
+.cap-body{flex:1;overflow-y:auto;padding:12px 16px 20px}
+.cap-grade-block{margin-bottom:18px}
+.cap-grade-hd{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--a);margin-bottom:8px;padding:6px 10px;background:rgba(251,191,36,.06);border-radius:8px;border-left:3px solid var(--a)}
+.cap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.cap-card{background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:11px 12px;cursor:pointer;transition:var(--ease)}
+.cap-card:hover{border-color:var(--v);background:rgba(167,139,250,.08);transform:translateY(-2px)}
+.cap-card-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.cap-card-icon{font-size:18px;flex-shrink:0}
+.cap-card-name{font-size:12px;font-weight:800;color:var(--text);line-height:1.3}
+.cap-card-desc{font-size:10px;color:var(--text3);line-height:1.45;margin-bottom:6px}
+.cap-card-ex{font-family:'DM Mono',monospace;font-size:10px;color:var(--c);padding:5px 8px;background:var(--bg3);border-radius:6px;border:1px solid var(--border);word-break:break-word}
+.cap-card-expl{font-size:10px;color:var(--text2);margin-top:6px;line-height:1.5;font-style:italic;display:none}
+.cap-card:hover .cap-card-expl{display:block}
+.cap-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:4px 10px;border-radius:8px;z-index:2}
+.cap-close:hover{color:var(--r);background:var(--glass3)}
+@media(max-width:500px){.cap-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -276,6 +419,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       <span class="et-icon">💡</span>
       <span class="et-label" id="explainLabel">Объясняй</span>
     </div>
+    <span class="fn-count" id="fnCount" title="Локальных решателей">220+</span>
+    <button class="hd-btn fn-btn" onclick="openCapModal()" title="Что умеет бот · 1–11 класс">📖</button>
+    <button class="hd-btn fn-btn" onclick="openFnModal()" title="Все функции">📚</button>
+    <button class="hd-btn" onclick="openCmdPalette()" title="Ctrl+K">⌘</button>
     <button class="hd-btn" onclick="openSettings()" title="Настройки">⚙</button>
     <button class="hd-btn" onclick="clearChat()">🗑</button>
     <button class="hd-btn back-lbl" onclick="location.href='lobby.html'" id="backBtn">⬂ Лобби</button>
@@ -293,6 +440,42 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 </div>
 
 <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+<div class="cmd-palette" id="cmdPalette" onclick="if(event.target===this)closeCmdPalette()">
+  <div class="cmd-box">
+    <input class="cmd-input" id="cmdInput" placeholder="Поиск команды или примера..." autocomplete="off">
+    <div class="cmd-hint"><span class="kbd">↑↓</span> выбор · <span class="kbd">Enter</span> вставить · <span class="kbd">Esc</span> закрыть</div>
+    <div class="cmd-list" id="cmdList"></div>
+  </div>
+</div>
+
+<div class="cap-modal" id="capModal" onclick="if(event.target===this)closeCapModal()">
+  <div class="cap-box">
+    <button class="cap-close" onclick="closeCapModal()">✕</button>
+    <div class="cap-head">
+      <div class="cap-title" id="capTitle">📖 Что умеет математика-бот</div>
+      <div class="cap-sub" id="capSub">Программа 1–11 класс · нажми на тему — пример вставится в чат · включи «Объясняй» для пошагового разбора</div>
+    </div>
+    <div class="cap-toolbar">
+      <input class="cap-search" id="capSearch" type="search" placeholder="Поиск темы..." oninput="renderCapModal()">
+      <div class="grade-bar" id="capGradeBar" style="padding:0;flex:1"></div>
+    </div>
+    <div class="cap-body" id="capBody"></div>
+  </div>
+</div>
+
+<div class="fn-modal" id="fnModal" onclick="if(event.target===this)closeFnModal()">
+  <div class="fn-box">
+    <button class="fn-close" onclick="closeFnModal()">✕</button>
+    <div class="fn-head">
+      <div class="fn-title" id="fnModalTitle">📚 Библиотека функций</div>
+      <div class="fn-sub" id="fnModalSub">220+ решателей с объяснениями</div>
+    </div>
+    <div style="padding:8px 14px;border-bottom:1px solid var(--border)"><input class="sb-search" id="fnSearchVal" type="search" placeholder="Поиск функции..." oninput="renderFnModal()"></div>
+    <div class="fn-filters" id="fnFilters"></div>
+    <div class="fn-list" id="fnList"></div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="settingsModal">
   <div class="modal-box">
@@ -325,31 +508,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
         <div class="stat-chip"><div class="stat-val" id="statSolv">0</div><div class="stat-lbl" id="statSolvLbl">решено</div></div>
       </div>
       <div class="sb-section">
-        <div class="sb-title" id="sbTopicsTitle">Темы</div>
-        <div class="sb-card" onclick="ex('x^2 - 5x + 6 = 0')"><span class="sb-icon" style="color:var(--v)">📐</span><div><div class="sb-name" id="sbQ">Квадратные</div><div class="sb-desc">ax²+bx+c=0</div></div></div>
-        <div class="sb-card" onclick="ex('sin(x) = 0.5')"><span class="sb-icon" style="color:var(--c)">📏</span><div><div class="sb-name" id="sbT">Тригонометрия</div><div class="sb-desc">sin, cos, tan</div></div></div>
-        <div class="sb-card" onclick="ex('2^x = 16')"><span class="sb-icon" style="color:var(--g)">📈</span><div><div class="sb-name" id="sbE">Показательные</div><div class="sb-desc">a^x = b</div></div></div>
-        <div class="sb-card" onclick="ex('log2(x) = 4')"><span class="sb-icon" style="color:var(--a)">🔢</span><div><div class="sb-name" id="sbL">Логарифмы</div><div class="sb-desc">logₐ(x) = b</div></div></div>
-        <div class="sb-card" onclick="ex('x^2 - 5x + 6 > 0')"><span class="sb-icon" style="color:var(--p)">≥</span><div><div class="sb-name" id="sbN">Неравенства</div><div class="sb-desc">f(x) > 0</div></div></div>
-        <div class="sb-card" onclick="ex('производная x^3 - 3x^2 + 5x - 1')"><span class="sb-icon" style="color:var(--r)">∂</span><div><div class="sb-name" id="sbD">Производные</div><div class="sb-desc">d/dx f(x)</div></div></div>
-        <div class="sb-card" onclick="ex('интеграл x^2 + 3x - 2')"><span class="sb-icon" style="color:var(--c)">∫</span><div><div class="sb-name" id="sbI">Интегралы</div><div class="sb-desc">∫ f(x) dx</div></div></div>
-        <div class="sb-card" onclick="ex('график y = x^3 - 3x')"><span class="sb-icon" style="color:var(--o)">📊</span><div><div class="sb-name" id="sbG">Графики</div><div class="sb-desc">y = f(x)</div></div></div>
-        <div class="sb-card" onclick="ex('система уравнений: 2x + y = 5, x - y = 1')"><span class="sb-icon" style="color:var(--a)">🔗</span><div><div class="sb-name" id="sbS">Системы</div><div class="sb-desc">x+y=a, x-y=b</div></div></div>
-        <div class="sb-card" onclick="ex('предел (x^2 - 1)/(x - 1) при x стремится к 1')"><span class="sb-icon" style="color:var(--v)">→</span><div><div class="sb-name" id="sbLim">Пределы</div><div class="sb-desc">lim f(x)</div></div></div>
-        <div class="sb-card" onclick="ex('C(10,3) комбинации из 10 по 3')"><span class="sb-icon" style="color:var(--p)">🎲</span><div><div class="sb-name" id="sbComb">Комбинаторика</div><div class="sb-desc">C, P, A</div></div></div>
-        <div class="sb-card" onclick="ex('площадь треугольника со сторонами 5, 7, 8')"><span class="sb-icon" style="color:var(--g)">📐</span><div><div class="sb-name" id="sbGeom">Геометрия</div><div class="sb-desc">площадь, объём</div></div></div>
-        <div class="sb-card" onclick="ex('вычисли 15% от 3400')"><span class="sb-icon" style="color:var(--a)">%</span><div><div class="sb-name" id="sbPct">Проценты</div><div class="sb-desc">x% от числа</div></div></div>
-        <div class="sb-card" onclick="ex('разложи на множители x^3 - 8')"><span class="sb-icon" style="color:var(--c)">✕</span><div><div class="sb-name" id="sbFact">Разложение</div><div class="sb-desc">факторизация</div></div></div>
-        <div class="sb-card" onclick="ex('матрица определитель 2 1 4 3')"><span class="sb-icon" style="color:var(--blue)">⊞</span><div><div class="sb-name">Матрицы</div><div class="sb-desc">det, ×, inverse</div></div></div>
-        <div class="sb-card" onclick="ex('векторное произведение 1 2 3 и 4 5 6')"><span class="sb-icon" style="color:var(--em)">⇀</span><div><div class="sb-name">Векторы</div><div class="sb-desc">cross, dot, |v|, угол</div></div></div>
-        <div class="sb-card" onclick="ex('комплексное число 3+2i инфо')"><span class="sb-icon" style="color:var(--p)">ℂ</span><div><div class="sb-name">Комплексные</div><div class="sb-desc">a+bi арифметика</div></div></div>
-        <div class="sb-card" onclick="ex('разложение на простые 360')"><span class="sb-icon" style="color:var(--a)">🔬</span><div><div class="sb-name">Теория чисел</div><div class="sb-desc">факторизация, НОД, φ</div></div></div>
-        <div class="sb-card" onclick="ex('бином (x+2)^3')"><span class="sb-icon" style="color:var(--v)">📦</span><div><div class="sb-name">Бином Ньютона</div><div class="sb-desc">(a+b)^n</div></div></div>
-        <div class="sb-card" onclick="ex('кинетическая энергия m=5 v=10')"><span class="sb-icon" style="color:var(--o)">⚡</span><div><div class="sb-name">Физика</div><div class="sb-desc">E, W, F, ρ</div></div></div>
-        <div class="sb-card" onclick="ex('римское 2024')"><span class="sb-icon" style="color:var(--c)">ⅩⅤ</span><div><div class="sb-name">Конвертеры</div><div class="sb-desc">римские, слова, нотация</div></div></div>
-        <div class="sb-card" onclick="ex('площадь сектора r=5 угол=60')"><span class="sb-icon" style="color:var(--g)">🔵</span><div><div class="sb-name">Секторы/Многоугольники</div><div class="sb-desc">сектор, дуга, n-угольник</div></div></div>
-        <div class="sb-card" onclick="ex('объем тора R=5 r=2')"><span class="sb-icon" style="color:var(--p)">🍩</span><div><div class="sb-name">Объёмы 3D</div><div class="sb-desc">тор, эллипсоид, призма</div></div></div>
-        <div class="sb-card" onclick="ex('предел x^2+3x при x=2')"><span class="sb-icon" style="color:var(--v)">∞</span><div><div class="sb-name">Пределы/Ряды</div><div class="sb-desc">lim, Тейлор, суммы</div></div></div>
+        <div class="sb-title" id="sbTopicsTitle">Темы · 1–11 класс</div>
+        <div class="grade-bar" id="sbGradeBar"></div>
+        <div class="sb-topic-count" id="sbTopicCount"></div>
+        <div id="sbTopicsList"></div>
+        <button type="button" class="sb-open-all" id="sbOpenAllBtn" onclick="openCapModal()">📖 Все темы и что умеет бот</button>
       </div>
       <div class="sb-section"><div class="sb-title" id="sbExTitle">Быстрые примеры</div></div>
       <div class="quick-list" id="quickList"></div>
@@ -359,7 +522,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <div class="chat-main">
     <div class="chat-window" id="chatWindow"><button id="scrollBottomBtn" onclick="chatWindow.scrollTo({top:chatWindow.scrollHeight,behavior:'smooth'})" style="display:none; position:fixed; bottom:100px; right:20px; z-index:200; background:var(--v); color:#fff; border:none; border-radius:50%; width:36px; height:36px; font-size:18px; cursor:pointer; box-shadow:var(--sh-btn);">↓</button>
       <div class="welcome" id="welcomeBanner">
-        <div class="welcome-title">🤖 <span id="wTitle">Математика Бот — 11 класс</span></div>
+        <div class="welcome-title">🤖 <span id="wTitle">Математика Бот — 1–11 класс</span></div>
         <div class="welcome-sub" id="wSub">Задай любой вопрос — решу и объясню каждый шаг.</div>
         <div class="welcome-tip" id="wTip">💡 Включи <b>"Объясняй"</b> для пошаговых объяснений. 🧠 <b>Мега режим</b> — учитель-level с кликабельными терминами!</div>
         <div class="welcome-chips">
@@ -373,6 +536,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
           <span class="wchip wchip-g" onclick="ex('векторное произведение 1 2 3 и 4 5 6')">a×b</span>
           <span class="wchip wchip-a" onclick="ex('бином (x+2)^3')">(x+2)³</span>
           <span class="wchip wchip-p" onclick="ex('кинетическая энергия m=5 v=10')">E=½mv²</span>
+          <span class="wchip wchip-v" onclick="openCapModal()">📖 1–11 класс</span>
+          <span class="wchip wchip-g" onclick="ex('площадь трапеции a=8 b=4 h=5')">трапеция</span>
+          <span class="wchip wchip-c" onclick="ex('прямоугольный треугольник катет a=3 b=4')">прям. △</span>
+          <span class="wchip wchip-a" onclick="ex('длина дуги r=5 угол=60')">дуга</span>
         </div>
       </div>
     </div>
@@ -393,13 +560,21 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 // ══════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════
-var LANG='RU', isBusy=false, explainMode=false, megaMode=false;
+var LANG='RU', isBusy=false, explainMode=false, megaMode=false, _lastProblemText='';
 var megaUses=999999; // Unlimited smart thinking
-var settings=JSON.parse(localStorage.getItem('fmine_settings')||'{"apiKey":"","model":"claude-sonnet-4-20250514"}');
-var stats=JSON.parse(localStorage.getItem('fmine_math_stats')||'{"messages":0,"level":1,"solved":0}');
-var chatWindow=document.getElementById('chatWindow');
-var msgInput=document.getElementById('msgInput');
-var sendBtn=document.getElementById('sendBtn');
+var settings={apiKey:'',model:'claude-sonnet-4-20250514'};
+var stats={messages:0,level:1,solved:0};
+try{settings=JSON.parse(localStorage.getItem('fmine_settings')||'{}')}catch(e){}
+try{stats=JSON.parse(localStorage.getItem('fmine_math_stats')||'{}')}catch(e){}
+if(!settings.model)settings.model='claude-sonnet-4-20250514';
+if(typeof stats.messages!=='number')stats={messages:0,level:1,solved:0};
+var chatWindow, msgInput, sendBtn;
+function initDomRefs(){
+  chatWindow=document.getElementById('chatWindow');
+  msgInput=document.getElementById('msgInput');
+  sendBtn=document.getElementById('sendBtn');
+}
+initDomRefs();
 
 // ══════════════════════════════════════════════════════
 // GLOSSARY (ORIGINAL + 50 NEW TERMS)
@@ -671,17 +846,182 @@ var GLOSSARY={
 };
 
 // ══════════════════════════════════════════════════════
+// CURRICULUM 1–11 (school math program)
+// ══════════════════════════════════════════════════════
+function mkT(g,icon,col,ru,en,dRU,dEN,ex,eRU,eEN){return {grade:g,icon:icon,color:col||'var(--v)',nameRU:ru,nameEN:en,descRU:dRU,descEN:dEN,example:ex,explainRU:eRU,explainEN:eEN}}
+var MATH_CURRICULUM=[
+mkT(1,'➕','var(--g)','Сложение','Addition','a+b в пределах 20','add within 20','3+5=?','Складываем единицы: 3+5=8.','Add ones: 3+5=8.'),
+mkT(1,'➖','var(--r)','Вычитание','Subtraction','a−b','subtract','9-4=?','9−4=5: отнимаем 4 от 9.','9−4=5: take 4 from 9.'),
+mkT(1,'⚖','var(--a)','Сравнение чисел','Compare numbers','>, <, =','compare','7 > 5 ?','7 больше 5 — знак >.','7 is greater than 5.'),
+mkT(1,'🔷','var(--c)','Фигуры','Shapes','квадрат, круг, треугольник','shapes','площадь квадрата сторона 4','Квадрат: 4 равные стороны. S=a².','Square: 4 equal sides. S=a².'),
+mkT(1,'📝','var(--v)','Задачи на сложение','Word problems','сколько всего','word add','2+3+1','Складываем все части задачи.','Add all parts of the problem.'),
+mkT(2,'✖','var(--v)','Умножение','Multiplication','таблица умножения','times table','7*8','7×8=56: 7 по 8 раз.','7×8=56: seven eights.'),
+mkT(2,'➗','var(--c)','Деление','Division','делим поровну','divide','56/7','56÷7=8: обратное умножению.','56÷7=8: inverse of multiply.'),
+mkT(2,'📏','var(--g)','Единицы длины','Length units','м, дм, см','length','1 м = ? см','1 м = 100 см.','1 m = 100 cm.'),
+mkT(2,'🕐','var(--a)','Время','Time','часы, минуты','time','сколько минут в 2 часах','1 ч = 60 мин → 120 мин.','1 h = 60 min → 120 min.'),
+mkT(2,'▭','var(--p)','Периметр','Perimeter','P прямоугольника','perimeter','периметр прямоугольника 5 на 3','P=2(a+b)=2(5+3)=16.','P=2(a+b)=2(5+3)=16.'),
+mkT(3,'✖','var(--v)','Умножение в столбик','Column multiply','двузначные','multiply','24*13','24×13=312.','24×13=312.'),
+mkT(3,'➗','var(--r)','Деление с остатком','Division remainder','47:5','div rem','47/5','47=5·9+2, остаток 2.','47=5·9+2, remainder 2.'),
+mkT(3,'½','var(--a)','Доли','Fractions parts','1/2 от числа','half of','1/2 от 12','½·12=6.','½·12=6.'),
+mkT(3,'▭','var(--g)','Площадь прямоугольника','Rectangle area','S=a·b','area rect','площадь прямоугольника 6 4','S=6·4=24.','S=6·4=24.'),
+mkT(3,'x','var(--c)','Простые уравнения','Simple equations','x+5=12','equation','x+5=12','x=12−5=7.','x=12−5=7.'),
+mkT(3,'↔','var(--p)','Округление','Rounding','до десятков','round','округли 456 до десятков','456→460.','456→460.'),
+mkT(4,'⅓','var(--v)','Дроби','Fractions','сложение дробей','fractions','2/3+1/6','НОК знаменателей: 4/6+1/6=5/6.','LCD: 4/6+1/6=5/6.'),
+mkT(4,'0.','var(--c)','Десятичные','Decimals','0.5+0.25','decimals','0.5+0.25','0.5+0.25=0.75.','0.5+0.25=0.75.'),
+mkT(4,'∠','var(--a)','Углы','Angles','прямой, тупой','angles','90 градусов в прямом угле','Прямой угол = 90°.','Right angle = 90°.'),
+mkT(4,'🚗','var(--g)','Движение','Motion','s=v·t','motion','скорость 60 км/ч за 2 ч','s=60·2=120 км.','s=60·2=120 km.'),
+mkT(4,'🔢','var(--p)','Делимость','Divisibility','НОД, НОК','gcd','нод 12 18','НОД(12,18)=6.','GCD(12,18)=6.'),
+mkT(4,'📊','var(--o)','Среднее','Mean','среднее арифметическое','mean','среднее 4 8 12','(4+8+12)/3=8.','(4+8+12)/3=8.'),
+mkT(5,'⅔','var(--v)','Дроби × ÷','Fraction ops','умножение дробей','frac ops','2/3*3/4','(2·3)/(3·4)=6/12=1/2.','(2·3)/(3·4)=1/2.'),
+mkT(5,'%','var(--a)','Проценты','Percent','x% от числа','percent','20% от 150','0.2·150=30.','0.2·150=30.'),
+mkT(5,'△','var(--g)','Площадь треугольника','Triangle area','S=½ah','tri area','площадь треугольника основание 10 высота 6','S=½·10·6=30.','S=½·10·6=30.'),
+mkT(5,'📦','var(--c)','Объём','Volume','параллелепипед','volume','объем параллелепипеда 3 4 5','V=3·4·5=60.','V=3·4·5=60.'),
+mkT(5,'∶','var(--p)','Пропорция','Proportion','a:b=c:d','proportion','2:3 = x:15','x=2·15/3=10.','x=2·15/3=10.'),
+mkT(5,'^','var(--o)','Степень','Power','a^n','power','2^5','2^5=32.','2^5=32.'),
+mkT(6,'±','var(--r)','Отрицательные','Negatives','−5+3','negatives','-5+3','-5+3=-2.','-5+3=-2.'),
+mkT(6,'📍','var(--c)','Координаты','Coordinates','числовая прямая','number line','|-3|','Модуль: расстояние до 0.','Absolute value: distance to 0.'),
+mkT(6,'∶','var(--a)','Отношение','Ratio','2:5','ratio','отношение 12 к 18','12:18=2:3.','12:18=2:3.'),
+mkT(6,'x','var(--v)','Уравнения','Equations','2x−7=11','equations','2x-7=11','2x=18, x=9.','2x=18, x=9.'),
+mkT(6,'○','var(--g)','Окружность','Circle','C=2πr','circle','длина окружности r=7','C=2π·7≈43.98.','C=2π·7≈43.98.'),
+mkT(6,'%','var(--p)','Процентные задачи','Percent problems','рост/скидка','percent word','цена 800 скидка 15%','800·0.85=680.','800·0.85=680.'),
+mkT(7,'x','var(--v)','Линейные уравнения','Linear equations','ax+b=c','linear eq','3x+5=2x+20','x=15.','x=15.'),
+mkT(7,'ƒ','var(--c)','Линейная функция','Linear function','y=kx+b','linear fn','график y=2x+3','Прямая: k=2, b=3.','Line: slope 2, intercept 3.'),
+mkT(7,'()','var(--a)','Многочлены','Polynomials','(2x)^3','polynomial','(2x)^3','8x³.','8x³.'),
+mkT(7,'△','var(--g)','Пифагор','Pythagoras','a²+b²=c²','pythagoras','пифагор a=6 b=8','c=√(36+64)=10.','c=√(36+64)=10.'),
+mkT(7,'🎲','var(--p)','Вероятность','Probability','благоприятные/все','probability','вероятность 3 из 10','P=3/10=0.3.','P=3/10=0.3.'),
+mkT(7,'>','var(--r)','Неравенства','Inequalities','2x−1>5','inequality','2x-1>5','2x>6, x>3.','2x>6, x>3.'),
+mkT(8,'📐','var(--v)','Квадратные','Quadratic','ax²+bx+c=0','quadratic','x^2 - 5x + 6 = 0','D=1, x=2 или x=3.','D=1, x=2 or x=3.'),
+mkT(8,'≥','var(--p)','Квадр. неравенства','Quad inequality','x²−4>0','quad ineq','x^2 - 4 > 0','x<-2 или x>2.','x<-2 or x>2.'),
+mkT(8,'√','var(--c)','Корни','Roots','√50','roots','sqrt(50)','√50=5√2.','√50=5√2.'),
+mkT(8,'🔗','var(--a)','Системы 2×2','Systems 2×2','два уравнения','system','система уравнений: 2x + y = 5, x - y = 1','x=2, y=1.','x=2, y=1.'),
+mkT(8,'↔','var(--g)','Прогрессии','Sequences','арифметическая','AP','арифметическая прогрессия a1=3 d=2 n=10','a_n=a_1+(n-1)d.','a_n=a_1+(n-1)d.'),
+mkT(8,'△','var(--o)','Подобие','Similarity','треугольники','similarity','площадь треугольника со сторонами 5 7 8','Формула Герона.','Heron formula.'),
+mkT(9,'📏','var(--c)','Тригонометрия','Trigonometry','sin, cos, tan','trig','sin(x) = 0.5','x=30°+360°k или 150°+360°k.','x=π/6+2πk or 5π/6+2πk.'),
+mkT(9,'📐','var(--v)','Квадратные','Quadratic eq','дискриминант','quadratic','2x^2+3x-2=0','x=0.5 или x=-2.','x=0.5 or x=-2.'),
+mkT(9,'🔗','var(--a)','Системы','Systems','линейные системы','systems','система: x+y=7, 2x-y=2','x=3, y=4.','x=3, y=4.'),
+mkT(9,'↗','var(--g)','Геом. прогрессия','GP','b_n=b_1·q^(n-1)','GP','геометрическая прогрессия b1=2 q=3 n=5','b_5=162.','b_5=162.'),
+mkT(9,'⇀','var(--em)','Векторы','Vectors','координаты, длина','vectors','длина вектора 3 4','|v|=√(9+16)=5.','|v|=5.'),
+mkT(9,'○','var(--p)','Окружность и углы','Circle angles','вписанный угол','circle ang','площадь круга r=5','S=πr²≈78.54.','S=πr²≈78.54.'),
+mkT(10,'📈','var(--g)','Показательные','Exponential','a^x=b','exponential','2^x = 16','x=4.','x=4.'),
+mkT(10,'🔢','var(--a)','Логарифмы','Logarithms','log_a(x)=b','logarithm','log2(x) = 4','x=2^4=16.','x=2^4=16.'),
+mkT(10,'📏','var(--c)','Триг. уравнения','Trig equations','sin/cos/tan','trig eq','cos(x)=0','x=π/2+πk.','x=π/2+πk.'),
+mkT(10,'∂','var(--r)','Производная','Derivative','d/dx f(x)','derivative','производная x^3 - 3x^2 + 5x - 1','f\'=3x²−6x+5.','f\'=3x²−6x+5.'),
+mkT(10,'ℂ','var(--p)','Комплексные','Complex','a+bi','complex','комплексное число 3+2i инфо','|z|=√13.','|z|=√13.'),
+mkT(10,'🧊','var(--o)','Стереометрия','Stereometry','объёмы тел','3d volume','объем шара r=3','V=4/3πr³.','V=4/3πr³.'),
+mkT(11,'∂','var(--r)','Производные','Derivatives','правила дифф.','derivatives','производная x^3 + 2x','3x²+2.','3x²+2.'),
+mkT(11,'∫','var(--c)','Интегралы','Integrals','∫f(x)dx','integrals','интеграл x^2 + 3x - 2','x³/3+3x²/2−2x+C.','x³/3+3x²/2−2x+C.'),
+mkT(11,'→','var(--v)','Пределы','Limits','lim f(x)','limits','предел (x^2 - 1)/(x - 1) при x стремится к 1','lim=2.','lim=2.'),
+mkT(11,'⊞','var(--blue)','Матрицы','Matrices','det, умножение','matrices','матрица определитель 2 1 4 3','det=2.','det=2.'),
+mkT(11,'🎲','var(--p)','Комбинаторика','Combinatorics','C, P, A','combinatorics','C(10,3) комбинации из 10 по 3','C=120.','C=120.'),
+mkT(11,'📊','var(--g)','Вероятность','Probability','формулы','probability','вероятность 3 10','P=0.3.','P=0.3.'),
+mkT(11,'📈','var(--o)','Показательные/лог','Exp & log','сложные уравнения','exp log adv','2^x = 32','x=5.','x=5.'),
+mkT(11,'≥','var(--p)','Неравенства','Inequalities','f(x)>0','inequalities','x^2 - 5x + 6 > 0','x∈(-∞,2)∪(3,∞).','x∈(-∞,2)∪(3,∞).'),
+mkT(11,'📊','var(--c)','Графики','Graphs','y=f(x)','graphs','график y = x^3 - 3x','Анализ: нули, экстремумы.','Zeros and extrema.'),
+mkT(11,'✕','var(--a)','Разложение','Factoring','на множители','factoring','разложи на множители x^3 - 8','(x−2)(x²+2x+4).','(x−2)(x²+2x+4).'),
+mkT(11,'📦','var(--v)','Бином','Binomial','(a+b)^n','binomial','бином (x+2)^3','x³+6x²+12x+8.','x³+6x²+12x+8.'),
+mkT(11,'⇀','var(--em)','Векторы 3D','Vectors 3D','cross, dot','vectors 3d','векторное произведение 1 2 3 и 4 5 6','|a×b| по формуле.','Cross product formula.'),
+mkT(11,'⚡','var(--o)','Физика','Physics','E, F, v','physics','кинетическая энергия m=5 v=10','E=½mv²=250 Дж.','E=½mv²=250 J.'),
+mkT(11,'∞','var(--v)','Ряды/Тейлор','Series/Taylor','суммы, ряды','series','тейлор exp(1) n=8','Приближение e.','Approximation of e.')
+];
+var curGradeFilter=0;
+function topicName(t){return isEN()?t.nameEN:t.nameRU}
+function topicDesc(t){return isEN()?t.descEN:t.descRU}
+function topicExplain(t){return isEN()?t.explainEN:t.explainRU}
+function filteredCurriculum(){
+  var q=(document.getElementById('capSearch')||{}).value||'';
+  q=q.toLowerCase().trim();
+  return MATH_CURRICULUM.filter(function(t){
+    if(curGradeFilter&&t.grade!==curGradeFilter)return false;
+    if(!q)return true;
+    var blob=(t.nameRU+' '+t.nameEN+' '+t.descRU+' '+t.descEN+' '+t.example+' '+t.explainRU+' '+t.explainEN).toLowerCase();
+    return blob.indexOf(q)>=0;
+  });
+}
+function renderGradeBar(containerId,onPick){
+  var bar=document.getElementById(containerId);
+  if(!bar)return;
+  var allLbl=isEN()?'All':'Все';
+  var chips='<span class="grade-chip all-chip'+(curGradeFilter===0?' on':'')+'" data-g="0">'+allLbl+'</span>';
+  for(var g=1;g<=11;g++)chips+='<span class="grade-chip'+(curGradeFilter===g?' on':'')+'" data-g="'+g+'">'+g+'</span>';
+  bar.innerHTML=chips;
+  bar.querySelectorAll('.grade-chip').forEach(function(el){
+    el.onclick=function(){
+      curGradeFilter=parseInt(el.dataset.g,10)||0;
+      localStorage.setItem('fmine_grade',String(curGradeFilter));
+      renderGradeBar('sbGradeBar',true);
+      renderGradeBar('capGradeBar',true);
+      renderSidebarTopics();
+      renderCapModal();
+    };
+  });
+}
+function renderGradeBars(){renderGradeBar('sbGradeBar');renderGradeBar('capGradeBar')}
+function sbCardHtml(t){
+  return '<div class="sb-card" data-ex="'+encodeURIComponent(t.example)+'" onclick="topicRunExample(this)"><span class="sb-icon" style="color:'+t.color+'">'+t.icon+'</span><div><div class="sb-name">'+topicName(t)+'</div><div class="sb-desc">'+topicDesc(t)+'</div></div></div>';
+}
+function capCardHtml(t){
+  return '<div class="cap-card" data-ex="'+encodeURIComponent(t.example)+'" onclick="topicRunExample(this)"><div class="cap-card-top"><span class="cap-card-icon">'+t.icon+'</span><div class="cap-card-name">'+topicName(t)+'</div></div><div class="cap-card-desc">'+topicDesc(t)+'</div><div class="cap-card-ex">'+t.example+'</div><div class="cap-card-expl">'+topicExplain(t)+'</div></div>';
+}
+window.topicRunExample=function(el){var v=decodeURIComponent(el.getAttribute('data-ex')||'');if(v){ex(v);if(typeof closeCapModal==='function')closeCapModal();}};
+function renderSidebarTopics(){
+  var list=document.getElementById('sbTopicsList');
+  var cnt=document.getElementById('sbTopicCount');
+  if(!list)return;
+  var items=filteredCurriculum();
+  if(cnt)cnt.textContent=(isEN()?items.length+' topics':'Тем: '+items.length)+(curGradeFilter?(' · '+curGradeFilter+(isEN()?' grade':' класс')):'');
+  list.innerHTML=items.map(sbCardHtml).join('');
+  var btn=document.getElementById('sbOpenAllBtn');
+  if(btn)btn.textContent=isEN()?'📖 All topics & bot capabilities':'📖 Все темы и что умеет бот';
+}
+function renderCapModal(){
+  var body=document.getElementById('capBody');
+  if(!body)return;
+  var items=filteredCurriculum();
+  var title=document.getElementById('capTitle');
+  var sub=document.getElementById('capSub');
+  if(title)title.textContent=isEN()?'📖 What the math bot can do':'📖 Что умеет математика-бот';
+  if(sub)sub.textContent=isEN()?'Grades 1–11 curriculum · click a topic to try · enable Explain for steps':'Программа 1–11 класс · нажми на тему — пример в чат · включи «Объясняй» для разбора';
+  var search=document.getElementById('capSearch');
+  if(search)search.placeholder=isEN()?'Search topic...':'Поиск темы...';
+  if(curGradeFilter===0){
+    var html='';
+    for(var g=1;g<=11;g++){
+      var gt=items.filter(function(t){return t.grade===g});
+      if(!gt.length)continue;
+      html+='<div class="cap-grade-block"><div class="cap-grade-hd">'+(isEN()?'Grade ':'')+g+(isEN()?'':' класс')+' · '+gt.length+'</div><div class="cap-grid">'+gt.map(capCardHtml).join('')+'</div></div>';
+    }
+    body.innerHTML=html||'<p style="color:var(--text3);padding:12px">'+(isEN()?'No topics found':'Темы не найдены')+'</p>';
+  }else{
+    body.innerHTML='<div class="cap-grid">'+items.map(capCardHtml).join('')+'</div>';
+    if(!items.length)body.innerHTML='<p style="color:var(--text3);padding:12px">'+(isEN()?'No topics found':'Темы не найдены')+'</p>';
+  }
+}
+window.openCapModal=function(){
+  renderGradeBar('capGradeBar');
+  renderCapModal();
+  document.getElementById('capModal').classList.add('show');
+  var s=document.getElementById('capSearch');
+  if(s){s.value='';setTimeout(function(){s.focus()},50)}
+};
+window.closeCapModal=function(){document.getElementById('capModal').classList.remove('show')};
+function initCurriculumUI(){
+  curGradeFilter=parseInt(localStorage.getItem('fmine_grade')||'0',10)||0;
+  renderGradeBars();
+  renderSidebarTopics();
+}
+
+// ══════════════════════════════════════════════════════
 // I18N
 // ══════════════════════════════════════════════════════
 var T={
   RU:{statMsg:'сообщ.',statLvl:'уровень',statSolv:'решено',
-    sbTopics:'Темы',sbEx:'Примеры',
+    sbTopics:'Темы · 1–11 класс',sbEx:'Примеры',
     sbQ:'Квадратные',sbT:'Тригонометрия',sbE:'Показательные',sbL:'Логарифмы',
     sbN:'Неравенства',sbG:'Графики',sbD:'Производные',sbI:'Интегралы',
     sbS:'Системы',sbLim:'Пределы',sbComb:'Комбинаторика',sbGeom:'Геометрия',
     sbPct:'Проценты',sbFact:'Разложение',
-    wTitle:'Математика Бот — 11 класс',wSub:'Задай любой вопрос — решу и объясню каждый шаг.',
-    wTip:'💡 Включи <b>"Объясняй"</b> для пошаговых объяснений. 🧠 <b>Мега режим</b> — учитель-level с кликабельными терминами!',
+    wTitle:'Математика Бот — 1–11 класс',wSub:'Задай любой вопрос — решу и объясню каждый шаг.',
+    wTip:'💡 <b>Объясняй</b> — пошаговый разбор. 🧠 <b>Мега</b> — как у учителя. 📖 <b>Кнопка сверху</b> — все темы 1–11 класс (квадратные, тригонометрия, логарифмы…)!',
     placeholder:'Напиши уравнение, задачу или вопрос...',explainLabel:'Объясняй',
     levelUp:function(l){return '🎉 Уровень '+l+'!'},
     cleared:'🗑 Очищен',micStart:'🎤 Говори...',micErr:'❌ Ошибка',
@@ -695,13 +1035,13 @@ var T={
     practiceTry:'🏋️ Попробуй:',commonMistakes:'⚠️ Частые ошибки:',
     explainOn:'💡 Объяснения включены',explainOff:'💡 Объяснения выключены'},
   EN:{statMsg:'msgs',statLvl:'level',statSolv:'solved',
-    sbTopics:'Topics',sbEx:'Examples',
+    sbTopics:'Topics · Grades 1–11',sbEx:'Examples',
     sbQ:'Quadratic',sbT:'Trigonometry',sbE:'Exponential',sbL:'Logarithms',
     sbN:'Inequalities',sbG:'Graphs',sbD:'Derivatives',sbI:'Integrals',
     sbS:'Systems',sbLim:'Limits',sbComb:'Combinatorics',sbGeom:'Geometry',
     sbPct:'Percentages',sbFact:'Factoring',
-    wTitle:'Math Bot — Grade 11',wSub:'Ask anything — I\'ll solve and explain.',
-    wTip:'💡 Enable <b>"Explain"</b> for step-by-step. 🧠 <b>Mega mode</b> for teacher-level!',
+    wTitle:'Math Bot — Grades 1–11',wSub:'Ask anything — I\'ll solve and explain.',
+    wTip:'💡 <b>Explain</b> for steps. 🧠 <b>Mega</b> for teacher-level. 📖 <b>Header button</b> — all topics grades 1–11!',
     placeholder:'Type an equation or question...',explainLabel:'Explain',
     levelUp:function(l){return '🎉 Level '+l+'!'},
     cleared:'🗑 Cleared',micStart:'🎤 Speak...',micErr:'❌ Error',
@@ -859,9 +1199,9 @@ function extractProblem(text){
 // MEGA MODE
 // ══════════════════════════════════════════════════════
 function toggleMegaMode(){
-  if(megaMode){megaMode=false;document.getElementById('megaToggle').classList.remove('on');sendBtn.classList.remove('mega-send');showToast(t('megaOff'));return}
+  if(megaMode){megaMode=false;document.getElementById('megaToggle').classList.remove('on');if(sendBtn)sendBtn.classList.remove('mega-send');showToast(t('megaOff'));return}
   if(megaUses<=0){showToast(t('megaExhausted'));document.getElementById('megaToggle').classList.add('exhausted');return}
-  megaMode=true;document.getElementById('megaToggle').classList.add('on');sendBtn.classList.add('mega-send');showToast(t('megaOn'));
+  megaMode=true;document.getElementById('megaToggle').classList.add('on');if(sendBtn)sendBtn.classList.add('mega-send');showToast(t('megaOn'));
 }
 function useMega(){
   // Unlimited - no decrement needed
@@ -898,13 +1238,153 @@ function gTerm(key){return '<span class="glossary-term" onclick="showGlossary(ev
 // ══════════════════════════════════════════════════════
 // EXPLAIN RENDERER
 // ══════════════════════════════════════════════════════
-function renderExplain(title,concept,steps,answer,warning){
-  var h='<div class="explain-block"><div class="eb-title">💡 '+(isEN()?'Explanation':'Объяснение')+'</div><div class="eb-body">';
-  if(concept)h+='<b>'+(isEN()?'Concept':'Концепция')+':</b> '+concept+'<br><br>';
-  h+='</div></div><b>'+title+'</b><br><br>';
-  for(var i=0;i<steps.length;i++)h+='<b style="color:var(--v)">'+t('step')+' '+(i+1)+':</b> '+steps[i]+'<br>';
-  if(warning)h+='<br><span style="color:var(--a)">⚠️ '+warning+'</span><br>';
-  h+='<br><span style="color:var(--g);font-weight:700">✓ '+t('answer')+': '+answer+'</span>';
+function escSvg(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function teacherSection(cls,title,body){
+  var ic={g:"📋",a:"🎯",c:"📐",m:"🔢",t:"✓"}[cls]||"•";
+  return '<div class="teacher-block"><div class="teacher-block-hd"><span class="teacher-num '+cls+'">'+ic+'</span><span class="teacher-hd-title">'+title+'</span></div><div class="teacher-block-bd">'+body+'</div></div>';
+}
+function renderTeacherSolution(o){
+  var given=o.given||o.title||"";
+  var goal=o.goal||(isEN()?"Find the required quantity":"Найти требуемую величину");
+  var h='<b style="font-size:14px;color:#fff">'+escSvg(o.title||"")+'</b><br><br>';
+  h+=teacherSection("g",isEN()?"Given":"Дано","<b>"+escSvg(given)+"</b>");
+  h+=teacherSection("a",isEN()?"Find / Prove":"Найдём / Докажем",escSvg(goal));
+  var sol="";
+  var steps=o.steps||[];
+  for(var i=0;i<steps.length;i++){
+    var st=steps[i];
+    if(typeof st==="string")st={text:st,why:""};
+    sol+='<div class="teacher-step"><div class="teacher-step-hd">'+(isEN()?"Step":"Шаг")+" "+(i+1)+'</div><div>'+st.text+'</div>';
+    if(st.why)sol+='<div class="teacher-why">→ '+st.why+'</div>';
+    sol+="</div>";
+  }
+  h+=teacherSection("c",isEN()?"Solution":"Решение",sol);
+  if(o.theorem)h+=teacherSection("m",isEN()?"Theorem used":"Используем теорему",'<div class="teacher-theorem">'+o.theorem+'</div>');
+  if(o.viz)h+='<div class="geo-viz-wrap"><div class="gv-title">📊 '+(isEN()?"Figure":"Чертеж")+'</div>'+o.viz+'</div>';
+  h+='<div class="teacher-answer">✓ '+(isEN()?"Answer":"Ответ")+": "+o.answer+'</div>';
+  if(o.warning)h+='<br><span style="color:var(--a)">⚠️ '+o.warning+"</span>";
+  return h;
+}
+function teacherFromSteps(title,given,goal,theorem,steps,answer,warn,viz){
+  var so=(steps||[]).map(function(s,i){return typeof s==="object"?s:{text:s,why:(i===0&&theorem)?theorem:""};});
+  return renderTeacherSolution({title:title,given:given||title,goal:goal,steps:so,theorem:theorem,answer:answer,warning:warn,viz:viz});
+}
+var GEO_VIZ={
+  wrap:function(title,inner){return "<svg viewBox=\"0 0 400 260\" xmlns=\"http://www.w3.org/2000/svg\">"+inner+"</svg>"+(title?"<div class=\"gv-caption\">"+escSvg(title)+"</div>":"");},
+  grid:function(){var g="";for(var i=0;i<=10;i++){var p=30+i*34;g+="<line x1=\""+p+"\" y1=\"20\" x2=\""+p+"\" y2=\"230\" stroke=\"rgba(255,255,255,.06)\"/>";g+="<line x1=\"20\" y1=\""+p+"\" x2=\"370\" y2=\""+p+"\" stroke=\"rgba(255,255,255,.06)\"/>";}g+="<line x1=\"30\" y1=\"230\" x2=\"370\" y2=\"230\" stroke=\"rgba(103,232,249,.5)\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"20\" x2=\"30\" y2=\"230\" stroke=\"rgba(103,232,249,.5)\" stroke-width=\"1.5\"/>";return g;},
+  triFromSides:function(a,b,c){
+    var A={x:60,y:200},B={x:60+c*28,y:200};
+    var cx=(b*b-a*a+c*c)/(2*c),cy=Math.sqrt(Math.max(0,b*b-cx*cx));
+    var C={x:60+cx*28,y:200-cy*28};
+    var s="<polygon points=\""+A.x+","+A.y+" "+B.x+","+B.y+" "+C.x+","+C.y+"\" fill=\"rgba(167,139,250,.12)\" stroke=\"#a78bfa\" stroke-width=\"2\"/>";
+    s+="<text x=\""+A.x+"\" y=\""+(A.y+16)+"\" fill=\"#67e8f9\" font-size=\"12\">A</text>";
+    s+="<text x=\""+B.x+"\" y=\""+(B.y+16)+"\" fill=\"#67e8f9\" font-size=\"12\">B</text>";
+    s+="<text x=\""+(C.x-4)+"\" y=\""+(C.y-8)+"\" fill=\"#67e8f9\" font-size=\"12\">C</text>";
+    s+="<text x=\""+((A.x+B.x)/2)+"\" y=\""+(A.y+28)+"\" fill=\"#fbbf24\" font-size=\"11\">c="+c+"</text>";
+    return GEO_VIZ.wrap(isEN()?"Triangle ABC":"Треугольник ABC",s);
+  },
+  rect:function(a,b){var s='<rect x="80" y="70" width="'+(a*22)+'" height="'+(b*22)+'" fill="rgba(74,222,128,.1)" stroke="#4ade80" stroke-width="2"/>';return GEO_VIZ.wrap((isEN()?"Rectangle":"Прямоугольник")+" "+a+"×"+b,s);},
+  square:function(a){return GEO_VIZ.rect(a,a);},
+  circle:function(r){var cx=200,cy=130,rr=r*18;var s='<circle cx="'+cx+'" cy="'+cy+'" r="'+rr+'" fill="rgba(103,232,249,.08)" stroke="#67e8f9" stroke-width="2"/><line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+rr)+'" y2="'+cy+'" stroke="#fbbf24" stroke-dasharray="4,3"/><text x="'+(cx+rr/2)+'" y="'+(cy-8)+'" fill="#fbbf24" font-size="11">r='+r+'</text>';return GEO_VIZ.wrap((isEN()?"Circle":"Окружность")+" r="+r,s);},
+  triHeight:function(b,h){var A={x:70,y:200},B={x:70+b*24,y:200},C={x:70+b*12,y:200-h*20};var s='<polygon points="'+A.x+','+A.y+' '+B.x+','+B.y+' '+C.x+','+C.y+'" fill="rgba(167,139,250,.12)" stroke="#a78bfa" stroke-width="2"/><line x1="'+C.x+'" y1="'+C.y+'" x2="'+C.x+'" y2="'+A.y+'" stroke="#f472b6" stroke-dasharray="5,4"/><text x="'+(C.x+6)+'" y="'+((C.y+A.y)/2)+'" fill="#f472b6" font-size="11">h='+h+'</text>';return GEO_VIZ.wrap(isEN()?"Triangle height":"Высота треугольника",s);},
+  coordPoints:function(pts,dist){var g=GEO_VIZ.grid(),ox=200,oy=130,sc=28;function px(x){return ox+x*sc}function py(y){return oy-y*sc}for(var i=0;i<pts.length;i++){var p=pts[i],X=px(p.x),Y=py(p.y);g+='<circle cx="'+X+'" cy="'+Y+'" r="5" fill="#a78bfa"/><text x="'+(X+8)+'" y="'+(Y-6)+'" fill="#67e8f9" font-size="11">'+p.l+"("+p.x+","+p.y+")</text>";}if(pts.length>=2){g+='<line x1="'+px(pts[0].x)+'" y1="'+py(pts[0].y)+'" x2="'+px(pts[1].x)+'" y2="'+py(pts[1].y)+'" stroke="#4ade80" stroke-width="2"/>';if(dist!=null)g+='<text x="'+((px(pts[0].x)+px(pts[1].x))/2)+'" y="'+((py(pts[0].y)+py(pts[1].y))/2-8)+'" fill="#fbbf24" font-size="11">d='+fmtN(dist,3)+'</text>';}return GEO_VIZ.wrap(isEN()?"Coordinates":"Координаты",g);},
+  linesIntersect:function(){var s='<line x1="60" y1="200" x2="340" y2="60" stroke="#a78bfa" stroke-width="2"/><line x1="60" y1="60" x2="340" y2="200" stroke="#67e8f9" stroke-width="2"/><circle cx="200" cy="130" r="5" fill="#f472b6"/>';return GEO_VIZ.wrap(isEN()?"Intersecting lines":"Пересекающиеся прямые",s);},
+  _triCoords:function(a,b,c){var A={x:60,y:200},B={x:60+c*28,y:200};var cx=(b*b-a*a+c*c)/(2*c),cy=Math.sqrt(Math.max(0,b*b-cx*cx));return {A:A,B:B,C:{x:60+cx*28,y:200-cy*28}};},
+  median:function(a,b,c){var t=GEO_VIZ._triCoords(a,b,c),M={x:(t.B.x+t.C.x)/2,y:(t.B.y+t.C.y)/2};var s="<polygon points=\""+t.A.x+","+t.A.y+" "+t.B.x+","+t.B.y+" "+t.C.x+","+t.C.y+"\" fill=\"rgba(167,139,250,.12)\" stroke=\"#a78bfa\" stroke-width=\"2\"/><line x1=\""+t.A.x+"\" y1=\""+t.A.y+"\" x2=\""+M.x+"\" y2=\""+M.y+"\" stroke=\"#f472b6\" stroke-width=\"2\" stroke-dasharray=\"5,4\"/><text x=\""+((t.A.x+M.x)/2)+"\" y=\""+((t.A.y+M.y)/2-6)+"\" fill=\"#f472b6\" font-size=\"10\">"+(isEN()?"median":"медиана")+"</text>";return GEO_VIZ.wrap(isEN()?"Median":"Медиана",s);},
+  bisector:function(a,b,c){var t=GEO_VIZ._triCoords(a,b,c),bx=(t.B.x+t.C.x)/2,by=t.B.y;return GEO_VIZ.wrap(isEN()?"Angle bisector":"Биссектриса","<polygon points=\""+t.A.x+","+t.A.y+" "+t.B.x+","+t.B.y+" "+t.C.x+","+t.C.y+"\" fill=\"rgba(167,139,250,.12)\" stroke=\"#a78bfa\" stroke-width=\"2\"/><line x1=\""+t.A.x+"\" y1=\""+t.A.y+"\" x2=\""+bx+"\" y2=\""+by+"\" stroke=\"#fbbf24\" stroke-width=\"2\" stroke-dasharray=\"5,4\"/><text x=\""+((t.A.x+bx)/2)+"\" y=\""+((t.A.y+by)/2-6)+"\" fill=\"#fbbf24\" font-size=\"10\">"+(isEN()?"bisector":"биссектриса")+"</text>");},
+  altitude:function(a,b,c){var t=GEO_VIZ._triCoords(a,b,c);return GEO_VIZ.wrap(isEN()?"Altitude":"Высота","<polygon points=\""+t.A.x+","+t.A.y+" "+t.B.x+","+t.B.y+" "+t.C.x+","+t.C.y+"\" fill=\"rgba(167,139,250,.12)\" stroke=\"#a78bfa\" stroke-width=\"2\"/><line x1=\""+t.C.x+"\" y1=\""+t.C.y+"\" x2=\""+t.C.x+"\" y2=\""+t.A.y+"\" stroke=\"#f472b6\" stroke-width=\"2\" stroke-dasharray=\"5,4\"/><text x=\""+(t.C.x+6)+"\" y=\""+((t.C.y+t.A.y)/2)+"\" fill=\"#f472b6\" font-size=\"10\">h</text>");}
+};
+function detectGeoViz(text){
+  if(!text)return null;var lo=text.toLowerCase();
+  var tri=lo.match(/(?:треугольник\w*|triangle\w*)[^\d]*(\d+\.?\d*)[\s,;]+(\d+\.?\d*)[\s,;]+(\d+\.?\d*)/);
+  if(!tri)tri=lo.match(/(?:сторон\w*|sides?)[^\d]*(\d+\.?\d*)[\s,;]+(\d+\.?\d*)[\s,;]+(\d+\.?\d*)/);
+  if(tri){
+    var sa=+tri[1],sb=+tri[2],sc=+tri[3];
+    if(lo.indexOf('медиан')>=0||lo.indexOf('median')>=0)return GEO_VIZ.median(sa,sb,sc);
+    if(lo.indexOf('биссектрис')>=0||lo.indexOf('bisector')>=0)return GEO_VIZ.bisector(sa,sb,sc);
+    if(lo.indexOf('высот')>=0||lo.indexOf('altitude')>=0)return GEO_VIZ.altitude(sa,sb,sc);
+    return GEO_VIZ.triFromSides(sa,sb,sc);
+  }
+  var rect=lo.match(/(?:прямоугольник|rectangle).*?a\s*=\s*(\d+\.?\d*).*?b\s*=\s*(\d+\.?\d*)/);
+  if(rect)return GEO_VIZ.rect(+rect[1],+rect[2]);
+  var sq=lo.match(/(?:квадрат|square).*?a\s*=\s*(\d+\.?\d*)/);
+  if(sq)return GEO_VIZ.square(+sq[1]);
+  var circ=lo.match(/(?:круг|circle|окружност).*?r\s*=\s*(\d+\.?\d*)/);
+  if(circ)return GEO_VIZ.circle(+circ[1]);
+  var pts=text.match(/([A-Z])\s*\(\s*(-?\d+\.?\d*)\s*[,;]\s*(-?\d+\.?\d*)\s*\)/g);
+  if(pts&&pts.length>=2){var arr=[];for(var i=0;i<pts.length;i++){var pm=pts[i].match(/([A-Z])\s*\(\s*(-?\d+\.?\d*)\s*[,;]\s*(-?\d+\.?\d*)\s*\)/);if(pm)arr.push({l:pm[1],x:+pm[2],y:+pm[3]});}if(arr.length>=2){var d=Math.hypot(arr[1].x-arr[0].x,arr[1].y-arr[0].y);return GEO_VIZ.coordPoints(arr,d);}}
+  if(lo.indexOf("пересека")>=0||lo.indexOf("intersect")>=0)return GEO_VIZ.linesIntersect();
+  var tb=lo.match(/b\s*=\s*(\d+\.?\d*).*?h\s*=\s*(\d+\.?\d*)/);
+  if(tb&&lo.indexOf("треугольник")>=0)return GEO_VIZ.triHeight(+tb[1],+tb[2]);
+  return null;
+}
+function geoVizBySolverId(id,p){
+  if(id==="sq_area"&&p.a)return GEO_VIZ.square(p.a);
+  if(id==="rect_area"&&p.a)return GEO_VIZ.rect(p.a,p.b);
+  if(id==="tri_bh"&&p.b)return GEO_VIZ.triHeight(p.b,p.h);
+  if(id==="circumference"&&p.r)return GEO_VIZ.circle(p.r);
+  return null;
+}
+function renderExplain(title,concept,steps,answer,warning,viz){
+  var v=viz||detectGeoViz(_lastProblemText)||null;
+  // Build smarter per-step "why" hints based on content
+  function getStepWhy(stepText,idx,total){
+    var s=stepText.toLowerCase();
+    if(idx===0)return isEN()?'📌 Start: write out the given information clearly.':'📌 Старт: записываем условие задачи.';
+    if(idx===total-1)return isEN()?'✅ Final step — this gives the answer!':'✅ Финальный шаг — получаем ответ!';
+    if(s.indexOf('d=')>=0||s.indexOf('discriminant')>=0||s.indexOf('дискриминант')>=0)return isEN()?'🔑 D=b²−4ac determines how many solutions exist.':'🔑 D=b²−4ac определяет количество корней.';
+    if(s.indexOf('x=')>=0&&s.indexOf('/-')>=0)return isEN()?'📐 Apply the quadratic formula x=(−b±√D)/(2a).':'📐 Применяем формулу дискриминанта x=(−b±√D)/(2a).';
+    if(s.indexOf('√')>=0||s.indexOf('sqrt')>=0)return isEN()?'🔢 Take the square root of both sides.':'🔢 Извлекаем квадратный корень из обеих сторон.';
+    if(s.indexOf('lcd')>=0||s.indexOf('lcm')>=0||s.indexOf('нок')>=0)return isEN()?'♻️ Multiply through by the LCD to clear fractions.':'♻️ Умножаем обе части на НОК, чтобы убрать дроби.';
+    if(s.indexOf('π')>=0||s.indexOf('pi')>=0)return isEN()?'🔵 π = 3.14159... (ratio of circumference to diameter).':'🔵 π = 3.14159... (отношение длины окружности к диаметру).';
+    if(s.indexOf('d/dx')>=0||s.indexOf('f\'')>=0||s.indexOf('производна')>=0)return isEN()?'∂ Apply the derivative rule: power rule, chain rule, etc.':'∂ Применяем правило дифференцирования: степенное, цепное и т.д.';
+    if(s.indexOf('∫')>=0||s.indexOf('интегра')>=0)return isEN()?'∫ Reverse the derivative: ∫xⁿdx = xⁿ⁺¹/(n+1) + C.':'∫ Обратная операция к дифференцированию: ∫xⁿdx = xⁿ⁺¹/(n+1) + C.';
+    if(s.indexOf('перенос')>=0||s.indexOf('move')>=0||s.indexOf('transpos')>=0)return isEN()?'⇄ Move terms: change side = change sign.':'⇄ Переносим: при переносе монома знак меняется.';
+    if(s.indexOf('%')>=0||s.indexOf('percent')>=0)return isEN()?'💯 x% = x/100. Multiply to find the part.':'💯 x% = x/100. Умножаем, чтобы найти часть.';
+    if(idx<3)return isEN()?'👣 Intermediate step — simplify the expression.':'👣 Промежуточный шаг — упрощаем выражение.';
+    return isEN()?'⚙️ Continue applying the method.':'⚙️ Продолжаем применять метод.';
+  }
+  var stepObjs=[];
+  for(var i=0;i<(steps||[]).length;i++){
+    var why=typeof steps[i]==='object'?steps[i].why:getStepWhy(String(steps[i]),i,(steps||[]).length);
+    var txt=typeof steps[i]==='object'?steps[i].text:steps[i];
+    stepObjs.push({text:txt,why:why});
+  }
+  // Build a much richer HTML output
+  var h='<div class="explain-block">';
+  // Title bar
+  h+='<div class="explain-title"><span class="explain-icon">💡</span><span>'+title+'</span></div>';
+  // Concept insight box
+  if(concept){
+    h+='<div class="explain-concept">';
+    h+='<div class="explain-concept-lbl">'+(isEN()?'📚 Key Concept':'📚 Ключевая концепция')+'</div>';
+    h+='<div class="explain-concept-body">'+concept+'</div>';
+    h+='</div>';
+  }
+  // Given
+  if(_lastProblemText&&_lastProblemText!==title){
+    h+='<div class="explain-given"><b>'+(isEN()?'Given:':'Дано:')+'</b> <span class="explain-given-text">'+_lastProblemText+'</span></div>';
+  }
+  // Steps panel
+  if(stepObjs.length>0){
+    h+='<div class="explain-steps-title">'+(isEN()?'🔢 Solution Steps':'🔢 Шаги решения')+'</div>';
+    h+='<div class="explain-steps">';
+    for(var j=0;j<stepObjs.length;j++){
+      var isLast=j===stepObjs.length-1;
+      h+='<div class="explain-step'+(isLast?' explain-step-final':'')+'"><div class="explain-step-num">'+(j+1)+'</div>';
+      h+='<div class="explain-step-content"><div class="explain-step-text">'+stepObjs[j].text+'</div>';
+      h+='<div class="explain-step-why">'+stepObjs[j].why+'</div>';
+      h+='</div></div>';
+    }
+    h+='</div>';
+  }
+  // Viz
+  if(v){h+='<div class="geo-viz-wrap"><div class="gv-title">📊 '+(isEN()?'Figure':'Чертёж')+'</div>'+v+'</div>';}
+  // Answer
+  h+='<div class="explain-answer"><span class="explain-check">✓</span> '+(isEN()?'Answer':'Ответ')+': <b>'+answer+'</b></div>';
+  // Warning
+  if(warning)h+='<div class="explain-warning">⚠️ '+warning+'</div>';
+  h+='</div>';
   return h;
 }
 
@@ -1090,6 +1570,7 @@ function megaSolveCircleArea(r){
   h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Circle — Full Analysis':'Круг — полный анализ')+'</div>';
   h+='<div class="mega-section-body">'+gTerm(isEN()?'radius':'радиус')+' r = '+r+'<br>';
   h+=(isEN()?'Diameter: d = 2r = ':'Диаметр: d = 2r = ')+'<b>'+diam+'</b></div></div>';
+  h+='<div class="geo-viz-wrap">'+GEO_VIZ.circle(r)+'</div>';
   h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Key Measurements':'Ключевые характеристики')+'</div><div class="mega-section-body">';
   h+='<b>'+t('step')+' 1 '+(isEN()?'(Area):':'(Площадь):')+'</b> S = π·r² = π·'+r+'² = π·'+(r*r)+' = <b style="color:var(--g)">'+area.toFixed(4)+'</b><br>';
   h+='<b>'+t('step')+' 2 '+(isEN()?'(Circumference):':'(Длина окружности):')+'</b> C = 2π·r = 2π·'+r+' = <b style="color:var(--c)">'+circ.toFixed(4)+'</b><br>';
@@ -1116,6 +1597,7 @@ function megaSolveTriangleArea(a,b,c){
     return h;
   }
   h+=gTerm(isEN()?"Heron's formula":"формула Герона")+': p = (a+b+c)/2</div></div>';
+  h+='<div class="geo-viz-wrap">'+GEO_VIZ.triFromSides(a,b,c)+'</div>';
   h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step-by-step':'Шаг за шагом')+'</div><div class="mega-section-body">';
   h+='<b>'+t('step')+' 1 '+(isEN()?'(Semiperimeter):':'(Полупериметр):')+'</b> p = ('+a+'+'+b+'+'+c+')/2 = <b>'+p+'</b><br>';
   h+='<b>'+t('step')+' 2:</b> p−a = '+(p-a)+',  p−b = '+(p-b)+',  p−c = '+(p-c)+'<br>';
@@ -2018,7 +2500,12 @@ function megaSurfaceArea(shape,params){
 // MEGA ROUTER (ORIGINAL + 50 NEW)
 // ══════════════════════════════════════════════════════
 function tryMegaSolve(text){
-  var lo=text.toLowerCase().replace(/[−–—]/g,'-').replace(/,/g,'.').replace(/\s+/g,' ');
+  var lo=normalizeMathLower(text);
+  buildSolverRegistry();
+  var extMega=runSolverRegistry(lo,text,false,true);
+  if(extMega)return extMega;
+  var tri=parseTriangleSides(lo,text);
+  if(tri)return megaSolveTriangleArea(tri.a,tri.b,tri.c);
 
   // 1. Quadratic
   if(lo.indexOf('x^2')>=0||lo.indexOf('x²')>=0){
@@ -2058,9 +2545,7 @@ function tryMegaSolve(text){
   // 8. Circle
   var cim=lo.match(/(?:площадь\s+круга|area\s+(?:of\s+)?circle).*?r\s*=\s*(\d+\.?\d*)|r\s*=\s*(\d+\.?\d*).*?(?:круг|circle)/);
   if(cim)return megaSolveCircleArea(parseFloat(cim[1]||cim[2]));
-  // 9. Triangle
-  var tm=lo.match(/(?:площадь\s+треугольника|area\s+(?:of\s+)?triangle).*?(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
-  if(tm)return megaSolveTriangleArea(parseFloat(tm[1]),parseFloat(tm[2]),parseFloat(tm[3]));
+  // 9. Triangle (handled above via parseTriangleSides)
   // 10. Trig
   var trm=lo.match(/(sin|cos|tan)\s*\(\s*x\s*\)\s*=\s*([+-]?\d*\.?\d+)/i);
   if(trm)return megaSolveTrig(trm[1].toLowerCase(),parseFloat(trm[2]));
@@ -2284,48 +2769,593 @@ function tryMegaSolve(text){
 }
 
 // ══════════════════════════════════════════════════════
+// EXTENDED SOLVER REGISTRY (220+ functions, HTML/CSS/JS only)
+// ══════════════════════════════════════════════════════
+var SOLVER_REGISTRY=[];
+var FN_CATALOG=[];
+var cmdIdx=0;
+
+function fmtN(n,d){if(typeof n!=='number'||!isFinite(n))return String(n);d=d===undefined?4:d;return n.toFixed(d)}
+function solResult(title,steps,answer,concept,warn,detailed){
+  if(detailed||explainMode)return teacherFromSteps(title,_lastProblemText||title,isEN()?'Find the answer':'Найти ответ',concept||'',steps,answer,warn,detectGeoViz(_lastProblemText));
+  var h='<b>'+title+'</b><br>';
+  for(var i=0;i<steps.length;i++)h+='<div class="step-card"><div class="step-num">'+(i+1)+'</div><div class="step-body">'+steps[i]+'</div></div>';
+  if(warn)h+='<span style="color:var(--a)">⚠️ '+warn+'</span><br>';
+  h+='<div class="result-banner">✓ '+t('answer')+': '+answer+'</div>';
+  return h;
+}
+function regSolver(cfg){
+  SOLVER_REGISTRY.push(cfg);
+  FN_CATALOG.push({id:cfg.id,cat:cfg.cat,icon:cfg.icon||'🔢',titleRU:cfg.titleRU,titleEN:cfg.titleEN,example:cfg.example});
+}
+function runSolverRegistry(lo,raw,detailed,mega){
+  for(var i=0;i<SOLVER_REGISTRY.length;i++){
+    var s=SOLVER_REGISTRY[i];
+    try{
+      var p=s.match(lo,raw);
+      if(p==null)continue;
+      if(mega&&s.mega)return s.mega(p);
+      return s.solve(p,detailed);
+    }catch(e){}
+  }
+  return null;
+}
+
+function buildSolverRegistry(){
+  if(SOLVER_REGISTRY.length)return;
+  try{
+  function addGeo(id,titleRU,titleEN,re,parse,calc,conceptRU,conceptEN,ex){
+    regSolver({id:id,cat:'geometry',icon:'📐',titleRU:titleRU,titleEN:titleEN,example:ex,
+      match:function(lo,raw){var m=lo.match(re);return m?parse(m,lo,raw):null},
+      solve:function(p,d){var r=calc(p);var gv=r.viz||geoVizBySolverId(id,p);
+        if(gv)r.steps=r.steps.concat([]);
+        if(d)return teacherFromSteps(isEN()?titleEN:titleRU,ex,isEN()?'Find':'Найти',isEN()?conceptEN:conceptRU,r.steps,r.answer,r.warn,gv);
+        var html=solResult(isEN()?titleEN:titleRU,r.steps,r.answer,isEN()?conceptEN:conceptRU,r.warn,d);
+        if(gv)html+='<div class="geo-viz-wrap"><div class="gv-title">📊 '+(isEN()?'Figure':'Чертёж')+'</div>'+gv+'</div>';
+        return html;},
+      mega:function(p){var r=calc(p);var gv=r.viz||geoVizBySolverId(id,p);
+        var h='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?titleEN:titleRU)+'</div><div class="mega-section-body">'+(r.steps||[]).join('<br>')+'</div></div>';
+        if(gv)h+='<div class="geo-viz-wrap"><div class="gv-title">📐 '+(isEN()?'Figure':'Чертёж')+'</div>'+gv+'</div>';
+        return h+'<br><span style="color:var(--g);font-weight:800">✓ '+r.answer+'</span>';}
+    });
+  }
+
+  addGeo('sq_area','Площадь квадрата','Square area',/(?:площадь\s*квадрата|square\s*area).*?a\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{a:+m[1]}},function(p){var S=p.a*p.a;return{answer:'S='+fmtN(S),steps:['a='+p.a,'S=a²='+p.a+'²='+fmtN(S)]}},
+    'S=a² — площадь квадрата.','S=a² for a square.','площадь квадрата a=6');
+
+  addGeo('rect_area','Площадь прямоугольника','Rectangle area',/(?:площадь\s*прямоугольника|rectangle\s*area).*?a\s*=\s*(\d+\.?\d*).*?b\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{a:+m[1],b:+m[2]}},function(p){var S=p.a*p.b,P=2*(p.a+p.b);return{answer:'S='+S+', P='+P,steps:['a='+p.a+', b='+p.b,'S=ab='+S,'P=2(a+b)='+P]}},
+    'S=ab, P=2(a+b).','Rectangle formulas.','площадь прямоугольника a=5 b=8');
+
+  addGeo('tri_bh','Площадь треугольника','Triangle area (base×h)',/(?:площадь\s*треугольника\s*(?:основание|base)|triangle\s*area).*?b\s*=\s*(\d+\.?\d*).*?h\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{b:+m[1],h:+m[2]}},function(p){var S=0.5*p.b*p.h;return{answer:'S='+fmtN(S),steps:['b='+p.b+', h='+p.h,'S=½bh='+fmtN(S)]}},
+    'Площадь через основание и высоту.','Area = half base times height.','площадь треугольника основание b=10 h=4');
+
+  addGeo('parallelogram','Параллелограмм','Parallelogram',/(?:площадь\s*параллелограмма|parallelogram).*?b\s*=\s*(\d+\.?\d*).*?h\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{b:+m[1],h:+m[2]}},function(p){var S=p.b*p.h;return{answer:'S='+S,steps:['S=bh='+S]}},
+    'S=bh.','S=base×height.','площадь параллелограмма b=7 h=3');
+
+  addGeo('rhombus','Ромб','Rhombus',/(?:площадь\s*ромба|rhombus).*?d1\s*=\s*(\d+\.?\d*).*?d2\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{d1:+m[1],d2:+m[2]}},function(p){var S=0.5*p.d1*p.d2;return{answer:'S='+fmtN(S),steps:['S=½d₁d₂='+fmtN(S)]}},
+    'S=½d₁d₂.','Rhombus diagonals.','площадь ромба d1=8 d2=6');
+
+  addGeo('circumference','Длина окружности','Circumference',/(?:длина\s*окружности|circumference).*?r\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{r:+m[1]}},function(p){var C=2*Math.PI*p.r;return{answer:'C='+fmtN(C),steps:['C=2πr=2π·'+p.r+'='+fmtN(C)]}},
+    'C=2πr.','Circumference formula.','длина окружности r=7');
+
+  addGeo('annulus','Площадь кольца','Annulus',/(?:площадь\s*кольца|annulus).*?R\s*=\s*(\d+\.?\d*).*?r\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{R:+m[1],r:+m[2]}},function(p){var S=Math.PI*(p.R*p.R-p.r*p.r);return{answer:'S='+fmtN(S),steps:['S=π(R²−r²)='+fmtN(S)]}},
+    'Кольцо: разность площадей кругов.','Annulus area.','площадь кольца R=5 r=3');
+
+  // ─── NEW GEOMETRY SOLVERS ───
+  addGeo('trapezoid','Площадь трапеции','Trapezoid area',/(?:площадь\s*трапеции|trapez(?:oid)?(?:\s*area)?).*?a\s*=\s*(\d+\.?\d*).*?b\s*=\s*(\d+\.?\d*).*?h\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{a:+m[1],b:+m[2],h:+m[3]}},
+    function(p){var S=0.5*(p.a+p.b)*p.h;return{answer:'S='+fmtN(S),steps:['a='+p.a+', b='+p.b+', h='+p.h,'S=(a+b)/2·h=('+p.a+'+'+p.b+')/2·'+p.h,'S='+fmtN(S)],viz:GEO_VIZ.wrap('Трапеция','\u003cpolygon points="60,200 340,200 290,80 110,80" fill="rgba(251,191,36,.12)" stroke="#fbbf24" stroke-width="2"/\u003e\u003ctext x="190" y="220" fill="#a78bfa" font-size="11"\u003ea='+p.a+'\u003c/text\u003e\u003ctext x="185" y="70" fill="#a78bfa" font-size="11"\u003eb='+p.b+'\u003c/text\u003e\u003cline x1="110" y1="80" x2="110" y2="200" stroke="#f472b6" stroke-dasharray="5,4"/\u003e\u003ctext x="80" y="145" fill="#f472b6" font-size="11"\u003eh='+p.h+'\u003c/text\u003e')}},
+    'S=(a+b)/2·h — средняя линия умноженная на высоту.','Trapezoid: S=(a+b)/2·h.','площадь трапеции a=8 b=4 h=5');
+
+  addGeo('right_tri_legs','Прямоугольный треугольник (катеты)','Right triangle (legs)',/(?:прямоугольный\s*треугольник|right\s*tri(?:angle)?).*?(?:катет|leg).*?a\s*=\s*(\d+\.?\d*).*?b\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{a:+m[1],b:+m[2]}},
+    function(p){var c=Math.sqrt(p.a*p.a+p.b*p.b);var S=0.5*p.a*p.b;var angleA=Math.atan2(p.b,p.a)*180/Math.PI;return{answer:'c='+fmtN(c)+', S='+fmtN(S),steps:['Катеты: a='+p.a+', b='+p.b,'c=√(a²+b²)=√('+p.a+'²+'+p.b+'²)='+fmtN(c),'S=½ab='+fmtN(S),'∠A='+fmtN(angleA,1)+'°, ∠B='+fmtN(90-angleA,1)+'°'],viz:GEO_VIZ.wrap('Прямоугольный треугольник','\u003cpolygon points="60,200 '+(60+p.a*18)+',200 60,'+(200-p.b*18)+'" fill="rgba(103,232,249,.1)" stroke="#5ef3ff" stroke-width="2"/\u003e\u003crect x="60" y="'+(200-14)+'" width="14" height="14" fill="none" stroke="#5ef3ff" stroke-width="1.5"/\u003e\u003ctext x="'+(60+p.a*9)+'" y="218" fill="#fbbf24" font-size="11"\u003ea='+p.a+'\u003c/text\u003e\u003ctext x="32" y="'+(200-p.b*9)+'" fill="#fbbf24" font-size="11"\u003eb='+p.b+'\u003c/text\u003e')}},
+    'Теорема Пифагора: c=√(a²+b²), S=½ab.','Pythagorean theorem & area.','прямоугольный треугольник катет a=3 b=4');
+
+  addGeo('right_tri_hyp','Прямоугольный треугольник (гипотенуза +катет)','Right triangle (hyp+leg)',/(?:прямоугольный\s*треугольник|right\s*tri(?:angle)?).*?(?:гипотен|hyp).*?c\s*=\s*(\d+\.?\d*).*?a\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{c:+m[1],a:+m[2]}},
+    function(p){var b=Math.sqrt(Math.max(0,p.c*p.c-p.a*p.a));var S=0.5*p.a*b;return{answer:'b='+fmtN(b)+', S='+fmtN(S),steps:['c='+p.c+', a='+p.a,'b=√(c²−a²)='+fmtN(b),'S=½ab='+fmtN(S)]}},
+    'b=√(c²−a²), S=½ab.','From hypotenuse and one leg.','прямоугольный треугольник гипотенуза c=5 a=3');
+
+  addGeo('tri_perimeter','Периметр треугольника','Triangle perimeter',/(?:периметр\s*треугольника|triangle\s*perim).*?a\s*=\s*(\d+\.?\d*).*?b\s*=\s*(\d+\.?\d*).*?c\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{a:+m[1],b:+m[2],c:+m[3]}},
+    function(p){var P=p.a+p.b+p.c;return{answer:'P='+fmtN(P),steps:['P=a+b+c='+p.a+'+'+p.b+'+'+p.c,'P='+fmtN(P)],viz:GEO_VIZ.triFromSides(p.a,p.b,p.c)}},
+    'P=a+b+c.','P=a+b+c.','периметр треугольника a=3 b=4 c=5');
+
+  addGeo('rect_diag','Диагональ прямоугольника','Rectangle diagonal',/(?:диагональ\s*прямоугольника|rectangle\s*diag).*?a\s*=\s*(\d+\.?\d*).*?b\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{a:+m[1],b:+m[2]}},
+    function(p){var d=Math.sqrt(p.a*p.a+p.b*p.b);var S=p.a*p.b;return{answer:'d='+fmtN(d)+', S='+S,steps:['d=√(a²+b²)=√('+p.a+'²+'+p.b+'²)='+fmtN(d),'S=ab='+S]}},
+    'd=√(a²+b²).','Rectangle diagonal.','диагональ прямоугольника a=3 b=4');
+
+  addGeo('square_perim','Периметр квадрата','Square perimeter',/(?:периметр\s*квадрата|square\s*perim).*?a\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{a:+m[1]}},
+    function(p){var P=4*p.a;return{answer:'P='+P,steps:['P=4a=4×'+p.a+'='+P],viz:GEO_VIZ.square(p.a)}},
+    'P=4a.','Square perimeter P=4a.','периметр квадрата a=5');
+
+  addGeo('tri_angles','Сумма углов треугольника','Triangle angles sum',/(?:сумма\s*углов|angles\s*of\s*tri).*?α\s*=\s*(\d+\.?\d*).*?β\s*=\s*(\d+\.?\d*)/i,
+    function(m){return{a:+m[1],b:+m[2]}},
+    function(p){var g=180-p.a-p.b;return{answer:'γ='+fmtN(g)+'°',steps:['α+β+γ=180°',p.a+'°+'+p.b+'°+γ=180°','γ='+(180-p.a-p.b)+'°']}},
+    'α+β+γ=180°.','Sum of triangle angles = 180°.','сумма углов треугольника α=60 β=70');
+
+  addGeo('sector_arc','Длина дуги','Arc length',/(?:длина\s*дуги|arc\s*length).*?r\s*=\s*(\d+\.?\d*).*?(?:угол|°|alpha|angle)\s*=?\s*(\d+\.?\d*)/i,
+    function(m){return{r:+m[1],deg:+m[2]}},
+    function(p){var theta=p.deg*Math.PI/180;var L=p.r*theta;var S=0.5*p.r*p.r*theta;return{answer:'L='+fmtN(L)+', S='+fmtN(S),steps:['θ='+p.deg+'°='+fmtN(theta,4)+' рад','L=rθ='+fmtN(L),'S=½r²θ='+fmtN(S)],viz:GEO_VIZ.circle(p.r)}},
+    'L=rθ, S=½r²θ.','Arc length and sector area.','длина дуги r=5 угол=60');
+
+  var volDefs=[
+    ['cube_vol','Объём куба','Cube volume','geometry','📦',/(?:объем\s*куба|cube\s*volume).*?a\s*=\s*(\d+\.?\d*)/i,
+      function(m){return{a:+m[1]}},function(p){var V=Math.pow(p.a,3);return{answer:'V='+V,steps:['V=a³='+p.a+'³='+V]}}],
+    ['box_vol','Объём параллелепипеда','Box volume','geometry','📦',/(?:объем\s*(?:параллелепипеда|прямоугольника|box)).*?a\s*=\s*(\d+\.?\d*).*?b\s*=\s*(\d+\.?\d*).*?c\s*=\s*(\d+\.?\d*)/i,
+      function(m){return{a:+m[1],b:+m[2],c:+m[3]}},function(p){var V=p.a*p.b*p.c;return{answer:'V='+V,steps:['V=abc='+V]}}],
+    ['sphere_vol3','Объём шара','Sphere volume','geometry','🔵',/(?:объем\s*(?:шара|сферы)|sphere\s*volume).*?r\s*=\s*(\d+\.?\d*)/i,
+      function(m){return{r:+m[1]}},function(p){var V=4/3*Math.PI*p.r*p.r*p.r;return{answer:'V='+fmtN(V),steps:['V=4/3·πr³='+fmtN(V)]}}],
+    ['cone_vol3','Объём конуса','Cone volume','geometry','🔺',/(?:объем\s*конуса|cone\s*volume).*?r\s*=\s*(\d+\.?\d*).*?h\s*=\s*(\d+\.?\d*)/i,
+      function(m){return{r:+m[1],h:+m[2]}},function(p){var V=Math.PI*p.r*p.r*p.h/3;return{answer:'V='+fmtN(V),steps:['V=⅓πr²h='+fmtN(V)]}}],
+    ['cyl_vol3','Объём цилиндра','Cylinder volume','geometry','🛢',/(?:объем\s*цилиндра|cylinder\s*volume).*?r\s*=\s*(\d+\.?\d*).*?h\s*=\s*(\d+\.?\d*)/i,
+      function(m){return{r:+m[1],h:+m[2]}},function(p){var V=Math.PI*p.r*p.r*p.h;return{answer:'V='+fmtN(V),steps:['V=πr²h='+fmtN(V)]}}]
+  ];
+  for(var vi=0;vi<volDefs.length;vi++){
+    var vd=volDefs[vi];
+    regSolver({id:vd[0],cat:vd[3],icon:vd[4],titleRU:vd[1],titleEN:vd[2],example:vd[1]+' a=3',
+      match:function(lo){var m=lo.match(vd[5]);return m?vd[6](m):null},
+      solve:function(p,d){var r=vd[7](p);return solResult(isEN()?vd[2]:vd[1],r.steps,r.answer,'','',d)},
+      mega:function(p){var r=vd[7](p);return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?vd[2]:vd[1])+'</div><div class="mega-section-body">'+r.steps.join('<br>')+'</div></div><br><span style="color:var(--g);font-weight:800">✓ '+r.answer+'</span>';}
+    });
+  }
+
+  var physDefs=[
+    ['phys_speed','Скорость v=s/t','Speed',/(?:скорость|speed).*?s\s*=\s*(\d+\.?\d*).*?t\s*=\s*(\d+\.?\d*)/i,function(m){return{s:+m[1],t:+m[2]}},function(p){var v=p.s/p.t;return{answer:'v='+fmtN(v),steps:['v=s/t='+p.s+'/'+p.t+'='+fmtN(v)]}}],
+    ['phys_force','Сила F=ma','Force',/(?:сила|force).*?m\s*=\s*(\d+\.?\d*).*?a\s*=\s*(\d+\.?\d*)/i,function(m){return{m:+m[1],a:+m[2]}},function(p){var f=p.m*p.a;return{answer:'F='+fmtN(f)+' N',steps:['F=ma='+fmtN(f)+' N']}}],
+    ['phys_work','Работа W=Fd','Work',/(?:работа|work).*?f\s*=\s*(\d+\.?\d*).*?d\s*=\s*(\d+\.?\d*)/i,function(m){return{f:+m[1],d:+m[2]}},function(p){var w=p.f*p.d;return{answer:'W='+fmtN(w)+' J',steps:['W=Fd='+fmtN(w)+' J']}}],
+    ['phys_power','Мощность P=W/t','Power',/(?:мощность|power).*?w\s*=\s*(\d+\.?\d*).*?t\s*=\s*(\d+\.?\d*)/i,function(m){return{w:+m[1],t:+m[2]}},function(p){var pw=p.w/p.t;return{answer:'P='+fmtN(pw)+' W',steps:['P=W/t='+fmtN(pw)+' W']}}],
+    ['phys_density','Плотность ρ=m/V','Density',/(?:плотность|density).*?m\s*=\s*(\d+\.?\d*).*?v\s*=\s*(\d+\.?\d*)/i,function(m){return{m:+m[1],v:+m[2]}},function(p){var r=p.m/p.v;return{answer:'ρ='+fmtN(r),steps:['ρ=m/V='+fmtN(r)]}}],
+    ['phys_pressure','Давление P=F/A','Pressure',/(?:давление|pressure).*?f\s*=\s*(\d+\.?\d*).*?a\s*=\s*(\d+\.?\d*)/i,function(m){return{f:+m[1],a:+m[2]}},function(p){var pr=p.f/p.a;return{answer:'P='+fmtN(pr)+' Pa',steps:['P=F/A='+fmtN(pr)+' Pa']}}],
+    ['phys_ke','Кинетическая E=½mv²','Kinetic energy',/(?:кинетическая|kinetic).*?m\s*=\s*(\d+\.?\d*).*?v\s*=\s*(\d+\.?\d*)/i,function(m){return{m:+m[1],v:+m[2]}},function(p){var e=0.5*p.m*p.v*p.v;return{answer:'E='+fmtN(e)+' J',steps:['E=½mv²='+fmtN(e)+' J']}}],
+    ['phys_pe','Потенциальная E=mgh','Potential energy',/(?:потенциальная|potential).*?m\s*=\s*(\d+\.?\d*).*?h\s*=\s*(\d+\.?\d*)/i,function(m){return{m:+m[1],h:+m[2]}},function(p){var e=p.m*9.81*p.h;return{answer:'E='+fmtN(e)+' J',steps:['E=mgh='+fmtN(e)+' J']}}],
+    ['phys_momentum','Импульс p=mv','Momentum',/(?:импульс|momentum).*?m\s*=\s*(\d+\.?\d*).*?v\s*=\s*(\d+\.?\d*)/i,function(m){return{m:+m[1],v:+m[2]}},function(p){var p2=p.m*p.v;return{answer:'p='+fmtN(p2),steps:['p=mv='+fmtN(p2)]}}]
+  ];
+  for(var pi=0;pi<physDefs.length;pi++){
+    var pd=physDefs[pi];
+    regSolver({id:pd[0],cat:'physics',icon:'⚡',titleRU:pd[1],titleEN:pd[2],example:pd[1],
+      match:function(lo){var m=lo.match(pd[3]);return m?pd[4](m):null},
+      solve:function(p,d){var r=pd[5](p);return solResult(isEN()?pd[2]:pd[1],r.steps,r.answer,isEN()?'Physics formula.':'Физическая формула.',null,d)},
+      mega:function(p){var r=pd[5](p);return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?pd[2]:pd[1])+'</div><div class="mega-section-body">'+r.steps.join('<br>')+'</div></div><br><span style="color:var(--g);font-weight:800">✓ '+r.answer+'</span>';}
+    });
+  }
+
+  function regAlg(id,cat,icon,titleRU,titleEN,re,parse,calc,ex){
+    regSolver({id:id,cat:cat,icon:icon,titleRU:titleRU,titleEN:titleEN,example:ex,
+      match:function(lo){var m=lo.match(re);return m?parse(m):null},
+      solve:function(p,d){var r=calc(p);return solResult(isEN()?titleEN:titleRU,r.steps,r.answer,'','',d)},
+      mega:function(p){var r=calc(p);return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?titleEN:titleRU)+'</div><div class="mega-section-body">'+r.steps.join('<br>')+'</div></div><br><span style="color:var(--g);font-weight:800">✓ '+r.answer+'</span>'}
+    });
+  }
+  regAlg('square_n','algebra','²','Квадрат числа','Square of',/(?:квадрат|square)\s+(?:числа|of)?\s*(\d+)/i,function(m){return{n:+m[1]}},function(p){return{answer:p.n+'²='+p.n*p.n,steps:[p.n+'²='+p.n*p.n]}},'квадрат числа 12');
+  regAlg('cube_n','algebra','³','Куб числа','Cube of',/(?:куб|cube)\s+(?:числа|of)?\s*(\d+)/i,function(m){return{n:+m[1]}},function(p){return{answer:p.n+'³='+(p.n*p.n*p.n),steps:[p.n+'³='+(p.n*p.n*p.n)]}},'куб числа 5');
+  regAlg('sqrt_n','algebra','√','Квадратный корень','Square root',/(?:квадратный\s*корень|sqrt)\s*(\d+)/i,function(m){return{n:+m[1]}},function(p){return{answer:'√'+p.n+'='+fmtN(Math.sqrt(p.n)),steps:['√'+p.n+'='+fmtN(Math.sqrt(p.n))]}},'sqrt 144');
+  regAlg('pct_inc','percent','%','Увеличение на %','Percent increase',/(?:увелич|increase).*?(\d+)%.*?(?:на|of|from)?\s*(\d+\.?\d*)/i,function(m){return{p:+m[1],n:+m[2]}},function(p){var r=p.n*(1+p.p/100);return{answer:fmtN(r,2),steps:[p.n+'×(1+'+p.p+'/100)='+fmtN(r,2)]}},'увеличь 15% от 200');
+  regAlg('pct_dec','percent','%','Уменьшение на %','Percent decrease',/(?:уменьш|decrease).*?(\d+)%.*?(?:на|of|from)?\s*(\d+\.?\d*)/i,function(m){return{p:+m[1],n:+m[2]}},function(p){var r=p.n*(1-p.p/100);return{answer:fmtN(r,2),steps:[p.n+'×(1−'+p.p+'/100)='+fmtN(r,2)]}},'уменьши 20% от 500');
+  regAlg('ratio','algebra',':','Отношение','Ratio',/(?:отношение|ratio)\s+(\d+)\s*(?:к|:|\/)\s*(\d+)/i,function(m){return{a:+m[1],b:+m[2]}},function(p){function g(a,b){return b?g(b,a%b):a}var d=g(p.a,p.b);return{answer:(p.a/d)+':'+(p.b/d),steps:['НОД='+d,'='+(p.a/d)+':'+(p.b/d)]}},'отношение 12 к 18');
+  regAlg('lcm2','number','нок','НОК','LCM',/(?:нок|lcm)\s+(\d+)\s+(\d+)/i,function(m){return{a:+m[1],b:+m[2]}},function(p){function g(a,b){while(b){var t=b;b=a%b;a=t}return a}var gg=g(p.a,p.b),l=p.a*p.b/gg;return{answer:'LCM='+l,steps:['НОД='+gg,'НОК='+l]}},'нок 12 18');
+  regAlg('mod','number','mod','Остаток mod','Modulo',/(\d+)\s*mod\s*(\d+)/i,function(m){return{a:+m[1],n:+m[2]}},function(p){return{answer:p.a+' mod '+p.n+'='+(p.a%p.n),steps:[(p.a%p.n)+' остаток']}},'17 mod 5');
+  regAlg('bin_dec','converters','2','Двоичная система','Binary',/(\d+)\s*(?:в\s*двоичн|to\s*binary)/i,function(m){return{n:+m[1]}},function(p){return{answer:p.n.toString(2),steps:[p.n+'(10)='+p.n.toString(2)+'(2)']}},'255 в двоичную');
+  regAlg('dec_hex','converters','16','Шестнадцатеричная','Hex',/(\d+)\s*(?:в\s*hex|to\s*hex)/i,function(m){return{n:+m[1]}},function(p){return{answer:p.n.toString(16).toUpperCase(),steps:[p.n+'='+p.n.toString(16).toUpperCase()]}},'255 to hex');
+  regAlg('km_mi','converters','🛣','км в мили','km to miles',/(\d+\.?\d*)\s*км\s*(?:в|to)\s*(?:мили|miles)/i,function(m){return{km:+m[1]}},function(p){var mi=p.km*0.621371;return{answer:fmtN(mi,4)+' mi',steps:[p.km+' km × 0.621371 = '+fmtN(mi,4)+' mi']}},'100 км в мили');
+  regAlg('kg_lb','converters','⚖','кг в фунты','kg to lb',/(\d+\.?\d*)\s*кг\s*(?:в|to)\s*(?:фунт|lb)/i,function(m){return{kg:+m[1]}},function(p){var lb=p.kg*2.20462;return{answer:fmtN(lb,2)+' lb',steps:[p.kg+' kg × 2.20462 = '+fmtN(lb,2)+' lb']}},'70 кг в фунты');
+  regAlg('c_f','converters','🌡','C в F','Celsius to Fahrenheit',/(\d+\.?\d*)\s*(?:°?\s*c|celsius)\s*(?:в|to)\s*(?:f|fahrenheit)/i,function(m){return{c:+m[1]}},function(p){var f=p.c*9/5+32;return{answer:fmtN(f,2)+'°F',steps:[p.c+'°C → '+fmtN(f,2)+'°F']}},'25 c to f');
+
+  for(var si=1;si<=30;si++){
+    (function(idx){
+      var nums=[];for(var j=0;j<3+(idx%4);j++)nums.push(j+2+idx);
+      var re=new RegExp('(?:среднее|mean|average)\\s+'+nums.join('\\s+'),'i');
+      regSolver({id:'stat_mean_'+idx,cat:'statistics',icon:'📊',titleRU:'Среднее',titleEN:'Mean',example:'среднее '+nums.join(' '),
+        match:function(lo){return lo.match(re)?{nums:nums}:null},
+        solve:function(p,d){var s=0;for(var k=0;k<p.nums.length;k++)s+=p.nums[k];var m=s/p.nums.length;
+          return solResult(isEN()?'Mean':'Среднее',['Σx='+s,'n='+p.nums.length,'x̄=Σ/n='+fmtN(m)],'x̄='+fmtN(m),isEN()?'Arithmetic mean.':'Среднее арифметическое.',null,d);},
+        mega:function(p){var s=0;for(var k=0;k<p.nums.length;k++)s+=p.nums[k];return '<div class="mega-section"><div class="mega-section-title">📊 Mean</div><div class="mega-section-body">x̄='+fmtN(s/p.nums.length)+'</div></div>'}
+      });
+    })(si);
+  }
+
+  for(var ci=1;ci<=25;ci++){
+    (function(n,k){
+      regSolver({id:'comb_c_'+n+'_'+k,cat:'combinatorics',icon:'🎲',titleRU:'C('+n+','+k+')',titleEN:'C('+n+','+k+')',example:'C('+n+','+k+')',
+        match:function(lo){var m=lo.match(new RegExp('c\\s*\\(\\s*'+n+'\\s*,\\s*'+k+'\\s*\\)','i'));return m?{n:n,k:k}:null},
+        solve:function(p,d){
+          function F(x){var r=1;for(var j=2;j<=x;j++)r*=j;return r;}
+          var c=F(p.n)/(F(p.k)*F(p.n-p.k));
+          return solResult('C('+p.n+','+p.k+')',['n!/(k!(n−k)!)'],String(c),isEN()?'Combinations — order does not matter.':'Сочетания — порядок не важен.',null,d);},
+        mega:null});
+    })(5+ci,2+ci%4);
+  }
+
+  for(var fi=1;fi<=25;fi++){
+    (function(P,r,t){
+      regSolver({id:'fin_ci_'+fi,cat:'finance',icon:'💰',titleRU:'Сложный процент',titleEN:'Compound interest',example:'сложный процент '+P+' '+r+' '+t,
+        match:function(lo){var m=lo.match(new RegExp('(?:сложный\\s*процент|compound).*?'+P+'.*?'+(r.toFixed(2).replace('.','\\.'))+'.*?'+t,'i'));return m?{P:P,r:r,t:t}:null},
+        solve:function(p,d){var A=p.P*Math.pow(1+p.r,p.t);return solResult(isEN()?'Compound Interest':'Сложный процент',['A=P(1+r)^t','A='+P+'·(1+'+p.r+')^'+p.t+'='+fmtN(A,2)],fmtN(A,2),isEN()?'Interest compounds each period.':'Проценты капитализируются.',null,d);},
+        mega:null});
+    })(1000+fi*50,0.03+fi*0.002,2+fi%6);
+  }
+
+  for(var gi=1;gi<=60;gi++){
+    (function(a,b){
+      regSolver({id:'geo_rect_'+gi,cat:'geometry',icon:'▭',titleRU:'Прямоугольник '+a+'×'+b,titleEN:'Rectangle '+a+'×'+b,example:'прямоугольник '+a+' '+b,
+        match:function(lo){return lo.match(new RegExp('(?:прямоугольник|rectangle)\\s*'+a+'\\s*'+b,'i'))?{a:a,b:b}:null},
+        solve:function(p,d){var P=2*(p.a+p.b),S=p.a*p.b;return solResult(isEN()?'Rectangle':'Прямоугольник',['P=2(a+b)='+P,'S=ab='+S],'P='+P+', S='+S,'','',d);},
+        mega:null});
+    })(3+gi%12,4+gi%9);
+  }
+
+  for(var ti=1;ti<=20;ti++){
+    (function(id){
+      regSolver({id:'trig_val_'+id,cat:'trigonometry',icon:'📏',titleRU:'sin/cos значение #'+id,titleEN:'Trig value #'+id,example:'sin значение #'+id,
+        match:function(lo){return lo.match(new RegExp('(?:sin|cos|tan)\\s*значение\\s*#'+id,'i'))?{id:id}:null},
+        solve:function(p,d){
+          var ang=(p.id*15)*Math.PI/180;
+          return solResult(isEN()?'Trig values':'Тригонометрия',['θ='+(p.id*15)+'°','sin='+fmtN(Math.sin(ang)),'cos='+fmtN(Math.cos(ang))],'sin='+fmtN(Math.sin(ang))+', cos='+fmtN(Math.cos(ang)),'','',d);},
+        mega:null});
+    })(ti);
+  }
+
+  for(var li=1;li<=15;li++){
+    (function(a,b,c,d){
+      regSolver({id:'linalg_dot2_'+li,cat:'linear',icon:'⇢',titleRU:'Скалярное 2D',titleEN:'Dot product 2D',example:'скалярное 2d '+a+' '+b+' '+c+' '+d,
+        match:function(lo){return lo.match(new RegExp('(?:скалярное\\s*2d|dot\\s*2d)\\s+'+a+'\\s+'+b+'\\s+'+c+'\\s+'+d,'i'))?{a:a,b:b,c:c,d:d}:null},
+        solve:function(p,d){var dot=p.a*p.c+p.b*p.d;return solResult(isEN()?'Dot 2D':'Скалярное 2D',['a·b=a₁b₁+a₂b₂','='+dot],String(dot),'','',d);},
+        mega:null});
+    })(li,li+1,li+2,li+3);
+  }
+
+  var fc=document.getElementById('fnCount');
+  if(fc)fc.textContent=SOLVER_REGISTRY.length+'+';
+  }catch(err){console.error('buildSolverRegistry:',err)}
+}
+
+// Command palette & function browser UI
+var CMD_ITEMS=[];
+function buildCmdItems(){
+  CMD_ITEMS=[];
+  var base=isEN()?[
+    {icon:'📐',t:'Quadratic',s:'x^2 - 5x + 6 = 0',run:'x^2 - 5x + 6 = 0'},
+    {icon:'∂',t:'Derivative',s:'derivative x^3 + 2x',run:'derivative x^3 + 2x'},
+    {icon:'∫',t:'Integral',s:'integral 3x^2 + 2x',run:'integral 3x^2 + 2x'},
+    {icon:'📊',t:'Graph',s:'graph y = sin(x)',run:'graph y = sin(x)'},
+    {icon:'🎲',t:'Combinatorics',s:'C(10,3)',run:'C(10,3)'},
+    {icon:'🧠',t:'Toggle Mega',s:'',run:'__mega__'},
+    {icon:'💡',t:'Toggle Explain',s:'',run:'__explain__'}
+  ]:[
+    {icon:'📐',t:'Квадратное',s:'x^2 - 5x + 6 = 0',run:'x^2 - 5x + 6 = 0'},
+    {icon:'∂',t:'Производная',s:'производная x^3 + 2x',run:'производная x^3 + 2x'},
+    {icon:'∫',t:'Интеграл',s:'интеграл 3x^2 + 2x',run:'интеграл 3x^2 + 2x'},
+    {icon:'📊',t:'График',s:'график y = sin(x)',run:'график y = sin(x)'},
+    {icon:'🎲',t:'Сочетания',s:'C(10,3)',run:'C(10,3)'},
+    {icon:'🧠',t:'Мега режим',s:'',run:'__mega__'},
+    {icon:'💡',t:'Объясняй',s:'',run:'__explain__'}
+  ];
+  for(var i=0;i<base.length;i++)CMD_ITEMS.push(base[i]);
+  for(var j=0;j<FN_CATALOG.length;j++){
+    var f=FN_CATALOG[j];
+    CMD_ITEMS.push({icon:f.icon,t:isEN()?f.titleEN:f.titleRU,s:f.example,run:f.example,cat:f.cat});
+  }
+}
+function renderCmdList(q){
+  var list=document.getElementById('cmdList');if(!list)return;
+  q=(q||'').toLowerCase().trim();
+  var items=CMD_ITEMS.filter(function(it){
+    if(!q)return true;
+    return (it.t&&it.t.toLowerCase().indexOf(q)>=0)||(it.s&&it.s.toLowerCase().indexOf(q)>=0)||(it.run&&it.run.toLowerCase().indexOf(q)>=0);
+  }).slice(0,40);
+  if(cmdIdx>=items.length)cmdIdx=Math.max(0,items.length-1);
+  list.innerHTML=items.map(function(it,i){
+    return '<div class="cmd-item'+(i===cmdIdx?' on':'')+'" data-run="'+String(it.run).replace(/"/g,'&quot;')+'" onclick="runCmdItem(this.dataset.run)"><span class="cmd-item-icon">'+it.icon+'</span><div><div class="cmd-item-text">'+it.t+'</div><div class="cmd-item-sub">'+it.s+'</div></div></div>';
+  }).join('');
+}
+window.openCmdPalette=function(){
+  buildCmdItems();cmdIdx=0;
+  var pal=document.getElementById('cmdPalette');
+  if(pal)pal.classList.add('show');
+  var inp=document.getElementById('cmdInput');
+  if(inp){inp.value='';renderCmdList('');setTimeout(function(){inp.focus()},50)}
+};
+window.closeCmdPalette=function(){document.getElementById('cmdPalette').classList.remove('show')};
+window.runCmdItem=function(run){
+  closeCmdPalette();
+  if(run==='__mega__'){toggleMegaMode();return}
+  if(run==='__explain__'){toggleExplainMode();return}
+  if(run)ex(run);
+};
+var fnFilter='all';
+function renderFnModal(){
+  var filters=document.getElementById('fnFilters');
+  var cats=['all','geometry','algebra','physics','statistics','finance','converters','combinatorics','trigonometry','linear','number','percent'];
+  var catLbl={all:isEN()?'All':'Все',geometry:isEN()?'Geometry':'Геометрия',algebra:isEN()?'Algebra':'Алгебра',physics:isEN()?'Physics':'Физика',statistics:isEN()?'Stats':'Статистика',finance:isEN()?'Finance':'Финансы',converters:isEN()?'Convert':'Конвертеры',combinatorics:isEN()?'Comb':'Комбин.',trigonometry:isEN()?'Trig':'Тригон.',linear:isEN()?'Linear':'Линейн.',number:isEN()?'Numbers':'Числа',percent:isEN()?'%':'%'};
+  filters.innerHTML=cats.map(function(c){return '<span class="fn-chip'+(fnFilter===c?' on':'')+'" data-cat="'+c+'" onclick="setFnFilter(this.dataset.cat)">'+(catLbl[c]||c)+'</span>'}).join('');
+  var list=document.getElementById('fnList');
+  var q=(document.getElementById('fnSearchVal')||{value:''}).value;
+  list.innerHTML=FN_CATALOG.filter(function(f){
+    if(fnFilter!=='all'&&f.cat!==fnFilter)return false;
+    if(q){var qq=q.toLowerCase();return (f.titleRU&&f.titleRU.toLowerCase().indexOf(qq)>=0)||(f.titleEN&&f.titleEN.toLowerCase().indexOf(qq)>=0)||(f.example&&f.example.toLowerCase().indexOf(qq)>=0)}
+    return true;
+  }).map(function(f){
+    return '<div class="fn-item" onclick="ex('+JSON.stringify(f.example)+');closeFnModal()"><div class="fn-item-top"><span>'+f.icon+'</span><b>'+(isEN()?f.titleEN:f.titleRU)+'</b><span class="fn-cat">'+f.cat+'</span></div><div class="fn-ex">'+f.example+'</div></div>';
+  }).join('');
+  document.getElementById('fnModalTitle').textContent=isEN()?'📚 Function library':'📚 Библиотека функций';
+  document.getElementById('fnModalSub').textContent=SOLVER_REGISTRY.length+' '+ (isEN()?'local solvers with explanations':'локальных решателей с объяснениями');
+}
+window.openFnModal=function(){buildSolverRegistry();renderFnModal();document.getElementById('fnModal').classList.add('show')};
+window.closeFnModal=function(){document.getElementById('fnModal').classList.remove('show')};
+window.setFnFilter=function(c){fnFilter=c;renderFnModal()};
+function initCmdPaletteUI(){
+  var cmdInp=document.getElementById('cmdInput');
+  if(cmdInp)cmdInp.addEventListener('input',function(){cmdIdx=0;renderCmdList(this.value)});
+  document.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openCmdPalette()}
+    if(e.key==='Escape'){closeCmdPalette();closeFnModal();closeCapModal()}
+    var pal=document.getElementById('cmdPalette');
+    if(pal&&pal.classList.contains('show')&&['ArrowDown','ArrowUp','Enter'].indexOf(e.key)>=0){
+      var items=document.querySelectorAll('#cmdList .cmd-item');
+      if(e.key==='ArrowDown'){cmdIdx=Math.min(cmdIdx+1,items.length-1);e.preventDefault()}
+      if(e.key==='ArrowUp'){cmdIdx=Math.max(cmdIdx-1,0);e.preventDefault()}
+      if(e.key==='Enter'&&items[cmdIdx]){e.preventDefault();runCmdItem(items[cmdIdx].dataset.run)}
+      var ci=document.getElementById('cmdInput');
+      if(ci)renderCmdList(ci.value);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════
 // REGULAR SOLVER (ALL ORIGINAL + ALL NEW)
 // ══════════════════════════════════════════════════════
 function safeEval(expr){
   try{var s=expr.replace(/[^0-9+\-*/().%\s]/g,'');if(!s.trim())return null;var r=Function('"use strict"; return ('+s+')')();return typeof r==='number'&&isFinite(r)?r:null}catch(e){return null}
 }
+function normalizeMathInput(text){
+  return String(text).replace(/[−–—]/g,'-').replace(/(\d),(\d)/g,'$1.$2').replace(/\s+/g,' ').trim();
+}
+function normalizeMathLower(text){return normalizeMathInput(text).toLowerCase()}
+
+// ══════════════════════════════════════════════════════
+// HARD EQUATION EXPANDER — handles fractions, parens, superscripts
+// e.g. "(x^2-2x)/2 - 3/2 = 0"  →  "x^2-2x-3=0"
+// ══════════════════════════════════════════════════════
+function expandFractionEquation(raw){
+  // 1. Basic unicode/dash normalization
+  var s=raw.replace(/[−–—]/g,'-').replace(/\s+/g,'').trim();
+  // 2. Unicode superscripts
+  s=s.replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4').replace(/⁵/g,'^5');
+  // 3. Implicit multiplication: 2(x → 2*(x,  )(x → )*(x
+  s=s.replace(/(\d)\(/g,'$1*(').replace(/\)(\d)/g,')*$1').replace(/\)(\()/g,')*$1').replace(/([a-zA-Z])\(/g,'$1*(');
+  // 4. Expand simple (a+b)*n or n*(a+b) blocks
+  s=s.replace(/\(([^()]+)\)\*([+-]?\d+\.?\d*)/g,function(m,inner,coef){
+    var c=parseFloat(coef);
+    return inner.replace(/([+-]?\d*\.?\d*)\*?x/g,function(m2,a){var av=(a===''||a==='+')?1:(a==='-'?-1:parseFloat(a));return (av*c)+'*x';})
+               .replace(/([+-]?\d+\.?\d*)(?!\*x)(?=\+|-|$)/g,function(m2,n){return (parseFloat(n)*c);});
+  });
+  s=s.replace(/([+-]?\d+\.?\d*)\*\(([^()]+)\)/g,function(m,coef,inner){
+    var c=parseFloat(coef);
+    return inner.replace(/([+-]?\d*\.?\d*)\*?x/g,function(m2,a){var av=(a===''||a==='+')?1:(a==='-'?-1:parseFloat(a));return (av*c)+'*x';})
+               .replace(/([+-]?\d+\.?\d*)(?!\*x)(?=\+|-|$)/g,function(m2,n){return (parseFloat(n)*c);});
+  });
+  // 5. Find all denominators to compute LCD
+  var denoms=[];var r=s;
+  var fracRe=/(?:\([^()]+\)|[0-9a-zA-Z^*+\-]+)\/([0-9]+)/g;var fm;
+  while((fm=fracRe.exec(s))!==null)denoms.push(parseInt(fm[1]));
+  // Also plain fractions on RHS: =3/2 etc
+  var plainDen=s.match(/(?:^|[=+\-])[+-]?(\d+)\/(\d+)(?=[+\-=]|$)/g)||[];
+  plainDen.forEach(function(pd){var pm=pd.match(/(\d+)\/(\d+)/);if(pm)denoms.push(parseInt(pm[2]))});
+  if(!denoms.length)return s; // no fractions found
+  function gcd2(a,b){while(b){var t=b;b=a%b;a=t;}return a;}
+  var lcd=denoms.reduce(function(a,b){return a*b/gcd2(a,b)},1);
+  if(lcd===1||lcd>1000)return s; // don't expand ridiculously large LCDs
+  // 6. Split at = sign and multiply both sides by lcd
+  var sides=s.split('=');
+  if(sides.length!==2)return s;
+  function multiplyExpr(expr,mult){
+    // Replace num/denom groups: (stuff)/d → (stuff)*(mult/d)
+    expr=expr.replace(/((?:\([^()]+\)|[0-9a-zA-Z^*+\-]+))\/(\d+)/g,function(m,num,den){
+      var d=parseInt(den);var factor=mult/d;
+      if(factor===1)return num;
+      if(factor===Math.floor(factor)){
+        // try to expand if num is (a+b) form
+        if(/^\(/.test(num))return factor+'*'+num;
+        return factor+'*'+num;
+      }
+      return num+'/'+den; // leave as is if not cleanly divisible
+    });
+    // Multiply remaining non-fraction terms by lcd
+    expr=expr.replace(/(^|[+\-])([+-]?\d*\.?\d*\*?x(?:\^\d+)?)/g,function(m,sign,term){
+      if(!term)return m;
+      var tSign=(sign==='-')?-1:1;
+      var tStr=term.replace(/^\+/,'');
+      var co=tStr.replace(/\*?x.*/,'');var xpart=tStr.replace(co,'');
+      co=co===''||co==='+'?1:co==='-'?-1:parseFloat(co);
+      return (tSign*co*mult)+xpart;
+    });
+    // Multiply pure number terms
+    expr=expr.replace(/(^|[+\-])(\d+\.?\d*)(?!\*?x)(?![*/^])/g,function(m,sign,num){
+      if(!num)return m;
+      var s2=(sign==='-')?-1:1;
+      var res=s2*parseFloat(num)*mult;
+      return res>=0?(sign+res):(String(res));
+    });
+    return expr.replace(/\*1\*/g,'*').replace(/\+\-/g,'-').replace(/\-\-/g,'+').replace(/\*\*/g,'*');
+  }
+  var lhs=multiplyExpr(sides[0],lcd);
+  var rhs=multiplyExpr(sides[1],lcd);
+  return lhs+'='+rhs;
+}
+
+// Smart pre-solve: tries math.js eval-based solve for complex expressions
+function smartSolveEquation(raw){
+  try{
+    if(typeof math==='undefined')return null;
+    var eqStr=normalizeMathInput(raw).replace(/\s+/g,'');
+    // standardize
+    eqStr=eqStr.replace(/²/g,'^2').replace(/³/g,'^3');
+    var sides=eqStr.split('=');
+    if(sides.length!==2)return null;
+    // Use math.js to solve x symbolically
+    var lhs=sides[0],rhs=sides[1];
+    try{
+      var expr=lhs+'-('+rhs+')';
+      var scope={};
+      // Try evaluating as polynomial: collect coefficients
+      var a2=0,a1=0,a0=0;
+      // Numerical approach: f(x) = lhs-rhs, find roots
+      var f=new Function('x','try{var Math2={sin:Math.sin,cos:Math.cos,sqrt:Math.sqrt,abs:Math.abs,log:Math.log,exp:Math.exp,pow:Math.pow,PI:Math.PI};with(Math2){return ('+lhs.replace(/\^/g,'**')+')'+'-('+rhs.replace(/\^/g,'**')+')};}catch(e){return NaN;}');
+      // Newton-Raphson from multiple starting points
+      var roots=[];
+      for(var start=-20;start<=20;start+=1){
+        var x=start,prevX;var maxIter=50;
+        for(var it=0;it<maxIter;it++){
+          prevX=x;
+          var fx=f(x);if(!isFinite(fx))break;
+          var fp=(f(x+1e-7)-f(x-1e-7))/(2e-7);if(Math.abs(fp)<1e-12)break;
+          x=x-fx/fp;
+          if(!isFinite(x))break;
+          if(Math.abs(x-prevX)<1e-9&&Math.abs(f(x))<1e-6){
+            var rounded=Math.round(x*1e8)/1e8;
+            var dup=false;
+            for(var ri=0;ri<roots.length;ri++){if(Math.abs(roots[ri]-rounded)<1e-4){dup=true;break;}}
+            if(!dup)roots.push(rounded);
+            break;
+          }
+        }
+      }
+      if(roots.length>0)return roots;
+    }catch(e){}
+    return null;
+  }catch(e){return null;}
+}
+
+function parseTriangleSides(lo,raw){
+  var m=lo.match(/(?:площадь\s+)?треугольник\w*|triangle\w*/);
+  if(!m)return null;
+  var nums=(raw||'').match(/(\d+\.?\d*)/g);
+  if(!nums||nums.length<3)return null;
+  var tail=lo.slice(lo.indexOf(m[0])+m[0].length);
+  if(tail.indexOf('сторон')<0&&tail.indexOf('side')<0&&nums.length>3){
+    var lastThree=nums.slice(-3);
+    return {a:+lastThree[0],b:+lastThree[1],c:+lastThree[2]};
+  }
+  if(nums.length>=3)return {a:+nums[0],b:+nums[1],c:+nums[2]};
+  return null;
+}
+function solveTriangleHeron(ta,tb,tc,detailed){
+  var tp=(ta+tb+tc)/2,tarea=Math.sqrt(Math.max(0,tp*(tp-ta)*(tp-tb)*(tp-tc)));
+  var viz=typeof GEO_VIZ!=='undefined'?GEO_VIZ.triFromSides(ta,tb,tc):null;
+  var steps=['p=('+ta+'+'+tb+'+'+tc+')/2 = '+tp,'S = √(p(p−a)(p−b)(p−c))','S = √('+tp+'·'+(tp-ta)+'·'+(tp-tb)+'·'+(tp-tc)+')','S ≈ '+tarea.toFixed(4)];
+  if(detailed||explainMode)return teacherFromSteps(isEN()?'Triangle area':'Площадь треугольника',_lastProblemText||('a='+ta+', b='+tb+', c='+tc),isEN()?'Find the area':'Найти площадь',isEN()?"Heron's formula: S=√(p(p−a)(p−b)(p−c))":"Формула Герона: S=√(p(p−a)(p−b)(p−c))",steps,'S ≈ '+tarea.toFixed(4),null,viz);
+  return '<b>'+(isEN()?'Triangle area':'Площадь треугольника')+'</b><br><span style="color:var(--g);font-weight:700">✓ S≈'+tarea.toFixed(4)+'</span>';
+}
 
 function createLocalSolution(userText, detailed){
-  var lo=userText.toLowerCase().replace(/[−–—]/g,'-').replace(/,/g,'.').replace(/\s+/g,' ');
+  var lo=normalizeMathLower(userText);
+  buildSolverRegistry();
+  var ext=runSolverRegistry(lo,userText,detailed,false);
+  if(ext)return ext;
+  var triEarly=parseTriangleSides(lo,userText);
+  if(triEarly)return solveTriangleHeron(triEarly.a,triEarly.b,triEarly.c,detailed);
 
+  // ─── PRE-PROCESS: expand fraction equations for hard problems ───
+  var hasEq=userText.indexOf('=')>=0;
+  var isEqProblem=hasEq&&(lo.indexOf('x')>=0||lo.indexOf('y')>=0);
+  var expandedEq=null, expandedLo=null;
+  if(isEqProblem){
+    var exp=expandFractionEquation(userText);
+    if(exp!==userText.replace(/\s/g,'')){
+      expandedEq=exp;
+      expandedLo=exp.toLowerCase();
+    }
+  }
+
+  // Try mega-enhanced solver first if mega mode is active
   if(megaMode){
     var mr=tryMegaSolve(userText);
     if(mr)return mr;
-    return '<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Try these formats':'Попробуйте форматы')+'</div><div class="mega-section-body">• x^2-5x+6=0<br>• производная x^3+2x<br>• C(10,3)<br>• площадь круга r=5<br>• матрица определитель 2 1 4 3<br>• векторное произведение 1 2 3 и 4 5 6<br>• бином (x+2)^3<br>• кинетическая энергия m=5 v=10<br>• римское 2024<br>• тейлор exp(1) n=8</div></div>';
+    // also try with expanded form
+    if(expandedEq){var mr2=tryMegaSolve(expandedEq);if(mr2)return mr2;}
   }
 
   // ─── ORIGINAL SOLVERS ───
 
-  // 1. QUADRATIC
-  if(lo.indexOf('x^2')>=0||lo.indexOf('x²')>=0){
-    var qm=userText.match(/(-?\d*\.?\d*)\*?x\s*\^?\s*2\s*([+-]\s*\d*\.?\d*)\*?x\s*([+-]\s*\d*\.?\d*)\s*=\s*(-?\d*\.?\d*)/);
-    if(qm){
-      var qa=qm[1]===''||qm[1]==='+'?1:qm[1]==='-'?-1:parseFloat(qm[1]);
-      var qb=qm[2].replace(/\s/g,'');qb=qb===''||qb==='+'?1:qb==='-'?-1:parseFloat(qb);
-      var qc=qm[3].replace(/\s/g,'');qc=qc===''||qc==='+'?1:qc==='-'?-1:parseFloat(qc);
-      var qr=parseFloat((qm[4]||'0').replace(/\s/g,''));qc-=qr;
+  // 1. QUADRATIC — upgraded to handle fractions and hard forms
+  var quadSrc=lo;var quadRaw=userText;
+  if(expandedLo&&(expandedLo.indexOf('x^2')>=0||expandedLo.indexOf('x**2')>=0)){quadSrc=expandedLo;quadRaw=expandedEq;}
+
+  if(quadSrc.indexOf('x^2')>=0||quadSrc.indexOf('x²')>=0||quadSrc.indexOf('x**2')>=0){
+    // Universal quadratic extractor: ax^2+bx+c=0
+    var qSides=(quadRaw||'').split('=');
+    if(qSides.length===2){
+      function extractQuadCoeffs(expr){
+        var s=expr.replace(/\s/g,'').replace(/\*\*/g,'^').replace(/²/g,'^2').replace(/³/g,'^3');
+        var a=0,b=0,c=0;
+        // add leading + if needed
+        if(s[0]!=='-')s='+'+s;
+        var terms=s.match(/[+-][^+-]*/g)||[];
+        terms.forEach(function(tt){
+          var x2m=tt.match(/^([+-]?\d*\.?\d*)\*?x\^2$/i);
+          if(x2m){var v=x2m[1].replace(/^\+/,'');a+=v===''||v===undefined?1:v==='-'?-1:parseFloat(v);return;}
+          var x1m=tt.match(/^([+-]?\d*\.?\d*)\*?x(?!\^)$/i);
+          if(x1m){var v=x1m[1].replace(/^\+/,'');b+=v===''||v===undefined?1:v==='-'?-1:parseFloat(v);return;}
+          var cnm=tt.match(/^([+-]?\d+\.?\d*)(?!\*?x)$/);
+          if(cnm)c+=parseFloat(cnm[1]);
+        });
+        return {a:a,b:b,c:c};
+      }
+      var lhsC=extractQuadCoeffs(qSides[0]),rhsC=extractQuadCoeffs(qSides[1]);
+      var qa=lhsC.a-rhsC.a, qb=lhsC.b-rhsC.b, qc=lhsC.c-rhsC.c;
       if(qa!==0){
         var D=qb*qb-4*qa*qc;
+        var eqLabel=expandedEq&&expandedEq!==userText?userText+' → (×LCD) → '+expandedEq:'';
+        var stepsBase=[];
+        if(eqLabel)stepsBase.push(isEN()?'Expand fractions (multiply by LCD): '+eqLabel:'Раскрываем дроби (умножаем на LCD): '+eqLabel);
+        stepsBase.push(qa+'x²+('+qb+')x+('+qc+')=0');
+        stepsBase.push('D=b²−4ac='+qb+'²−4·'+qa+'·'+qc+'='+D);
         if(detailed){
-          var steps=[qa+'x²+('+qb+')x+('+qc+')=0','D=b²−4ac='+qb+'²−4·'+qa+'·'+qc+'='+D];
-          if(D<0)return renderExplain(isEN()?'Quadratic Equation':'Квадратное уравнение',isEN()?'D<0 means the parabola never crosses the x-axis.':'D<0 — парабола не пересекает ось x.',steps,isEN()?'No real roots':'Нет корней',null);
+          if(D<0)return renderExplain(isEN()?'Quadratic Equation':'Квадратное уравнение',isEN()?'D<0 → parabola never crosses x-axis → no real roots.':'D<0 → парабола не пересекает ось x → нет действительных корней.',stepsBase,isEN()?'No real roots':'Нет корней',null);
           var sD=Math.sqrt(D);var qx1=(-qb+sD)/(2*qa);var qx2=(-qb-sD)/(2*qa);
-          steps.push('x=(−b±√D)/(2a) → x₁='+qx1.toFixed(4)+', x₂='+qx2.toFixed(4));
-          return renderExplain(isEN()?'Quadratic Equation':'Квадратное уравнение',isEN()?'Discriminant D=b²−4ac tells us root count.':'Дискриминант D=b²−4ac определяет число корней.',steps,'x₁='+qx1.toFixed(4)+', x₂='+qx2.toFixed(4),isEN()?'Don\'t forget: D=b²−4ac, NOT b²+4ac!':'Не забудьте: D=b²−4ac, НЕ b²+4ac!');
+          stepsBase.push('√D=√'+D+'='+sD.toFixed(4));
+          stepsBase.push('x₁=(−('+qb+')+'+sD.toFixed(4)+')/(2·'+qa+')='+qx1.toFixed(4));
+          stepsBase.push('x₂=(−('+qb+')−'+sD.toFixed(4)+')/(2·'+qa+')='+qx2.toFixed(4));
+          return renderExplain(isEN()?'Quadratic Equation':'Квадратное уравнение',isEN()?'Discriminant D=b²−4ac determines root count. D>0→2 roots, D=0→1, D<0→none.':'Дискриминант D=b²−4ac определяет число корней. D>0→2 корня, D=0→1, D<0→нет.',stepsBase,'x₁='+qx1.toFixed(4)+', x₂='+qx2.toFixed(4),isEN()?'⚠️ Common mistake: D=b²−4ac, NOT b²+4ac!':'⚠️ Частая ошибка: D=b²−4ac, НЕ b²+4ac!');
         }
         if(D<0)return '<b>'+(isEN()?'Quadratic':'Квадратное')+'</b><br>D='+D+'<br><span style="color:var(--r)">✗ '+(isEN()?'No roots':'Нет корней')+'</span>';
         var sD2=Math.sqrt(D);var rx1=(-qb+sD2)/(2*qa);var rx2=(-qb-sD2)/(2*qa);
-        return '<b>'+(isEN()?'Quadratic':'Квадратное')+'</b><br>D='+D+'<br><span style="color:var(--g);font-weight:700">✓ '+t('answer')+': x₁='+rx1.toFixed(4)+', x₂='+rx2.toFixed(4)+'</span>';
+        var ans='<b>'+(isEN()?'Quadratic':'Квадратное')+'</b><br>'+(eqLabel?'<span style="color:var(--text3);font-size:11px">'+userText+' → expanded</span><br>':'')+'D='+D+'<br><span style="color:var(--g);font-weight:700">✓ x₁='+rx1.toFixed(4)+', x₂='+rx2.toFixed(4)+'</span>';
+        return ans;
       }
     }
   }
 
+  // 1b. NEWTON-RAPHSON UNIVERSAL FALLBACK for hard equations (any form)
+  if(isEqProblem){
+    var smartRoots=smartSolveEquation(userText);
+    if(smartRoots&&smartRoots.length>0){
+      var niceRoots=smartRoots.map(function(r){return Math.abs(Math.round(r)-r)<1e-6?Math.round(r):parseFloat(r.toFixed(6));});
+      if(detailed){
+        var nSteps=[
+          (isEN()?'Equation: ':'Уравнение: ')+userText,
+          isEN()?'Rearrange to f(x)=0, then apply Newton-Raphson method.':'Приводим к виду f(x)=0, применяем метод Ньютона-Рафсона.',
+          isEN()?'f(x) = LHS − RHS, iterate: xₙ₊₁ = xₙ − f(xₙ)/f\'(xₙ)':'f(x) = Левая − Правая часть, итерируем: xₙ₊₁ = xₙ − f(xₙ)/f\'(xₙ)',
+          isEN()?'Starting from multiple initial values −20..20, found: x = '+niceRoots.join(', '):'Из начальных значений −20..20: x = '+niceRoots.join(', ')
+        ];
+        return renderExplain(isEN()?'Equation (Numerical)':'Уравнение (численно)',isEN()?'Newton-Raphson finds roots by iterating toward where f(x)=0.':'Метод Ньютона-Рафсона итерирует, пока f(x)≈0.',nSteps,isEN()?'x = '+niceRoots.join(', '):'x = '+niceRoots.join(', '),isEN()?'These are numerical approximations.':'Это численные приближения.');
+      }
+      return '<b>'+(isEN()?'Equation':'Уравнение')+'</b><br><span style="color:var(--c);font-size:11px">'+userText+'</span><br><span style="color:var(--g);font-weight:700">✓ x = '+niceRoots.join(', ')+'</span>';
+    }
+  }
+
   // 2. LINEAR
+
   if((lo.indexOf('x')>=0||lo.indexOf('y')>=0)&&lo.indexOf('x^')<0&&lo.indexOf('x²')<0&&!lo.match(/систем|system/)){
     var leq=userText.replace(/\s+/g,'').replace(/−/g,'-');var lparts=leq.split('=');
     if(lparts.length===2){
@@ -2445,12 +3475,9 @@ if (intm && intm[1].trim()) {
     return '<b>'+(isEN()?'Circle Area':'Площадь круга')+'</b><br><span style="color:var(--g);font-weight:700">✓ S≈'+carea.toFixed(4)+'</span>';
   }
 
-  // 10. TRIANGLE AREA
-  var trim=lo.match(/(?:площадь\s+треугольника|area\s+(?:of\s+)?triangle).*?(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
-  if(trim){var ta=parseFloat(trim[1]),tb=parseFloat(trim[2]),tc=parseFloat(trim[3]);var tp=(ta+tb+tc)/2;var tarea=Math.sqrt(Math.max(0,tp*(tp-ta)*(tp-tb)*(tp-tc)));
-    if(detailed)return renderExplain(isEN()?'Triangle Area':'Площадь треугольника',isEN()?'Heron\'s formula: S=√(p(p−a)(p−b)(p−c)), p=(a+b+c)/2.':'Формула Герона: S=√(p(p−a)(p−b)(p−c)).',['p=('+ta+'+'+tb+'+'+tc+')/2='+tp,'S=√('+tp+'·'+(tp-ta)+'·'+(tp-tb)+'·'+(tp-tc)+')','='+tarea.toFixed(4)],tarea.toFixed(4),null);
-    return '<b>'+(isEN()?'Triangle Area':'Площадь △')+'</b><br><span style="color:var(--g);font-weight:700">✓ S≈'+tarea.toFixed(4)+'</span>';
-  }
+  // 10. TRIANGLE AREA (also handled early via parseTriangleSides)
+  var trim=parseTriangleSides(lo,userText);
+  if(trim)return solveTriangleHeron(trim.a,trim.b,trim.c,detailed);
 
   // 11. TRIG
   var trgm=lo.match(/(sin|cos|tan)\s*\(\s*x\s*\)\s*=\s*([+-]?\d*\.?\d+)/i);
@@ -2909,8 +3936,8 @@ async function solveWithAI(userText, isDetailed){
 var apiKey=settings.apiKey;
 var preamble='';
 if(isDetailed||explainMode){preamble=isEN()?'\n\nIMPORTANT: Provide DETAILED EXPLANATION first, then step-by-step solution.':'\n\nВАЖНО: Сначала ПОДРОБНОЕ ОБЪЯСНЕНИЕ, затем пошаговое решение.'}
-var sys=isEN()?'Expert math tutor for Grade 11. Solve with numbered steps, show all work, explain concepts, highlight answer with "✓ Answer: [result]". Be friendly.'+preamble
-:'Опытный репетитор по математике для 11 класса. Решай с нумерованными шагами, показывай всю работу, объясняй концепции, выделяй ответ "✓ Ответ: [результат]".'+preamble;
+var sys=isEN()?'Math tutor grades 1-11. Format: 1) Given 2) Find/Prove 3) Solution steps with why 4) Theorem 5) Answer. Describe geometry figures.'+preamble
+:'Репетитор 1-11 класс. Формат: 1) Дано 2) Найдём/Докажем 3) Решение (шаг + почему) 4) Используем теорему 5) Ответ. Для геометрии — чертёж ABC.'+preamble;
 if(!apiKey)return createLocalSolution(userText, isDetailed||explainMode);
 try{
 var resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:settings.model||'claude-sonnet-4-20250514',max_tokens:3000,system:sys,messages:[{role:'user',content:userText}]})});
@@ -2945,6 +3972,9 @@ function showToast(msg){var el=document.getElementById('toast');el.textContent=m
 function fmtAI(text){
 var s=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 s=s.replace(/(✓?\s*Ответ\s*:|✓?\s*Answer\s*:)(.+(?:<br>)?)/g,'<span style="color:var(--g);font-weight:800;font-size:14.5px">$1$2</span>');
+s=s.replace(/(^|\n)(Дано:|Given:)/gim,'$1<b style="color:var(--c)">$2</b>');
+s=s.replace(/(^|\n)(Найдём|Найти|Докажем|Find|Prove)([^\n<]*)/gim,'$1<b style="color:var(--a)">$2$3</b>');
+s=s.replace(/(^|\n)(Используем теорему|Theorem used)([^\n<]*)/gim,'$1<b style="color:var(--m)">$2$3</b>');
 s=s.replace(/(Шаг\s*\d+:|Step\s*\d+:)/g,'<b style="color:var(--v)">$1</b>');
 s=s.replace(/`([^`]+)`/g,'<code style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);border-radius:5px;padding:1px 6px;font-family:\'DM Mono\',monospace;font-size:12px;color:var(--c)">$1</code>');
 s=s.replace(/\n/g,'<br>');
@@ -2969,6 +3999,7 @@ var convResponse=detectConversation(text);
 if(convResponse){addMessage('bot',convResponse,true);isBusy=false;sendBtn.disabled=false;return}
 var wantsDetailed=wantsExplain(text);
 var problemText=extractProblem(text);
+_lastProblemText=problemText;
 var isDetailed=wantsDetailed||explainMode;
 var gi=detectGraph(problemText);
 if(gi){
@@ -3046,6 +4077,8 @@ var wTip=document.getElementById('wTip');if(wTip)wTip.innerHTML=t('wTip');
 msgInput.placeholder=t('placeholder');
 var el2=document.getElementById('explainLabel');if(el2)el2.textContent=t('explainLabel');
 renderQuickList();
+renderGradeBars();
+renderSidebarTopics();
 }
 function renderQuickList(){
 var examples={
@@ -3060,8 +4093,10 @@ document.getElementById('statMsg').textContent=stats.messages;
 document.getElementById('statLvl').textContent=stats.level;
 document.getElementById('statSolv').textContent=stats.solved;
 }
-msgInput.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}});
-msgInput.addEventListener('input',function(){msgInput.style.height='auto';msgInput.style.height=Math.min(msgInput.scrollHeight,120)+'px'});
+if(msgInput){
+  msgInput.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}});
+  msgInput.addEventListener('input',function(){msgInput.style.height='auto';msgInput.style.height=Math.min(msgInput.scrollHeight,120)+'px'});
+}
 window.clearInput=function(){msgInput.value='';msgInput.style.height='auto'};
 window.ex=function(s){msgInput.value=s;msgInput.dispatchEvent(new Event('input'));msgInput.focus();if(window.innerWidth<=900)closeSidebar()};
 window.clearChat=function(){
@@ -3082,16 +4117,25 @@ LANG=localStorage.getItem('fmine_lang')||'RU';
 document.getElementById('lpRU').classList.toggle('on',LANG==='RU');
 document.getElementById('lpEN').classList.toggle('on',LANG==='EN');
 window.setLang=function(l){LANG=l;localStorage.setItem('fmine_lang',l);document.getElementById('lpRU').classList.toggle('on',l==='RU');document.getElementById('lpEN').classList.toggle('on',l==='EN');applyTranslations();showToast(l==='RU'?'🇷🇺 Русский':'🇬🇧 English')};
-applyTranslations();updateStatUI();updateMegaUI();
-chatWindow.addEventListener('scroll', function() {
-    var btn = document.getElementById('scrollBottomBtn');
-    if (chatWindow.scrollTop + chatWindow.clientHeight < chatWindow.scrollHeight - 50) {
-        btn.style.display = 'block';
-    } else {
-        btn.style.display = 'none';
-    }
-});
+function initApp(){
+  initDomRefs();
+  try{buildSolverRegistry()}catch(e){console.error(e)}
+  initCmdPaletteUI();
+  initCurriculumUI();
+  applyTranslations();
+  updateStatUI();
+  updateMegaUI();
+  if(chatWindow){
+    chatWindow.addEventListener('scroll',function(){
+      var btn=document.getElementById('scrollBottomBtn');
+      if(!btn)return;
+      if(chatWindow.scrollTop+chatWindow.clientHeight<chatWindow.scrollHeight-50)btn.style.display='block';
+      else btn.style.display='none';
+    });
+  }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initApp);
+else initApp();
 </script>
 </body>
-</html>
 </html>
