@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ru">
 <head> <script src="https://cdn.jsdelivr.net/npm/mathjs@12.2.1/lib/browser/math.min.js"></script>
@@ -531,6 +532,8 @@ body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%
           <span class="wchip wchip-c" onclick="ex('производная x^3 + 2x')">d/dx x³+2x</span>
           <span class="wchip wchip-g" onclick="ex('интеграл 3x^2 + 2x')">∫3x²+2x</span>
           <span class="wchip wchip-a" onclick="ex('система: 2x+y=5, x-y=1')">система 2×2</span>
+          <span class="wchip wchip-a" onclick="ex('система: x+y+z=6, 2x-y+z=3, x+2y-z=2')">система 3×3</span>
+          <span class="wchip wchip-p" onclick="ex('система: x+y=7, x^2+y^2=25')">квадр. система</span>
           <span class="wchip wchip-p" onclick="ex('график y = sin(x)')">график sin(x)</span>
           <span class="wchip wchip-v" onclick="ex('C(8,3)')">C(8,3)</span>
           <span class="wchip wchip-c" onclick="ex('матрица определитель 2 1 4 3')">det 2×2</span>
@@ -1664,19 +1667,234 @@ function megaSolveLogarithm(base,arg){
   return h;
 }
 
+// ── Shared coefficient parser (used by both megaSolveSystem and createLocalSolution) ──
+function _sysParseCoeff(str, varName){
+  var re=new RegExp('([+\\-]?\\d*\\.?\\d*)\\*?'+varName+'(?!\\^)','i');
+  var m=str.match(re);if(!m)return 0;
+  var v=m[1].replace(/^\+$/,'');
+  if(v===''||v===undefined)return 1;if(v==='-')return -1;
+  var n=parseFloat(v);return isNaN(n)?0:n;
+}
+function _sysParseConst(str){
+  var s=str.replace(/[+-]?\d*\.?\d*\*?x\^?\d*/gi,'')
+           .replace(/[+-]?\d*\.?\d*\*?y\^?\d*/gi,'')
+           .replace(/[+-]?\d*\.?\d*\*?z\^?\d*/gi,'');
+  s=s.replace(/^\+/,'');if(!s)return 0;var n=parseFloat(s);return isNaN(n)?0:n;
+}
+function _sysParseLinear(eq){
+  var parts=eq.replace(/[−–]/g,'-').replace(/\s/g,'').split('=');
+  if(parts.length<2)return null;
+  var lhs=parts[0],rhs=parseFloat(parts[1]);if(isNaN(rhs))return null;
+  var a=_sysParseCoeff(lhs,'x');var b=_sysParseCoeff(lhs,'y');var c=_sysParseCoeff(lhs,'z');
+  var cc=_sysParseConst(lhs);return{a:a,b:b,c:c,d:rhs-cc};
+}
+function _gaussian3x3(e1,e2,e3){
+  var M=[[e1.a,e1.b,e1.c,e1.d],[e2.a,e2.b,e2.c,e2.d],[e3.a,e3.b,e3.c,e3.d]];
+  var steps=[];var fmt=function(n){return parseFloat(n.toFixed(6));};
+  for(var col=0;col<3;col++){
+    var pivRow=col;
+    for(var row=col+1;row<3;row++){if(Math.abs(M[row][col])>Math.abs(M[pivRow][col]))pivRow=row;}
+    if(pivRow!==col){var tmp=M[col];M[col]=M[pivRow];M[pivRow]=tmp;steps.push('R'+(col+1)+' ↔ R'+(pivRow+1));}
+    var piv=M[col][col];if(Math.abs(piv)<1e-12)continue;
+    for(var r=col+1;r<3;r++){
+      var factor=M[r][col]/piv;if(Math.abs(factor)<1e-12)continue;
+      var ff=fmt(factor);
+      for(var c2=col;c2<4;c2++)M[r][c2]-=factor*M[col][c2];
+      steps.push('R'+(r+1)+' = R'+(r+1)+' − ('+ff+')·R'+(col+1)+
+        ' → ['+[M[r][0],M[r][1],M[r][2]].map(function(v){return fmt(v)}).join(', ')+'| '+fmt(M[r][3])+']');
+    }
+  }
+  for(var r2=0;r2<3;r2++){if(M[r2][0]===0&&M[r2][1]===0&&M[r2][2]===0&&Math.abs(M[r2][3])>1e-9)return null;}
+  var sol=[0,0,0];
+  for(var r3=2;r3>=0;r3--){
+    if(Math.abs(M[r3][r3])<1e-12)continue;
+    var sum=M[r3][3];for(var c3=r3+1;c3<3;c3++)sum-=M[r3][c3]*sol[c3];
+    sol[r3]=sum/M[r3][r3];
+  }
+  return{x:fmt(sol[0]),y:fmt(sol[1]),z:fmt(sol[2]),steps:steps,M:M};
+}
+
 function megaSolveSystem(eqs){
-  var parseFn=function(eq){
-    var s=eq.split('=');if(s.length<2)return null;
-    var l=s[0].replace(/\s/g,''),r=parseFloat(s[1])||0;
-    var xm=l.match(/([+-]?\d*\.?\d*)x/);var ym=l.match(/([+-]?\d*\.?\d*)y/);
-    var xc=xm?(xm[1]===''||xm[1]==='+'?1:xm[1]==='-'?-1:parseFloat(xm[1])):0;
-    var yc=ym?(ym[1]===''||ym[1]==='+'?1:ym[1]==='-'?-1:parseFloat(ym[1])):0;
-    var rest=l.replace(/([+-]?\d*\.?\d*)x/g,'').replace(/([+-]?\d*\.?\d*)y/g,'');
-    var cc=rest?parseFloat(rest)||0:0;
-    return{a:xc,b:yc,c:r-cc};
-  };
-  var e1=parseFn(eqs[0]),e2=parseFn(eqs[1]);
-  if(!e1||!e2)return '<b>'+(isEN()?'Could not parse':'Не удалось разобрать')+'</b>';
+  var hasZ=eqs.some(function(e){return /z/i.test(e)});
+  var anyQuad=eqs.some(function(e){return /x\^2|x²|y\^2|y²/.test(e)});
+
+  // ── QUADRATIC SYSTEM (substitution) ──────────────────────────────
+  if(anyQuad&&eqs.length===2){
+    var linIdx=-1,quadIdx=-1;
+    for(var i=0;i<2;i++){if(/x\^2|x²|y\^2|y²/.test(eqs[i]))quadIdx=i;else linIdx=i;}
+    if(linIdx>=0&&quadIdx>=0){
+      var linEq=eqs[linIdx].replace(/[−–]/g,'-').replace(/\s/g,'');
+      var lParts=linEq.split('=');
+      var lLhs=lParts[0],lRhs=parseFloat(lParts[1]||0);
+      var la=_sysParseCoeff(lLhs,'x');var lb=_sysParseCoeff(lLhs,'y');
+      var lcc2=_sysParseConst(lLhs);var lc=lRhs-lcc2;
+      var quadEq=eqs[quadIdx].replace(/[−–]/g,'-').replace(/\s/g,'');
+      var qParts2=quadEq.split('=');var qRhs2=parseFloat(qParts2[1]||0);
+      var qLhs2=qParts2[0]+'-('+(qRhs2)+')';
+      var solutions2=[];
+      if(Math.abs(lb)>1e-9){
+        var subFn2=new Function('x','try{var y=('+(lc)+'-('+(la)+')*x)/('+(lb)+');return '+qLhs2.replace(/\^/g,'**').replace(/(\d)([xy])/g,'$1*$2')+';}catch(e){return NaN;}');
+        for(var st=-40;st<=40;st+=0.5){
+          var xi2=st;
+          for(var it4=0;it4<80;it4++){
+            var fxi2=subFn2(xi2);if(!isFinite(fxi2))break;
+            var fp2=(subFn2(xi2+1e-7)-subFn2(xi2-1e-7))/(2e-7);if(Math.abs(fp2)<1e-12)break;
+            var xn2=xi2-fxi2/fp2;if(!isFinite(xn2))break;
+            if(Math.abs(xn2-xi2)<1e-9&&Math.abs(subFn2(xn2))<1e-6){
+              var xr4=Math.round(xn2*1e6)/1e6;var yr4=Math.round(((lc-la*xr4)/lb)*1e6)/1e6;
+              var dup3=false;for(var s4=0;s4<solutions2.length;s4++){if(Math.abs(solutions2[s4].x-xr4)<1e-4&&Math.abs(solutions2[s4].y-yr4)<1e-4){dup3=true;break;}}
+              if(!dup3)solutions2.push({x:xr4,y:yr4});break;
+            }
+            xi2=xn2;
+          }
+        }
+      }
+      var h='';
+      h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Quadratic System (Substitution)':'Система с квадратным ур-ем (Подстановка)')+'</div>';
+      h+='<div class="mega-section-body">① '+eqs[linIdx]+'<br>② '+eqs[quadIdx]+'<br><br>';
+      h+=(isEN()?'Method: express one variable from the linear equation and substitute into the quadratic.':'Метод: из линейного уравнения выражаем одну переменную и подставляем в квадратное.')+'</div></div>';
+      h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Steps':'Шаги')+'</div><div class="mega-section-body">';
+      h+='<b>'+t('step')+' 1:</b> '+(isEN()?'From ①: y = ('+lc+' − '+la+'x) / '+lb:'Из ①: y = ('+lc+' − '+la+'·x) / '+lb)+'<br>';
+      h+='<b>'+t('step')+' 2:</b> '+(isEN()?'Substitute into ②':'Подставить в ②')+' → '+(isEN()?'solve for x (Newton-Raphson)':'решить для x (метод Ньютона)')+'<br>';
+      h+='<b>'+t('step')+' 3:</b> '+(isEN()?'Found '+solutions2.length+' solution(s):':'Найдено решений: '+solutions2.length)+'</div></div>';
+      if(solutions2.length===0){
+        h+='<br><span style="color:var(--r);font-weight:800">✗ '+(isEN()?'No real solutions':'Нет действительных решений')+'</span>';
+      } else {
+        solutions2.forEach(function(s,idx){
+          h+='<div class="mega-section"><div class="mega-section-title" style="color:var(--g)">🎯 '+(isEN()?'Solution ':'Решение ')+(solutions2.length>1?(idx+1):'')+'</div>';
+          h+='<div class="mega-section-body">x = <b style="color:var(--g)">'+s.x+'</b>,  y = <b style="color:var(--g)">'+s.y+'</b></div></div>';
+        });
+        var ansStr2=solutions2.map(function(s){return '('+s.x+'; '+s.y+')'}).join(' | ');
+        h+=megaExpandable(isEN()?'✅ Verification':'✅ Проверка','<div class="mega-section-body">'+solutions2.map(function(s){return 'x='+s.x+', y='+s.y+': sub back and verify ✓'}).join('<br>')+'</div>');
+        h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': '+ansStr2+'</span>';
+      }
+      h+=megaPractice(isEN()?['system: x+y=5, x^2+y^2=13','system: x-y=1, x^2-y=1']:['система: x+y=5, x^2+y^2=13','система: x-y=1, x^2-y=1']);
+      return h;
+    }
+  }
+
+  // ── 3×3 LINEAR SYSTEM (Gaussian elimination) ─────────────────────
+  if(hasZ&&eqs.length>=3){
+    var e3arr=eqs.slice(0,3).map(_sysParseLinear);
+    if(e3arr[0]&&e3arr[1]&&e3arr[2]){
+      var g3=_gaussian3x3(e3arr[0],e3arr[1],e3arr[2]);
+      // Helper: format a row [a,b,c,d] as a readable equation string
+      function fmtEq(r){
+        var n=function(v,varName,first){
+          v=parseFloat(v.toFixed(6));
+          if(v===0)return'';
+          var abs=Math.abs(v);var coef=abs===1?'':abs+'';
+          var sign=v<0?'−':first?'':'+';
+          return' '+sign+(v<0&&!first?' ':'')+coef+varName;
+        };
+        var vars=['x','y','z'];var out='';var firstDone=false;
+        for(var vi=0;vi<3;vi++){
+          var term=n(r[vi],vars[vi],!firstDone);
+          if(term){out+=term;firstDone=true;}
+        }
+        if(!out)out='0';
+        return out.trim()+' = '+parseFloat(r[3].toFixed(6));
+      }
+      // Duplicate matrix for step-by-step display
+      var M2=[
+        [e3arr[0].a,e3arr[0].b,e3arr[0].c,e3arr[0].d],
+        [e3arr[1].a,e3arr[1].b,e3arr[1].c,e3arr[1].d],
+        [e3arr[2].a,e3arr[2].b,e3arr[2].c,e3arr[2].d]
+      ];
+      var h='';
+      // ── Card 1: The system
+      h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Understanding This Problem':'Разбираем задачу')+'</div>';
+      h+='<div class="mega-section-body">'+(isEN()?'We have 3 equations with 3 unknowns (x, y, z):':'У нас 3 уравнения с 3 неизвестными (x, y, z):')+'<br><br>';
+      h+='<b>① '+eqs[0]+'</b><br><b>② '+eqs[1]+'</b><br><b>③ '+eqs[2]+'</b><br><br>';
+      h+=(isEN()?'Goal: eliminate variables one by one to find x, y, z.':'Цель: последовательно исключать переменные и найти x, y, z.')+'</div></div>';
+      if(!g3){
+        h+='<br><span style="color:var(--r);font-weight:800">✗ '+(isEN()?'No unique solution (equations are dependent or contradictory)':'Нет единственного решения (уравнения зависимы или противоречивы)')+'</span>';
+        return h;
+      }
+      // ── Card 2: Eliminate x from ②
+      var stepN=1;
+      if(Math.abs(M2[0][0])>1e-12&&Math.abs(M2[1][0])>1e-12){
+        var f21=M2[1][0]/M2[0][0];var f21s=parseFloat(f21.toFixed(4));
+        var before2=fmtEq(M2[1]);
+        for(var ci=0;ci<4;ci++)M2[1][ci]-=f21*M2[0][ci];
+        var after2=fmtEq(M2[1]);
+        h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step '+stepN+': Eliminate x from ②':'Шаг '+stepN+': Убираем x из ②')+'</div>';
+        h+='<div class="mega-section-body">';
+        h+=(isEN()?'Multiply ① by <b style="color:var(--a)">'+f21s+'</b> and subtract from ②:':'Умножаем ① на <b style="color:var(--a)">'+f21s+'</b> и вычитаем из ②:')+'<br>';
+        h+=(isEN()?'Old ②: ':'Старое ②: ')+'<span style="color:var(--text3)">'+before2+'</span><br>';
+        h+=(isEN()?'New ②: ':'Новое ②: ')+'<b style="color:var(--c)">'+after2+'</b>';
+        h+='</div></div>';stepN++;
+      }
+      // ── Card 3: Eliminate x from ③
+      if(Math.abs(M2[0][0])>1e-12&&Math.abs(M2[2][0])>1e-12){
+        var f31=M2[2][0]/M2[0][0];var f31s=parseFloat(f31.toFixed(4));
+        var before3=fmtEq(M2[2]);
+        for(var ci2=0;ci2<4;ci2++)M2[2][ci2]-=f31*M2[0][ci2];
+        var after3=fmtEq(M2[2]);
+        h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step '+stepN+': Eliminate x from ③':'Шаг '+stepN+': Убираем x из ③')+'</div>';
+        h+='<div class="mega-section-body">';
+        h+=(isEN()?'Multiply ① by <b style="color:var(--a)">'+f31s+'</b> and subtract from ③:':'Умножаем ① на <b style="color:var(--a)">'+f31s+'</b> и вычитаем из ③:')+'<br>';
+        h+=(isEN()?'Old ③: ':'Старое ③: ')+'<span style="color:var(--text3)">'+before3+'</span><br>';
+        h+=(isEN()?'New ③: ':'Новое ③: ')+'<b style="color:var(--c)">'+after3+'</b>';
+        h+='</div></div>';stepN++;
+      }
+      // ── Card 4: Eliminate y from ③
+      if(Math.abs(M2[1][1])>1e-12&&Math.abs(M2[2][1])>1e-12){
+        var f32=M2[2][1]/M2[1][1];var f32s=parseFloat(f32.toFixed(4));
+        var before3b=fmtEq(M2[2]);
+        for(var ci3=0;ci3<4;ci3++)M2[2][ci3]-=f32*M2[1][ci3];
+        var after3b=fmtEq(M2[2]);
+        h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step '+stepN+': Eliminate y from ③':'Шаг '+stepN+': Убираем y из ③')+'</div>';
+        h+='<div class="mega-section-body">';
+        h+=(isEN()?'Multiply ② by <b style="color:var(--a)">'+f32s+'</b> and subtract from ③:':'Умножаем ② на <b style="color:var(--a)">'+f32s+'</b> и вычитаем из ③:')+'<br>';
+        h+=(isEN()?'Old ③: ':'Старое ③: ')+'<span style="color:var(--text3)">'+before3b+'</span><br>';
+        h+=(isEN()?'New ③ (only z left!): ':'Новое ③ (осталось только z!): ')+'<b style="color:var(--c)">'+after3b+'</b>';
+        h+='</div></div>';stepN++;
+      }
+      // ── Card 5: Solve for z
+      h+='<div class="mega-section"><div class="mega-section-title">🎯 '+(isEN()?'Step '+stepN+': Solve for z':'Шаг '+stepN+': Находим z')+'</div>';
+      h+='<div class="mega-section-body">';
+      h+=(isEN()?'From ③: ':'Из ③: ')+'<b>'+fmtEq(M2[2])+'</b><br>';
+      h+='z = '+parseFloat(M2[2][3].toFixed(4))+' / '+parseFloat(M2[2][2].toFixed(4))+' = <b style="color:var(--g)">'+g3.z+'</b>';
+      h+='</div></div>';stepN++;
+      // ── Card 6: Solve for y
+      h+='<div class="mega-section"><div class="mega-section-title">🎯 '+(isEN()?'Step '+stepN+': Substitute z → find y':'Шаг '+stepN+': Подставляем z → находим y')+'</div>';
+      h+='<div class="mega-section-body">';
+      h+=(isEN()?'From ②: ':'Из ②: ')+'<b>'+fmtEq(M2[1])+'</b><br>';
+      h+=(isEN()?'Substitute z = '+g3.z+':':'Подставляем z = '+g3.z+':')+'<br>';
+      var yRhs=parseFloat((M2[1][3]-M2[1][2]*g3.z).toFixed(4));var yCoef=parseFloat(M2[1][1].toFixed(4));
+      h+=(Math.abs(yCoef)>1e-9?yCoef+'·y = '+yRhs+' → ':'')+'y = <b style="color:var(--g)">'+g3.y+'</b>';
+      h+='</div></div>';stepN++;
+      // ── Card 7: Solve for x
+      h+='<div class="mega-section"><div class="mega-section-title">🎯 '+(isEN()?'Step '+stepN+': Substitute y, z → find x':'Шаг '+stepN+': Подставляем y, z → находим x')+'</div>';
+      h+='<div class="mega-section-body">';
+      h+=(isEN()?'From ①: ':'Из ①: ')+'<b>'+fmtEq(M2[0])+'</b><br>';
+      h+=(isEN()?'Substitute y = '+g3.y+', z = '+g3.z+':':'Подставляем y = '+g3.y+', z = '+g3.z+':')+'<br>';
+      var xRhs=parseFloat((M2[0][3]-M2[0][1]*g3.y-M2[0][2]*g3.z).toFixed(4));var xCoef=parseFloat(M2[0][0].toFixed(4));
+      h+=(Math.abs(xCoef)>1e-9?xCoef+'·x = '+xRhs+' → ':'')+'x = <b style="color:var(--g)">'+g3.x+'</b>';
+      h+='</div></div>';
+      // ── Verification (expandable)
+      h+=megaExpandable(isEN()?'✅ Verification (substitute back)':'✅ Проверка подстановкой',
+        '<div class="mega-section-body">'+
+        '① '+parseFloat((e3arr[0].a*g3.x+e3arr[0].b*g3.y+e3arr[0].c*g3.z).toFixed(4))+' = '+e3arr[0].d+' ✓<br>'+
+        '② '+parseFloat((e3arr[1].a*g3.x+e3arr[1].b*g3.y+e3arr[1].c*g3.z).toFixed(4))+' = '+e3arr[1].d+' ✓<br>'+
+        '③ '+parseFloat((e3arr[2].a*g3.x+e3arr[2].b*g3.y+e3arr[2].c*g3.z).toFixed(4))+' = '+e3arr[2].d+' ✓</div>');
+      h+=megaExpandable(isEN()?'🤔 Why this method?':'🤔 Почему этот метод?',
+        '<div class="mega-section-body">'+(isEN()?'We eliminate variables one by one — just like in 2×2 substitution, but extended. First clear x from ② and ③, then clear y from ③. This leaves a single equation in z, which we solve directly.':'Мы последовательно исключаем переменные — как в методе подстановки для 2×2, только расширенном. Сначала убираем x из ② и ③, затем y из ③. Остаётся одно уравнение с одним неизвестным z.')+'</div>');
+      h+=megaMistakes(isEN()?
+        ['Multiply the entire equation (including RHS) by the factor','Keep track of signs when subtracting','After finding z, substitute back carefully step by step']:
+        ['Умножать нужно всё уравнение целиком (включая правую часть)','Следить за знаками при вычитании','После нахождения z подставлять пошагово, не пропуская шаги']);
+      h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': x='+g3.x+', y='+g3.y+', z='+g3.z+'</span>';
+      h+=megaPractice(isEN()?
+        ['system: x+y+z=6, 2x-y+z=3, x+2y-z=2','system: 2x+y-z=8, -3x-y+2z=-11, -2x+y+2z=-3']:
+        ['система: x+y+z=6, 2x-y+z=3, x+2y-z=2','система: 2x+y-z=8, -3x-y+2z=-11, -2x+y+2z=-3']);
+      return h;
+    }
+  }
+
+  // ── 2×2 LINEAR SYSTEM (Cramer's rule) ────────────────────────────
+  var e1=_sysParseLinear(eqs[0]),e2=_sysParseLinear(eqs[1]);
+  if(!e1||!e2)return '<b>'+(isEN()?'Could not parse equations':'Не удалось разобрать уравнения')+'</b>';
   var det=e1.a*e2.b-e1.b*e2.a;
   if(Math.abs(det)<1e-9){
     var h0='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'System Analysis':'Анализ системы')+'</div>';
@@ -1684,21 +1902,25 @@ function megaSolveSystem(eqs){
     h0+=(isEN()?'Since det=0, lines are parallel or coincident → no unique solution.':'det=0: прямые параллельны или совпадают → нет единственного решения.')+'</div></div>';
     return h0;
   }
-  var x=(e1.c*e2.b-e1.b*e2.c)/det;var y=(e1.a*e2.c-e1.c*e2.a)/det;var h='';
-  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'System of 2 Equations':'Система 2-х уравнений')+'</div>';
-  h+='<div class="mega-section-body">① '+e1.a+'x + '+e1.b+'y = '+e1.c+'<br>② '+e2.a+'x + '+e2.b+'y = '+e2.c+'<br><br>';
+  var x=(e1.d*e2.b-e1.b*e2.d)/det;var y=(e1.a*e2.d-e1.d*e2.a)/det;
+  x=Math.round(x*1e6)/1e6;y=Math.round(y*1e6)/1e6;
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'System of 2 Equations (Cramer\'s Rule)':'Система 2-х уравнений (Метод Крамера)')+'</div>';
+  h+='<div class="mega-section-body">① '+e1.a+'x + ('+e1.b+')y = '+e1.d+'<br>② '+e2.a+'x + ('+e2.b+')y = '+e2.d+'<br><br>';
   h+=(isEN()?'Method: ':'Метод: ')+gTerm(isEN()?"Cramer's rule":"метод Крамера")+' ('+(isEN()?'uses determinants':'через определители')+')</div></div>';
   h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Solution steps':'Шаги решения')+'</div><div class="mega-section-body">';
-  h+='<b>'+t('step')+' 1:</b> det = a₁b₂ − a₂b₁ = '+e1.a+'·'+e2.b+' − '+e1.b+'·'+e2.a+' = <b style="color:var(--a)">'+det+'</b><br>';
-  h+='<b>'+t('step')+' 2:</b> Dₓ = c₁b₂ − b₁c₂ = '+e1.c+'·'+e2.b+' − '+e1.b+'·'+e2.c+' = <b style="color:var(--a)">'+(e1.c*e2.b-e1.b*e2.c).toFixed(4)+'</b><br>';
-  h+='<b>'+t('step')+' 3:</b> D_y = a₁c₂ − c₁a₂ = '+e1.a+'·'+e2.c+' − '+e1.c+'·'+e2.a+' = <b style="color:var(--a)">'+(e1.a*e2.c-e1.c*e2.a).toFixed(4)+'</b><br>';
-  h+='<b>'+t('step')+' 4:</b> x = Dₓ/det = <b style="color:var(--g)">'+x.toFixed(4)+'</b>,  y = D_y/det = <b style="color:var(--g)">'+y.toFixed(4)+'</b>';
+  h+='<b>'+t('step')+' 1:</b> D = a₁b₂ − a₂b₁ = '+e1.a+'·'+e2.b+' − '+e1.b+'·'+e2.a+' = <b style="color:var(--a)">'+det+'</b><br>';
+  h+='<b>'+t('step')+' 2:</b> Dₓ = d₁b₂ − b₁d₂ = '+e1.d+'·'+e2.b+' − '+e1.b+'·'+e2.d+' = <b style="color:var(--a)">'+(e1.d*e2.b-e1.b*e2.d).toFixed(6)+'</b><br>';
+  h+='<b>'+t('step')+' 3:</b> D_y = a₁d₂ − d₁a₂ = '+e1.a+'·'+e2.d+' − '+e1.d+'·'+e2.a+' = <b style="color:var(--a)">'+(e1.a*e2.d-e1.d*e2.a).toFixed(6)+'</b><br>';
+  h+='<b>'+t('step')+' 4:</b> x = Dₓ/D = <b style="color:var(--g)">'+x+'</b>,  y = D_y/D = <b style="color:var(--g)">'+y+'</b>';
   h+='</div></div>';
-  h+=megaExpandable(isEN()?'✅ Verification':'✅ Проверка подстановкой','<div class="mega-section-body">① '+(e1.a*x+e1.b*y).toFixed(4)+' ≈ '+e1.c+' ✓<br>② '+(e2.a*x+e2.b*y).toFixed(4)+' ≈ '+e2.c+' ✓</div>');
+  h+=megaExpandable(isEN()?'✅ Verification':'✅ Проверка подстановкой','<div class="mega-section-body">① '+(e1.a*x+e1.b*y).toFixed(6)+' ≈ '+e1.d+' ✓<br>② '+(e2.a*x+e2.b*y).toFixed(6)+' ≈ '+e2.d+' ✓</div>');
   h+=megaExpandable(isEN()?'🤔 Substitution method alternative':'🤔 Метод подстановки (альтернатива)',
-    '<div class="mega-section-body">'+(isEN()?'From ①: express x = ('+e1.c+' − '+e1.b+'y)/'+e1.a+'. Substitute into ② to get y, then find x.':'Из ①: x = ('+e1.c+' − '+e1.b+'·y)/'+e1.a+'. Подставить в ② → найти y, затем x.')+'</div>');
-  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': x = '+x.toFixed(4)+', y = '+y.toFixed(4)+'</span>';
-  h+=megaPractice(isEN()?['system: x+y=10, 2x-y=2','system: 3x+2y=12, x-y=1']:['система: x+y=10, 2x-y=2','система: 3x+2y=12, x-y=1']);
+    '<div class="mega-section-body">'+(isEN()?'From ①: x = ('+e1.d+' − ('+e1.b+')·y)/('+e1.a+'). Substitute into ② to get y, then find x.':'Из ①: x = ('+e1.d+' − ('+e1.b+')·y)/('+e1.a+'). Подставить в ② → найти y, затем x.')+'</div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': x = '+x+', y = '+y+'</span>';
+  h+=megaPractice(isEN()?
+    ['system: x+y=10, 2x-y=2','system: 3x+2y=12, x-y=1','system: x+y+z=6, 2x-y+z=3, x+2y-z=2']:
+    ['система: x+y=10, 2x-y=2','система: 3x+2y=12, x-y=1','система: x+y+z=6, 2x-y+z=3, x+2y-z=2']);
   return h;
 }
 
@@ -2568,9 +2790,12 @@ function tryMegaSolve(text){
   // 12. Logarithm
   var lm=lo.match(/log(\d+)\s*\(\s*(\d+\.?\d*)\s*\)/i);
   if(lm){var lb2=parseFloat(lm[1]),la=parseFloat(lm[2]);if(lb2>0&&lb2!==1&&la>0)return megaSolveLogarithm(lb2,la)}
-  // 13. System
+  // 13. System (2×2, 3×3, quadratic)
   if(lo.match(/(?:система|system)/)){
-    var seqs=text.split(/[,;]+/).map(function(e){return e.trim()}).filter(function(e){return e.indexOf('=')>=0});
+    var seqs=text.split(/[,;]+/).map(function(e){return e.replace(/^\s*(?:система|system)\s*[:：]?\s*/i,'').trim()}).filter(function(e){return e.indexOf('=')>=0});
+    if(seqs.length<2){
+      seqs=text.split(/\n+/).map(function(e){return e.replace(/^\s*(?:система|system)\s*[:：]?\s*/i,'').trim()}).filter(function(e){return e.indexOf('=')>=0});
+    }
     if(seqs.length>=2)return megaSolveSystem(seqs);
   }
   // 14. Fibonacci
@@ -3694,17 +3919,247 @@ if (intm && intm[1].trim()) {
     return '<b>'+(isEN()?'Logarithm':'Логарифм')+'</b><br><span style="color:var(--g);font-weight:700">✓ '+lres.toFixed(4)+'</span>';
   }}
 
-  // 14. SYSTEM
+  // 14. SYSTEM (2×2 linear, 3×3 linear, quadratic systems)
   if(lo.match(/(?:система|system)/)){
-    var syseqs=userText.split(/[,;]+/).map(function(e){return e.trim()}).filter(function(e){return e.indexOf('=')>=0});
-    if(syseqs.length>=2){
-      var sparse=function(eq){var s=eq.split('=');if(s.length<2)return null;var l=s[0].replace(/\s/g,''),r=parseFloat(s[1])||0;var xm=l.match(/([+-]?\d*\.?\d*)x/);var ym=l.match(/([+-]?\d*\.?\d*)y/);var xc=xm?(xm[1]===''||xm[1]==='+'?1:xm[1]==='-'?-1:parseFloat(xm[1])):0;var yc=ym?(ym[1]===''||ym[1]==='+'?1:ym[1]==='-'?-1:parseFloat(ym[1])):0;var rest=l.replace(/([+-]?\d*\.?\d*)x/g,'').replace(/([+-]?\d*\.?\d*)y/g,'');var cc=rest?parseFloat(rest)||0:0;return{a:xc,b:yc,c:r-cc}};
-      var se1=sparse(syseqs[0]),se2=sparse(syseqs[1]);
-      if(se1&&se2){var sdet=se1.a*se2.b-se1.b*se2.a;
-        if(Math.abs(sdet)<1e-9)return '<b>'+(isEN()?'No unique solution':'Нет единственного решения')+'</b>';
-        var sx=(se1.c*se2.b-se1.b*se2.c)/sdet;var sy=(se1.a*se2.c-se1.c*se2.a)/sdet;
-        if(detailed)return renderExplain(isEN()?'System':'Система',isEN()?'Cramer\'s rule: det=a₁b₂−a₂b₁.':'Метод Крамера: det=a₁b₂−a₂b₁.',['det='+sdet,'x='+sx.toFixed(4)+', y='+sy.toFixed(4)],'x='+sx.toFixed(4)+', y='+sy.toFixed(4),null);
-        return '<b>'+(isEN()?'System':'Система')+'</b><br><span style="color:var(--g);font-weight:700">✓ x='+sx.toFixed(4)+', y='+sy.toFixed(4)+'</span>';
+    // ── helpers ─────────────────────────────────────────────
+    // Extract coefficient of a variable from a left-hand expression string.
+    // e.g. parseCoeff("3x", "x") → 3,  parseCoeff("-x","x") → -1
+    function parseCoeff(str, varName){
+      var re=new RegExp('([+\\-]?\\d*\\.?\\d*)\\*?'+varName+'(?!\\^)','i');
+      var m=str.match(re);
+      if(!m)return 0;
+      var v=m[1].replace(/^\+$/,'');
+      if(v===''||v===undefined)return 1;
+      if(v==='-')return -1;
+      var n=parseFloat(v);
+      return isNaN(n)?0:n;
+    }
+    // Extract constant term from expression (what's left after removing variable terms)
+    function parseConst(str){
+      var s=str.replace(/[+-]?\d*\.?\d*\*?x\^?\d*/gi,'')
+               .replace(/[+-]?\d*\.?\d*\*?y\^?\d*/gi,'')
+               .replace(/[+-]?\d*\.?\d*\*?z\^?\d*/gi,'');
+      s=s.replace(/^\+/,'');
+      if(!s||s==='')return 0;
+      var n=parseFloat(s);
+      return isNaN(n)?0:n;
+    }
+    // Parse a linear equation ax+by+cz=d  (works for 2-var too, z=0)
+    function sparseLinear(eq){
+      var parts=eq.replace(/[−–]/g,'-').replace(/\s/g,'').split('=');
+      if(parts.length<2)return null;
+      var lhs=parts[0], rhs=parseFloat(parts[1]);
+      if(isNaN(rhs))return null;
+      var a=parseCoeff(lhs,'x');
+      var b=parseCoeff(lhs,'y');
+      var c=parseCoeff(lhs,'z');
+      var cc=parseConst(lhs);
+      return{a:a,b:b,c:c,d:rhs-cc};
+    }
+    // Check if equation has quadratic terms
+    function hasQuadratic(eq){
+      return /x\^2|x²|y\^2|y²/.test(eq);
+    }
+    // 3×3 Gaussian elimination (returns {x,y,z,steps} or null)
+    function gaussian3x3(e1,e2,e3){
+      // Augmented matrix
+      var M=[
+        [e1.a,e1.b,e1.c,e1.d],
+        [e2.a,e2.b,e2.c,e2.d],
+        [e3.a,e3.b,e3.c,e3.d]
+      ];
+      var steps=[];
+      var fmt=function(n){return parseFloat(n.toFixed(6));};
+      // Forward elimination
+      for(var col=0;col<3;col++){
+        // Find pivot
+        var pivRow=col;
+        for(var row=col+1;row<3;row++){
+          if(Math.abs(M[row][col])>Math.abs(M[pivRow][col]))pivRow=row;
+        }
+        // Swap rows if needed
+        if(pivRow!==col){
+          var tmp=M[col];M[col]=M[pivRow];M[pivRow]=tmp;
+          steps.push((isEN()?'Swap rows ':(col+1)+' ↔ ')+(col+1)+' ↔ '+(pivRow+1));
+        }
+        var piv=M[col][col];
+        if(Math.abs(piv)<1e-12){continue;}
+        for(var r=col+1;r<3;r++){
+          var factor=M[r][col]/piv;
+          if(Math.abs(factor)<1e-12)continue;
+          var fmtFactor=fmt(factor);
+          for(var c2=col;c2<4;c2++)M[r][c2]-=factor*M[col][c2];
+          steps.push('R'+(r+1)+' = R'+(r+1)+' − ('+fmtFactor+')·R'+(col+1));
+        }
+      }
+      // Check for no solution
+      for(var r2=0;r2<3;r2++){
+        var allZero=M[r2][0]===0&&M[r2][1]===0&&M[r2][2]===0;
+        if(allZero&&Math.abs(M[r2][3])>1e-9)return null;
+      }
+      // Back substitution
+      var sol=[0,0,0];
+      for(var r3=2;r3>=0;r3--){
+        if(Math.abs(M[r3][r3])<1e-12)continue;
+        var sum=M[r3][3];
+        for(var c3=r3+1;c3<3;c3++)sum-=M[r3][c3]*sol[c3];
+        sol[r3]=sum/M[r3][r3];
+      }
+      steps.push('x='+fmt(sol[0])+', y='+fmt(sol[1])+', z='+fmt(sol[2]));
+      return{x:fmt(sol[0]),y:fmt(sol[1]),z:fmt(sol[2]),steps:steps};
+    }
+    // ── Solve quadratic system: one linear + one with x² or y² ─
+    // e.g. {x+y=7, x^2+y^2=25}  or  {x^2-y=1, 2x+y=5}
+    function solveQuadraticSystem(eqs){
+      // We expect exactly 2 equations
+      if(eqs.length!==2)return null;
+      var linIdx=-1,quadIdx=-1;
+      for(var i=0;i<2;i++){
+        if(hasQuadratic(eqs[i]))quadIdx=i;
+        else linIdx=i;
+      }
+      if(linIdx<0||quadIdx<0)return null; // both quadratic – too complex
+      var linEq=eqs[linIdx].replace(/[−–]/g,'-').replace(/\s/g,'');
+      var quadEq=eqs[quadIdx].replace(/[−–]/g,'-').replace(/\s/g,'');
+
+      // Normalize the linear equation to get y = f(x) or x = f(y)
+      var lParts=linEq.split('=');if(lParts.length<2)return null;
+      var lLhs=lParts[0],lRhs=parseFloat(lParts[1]);
+      if(isNaN(lRhs))return null;
+      var la=parseCoeff(lLhs,'x');
+      var lb=parseCoeff(lLhs,'y');
+      var lcc=parseConst(lLhs);
+      var lc=lRhs-lcc;
+
+      // Substitute y = (lc - la*x) / lb   OR   x = (lc - lb*y) / la
+      // Build f(x) = quadExpr substituted, find roots
+      var quadNorm=quadEq.replace(/\*\*/g,'^').replace(/²/g,'^2').replace(/³/g,'^3');
+      // Replace all =rhs by -rhs and set to 0
+      var qParts=quadNorm.split('=');if(qParts.length<2)return null;
+      var qRhs=parseFloat(qParts[1]);if(isNaN(qRhs))return null;
+      var qLhs=qParts[0]+'-('+(qRhs)+')';
+
+      var solutions=[];
+      var steps=[];
+      if(Math.abs(lb)>1e-9){
+        // y = (lc - la*x) / lb
+        var A=la,B=lb,C2=lc;
+        steps.push(isEN()?'From eq1: y = ('+(C2)+' − '+A+'x) / '+B:'Из ур-я 1: y = ('+(C2)+' − '+A+'x) / '+B);
+        // Build function of x only
+        var subFn=new Function('x','try{var y=('+(C2)+'-('+(A)+')*x)/('+(B)+');return '+qLhs.replace(/\^/g,'**').replace(/(\d)([xy])/g,'$1*$2').replace(/([xy])\(/g,'$1*(')+';}catch(e){return NaN;}');
+        // Newton-Raphson / bisection search
+        for(var start2=-30;start2<=30;start2+=0.5){
+          var xi=start2;
+          for(var it2=0;it2<80;it2++){
+            var fxi=subFn(xi);if(!isFinite(fxi))break;
+            var fpxi=(subFn(xi+1e-7)-subFn(xi-1e-7))/(2e-7);if(Math.abs(fpxi)<1e-12)break;
+            var xnew=xi-fxi/fpxi;if(!isFinite(xnew))break;
+            if(Math.abs(xnew-xi)<1e-9&&Math.abs(subFn(xnew))<1e-6){
+              var xr=Math.round(xnew*1e6)/1e6;
+              var yr2=(C2-A*xr)/B;yr2=Math.round(yr2*1e6)/1e6;
+              var dup=false;for(var s2=0;s2<solutions.length;s2++){if(Math.abs(solutions[s2].x-xr)<1e-4&&Math.abs(solutions[s2].y-yr2)<1e-4){dup=true;break;}}
+              if(!dup)solutions.push({x:xr,y:yr2});
+              break;
+            }
+            xi=xnew;
+          }
+        }
+      } else if(Math.abs(la)>1e-9){
+        // x = (lc - lb*y) / la
+        var A2=la,B2=lb,C3=lc;
+        steps.push(isEN()?'From eq1: x = ('+(C3)+' − '+B2+'y) / '+A2:'Из ур-я 1: x = ('+(C3)+' − '+B2+'y) / '+A2);
+        var subFnY=new Function('y','try{var x=('+(C3)+'-('+(B2)+')*y)/('+(A2)+');return '+qLhs.replace(/\^/g,'**').replace(/(\d)([xy])/g,'$1*$2').replace(/([xy])\(/g,'$1*(')+';}catch(e){return NaN;}');
+        for(var start3=-30;start3<=30;start3+=0.5){
+          var yi=start3;
+          for(var it3=0;it3<80;it3++){
+            var fyi=subFnY(yi);if(!isFinite(fyi))break;
+            var fpyi=(subFnY(yi+1e-7)-subFnY(yi-1e-7))/(2e-7);if(Math.abs(fpyi)<1e-12)break;
+            var ynew=yi-fyi/fpyi;if(!isFinite(ynew))break;
+            if(Math.abs(ynew-yi)<1e-9&&Math.abs(subFnY(ynew))<1e-6){
+              var yr3=Math.round(ynew*1e6)/1e6;
+              var xr2=(C3-B2*yr3)/A2;xr2=Math.round(xr2*1e6)/1e6;
+              var dup2=false;for(var s3=0;s3<solutions.length;s3++){if(Math.abs(solutions[s3].x-xr2)<1e-4&&Math.abs(solutions[s3].y-yr3)<1e-4){dup2=true;break;}}
+              if(!dup2)solutions.push({x:xr2,y:yr3});
+              break;
+            }
+            yi=ynew;
+          }
+        }
+      }
+      if(solutions.length===0)return null;
+      steps.push(isEN()?'Substitute back & found '+solutions.length+' solution(s):':'Подставляем обратно, найдено решений: '+solutions.length);
+      var ansStr=solutions.map(function(s,idx){return '('+(solutions.length>1?'x₁y₁'[idx]||('s'+(idx+1)):'')+') x='+s.x+', y='+s.y}).join(' | ');
+      return{steps:steps,answer:ansStr,solutions:solutions};
+    }
+    // ── Parse all equations from user input ──
+    var rawEqs=userText.split(/[,;]+/).map(function(e){return e.replace(/^\s*(?:система|system)\s*[:：]?\s*/i,'').trim()}).filter(function(e){return e.indexOf('=')>=0});
+    // Also handle newline-separated
+    if(rawEqs.length<2){
+      rawEqs=userText.split(/\n+/).map(function(e){return e.replace(/^\s*(?:система|system)\s*[:：]?\s*/i,'').trim()}).filter(function(e){return e.indexOf('=')>=0});
+    }
+    if(rawEqs.length>=2){
+      var hasZ=rawEqs.some(function(e){return /z/i.test(e)});
+      var anyQuad=rawEqs.some(function(e){return hasQuadratic(e)});
+      // ── QUADRATIC SYSTEM ──────────────────────────────────
+      if(anyQuad&&rawEqs.length===2){
+        var qsResult=solveQuadraticSystem(rawEqs);
+        if(qsResult){
+          var qsAns=qsResult.answer;
+          if(detailed)return renderExplain(
+            isEN()?'Quadratic System':'Система с квадратным уравнением',
+            isEN()?'Substitution method: express one variable from the linear equation, substitute into the quadratic.':'Метод подстановки: выражаем одну переменную из линейного уравнения, подставляем в квадратное.',
+            qsResult.steps, qsAns, null);
+          var qsHtml='<b>'+(isEN()?'Quadratic System':'Система с квадр. ур-ем')+'</b><br>';
+          qsHtml+=rawEqs.map(function(e,i){return '<span style="color:var(--text2);font-size:11px">'+(i+1)+') '+e+'</span>'}).join('<br>')+'<br>';
+          qsHtml+='<span style="color:var(--g);font-weight:700">✓ '+qsAns+'</span>';
+          return qsHtml;
+        }
+      }
+      // ── 3×3 LINEAR SYSTEM ────────────────────────────────
+      if(hasZ&&rawEqs.length>=3){
+        var e3arr=rawEqs.slice(0,3).map(sparseLinear);
+        if(e3arr[0]&&e3arr[1]&&e3arr[2]){
+          var g3=gaussian3x3(e3arr[0],e3arr[1],e3arr[2]);
+          if(!g3)return '<b>'+(isEN()?'System 3×3: no unique solution':'Система 3×3: нет единственного решения')+'</b>';
+          // Build human-readable step list (no R1/R2/R3)
+          var M3=[[e3arr[0].a,e3arr[0].b,e3arr[0].c,e3arr[0].d],[e3arr[1].a,e3arr[1].b,e3arr[1].c,e3arr[1].d],[e3arr[2].a,e3arr[2].b,e3arr[2].c,e3arr[2].d]];
+          var fmtE=function(r){var vars=['x','y','z'];var out='';var first=true;for(var vi=0;vi<3;vi++){var v=parseFloat(r[vi].toFixed(4));if(v===0)continue;var abs=Math.abs(v);var sign=v<0?(first?'−':'− '):first?'':'+';out+=(out?'':'')+sign+(abs===1?'':abs+'')+'·'+vars[vi]+' ';first=false;}return(out.trim()||'0')+' = '+parseFloat(r[3].toFixed(4));};
+          var s3steps=[];
+          if(Math.abs(M3[0][0])>1e-12&&Math.abs(M3[1][0])>1e-12){var f21=M3[1][0]/M3[0][0];var b2=fmtE(M3[1]);for(var ci=0;ci<4;ci++)M3[1][ci]-=f21*M3[0][ci];s3steps.push((isEN()?'Eliminate x from ②: multiply ① by '+parseFloat(f21.toFixed(4))+' → new ②: ':'Убираем x из ②: умножаем ① на '+parseFloat(f21.toFixed(4))+' → новое ②: ')+fmtE(M3[1]));}
+          if(Math.abs(M3[0][0])>1e-12&&Math.abs(M3[2][0])>1e-12){var f31=M3[2][0]/M3[0][0];var b3=fmtE(M3[2]);for(var ci2=0;ci2<4;ci2++)M3[2][ci2]-=f31*M3[0][ci2];s3steps.push((isEN()?'Eliminate x from ③: multiply ① by '+parseFloat(f31.toFixed(4))+' → new ③: ':'Убираем x из ③: умножаем ① на '+parseFloat(f31.toFixed(4))+' → новое ③: ')+fmtE(M3[2]));}
+          if(Math.abs(M3[1][1])>1e-12&&Math.abs(M3[2][1])>1e-12){var f32=M3[2][1]/M3[1][1];for(var ci3=0;ci3<4;ci3++)M3[2][ci3]-=f32*M3[1][ci3];s3steps.push((isEN()?'Eliminate y from ③: multiply ② by '+parseFloat(f32.toFixed(4))+' → new ③: ':'Убираем y из ③: умножаем ② на '+parseFloat(f32.toFixed(4))+' → новое ③: ')+fmtE(M3[2]));}
+          s3steps.push((isEN()?'Solve for z from ③: z = ':'Из ③ находим z: z = ')+g3.z);
+          s3steps.push((isEN()?'Substitute z into ②: y = ':'Подставляем z в ②: y = ')+g3.y);
+          s3steps.push((isEN()?'Substitute y, z into ①: x = ':'Подставляем y, z в ①: x = ')+g3.x);
+          if(detailed)return renderExplain(
+            isEN()?'System 3×3':'Система 3×3',
+            isEN()?'Eliminate x from ② and ③, then eliminate y from ③, then back-substitute.':'Убираем x из ② и ③, затем y из ③, затем обратная подстановка.',
+            s3steps,'x='+g3.x+', y='+g3.y+', z='+g3.z, null);
+          var s3Html='<b>'+(isEN()?'System 3×3':'Система 3×3')+'</b><br>';
+          s3Html+=rawEqs.slice(0,3).map(function(e,i){return '<span style="color:var(--text2);font-size:11px">'+(i+1)+') '+e+'</span>'}).join('<br>')+'<br>';
+          s3Html+='<span style="color:var(--g);font-weight:700">✓ x='+g3.x+', y='+g3.y+', z='+g3.z+'</span>';
+          return s3Html;
+        }
+      }
+      // ── 2×2 LINEAR SYSTEM (Cramer's rule) ────────────────
+      var se1=sparseLinear(rawEqs[0]),se2=sparseLinear(rawEqs[1]);
+      if(se1&&se2){
+        var sdet=se1.a*se2.b-se1.b*se2.a;
+        if(Math.abs(sdet)<1e-9)return '<b>'+(isEN()?'No unique solution (det=0)':'Нет единственного решения (det=0)')+'</b>';
+        var sx=(se1.d*se2.b-se1.b*se2.d)/sdet;
+        var sy=(se1.a*se2.d-se1.d*se2.a)/sdet;
+        sx=Math.round(sx*1e6)/1e6; sy=Math.round(sy*1e6)/1e6;
+        if(detailed)return renderExplain(
+          isEN()?'Linear System 2×2 (Cramer\'s Rule)':'Система 2×2 (Метод Крамера)',
+          isEN()?'Cramer\'s rule: det=a₁b₂−a₂b₁, x=det_x/det, y=det_y/det.':'Метод Крамера: det=a₁b₂−a₂b₁, x=det_x/det, y=det_y/det.',
+          ['D = '+se1.a+'·'+se2.b+' − '+se1.b+'·'+se2.a+' = '+sdet,
+           'Dₓ = '+se1.d+'·'+se2.b+' − '+se1.b+'·'+se2.d+' = '+(se1.d*se2.b-se1.b*se2.d),
+           'D_y = '+se1.a+'·'+se2.d+' − '+se1.d+'·'+se2.a+' = '+(se1.a*se2.d-se1.d*se2.a),
+           'x=Dₓ/D='+sx+', y=D_y/D='+sy],
+          'x='+sx+', y='+sy, null);
+        return '<b>'+(isEN()?'System 2×2':'Система 2×2')+'</b><br>'+
+          rawEqs.slice(0,2).map(function(e,i){return '<span style="color:var(--text2);font-size:11px">'+(i+1)+') '+e+'</span>'}).join('<br>')+'<br>'+
+          '<span style="color:var(--g);font-weight:700">✓ x='+sx+', y='+sy+'</span>';
       }
     }
   }
@@ -4274,8 +4729,8 @@ renderSidebarTopics();
 }
 function renderQuickList(){
 var examples={
-RU:['x^2-5x+6=0','2x^2+3x-2=0','sin(x)=0.5','2^x=32','log2(x)=3','производная x^3+2x^2-x','интеграл 3x^2+2x','система: x+y=7, 2x-y=2','C(8,3)=?','график y=x^2-4','площадь круга r=5','факториал 7','15% от 3400','фибоначчи 10','простое число 97','нод 24 36','имт вес 70 рост 1.75','скорость 120 за 2','среднее 2 5 8 10','255 в двоичн','пифагор a=3 b=4','сложный процент 1000 5 3','матрица определитель 2 1 4 3','векторное произведение 1 2 3 и 4 5 6','бином (x+2)^3','кинетическая энергия m=5 v=10','римское 2024','разложение на простые 360','паскаль строка 5','тейлор exp(1) n=8','определённый интеграл x^2 0 1','площадь сектора r=5 угол=60','правильный многоугольник n=6 a=4','объем тора R=5 r=2','среднее геометрическое 2 8 32','вероятность 3 10'],
-EN:['x^2-5x+6=0','2x^2+3x-2=0','sin(x)=0.5','2^x=32','log2(x)=3','derivative x^3+2x^2-x','integral 3x^2+2x','system: x+y=7, 2x-y=2','C(8,3)=?','graph y=x^2-4','area of circle r=5','factorial 7','15% of 3400','fibonacci 10','is prime 97','gcd 24 36','bmi weight 70 height 1.75','speed 120 in 2','mean 2 5 8 10','255 to binary','pythagor a=3 b=4','compound interest 1000 5 3','matrix det 2 1 4 3','cross product 1 2 3 and 4 5 6','binomial (x+2)^3','kinetic energy m=5 v=10','roman 2024','prime factors 360','pascal row 5','taylor exp(1) n=8','definite integral x^2 0 1','sector area r=5 angle=60','regular polygon n=6 a=4','torus volume R=5 r=2','geometric mean 2 8 32','probability 3 10']
+RU:['x^2-5x+6=0','2x^2+3x-2=0','sin(x)=0.5','2^x=32','log2(x)=3','производная x^3+2x^2-x','интеграл 3x^2+2x','система: x+y=7, 2x-y=2','система: x+y+z=6, 2x-y+z=3, x+2y-z=2','система: x+y=5, x^2+y^2=13','C(8,3)=?','график y=x^2-4','площадь круга r=5','факториал 7','15% от 3400','фибоначчи 10','простое число 97','нод 24 36','имт вес 70 рост 1.75','скорость 120 за 2','среднее 2 5 8 10','255 в двоичн','пифагор a=3 b=4','сложный процент 1000 5 3','матрица определитель 2 1 4 3','векторное произведение 1 2 3 и 4 5 6','бином (x+2)^3','кинетическая энергия m=5 v=10','римское 2024','разложение на простые 360','паскаль строка 5','тейлор exp(1) n=8','определённый интеграл x^2 0 1','площадь сектора r=5 угол=60','правильный многоугольник n=6 a=4','объем тора R=5 r=2','среднее геометрическое 2 8 32','вероятность 3 10'],
+EN:['x^2-5x+6=0','2x^2+3x-2=0','sin(x)=0.5','2^x=32','log2(x)=3','derivative x^3+2x^2-x','integral 3x^2+2x','system: x+y=7, 2x-y=2','system: x+y+z=6, 2x-y+z=3, x+2y-z=2','system: x+y=5, x^2+y^2=13','C(8,3)=?','graph y=x^2-4','area of circle r=5','factorial 7','15% of 3400','fibonacci 10','is prime 97','gcd 24 36','bmi weight 70 height 1.75','speed 120 in 2','mean 2 5 8 10','255 to binary','pythagor a=3 b=4','compound interest 1000 5 3','matrix det 2 1 4 3','cross product 1 2 3 and 4 5 6','binomial (x+2)^3','kinetic energy m=5 v=10','roman 2024','prime factors 360','pascal row 5','taylor exp(1) n=8','definite integral x^2 0 1','sector area r=5 angle=60','regular polygon n=6 a=4','torus volume R=5 r=2','geometric mean 2 8 32','probability 3 10']
 };
 document.getElementById('quickList').innerHTML=examples[LANG].map(function(e){return '<div class="qex" onclick="ex('+JSON.stringify(e)+')">'+e+'</div>'}).join('');
 }
@@ -4329,43 +4784,6 @@ function initApp(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initApp);
 else initApp();
 </script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
+
 </body>
 </html>
