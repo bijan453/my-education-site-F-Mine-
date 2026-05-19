@@ -430,6 +430,13 @@ body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%
 .ocr-cancel-btn{background:var(--glass2);border:1.5px solid var(--border2);color:var(--text2)}
 .ocr-cancel-btn:hover{border-color:var(--r);color:var(--r)}
 .ocr-warn{margin:8px 16px 0;padding:8px 12px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.22);border-radius:9px;font-size:11px;color:var(--a);display:none;line-height:1.5}
+/* ═ OCR SOURCE PICKER ═ */
+#ocrPicker{display:none;position:absolute;bottom:54px;left:0;background:var(--bg2);border:1.5px solid rgba(52,211,153,.35);border-radius:14px;padding:6px;box-shadow:0 8px 40px rgba(0,0,0,.8),0 0 30px rgba(52,211,153,.15);z-index:500;min-width:160px;animation:fadeUp .18s ease both}
+#ocrPicker.show{display:block}
+.ocr-pick-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;border:none;background:transparent;color:var(--text);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:9px;transition:var(--ease);text-align:left}
+.ocr-pick-btn:hover{background:rgba(52,211,153,.12);color:var(--em)}
+.ocr-pick-btn .op-icon{font-size:18px}
+.ocr-pick-sep{height:1px;background:var(--border);margin:3px 8px}
 </style>
 </head>
 <body>
@@ -586,8 +593,22 @@ body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%
     <div class="input-bar">
       <div class="input-wrap">
         <button class="ib-btn ib-mic" id="micBtn" title="Голос">🎤</button>
-        <button class="ib-btn ib-ocr" id="ocrBtn" onclick="triggerOCR()" title="Фото задачи · OCR">📷</button>
-        <input type="file" id="ocrFileInput" accept="image/*" capture="environment" style="display:none" onchange="handleOCRFile(event)">
+        <!-- OCR button + picker popover -->
+        <div style="position:relative;flex-shrink:0">
+          <button class="ib-btn ib-ocr" id="ocrBtn" onclick="toggleOCRPicker(event)" title="Фото задачи · OCR">📷</button>
+          <div id="ocrPicker">
+            <button class="ocr-pick-btn" onclick="pickOCRSource('camera')">
+              <span class="op-icon">📷</span> Камера
+            </button>
+            <div class="ocr-pick-sep"></div>
+            <button class="ocr-pick-btn" onclick="pickOCRSource('gallery')">
+              <span class="op-icon">🖼️</span> Галерея
+            </button>
+          </div>
+        </div>
+        <!-- Two hidden inputs: camera (rear lens) and gallery -->
+        <input type="file" id="ocrCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleOCRFile(event)">
+        <input type="file" id="ocrGalleryInput" accept="image/*" style="display:none" onchange="handleOCRFile(event)">
         <textarea class="msg-input" id="msgInput" placeholder="Напиши уравнение, задачу или вопрос..." rows="1"></textarea>
         <button class="ib-btn ib-clear" onclick="clearInput()" title="Очистить">✕</button>
         <button class="ib-btn ib-send" id="sendBtn" onclick="sendMessage()" title="Отправить">➤</button>
@@ -5375,10 +5396,30 @@ var _ocrRunning = false;
 
 function _oid(id){ return document.getElementById(id); }
 
-function triggerOCR(){
-  _oid('ocrFileInput').value = '';
-  _oid('ocrFileInput').click();
+function toggleOCRPicker(e){
+  e && e.stopPropagation();
+  var p = _oid('ocrPicker');
+  p.classList.toggle('show');
 }
+
+function pickOCRSource(src){
+  _oid('ocrPicker').classList.remove('show');
+  if(src === 'camera') {
+    _oid('ocrCameraInput').value = '';
+    _oid('ocrCameraInput').click();
+  } else {
+    _oid('ocrGalleryInput').value = '';
+    _oid('ocrGalleryInput').click();
+  }
+}
+
+// Close picker on outside click
+document.addEventListener('click', function(e){
+  var p = _oid('ocrPicker');
+  if(p && p.classList.contains('show') && !p.contains(e.target) && e.target !== _oid('ocrBtn')){
+    p.classList.remove('show');
+  }
+});
 
 function handleOCRFile(e){
   var file = e.target.files && e.target.files[0];
@@ -5556,6 +5597,366 @@ function postProcessMathOCR(raw){
 
   return s;
 }
+
+// ══════════════════════════════════════════════════════
+// NEW BIG SOLVER #1 — MATRIX MULTIPLICATION
+// "умножить матрицы 1 2 3 4 * 5 6 7 8"
+// ══════════════════════════════════════════════════════
+function megaMatrixMul(A, B, n){
+  // A, B are flat arrays of n*n numbers
+  var C = [];
+  for(var i=0;i<n;i++) for(var j=0;j<n;j++){
+    var sum=0; for(var k=0;k<n;k++) sum+=A[i*n+k]*B[k*n+j];
+    C.push(sum);
+  }
+  function fmt(m){ return '['+Array.from({length:n},function(_,r){return '('+Array.from({length:n},function(_,c){return m[r*n+c];}).join(', ')+')';}).join(' | ')+']';}
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Matrix Multiplication':'Умножение матриц')+'</div>';
+  h+='<div class="mega-section-body">A = '+fmt(A)+'<br>B = '+fmt(B)+'<br><br>';
+  h+=(isEN()?'Rule: C[i][j] = Σ A[i][k]·B[k][j]':'Правило: C[i][j] = Σ A[i][k]·B[k][j]')+'</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step-by-step computation':'Вычисление по шагам')+'</div><div class="mega-section-body">';
+  for(var i=0;i<n;i++) for(var j=0;j<n;j++){
+    var terms=[];for(var k=0;k<n;k++)terms.push(A[i*n+k]+'×'+B[k*n+j]);
+    h+='C['+(i+1)+']['+(j+1)+'] = '+terms.join(' + ')+' = <b style="color:var(--g)">'+C[i*n+j]+'</b><br>';
+  }
+  h+='</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">✅ '+(isEN()?'Result C = A × B':'Результат C = A × B')+'</div><div class="mega-section-body">';
+  for(var i=0;i<n;i++){
+    h+='| ';for(var j=0;j<n;j++)h+='<b>'+C[i*n+j]+'</b> ';h+='|<br>';
+  }
+  h+='</div></div>';
+  h+=megaPractice(isEN()?['multiply matrices 1 0 0 1 * 2 3 4 5','multiply matrices 3x3 1 2 3 4 5 6 7 8 9 * 9 8 7 6 5 4 3 2 1']:['умножить матрицы 1 0 0 1 * 2 3 4 5','умножить матрицы 3x3 1 2 3 4 5 6 7 8 9 * 9 8 7 6 5 4 3 2 1']);
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ C = '+fmt(C)+'</span>';
+  return h;
+}
+
+// ══════════════════════════════════════════════════════
+// NEW BIG SOLVER #2 — FULL STATISTICS ANALYSIS
+// "статистика 2 5 8 3 7 1 9"
+// ══════════════════════════════════════════════════════
+function megaStatistics(data){
+  data.sort(function(a,b){return a-b;});
+  var n=data.length;
+  var mean=data.reduce(function(s,x){return s+x;},0)/n;
+  // Median
+  var med=n%2===0?(data[n/2-1]+data[n/2])/2:data[(n-1)/2];
+  // Mode
+  var freq={};data.forEach(function(x){freq[x]=(freq[x]||0)+1;});
+  var maxF=Math.max.apply(null,Object.values(freq));
+  var modes=Object.keys(freq).filter(function(k){return freq[k]===maxF;}).map(Number);
+  var modeStr=maxF===1?(isEN()?'no mode':'нет моды'):modes.join(', ');
+  // Variance & std
+  var variance=data.reduce(function(s,x){return s+Math.pow(x-mean,2);},0)/n;
+  var std=Math.sqrt(variance);
+  // Range
+  var range=data[n-1]-data[0];
+  // Quartiles
+  function quartile(arr,q){var pos=(arr.length-1)*q;var lo=Math.floor(pos);var hi=Math.ceil(pos);return arr[lo]+(arr[hi]-arr[lo])*(pos-lo);}
+  var q1=quartile(data,.25);var q3=quartile(data,.75);var iqr=q3-q1;
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Dataset':'Данные')+'</div>';
+  h+='<div class="mega-section-body">n = '+n+'<br>['+data.join(', ')+']</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Central Tendency':'Центр распределения')+'</div><div class="mega-section-body">';
+  h+=(isEN()?'Mean':'Среднее')+' x̄ = Σxᵢ/n = <b style="color:var(--g)">'+mean.toFixed(4)+'</b><br>';
+  h+=(isEN()?'Median':'Медиана')+' = <b style="color:var(--c)">'+med+'</b><br>';
+  h+=(isEN()?'Mode':'Мода')+' = <b style="color:var(--a)">'+modeStr+'</b>';
+  h+='</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📐 '+(isEN()?'Spread':'Разброс')+'</div><div class="mega-section-body">';
+  h+=(isEN()?'Variance':'Дисперсия')+' σ² = <b style="color:var(--v)">'+variance.toFixed(4)+'</b><br>';
+  h+=(isEN()?'Std Dev':'Ст. откл.')+' σ = <b style="color:var(--p)">'+std.toFixed(4)+'</b><br>';
+  h+=(isEN()?'Range':'Размах')+' = max−min = '+data[n-1]+'−'+data[0]+' = <b style="color:var(--a)">'+range+'</b>';
+  h+='</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📦 '+(isEN()?'Quartiles (Box Plot)':'Квартили (ящик с усами)')+'</div><div class="mega-section-body">';
+  h+='Min = '+data[0]+'<br>Q1 = <b>'+q1.toFixed(2)+'</b><br>Q2 (median) = <b>'+med+'</b><br>Q3 = <b>'+q3.toFixed(2)+'</b><br>Max = '+data[n-1]+'<br>IQR = Q3−Q1 = <b style="color:var(--em)">'+iqr.toFixed(2)+'</b>';
+  h+='</div></div>';
+  h+=megaExpandable(isEN()?'🤔 Why does spread matter?':'🤔 Зачем нужен разброс?','<div class="mega-section-body">'+(isEN()?'Variance measures average squared distance from mean. Low σ = data clusters near mean. IQR resists outliers better than range.':'Дисперсия — среднее квадратичное отклонение от среднего. Малая σ — данные кучкуются. IQR устойчив к выбросам.')+' </div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ x̄='+mean.toFixed(3)+', σ='+std.toFixed(3)+', Med='+med+'</span>';
+  h+=megaPractice(isEN()?['statistics 4 8 15 16 23 42','statistics 1 2 3 4 5 6 7 8 9 10']:['статистика 4 8 15 16 23 42','статистика 1 2 3 4 5 6 7 8 9 10']);
+  return h;
+}
+
+// ══════════════════════════════════════════════════════
+// NEW BIG SOLVER #3 — POLYNOMIAL LONG DIVISION
+// "разделить x^3+2x^2-x-2 на x-1"
+// ══════════════════════════════════════════════════════
+function megaPolyDivision(dividendStr, divisorStr){
+  // Parse polynomial into coefficient array [highest..lowest]
+  function parsePoly(s){
+    s=s.replace(/\s+/g,'').replace(/−/g,'-').replace(/\*\*/g,'^');
+    if(s[0]!=='-')s='+'+s;
+    var terms=s.match(/[+-][^+-]*/g)||[];
+    var coeffs={};
+    terms.forEach(function(t){
+      var m;
+      if((m=t.match(/^([+-]?\d*\.?\d*)x\^(\d+)$/i))){
+        var c=m[1].replace(/^\+$/,'');c=(c===''||c===undefined)?1:c==='-'?-1:parseFloat(c);
+        coeffs[parseInt(m[2])]=(coeffs[parseInt(m[2])]||0)+c;
+      } else if((m=t.match(/^([+-]?\d*\.?\d*)x$/i))){
+        var c2=m[1].replace(/^\+$/,'');c2=(c2===''||c2===undefined)?1:c2==='-'?-1:parseFloat(c2);
+        coeffs[1]=(coeffs[1]||0)+c2;
+      } else if((m=t.match(/^([+-]?\d+\.?\d*)$/))){
+        coeffs[0]=(coeffs[0]||0)+parseFloat(m[1]);
+      }
+    });
+    var maxDeg=Math.max.apply(null,Object.keys(coeffs).map(Number).concat([0]));
+    var arr=[];for(var i=maxDeg;i>=0;i--)arr.push(coeffs[i]||0);
+    return arr;
+  }
+  function polyStr(arr){
+    var deg=arr.length-1;var out='';
+    arr.forEach(function(c,i){
+      if(c===0)return;
+      var pw=deg-i;
+      var sign=c<0?(out?' − ':'-'):(out?' + ':'');
+      var ac=Math.abs(c);
+      var term=pw===0?String(ac):pw===1?(ac===1?'x':ac+'x'):(ac===1?'x^'+pw:ac+'x^'+pw);
+      out+=sign+term;
+    });
+    return out||'0';
+  }
+  var D=parsePoly(dividendStr), V=parsePoly(divisorStr);
+  var quot=[],rem=[].concat(D);
+  var steps=[];
+  while(rem.length>=V.length && rem[0]!==0){
+    var q=rem[0]/V[0];
+    quot.push(q);
+    var sub=V.map(function(c){return c*q;});
+    var newRem=[];
+    for(var i=1;i<rem.length;i++) newRem.push(i<sub.length?(rem[i]-sub[i]):rem[i]);
+    while(newRem.length>0 && newRem[0]===0) newRem.shift();
+    steps.push('÷ '+V[0]+' = '+q+'  →  subtract '+polyStr(sub));
+    rem=newRem.length?newRem:[0];
+  }
+  var quotStr=polyStr(quot)||'0';
+  var remStr=rem[0]===0?'0':polyStr(rem);
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Polynomial Long Division':'Деление многочленов столбиком')+'</div>';
+  h+='<div class="mega-section-body">('+dividendStr+') ÷ ('+divisorStr+')<br><br>'+(isEN()?'Like integer long division, we divide term-by-term from highest degree.':'Как деление в столбик: делим слагаемые от старшей степени к младшей.')+'</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Steps':'Шаги')+'</div><div class="mega-section-body">';
+  steps.forEach(function(st,i){h+='<b>Шаг '+(i+1)+':</b> '+st+'<br>';});
+  h+='</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">✅ '+(isEN()?'Result':'Результат')+'</div><div class="mega-section-body">';
+  h+='<b style="color:var(--g);font-size:14px">Quotient: '+quotStr+'</b><br>';
+  h+='Remainder: <b style="color:var(--c)">'+remStr+'</b><br><br>';
+  h+=(isEN()?'Full form: ('+dividendStr+') = ('+divisorStr+') × ('+quotStr+')':'Полная форма: ('+dividendStr+') = ('+divisorStr+') × ('+quotStr+')')+(remStr!=='0'?' + '+remStr:'');
+  h+='</div></div>';
+  h+=megaPractice(isEN()?['divide x^3-6x^2+11x-6 by x-1','divide x^3+2x^2-x-2 by x+1']:['разделить x^3-6x^2+11x-6 на x-1','разделить x^3+2x^2-x-2 на x+1']);
+  return h;
+}
+
+// ══════════════════════════════════════════════════════
+// NEW BIG SOLVER #4 — DEFINITE INTEGRAL ∫[a,b] f(x)dx
+// "интеграл от 0 до 1 x^2" or "∫[0,1] x^2"
+// ══════════════════════════════════════════════════════
+function megaDefiniteIntegral(exprStr, a, b){
+  var symbolic=null, numeric=null;
+  // Try nerdamer symbolic
+  if(typeof nerdamer!=='undefined'){
+    try{
+      var antideriv=nerdamer.integrate(exprStr,'x').toString();
+      symbolic=antideriv;
+      // Evaluate at bounds
+      var Fb=nerdamer(antideriv).evaluate({x:String(b)}).toString();
+      var Fa=nerdamer(antideriv).evaluate({x:String(a)}).toString();
+      numeric=parseFloat(Fb)-parseFloat(Fa);
+    }catch(e){}
+  }
+  // Numerical fallback (Simpson's rule, n=1000)
+  if(numeric===null || !isFinite(numeric)){
+    try{
+      var fn=new Function('x','return ('+exprStr.replace(/\^/g,'**')+')');
+      var nn=1000,h2=(b-a)/nn,tot=fn(a)+fn(b);
+      for(var i=1;i<nn;i++) tot+=(i%2===0?2:4)*fn(a+i*h2);
+      numeric=(h2/3)*tot;
+    }catch(e){}
+  }
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Definite Integral':'Определённый интеграл')+'</div>';
+  h+='<div class="mega-section-body">∫<sub>'+a+'</sub><sup>'+b+'</sup> ('+exprStr+') dx<br><br>'+(isEN()?'Definite integral = area under the curve from x='+a+' to x='+b+'. Use the Fundamental Theorem: F(b)−F(a).':'Определённый интеграл = площадь под кривой от x='+a+' до x='+b+'. Применяем формулу Ньютона-Лейбница: F(b)−F(a).')+'</div></div>';
+  if(symbolic){
+    h+='<div class="mega-section"><div class="mega-section-title">📐 '+(isEN()?'Step 1: Antiderivative':'Шаг 1: Первообразная')+'</div>';
+    h+='<div class="mega-section-body">F(x) = <b style="color:var(--v)">'+symbolic+' + C</b></div></div>';
+    h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step 2: Apply bounds':'Шаг 2: Подставляем пределы')+'</div>';
+    h+='<div class="mega-section-body">F('+b+') − F('+a+') = <b style="color:var(--g)">'+numeric.toFixed(6)+'</b></div></div>';
+  } else {
+    h+='<div class="mega-section"><div class="mega-section-title">📐 '+(isEN()?'Numerical result (Simpson\'s rule)':'Численный результат (формула Симпсона)')+'</div>';
+    h+='<div class="mega-section-body">∫ ≈ <b style="color:var(--g)">'+(numeric!==null?numeric.toFixed(6):'?')+'</b></div></div>';
+  }
+  h+=megaExpandable(isEN()?'🤔 Newton-Leibniz Theorem':'🤔 Формула Ньютона-Лейбница','<div class="mega-section-body">'+(isEN()?'If F\'(x)=f(x), then ∫ₐᵇ f(x)dx = F(b)−F(a). This connects differentiation and integration perfectly.':'Если F\'(x)=f(x), то ∫ₐᵇ f(x)dx = F(b)−F(a). Это связывает дифференцирование и интегрирование.')+' </div>');
+  h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ ∫<sub>'+a+'</sub><sup>'+b+'</sup> = '+(numeric!==null?numeric.toFixed(6):'?')+'</span>';
+  h+=megaPractice(isEN()?['integral from 0 to 1 x^2','integral from 0 to pi sin(x)','integral from 1 to e ln(x)']:['интеграл от 0 до 1 x^2','интеграл от 0 до pi sin(x)','интеграл от 1 до e ln(x)']);
+  return h;
+}
+
+// ══════════════════════════════════════════════════════
+// NEW BIG SOLVER #5 — TAYLOR SERIES EXPANSION
+// "ряд Тейлора sin(x)" / "Taylor series e^x"
+// ══════════════════════════════════════════════════════
+function megaTaylorSeries(fn, terms){
+  terms=terms||6;
+  var SERIES={
+    'sin':  {name:'sin(x)',  latex:'sin(x)',  color:'var(--p)',
+      series:function(n){return Array.from({length:n},function(_,k){var p=2*k+1;return (k%2===0?'+':'-')+'x^'+p+'/'+factorial(p);}).join(' ')+' + …'},
+      approx:function(x,n){var s=0;for(var k=0;k<n;k++){s+=Math.pow(-1,k)*Math.pow(x,2*k+1)/factorial(2*k+1);}return s;},
+      terms:function(n){return Array.from({length:n},function(_,k){var p=2*k+1;return {deg:p,coeff:(k%2===0?1:-1)+'/'+factorial(p)+'  ('+('x^'+p)+')'};});}},
+    'cos':  {name:'cos(x)',  latex:'cos(x)',  color:'var(--c)',
+      series:function(n){return Array.from({length:n},function(_,k){var p=2*k;return (k%2===0?'+':'-')+'x^'+p+'/'+factorial(p);}).join(' ')+' + …'},
+      approx:function(x,n){var s=0;for(var k=0;k<n;k++){s+=Math.pow(-1,k)*Math.pow(x,2*k)/factorial(2*k);}return s;},
+      terms:function(n){return Array.from({length:n},function(_,k){var p=2*k;return {deg:p,coeff:(k%2===0?1:-1)+'/'+factorial(p)+'  ('+('x^'+p)+')'};});}},
+    'exp':  {name:'eˣ',      latex:'e^x',    color:'var(--g)',
+      series:function(n){return Array.from({length:n},function(_,k){return '+x^'+k+'/'+factorial(k);}).join(' ')+' + …'},
+      approx:function(x,n){var s=0;for(var k=0;k<n;k++)s+=Math.pow(x,k)/factorial(k);return s;},
+      terms:function(n){return Array.from({length:n},function(_,k){return {deg:k,coeff:'1/'+factorial(k)+'  (x^'+k+')'};});}},
+    'ln':   {name:'ln(1+x)', latex:'ln(1+x)',color:'var(--a)',
+      series:function(n){return Array.from({length:n},function(_,k){var p=k+1;return (k%2===0?'+':'-')+'x^'+p+'/'+p;}).join(' ')+' + …'},
+      approx:function(x,n){var s=0;for(var k=0;k<n;k++){s+=Math.pow(-1,k)*Math.pow(x,k+1)/(k+1);}return s;},
+      terms:function(n){return Array.from({length:n},function(_,k){var p=k+1;return {deg:p,coeff:(k%2===0?1:-1)+'/'+p+'  (x^'+p+')'};});}},
+    'atan': {name:'arctan(x)',latex:'arctan(x)',color:'var(--v)',
+      series:function(n){return Array.from({length:n},function(_,k){var p=2*k+1;return (k%2===0?'+':'-')+'x^'+p+'/'+p;}).join(' ')+' + …'},
+      approx:function(x,n){var s=0;for(var k=0;k<n;k++)s+=Math.pow(-1,k)*Math.pow(x,2*k+1)/(2*k+1);return s;},
+      terms:function(n){return Array.from({length:n},function(_,k){var p=2*k+1;return {deg:p,coeff:(k%2===0?1:-1)+'/'+p};});}}
+  };
+  var key=fn.toLowerCase().replace(/[^a-z]/g,'');
+  var fnMap={'sin':'sin','cos':'cos','exp':'exp','ex':'exp','e':'exp','ln':'ln','log':'ln','arctan':'atan','atan':'atan','tan':'atan'};
+  var s=SERIES[fnMap[key]||key];
+  if(!s) return null;
+  var h='';
+  h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Taylor Series':'Ряд Тейлора')+': '+s.name+'</div>';
+  h+='<div class="mega-section-body">'+(isEN()?'Expresses a function as an infinite sum of polynomial terms around x=0 (Maclaurin series). Each term uses a higher-order derivative.':'Разложение функции в бесконечную сумму многочленов вокруг x=0 (ряд Маклорена). Каждый член использует производную высшего порядка.')+'</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'First '+terms+' terms':'Первые '+terms+' слагаемых')+'</div><div class="mega-section-body" style="font-family:\'DM Mono\',monospace;font-size:12px">';
+  var ts=s.terms(terms);
+  ts.forEach(function(t,i){
+    h+='<span style="color:'+s.color+'">'+t.coeff+'</span><br>';
+  });
+  h+='</div></div>';
+  h+='<div class="mega-section"><div class="mega-section-title">📐 '+(isEN()?'Full formula':'Полная формула')+'</div>';
+  h+='<div class="mega-section-body" style="font-size:13px">'+s.name+' ≈ <b style="color:'+s.color+'">'+s.series(Math.min(terms,5))+'</b></div></div>';
+  // Demo: evaluate at x=0.5 vs built-in
+  var x05=0.5;
+  var approx=s.approx(x05,terms);
+  var exact=fn==='sin'?Math.sin(x05):fn==='cos'?Math.cos(x05):fn==='exp'||fn==='e'?Math.exp(x05):fn==='ln'?Math.log(1+x05):Math.atan(x05);
+  if(isFinite(exact)){
+    h+=megaExpandable(isEN()?'✅ Accuracy check at x=0.5':'✅ Проверка точности при x=0.5','<div class="mega-section-body">'+s.name+'(0.5) exact ≈ <b>'+exact.toFixed(6)+'</b><br>'+s.name+'(0.5) Taylor ('+terms+' terms) ≈ <b>'+approx.toFixed(6)+'</b><br>Error: '+(Math.abs(exact-approx)).toExponential(2)+'</div>');
+  }
+  h+=megaExpandable(isEN()?'🤔 Why Taylor series?':'🤔 Зачем ряды Тейлора?','<div class="mega-section-body">'+(isEN()?'Computers can\'t evaluate sin/cos/e directly — they use Taylor series internally! The more terms, the better the approximation.':'Компьютеры не могут вычислить sin/cos/e напрямую — они используют ряды Тейлора! Чем больше слагаемых, тем точнее.')+' </div>');
+  h+='<br><span style="color:'+s.color+';font-weight:800;font-size:15px">✓ '+s.name+' = '+s.series(4)+'</span>';
+  h+=megaPractice(isEN()?['Taylor series sin(x)','Taylor series cos(x)','Taylor series e^x','Taylor series ln']:['ряд Тейлора sin(x)','ряд Тейлора cos(x)','ряд Тейлора e^x','ряд Тейлора ln']);
+  return h;
+}
+
+// ══════════════════════════════════════════════════════
+// WIRE NEW SOLVERS INTO tryMegaSolve + createLocalSolution
+// ══════════════════════════════════════════════════════
+
+// Patch #1: extend semanticNormalizeQuery for new functions
+(function(){
+  var _orig = semanticNormalizeQuery;
+  semanticNormalizeQuery = function(text){
+    var s = _orig(text);
+    var lo = s.toLowerCase();
+
+    // Matrix multiply: "умножить матрицы ... * ..."
+    if(!lo.match(/^матрица умножить|^matrix mul|^умножить матриц/)){
+      if(/(?:умножить\s+матриц|матриц.*\*|matrix\s*mul|multiply\s+matri)/i.test(lo)){
+        s = s.replace(/умножить\s+матрицы?\s*/gi,'матрица умножить ');
+      }
+    }
+
+    // Statistics: "средн|медиан|дисперс|отклонени|statistics|stat" + numbers
+    if(/(?:средн|медиан|дисперс|стандартн|отклонени|statistics of|stat\s+\d)/i.test(lo) && /\d/.test(lo)){
+      s = s.replace(/^(?:найди|вычисли|посчитай|рассчитай)\s+/gi,'');
+      s = s.replace(/^(?:средн|медиан|дисперс|стандартн\w+|статистику?)\s+(?:для|для набора|набора|числ\w+)?\s*/gi,'статистика ');
+    }
+
+    // Polynomial division: "разделить X на Y" → "разделить X на Y" (already canonical)
+
+    // Definite integral: "интеграл от A до B expr" or "∫[A,B]"
+    var defm = lo.match(/(?:интеграл|integral)\s+(?:от|from)\s+(-?[\d.]+(?:pi|π)?)\s+(?:до|to)\s+(-?[\d.]+(?:pi|π)?)\s+(.+)/i);
+    if(!defm) defm = lo.match(/∫\s*\[\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\]\s*(.+)/i);
+    if(defm){
+      var aa=defm[1].replace(/pi|π/g,'3.14159').replace(/e(?=$|\s)/,'2.71828');
+      var bb=defm[2].replace(/pi|π/g,'3.14159').replace(/e(?=$|\s)/,'2.71828');
+      s='интеграл_定 '+defm[3]+' от '+aa+' до '+bb;
+    }
+
+    // Taylor series: "ряд Тейлора sin" → "тейлор sin"
+    if(/(?:ряд\s+тейлора?|taylor\s+series?)/i.test(lo)){
+      s = s.replace(/ряд\s+тейлора?\s*/gi,'тейлор ').replace(/taylor\s+series?\s*/gi,'тейлор ');
+    }
+
+    return s;
+  };
+})();
+
+// Patch #2: extend tryMegaSolve for new solvers
+(function(){
+  var _origMega = tryMegaSolve;
+  tryMegaSolve = function(text){
+    var base = _origMega(text);
+    if(base) return base;
+    var lo = text.toLowerCase();
+
+    // ── Matrix multiplication ──────────────────────────
+    var mm2 = lo.match(/матрица умножить\s+(-?[\d.\s]+)\*\s*(-?[\d.\s]+)/i)
+           || lo.match(/(?:matrix\s*mul(?:tiply)?)\s+(-?[\d.\s]+)\*\s*(-?[\d.\s]+)/i);
+    if(mm2){
+      var aN=mm2[1].trim().split(/\s+/).map(Number);
+      var bN=mm2[2].trim().split(/\s+/).map(Number);
+      var n2=Math.round(Math.sqrt(aN.length));
+      if(n2*n2===aN.length && bN.length===aN.length && (n2===2||n2===3)){
+        return megaMatrixMul(aN,bN,n2);
+      }
+    }
+    // also handle "умножить матрицы 3x3 ..."
+    var mm3 = lo.match(/(?:матрица умножить|matrix mul)\s+(?:3x3\s+)?(-?[\d.\s]{10,})\*\s*(-?[\d.\s]+)/i);
+    if(mm3){
+      var aN2=mm3[1].trim().split(/\s+/).map(Number);
+      var bN2=mm3[2].trim().split(/\s+/).map(Number);
+      var sz=Math.round(Math.sqrt(aN2.length));
+      if(sz*sz===aN2.length && bN2.length===aN2.length){return megaMatrixMul(aN2,bN2,sz);}
+    }
+
+    // ── Statistics ────────────────────────────────────
+    var sm = lo.match(/(?:статистика|statistics)\s+([\d.\s,;]+)/i);
+    if(sm){
+      var nums=sm[1].split(/[\s,;]+/).map(Number).filter(function(n){return !isNaN(n);});
+      if(nums.length>=2) return megaStatistics(nums);
+    }
+
+    // ── Polynomial division ────────────────────────────
+    var dm = lo.match(/(?:разделить|divide)\s+(.+?)\s+(?:на|by)\s+(.+)/i);
+    if(dm && dm[1].trim() && dm[2].trim()){
+      return megaPolyDivision(dm[1].trim(), dm[2].trim());
+    }
+
+    // ── Definite integral ──────────────────────────────
+    var defint = lo.match(/интеграл_定\s+(.+?)\s+от\s+(-?[\d.]+)\s+до\s+(-?[\d.]+)/i);
+    if(defint){
+      var dexpr=defint[1].trim(), da=parseFloat(defint[2]), db=parseFloat(defint[3]);
+      if(!isNaN(da)&&!isNaN(db)) return megaDefiniteIntegral(dexpr,da,db);
+    }
+
+    // ── Taylor series ─────────────────────────────────
+    var tm = lo.match(/тейлор\s+(.+)/i);
+    if(tm){
+      var res=megaTaylorSeries(tm[1].trim());
+      if(res) return res;
+    }
+
+    return null;
+  };
+})();
+
+// Patch #3: same hooks for createLocalSolution
+(function(){
+  var _origLocal = createLocalSolution;
+  createLocalSolution = function(userText, detailed){
+    // Try new mega solvers first (they already handle detailed mode well)
+    var r = tryMegaSolve(userText);
+    if(r) return r;
+    return _origLocal(userText, detailed);
+  };
+})();
 </script>
 
 </body>
