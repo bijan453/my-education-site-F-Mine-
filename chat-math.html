@@ -5565,6 +5565,24 @@ function postProcessMathOCR(raw){
   s = s.replace(/(\d)\s*G\s*(\d)/g,'$16$2');
   s = s.replace(/(\d)\s*Z\s*(\d)/g,'$12$2');
 
+  // ── Screenshot-discovered OCR fixes ─────────────────
+  // Fix 1: "x?" → "x^2"  (superscript ² misread as ?)
+  // e.g. "2x? - 5x" → "2x^2 - 5x"
+  s = s.replace(/([a-zA-Z])\?/g,'$1^2');
+
+  // Fix 2: digit directly after variable letter without ^ → treat as exponent
+  // e.g. "2x2" → "2x^2", "x3" → "x^3"
+  // Only do this when it can't be a coefficient (no operator ahead)
+  s = s.replace(/([a-zA-Z])(\d)(?=\s*[-+*/=);,\s]|$)/g, function(m, v, d){
+    // Don't apply if d is clearly a separate number (preceded by space already handled)
+    return v + '^' + d;
+  });
+
+  // Fix 3: "T*" or "T *" → "7" (Tesseract confuses 7 with T)
+  // Also lone "T" between operators/digits
+  s = s.replace(/\bT\s*\*/g,'7');
+  s = s.replace(/([+\-*/=(,\s])\s*T\s*(?=[-+*/=);,\s]|$)/g,'$17');
+
   // 3. Equation format fixes
   s = s.replace(/\s*\^\s*/g,'^');         // x ^ 2 → x^2
   s = s.replace(/==/g,'=');               // == → =
