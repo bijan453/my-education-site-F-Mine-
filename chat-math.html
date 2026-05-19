@@ -6,6 +6,7 @@
 <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>F‑Mine · Математика Бот</title>
@@ -398,6 +399,37 @@ body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%
 .cap-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:4px 10px;border-radius:8px;z-index:2}
 .cap-close:hover{color:var(--r);background:var(--glass3)}
 @media(max-width:500px){.cap-grid{grid-template-columns:1fr}}
+
+/* ═══ OCR BUTTON ═══ */
+.ib-ocr{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);color:var(--em)}
+.ib-ocr:hover{border-color:var(--em);background:rgba(52,211,153,.15);color:#fff;box-shadow:0 0 14px rgba(52,211,153,.35)}
+.ib-ocr.busy{border-color:var(--em);background:rgba(52,211,153,.18);animation:ocrPulse 1.4s ease-in-out infinite}
+@keyframes ocrPulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}50%{box-shadow:0 0 0 6px rgba(52,211,153,0)}}
+
+/* ═══ OCR OVERLAY ═══ */
+#ocrOverlay{display:none;position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.78);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:16px}
+#ocrOverlay.show{display:flex}
+#ocrBox{width:min(480px,96vw);background:var(--bg2);border:1.5px solid rgba(52,211,153,.3);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.9),0 0 80px rgba(52,211,153,.12);animation:fadeUp .3s ease both}
+#ocrHead{padding:16px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+#ocrHeadIcon{font-size:22px;filter:drop-shadow(0 0 8px rgba(52,211,153,.5))}
+#ocrHeadTitle{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;flex:1}
+#ocrClose{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:var(--ease)}
+#ocrClose:hover{color:var(--r);background:var(--glass3)}
+#ocrPreviewWrap{position:relative;margin:14px 16px 0;border-radius:12px;overflow:hidden;background:#000;border:1px solid var(--border2);max-height:200px;display:flex;align-items:center;justify-content:center}
+#ocrPreviewImg{max-width:100%;max-height:200px;object-fit:contain;display:block;opacity:.92}
+#ocrScanLine{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(52,211,153,.9),transparent);animation:scanLine 1.8s ease-in-out infinite;top:0;display:none}
+@keyframes scanLine{0%{top:0;opacity:1}100%{top:100%;opacity:.3}}
+#ocrProgressWrap{margin:14px 16px 0;background:rgba(255,255,255,.04);border-radius:999px;height:6px;overflow:hidden;border:1px solid var(--border)}
+#ocrProgressBar{height:100%;width:0%;background:linear-gradient(90deg,var(--em),#059669);border-radius:999px;transition:width .3s ease;box-shadow:0 0 10px rgba(52,211,153,.5)}
+#ocrStatusText{margin:10px 16px 0;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);line-height:1.5;min-height:32px}
+#ocrResultPreview{margin:10px 16px 0;padding:10px 12px;background:var(--glass);border:1px solid var(--border2);border-radius:10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--c);word-break:break-word;display:none;line-height:1.6}
+#ocrActions{display:flex;gap:8px;padding:14px 16px;justify-content:flex-end}
+.ocr-action-btn{padding:8px 18px;border-radius:10px;border:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:var(--ease)}
+.ocr-use-btn{background:linear-gradient(135deg,var(--em),#059669);color:#fff;box-shadow:0 4px 20px rgba(52,211,153,.35)}
+.ocr-use-btn:hover{filter:brightness(1.12);transform:scale(1.04)}
+.ocr-cancel-btn{background:var(--glass2);border:1.5px solid var(--border2);color:var(--text2)}
+.ocr-cancel-btn:hover{border-color:var(--r);color:var(--r)}
+.ocr-warn{margin:8px 16px 0;padding:8px 12px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.22);border-radius:9px;font-size:11px;color:var(--a);display:none;line-height:1.5}
 </style>
 </head>
 <body>
@@ -534,6 +566,10 @@ body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%
           <span class="wchip wchip-a" onclick="ex('система: 2x+y=5, x-y=1')">система 2×2</span>
           <span class="wchip wchip-a" onclick="ex('система: x+y+z=6, 2x-y+z=3, x+2y-z=2')">система 3×3</span>
           <span class="wchip wchip-p" onclick="ex('система: x+y=7, x^2+y^2=25')">квадр. система</span>
+          <span class="wchip wchip-c" onclick="ex('упростить (x^2-9)/(x-3)')">упростить дробь</span>
+          <span class="wchip wchip-v" onclick="ex('разложить x^2+5x+6')">разложить</span>
+          <span class="wchip wchip-g" onclick="ex('раскрыть (x+2)^3')">раскрыть (x+2)³</span>
+          <span class="wchip wchip-a" onclick="ex('упростить (a+b)^2-(a-b)^2')">(a+b)²−(a−b)²</span>
           <span class="wchip wchip-p" onclick="ex('график y = sin(x)')">график sin(x)</span>
           <span class="wchip wchip-v" onclick="ex('C(8,3)')">C(8,3)</span>
           <span class="wchip wchip-c" onclick="ex('матрица определитель 2 1 4 3')">det 2×2</span>
@@ -550,6 +586,8 @@ body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%
     <div class="input-bar">
       <div class="input-wrap">
         <button class="ib-btn ib-mic" id="micBtn" title="Голос">🎤</button>
+        <button class="ib-btn ib-ocr" id="ocrBtn" onclick="triggerOCR()" title="Фото задачи · OCR">📷</button>
+        <input type="file" id="ocrFileInput" accept="image/*" capture="environment" style="display:none" onchange="handleOCRFile(event)">
         <textarea class="msg-input" id="msgInput" placeholder="Напиши уравнение, задачу или вопрос..." rows="1"></textarea>
         <button class="ib-btn ib-clear" onclick="clearInput()" title="Очистить">✕</button>
         <button class="ib-btn ib-send" id="sendBtn" onclick="sendMessage()" title="Отправить">➤</button>
@@ -559,6 +597,29 @@ body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%
 </div>
 
 <div id="toast"></div>
+
+<!-- ══ OCR OVERLAY ══ -->
+<div id="ocrOverlay" onclick="if(event.target===this)cancelOCR()">
+  <div id="ocrBox">
+    <div id="ocrHead">
+      <span id="ocrHeadIcon">📷</span>
+      <span id="ocrHeadTitle">Распознавание фото</span>
+      <button id="ocrClose" onclick="cancelOCR()">✕</button>
+    </div>
+    <div id="ocrPreviewWrap" style="display:none">
+      <img id="ocrPreviewImg" src="" alt="preview">
+      <div id="ocrScanLine"></div>
+    </div>
+    <div id="ocrProgressWrap"><div id="ocrProgressBar"></div></div>
+    <div id="ocrStatusText">Загрузи фото с задачей — бот прочитает и решит 📸</div>
+    <div class="ocr-warn" id="ocrWarn">⚠️ Tesseract иногда ошибается с математикой. Проверь текст перед отправкой.</div>
+    <div id="ocrResultPreview"></div>
+    <div id="ocrActions">
+      <button class="ocr-action-btn ocr-cancel-btn" onclick="cancelOCR()">Отмена</button>
+      <button class="ocr-action-btn ocr-use-btn" id="ocrUseBtn" style="display:none" onclick="applyOCRResult()">✓ Использовать</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════════════════════════
@@ -2735,12 +2796,112 @@ function megaSurfaceArea(shape,params){
 // MEGA ROUTER (ORIGINAL + 50 NEW)
 // ══════════════════════════════════════════════════════
 function tryMegaSolve(text){
+  // Apply NLP normalization so natural-language queries work in mega mode too
+  text = semanticNormalizeQuery(text);
   var lo=normalizeMathLower(text);
   buildSolverRegistry();
   var extMega=runSolverRegistry(lo,text,false,true);
   if(extMega)return extMega;
   var tri=parseTriangleSides(lo,text);
   if(tri)return megaSolveTriangleArea(tri.a,tri.b,tri.c);
+
+  // 0. GENERAL EXPRESSION SIMPLIFIER (no '=', or explicit keyword)
+  var simplKw=/упрост|simplif|factor|разлож|раскр|expand|фактор/i.test(lo);
+  var noEq=lo.indexOf('=')<0;
+  if((simplKw||noEq) && typeof nerdamer!=='undefined'){
+    try{
+      var rawE=text
+        .replace(/упрост[а-я]*/gi,'').replace(/simplif[a-z]*/gi,'')
+        .replace(/разлож[а-я]*/gi,'').replace(/factor[a-z]*/gi,'')
+        .replace(/раскр[а-я]*/gi,'').replace(/expand[a-z]*/gi,'')
+        .replace(/фактор[а-я]*/gi,'').replace(/выражение/gi,'').replace(/expression/gi,'')
+        .replace(/[−–—]/g,'-').replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4')
+        .replace(/\*\*/g,'^').replace(/\s+/g,'').trim();
+      if(!rawE)throw new Error('empty');
+      var normE=rawE
+        .replace(/(\d)([a-zA-Z])/g,'$1*$2')
+        .replace(/([a-zA-Z])\(/g,'$1*(')
+        .replace(/\)(\d)/g,')*$1')
+        .replace(/\)([a-zA-Z])/g,')*$1');
+
+      var expanded2=null,factored2=null,simplified2=null;
+      try{expanded2 =nerdamer('expand('+normE+')').toString();}catch(e){}
+      try{factored2 =nerdamer('factor('+normE+')').toString();}catch(e){}
+      try{simplified2=nerdamer(normE).toString();}catch(e){}
+
+      // Pick primary result based on keyword intent
+      var wantF=/разлож|factor/i.test(lo), wantX=/раскр|expand/i.test(lo);
+      var best=simplified2||expanded2||factored2;
+      if(wantF&&factored2)best=factored2;
+      if(wantX&&expanded2)best=expanded2;
+      if(!best||best===normE&&!simplified2)throw new Error('no change');
+
+      // Detect expression type
+      var hasDiv2=normE.indexOf('/')>=0,hasPow2=normE.indexOf('^')>=0;
+      var hasTrig2=/sin|cos|tan/i.test(normE),hasParen2=normE.indexOf('(')>=0;
+      var typeTitleEN=hasTrig2?'Trigonometric':hasDiv2&&hasPow2?'Rational Fraction':hasDiv2?'Fraction':hasPow2&&hasParen2?'Polynomial':'Algebraic Expression';
+      var typeTitleRU=hasTrig2?'Тригонометрическое':hasDiv2&&hasPow2?'Рациональная дробь':hasDiv2?'Дробное':hasPow2&&hasParen2?'Многочлен':'Алгебраическое выражение';
+      var typeTipEN=hasDiv2?'Factor numerator & denominator, cancel common factors.':hasPow2?'Expand brackets (or factor), collect like terms.':'Combine like terms.';
+      var typeTipRU=hasDiv2?'Разложить числитель и знаменатель, сократить общие множители.':hasPow2?'Раскрыть скобки (или разложить), привести подобные.':'Привести подобные слагаемые.';
+
+      var h='';
+      // Card 1
+      h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Understanding the Expression':'Разбираем выражение')+'</div>';
+      h+='<div class="mega-section-body"><b style="font-size:14px">'+rawE+'</b><br><br>';
+      h+=(isEN()?'Type: <b>'+typeTitleEN+'</b>':'Тип: <b>'+typeTitleRU+'</b>')+'<br>';
+      h+=(isEN()?typeTipEN:typeTipRU);
+      if(normE!==rawE)h+='<br><span style="color:var(--text3);font-size:11px">'+(isEN()?'Normalized: ':'Нормализовано: ')+normE+'</span>';
+      h+='</div></div>';
+
+      // Card 2: main simplification result
+      h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step 1: Simplify':'Шаг 1: Упрощаем')+'</div>';
+      h+='<div class="mega-section-body">';
+      if(simplified2&&simplified2!==normE){
+        h+=(isEN()?'Combined form:':'Упрощённый вид:')+'<br><b style="color:var(--g);font-size:15px">'+simplified2+'</b><br>';
+      }
+      h+='</div></div>';
+
+      // Card 3: factored form (if different and useful)
+      if(factored2&&factored2!==simplified2&&factored2!==normE){
+        h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step 2: Factored form':'Шаг 2: Разложение на множители')+'</div>';
+        h+='<div class="mega-section-body"><b style="color:var(--c);font-size:15px">'+factored2+'</b><br>';
+        h+=(isEN()?'(Each factor cannot be simplified further)':'(Каждый множитель нельзя упростить дальше)')+'</div></div>';
+      }
+
+      // Card 4: expanded form (if different and useful)
+      if(expanded2&&expanded2!==simplified2&&expanded2!==normE){
+        h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step 2: Expanded form':'Шаг 2: Раскрытые скобки')+'</div>';
+        h+='<div class="mega-section-body"><b style="color:var(--v);font-size:15px">'+expanded2+'</b></div></div>';
+      }
+
+      // Verification (x=2)
+      try{
+        var v1=nerdamer(normE).evaluate({x:2,y:3,a:2,b:3}).toString();
+        var v2=nerdamer(best).evaluate({x:2,y:3,a:2,b:3}).toString();
+        var match=Math.abs(parseFloat(v1)-parseFloat(v2))<0.001;
+        h+=megaExpandable(isEN()?'✅ Verification (x=2, y=3)':'✅ Проверка (x=2, y=3)',
+          '<div class="mega-section-body">'+
+          (isEN()?'Original: '+parseFloat(v1).toFixed(4):'Исходное: '+parseFloat(v1).toFixed(4))+'<br>'+
+          (isEN()?'Result: '+parseFloat(v2).toFixed(4):'Результат: '+parseFloat(v2).toFixed(4))+'<br>'+
+          (match?'✓ '+(isEN()?'Values match — simplification is correct!':'Значения совпадают — упрощение верно!'):'⚠️ '+(isEN()?'Values differ — check your expression.':'Значения отличаются — проверьте выражение.'))+'</div>');
+      }catch(ve){}
+
+      h+=megaExpandable(isEN()?'🤔 Why these steps?':'🤔 Почему такие шаги?',
+        '<div class="mega-section-body">'+(isEN()?
+          'Simplification = finding an equivalent expression that is shorter or cleaner. We try: (1) collect like terms, (2) cancel common factors in fractions, (3) factor polynomials. The factored form is useful for finding roots; the expanded form is useful for adding/subtracting expressions.':
+          'Упрощение = нахождение эквивалентного выражения в более компактном виде. Шаги: (1) привести подобные, (2) сократить дроби, (3) разложить на множители. Разложенный вид помогает найти корни; раскрытый — складывать выражения.')+'</div>');
+
+      h+=megaMistakes(isEN()?
+        ['(a+b)²≠a²+b² (don\'t forget 2ab!)','1/(a+b)≠1/a+1/b','√(a²+b²)≠a+b']:
+        ['(a+b)²≠a²+b² (не забыть 2ab!)','1/(a+b)≠1/a+1/b','√(a²+b²)≠a+b']);
+
+      h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': '+best+'</span>';
+      h+=megaPractice(isEN()?
+        ['(x^2-9)/(x-3)','expand (x+2)^3','factor x^2+5x+6','(a+b)^2-(a-b)^2','(x^2-4)/(x+2)+(x+2)']:
+        ['упростить (x^2-9)/(x-3)','раскрыть (x+2)^3','разложить x^2+5x+6','упростить (a+b)^2-(a-b)^2','(x^2-4)/(x+2)+(x+2)']);
+      return h;
+    }catch(ex){}
+  }
 
   // 1. Quadratic
   if(lo.indexOf('x^2')>=0||lo.indexOf('x²')>=0){
@@ -2753,8 +2914,34 @@ function tryMegaSolve(text){
       if(qa!==0)return megaSolveQuadratic(qa,qb,qc);
     }
   }
+  // 1b. Sqrt expression simplifier (no '=', has sqrt(...))
+  if(lo.indexOf('=')<0 && /sqrt\s*\(\s*\d/.test(lo)){
+    function _normImpl(s){
+      s=s.replace(/\s+/g,'').replace(/\*\*/g,'^');
+      s=s.replace(/(\d)([a-zA-Z])/g,'$1*$2');
+      s=s.replace(/\/((\d+\.?\d*)\*([a-zA-Z])(\^\d+)?)/g,function(_,all){return '/('+all+')';});
+      return s;
+    }
+    var sqEx=text.replace(/sqrt\s*\(\s*(\d+\.?\d*)\s*\)/gi,function(_,n){var v=Math.sqrt(parseFloat(n));return Math.abs(Math.round(v)-v)<1e-9?String(Math.round(v)):parseFloat(v.toFixed(8)).toString();});
+    var sqExC=_normImpl(sqEx);
+    var sqSteps=[isEN()?'Replace √: '+sqEx.replace(/\s+/g,''):'Заменяем √: '+sqEx.replace(/\s+/g,''), isEN()?'Explicit ×: '+sqExC:'С явным ×: '+sqExC];
+    var sqResult=null;
+    if(typeof nerdamer!=='undefined'){try{var nd2=nerdamer(sqExC);var ns=nd2.toString();if(ns&&ns.length<sqExC.length+20){sqResult=ns;sqSteps.push(isEN()?'Combine: '+sqResult:'Упрощаем: '+sqResult);}}catch(e){}}
+    if(!sqResult){var hasV=/[a-df-wyzA-Z]/.test(sqExC);if(!hasV){try{var nv=Function('return ('+sqExC.replace(/\^/g,'**')+')')();if(isFinite(nv)){sqResult=parseFloat(nv.toFixed(8)).toString();}}catch(e){}}else{sqResult=sqExC;}}
+    if(sqResult){
+      var h='';
+      h+='<div class="mega-section"><div class="mega-section-title">🎓 '+(isEN()?'Simplify Expression':'Упрощение выражения')+'</div>';
+      h+='<div class="mega-section-body"><b>'+text+'</b><br><br>';
+      h+=(isEN()?'Replace √(n) with its value, then combine like terms.':'Заменяем √(n) на значение, затем приводим подобные.')+'</div></div>';
+      h+='<div class="mega-section"><div class="mega-section-title">📊 '+(isEN()?'Step 1: Evaluate & normalize':'Шаг 1: Вычисляем и нормализуем')+'</div>';
+      h+='<div class="mega-section-body">'+sqSteps.join('<br>')+'</div></div>';
+      h+=megaExpandable(isEN()?'🤔 Why?':'🤔 Почему?','<div class="mega-section-body">'+(isEN()?'√(n) = the number whose square is n. Then we make implicit multiplication explicit (2x → 2·x) so terms combine correctly.':'√(n) — число, квадрат которого равен n. Затем расставляем явные знаки × (2x → 2·x), чтобы правильно привести подобные.')+'</div>');
+      h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': '+sqResult+'</span>';
+      return h;
+    }
+  }
   // 2. Linear
-  if((lo.indexOf('x')>=0||lo.indexOf('y')>=0)&&lo.indexOf('x^')<0&&lo.indexOf('x²')<0&&!lo.match(/систем|system/)){
+  if((lo.indexOf('x')>=0||lo.indexOf('y')>=0)&&lo.indexOf('x^')<0&&lo.indexOf('x²')<0&&!lo.match(/систем|system/)&&lo.indexOf('=')>=0){
     var eq=text.replace(/\s+/g,'').replace(/−/g,'-');var parts=eq.split('=');
     if(parts.length===2){
       var ps=function(s){var xc=0,cc=0;var terms=s.match(/[+-]?\d*\.?\d*x?/g)||[];for(var i=0;i<terms.length;i++){var t=terms[i];if(!t)continue;if(t.indexOf('x')>=0){var c2=t.replace('x','');xc+=c2===''||c2==='+'?1:c2==='-'?-1:parseFloat(c2)}else{cc+=parseFloat(t)||0}}return{xc:xc,cc:cc}};
@@ -2804,9 +2991,9 @@ function tryMegaSolve(text){
   // 15. Prime
   var prm=lo.match(/(?:простое\s*(?:число)?|is\s*prime|prime\s*(?:number)?)\s*(\d+)/);
   if(prm)return megaSolvePrime(parseInt(prm[1]));
-  // 16. GCD
-  var gm=lo.match(/(?:нод|gcd)\s+(\d+)\s+(\d+)/);
-  if(gm)return megaSolveGCD(parseInt(gm[1]),parseInt(gm[2]));
+  // 16. GCD – matches: НОД(12,18)  OR  нод 12 18  OR  gcd(12,18)
+  var gm=lo.match(/(?:нод|gcd)\s*[(]\s*(\d+)\s*,\s*(\d+)\s*[)]|(?:нод|gcd)\s+(\d+)\s+(\d+)/);
+  if(gm)return megaSolveGCD(parseInt(gm[1]||gm[3]),parseInt(gm[2]||gm[4]));
   // 17. BMI
   var bm=lo.match(/(?:имт|bmi).*?(?:вес|weight)\s*(\d+\.?\d*).*?(?:рост|height)\s*(\d+\.?\d*)/);
   if(bm)return megaSolveBMI(parseFloat(bm[1]),parseFloat(bm[2]));
@@ -3351,7 +3538,7 @@ function buildSolverRegistry(){
   }
   regAlg('square_n','algebra','²','Квадрат числа','Square of',/(?:квадрат|square)\s+(?:числа|of)?\s*(\d+)/i,function(m){return{n:+m[1]}},function(p){return{answer:p.n+'²='+p.n*p.n,steps:[p.n+'²='+p.n*p.n]}},'квадрат числа 12');
   regAlg('cube_n','algebra','³','Куб числа','Cube of',/(?:куб|cube)\s+(?:числа|of)?\s*(\d+)/i,function(m){return{n:+m[1]}},function(p){return{answer:p.n+'³='+(p.n*p.n*p.n),steps:[p.n+'³='+(p.n*p.n*p.n)]}},'куб числа 5');
-  regAlg('sqrt_n','algebra','√','Квадратный корень','Square root',/(?:квадратный\s*корень|sqrt)\s*(\d+)/i,function(m){return{n:+m[1]}},function(p){return{answer:'√'+p.n+'='+fmtN(Math.sqrt(p.n)),steps:['√'+p.n+'='+fmtN(Math.sqrt(p.n))]}},'sqrt 144');
+  regAlg('sqrt_n','algebra','√','Квадратный корень','Square root',/(?:квадратный\s*корень|sqrt)\s+(\d+)(?!\s*[\/+\-*])/i,function(m){return{n:+m[1]}},function(p){return{answer:'√'+p.n+'='+fmtN(Math.sqrt(p.n)),steps:['√'+p.n+'='+fmtN(Math.sqrt(p.n))]}},'sqrt 144');
   regAlg('pct_inc','percent','%','Увеличение на %','Percent increase',/(?:увелич|increase).*?(\d+)%.*?(?:на|of|from)?\s*(\d+\.?\d*)/i,function(m){return{p:+m[1],n:+m[2]}},function(p){var r=p.n*(1+p.p/100);return{answer:fmtN(r,2),steps:[p.n+'×(1+'+p.p+'/100)='+fmtN(r,2)]}},'увеличь 15% от 200');
   regAlg('pct_dec','percent','%','Уменьшение на %','Percent decrease',/(?:уменьш|decrease).*?(\d+)%.*?(?:на|of|from)?\s*(\d+\.?\d*)/i,function(m){return{p:+m[1],n:+m[2]}},function(p){var r=p.n*(1-p.p/100);return{answer:fmtN(r,2),steps:[p.n+'×(1−'+p.p+'/100)='+fmtN(r,2)]}},'уменьши 20% от 500');
   regAlg('ratio','algebra',':','Отношение','Ratio',/(?:отношение|ratio)\s+(\d+)\s*(?:к|:|\/)\s*(\d+)/i,function(m){return{a:+m[1],b:+m[2]}},function(p){function g(a,b){return b?g(b,a%b):a}var d=g(p.a,p.b);return{answer:(p.a/d)+':'+(p.b/d),steps:['НОД='+d,'='+(p.a/d)+':'+(p.b/d)]}},'отношение 12 к 18');
@@ -3674,13 +3861,331 @@ function solveTriangleHeron(ta,tb,tc,detailed){
   return '<b>'+(isEN()?'Triangle area':'Площадь треугольника')+'</b><br><span style="color:var(--g);font-weight:700">✓ S≈'+tarea.toFixed(4)+'</span>';
 }
 
+// ══════════════════════════════════════════════════════
+// SEMANTIC NLP NORMALIZER
+// Rewrites natural-language math queries to canonical
+// keyword forms so ALL downstream regex solvers fire
+// regardless of how the user phrased the question.
+// ══════════════════════════════════════════════════════
+function semanticNormalizeQuery(text){
+  var s = text;
+
+  // ── helpers ─────────────────────────────────────────
+  // strip common "task verbs" and filler prepositions that precede the real content
+  function stripVerbs(t){
+    return t
+      .replace(/^(?:вычисли|найди|посчитай|рассчитай|реши|определи|узнай|посмотри|помоги|скажи|дай|покажи|вычислить|найти|посчитать|рассчитать|решить|определить|нарисуй|построй|постройте)\s+/i,'')
+      .replace(/^(?:calculate|find|compute|solve|determine|evaluate|what\s+is|whats|please)\s+/i,'');
+  }
+
+  var lo = s.toLowerCase();
+
+  // ─── DERIVATIVE ───────────────────────────────────────
+  // "найди производную от x^2+3x"  →  "производная x^2+3x"
+  // "производная функции x^3"       →  "производная x^3"
+  // "дифференцировать sin(x)"       →  "производная sin(x)"
+  // "d/dx x^2"                      →  "производная x^2"
+  if(
+    /(?:производн|дифференцир|differentiat|d\/dx|d\s*\/\s*dx)/i.test(lo) &&
+    !/^производная\s/i.test(lo)
+  ){
+    var derivClean = stripVerbs(s)
+      .replace(/производну[юь]?\s+(?:функции|выражени[яе]|от)?\s*/gi,'')
+      .replace(/производн\w*\s+(?:функции|выражени[яе]|от)?\s*/gi,'')
+      .replace(/дифференцир\w*\s+(?:функцию|функции|выражение|от)?\s*/gi,'')
+      .replace(/differentiat\w*\s+(?:function|of|for)?\s*/gi,'')
+      .replace(/derivative\s+(?:of|for|the)?\s*/gi,'')
+      .replace(/d\/dx\s*/gi,'')
+      .replace(/найди\s+|вычисли\s+|посчитай\s+|determine\s+|find\s+|calculate\s+/gi,'')
+      .trim();
+    if(derivClean) s = 'производная ' + derivClean;
+  }
+
+  // ─── INTEGRAL ─────────────────────────────────────────
+  // "найди интеграл от x^2"  →  "интеграл x^2"
+  // "проинтегрировать sin(x)"  →  "интеграл sin(x)"
+  // "∫ x^3 dx"               →  "интеграл x^3"
+  if(
+    /(?:интегра[лт]|проинтегрир|integrat|∫)/i.test(lo) &&
+    !/^интеграл\s/i.test(lo)
+  ){
+    var intClean = stripVerbs(s)
+      .replace(/интегра(?:л|т)\w*\s+(?:функции|выражени[яе]|от)?\s*/gi,'')
+      .replace(/проинтегрир\w*\s+(?:функцию|функции|выражение|от)?\s*/gi,'')
+      .replace(/integrat\w*\s+(?:function|of|for|the)?\s*/gi,'')
+      .replace(/integral\s+(?:of|for|the)?\s*/gi,'')
+      .replace(/∫\s*/g,'')
+      .replace(/\s*dx\s*$/i,'')
+      .replace(/найди\s+|вычисли\s+|посчитай\s+|determine\s+|find\s+|calculate\s+/gi,'')
+      .trim();
+    if(intClean) s = 'интеграл ' + intClean;
+  }
+
+  // ─── GCD / НОД ────────────────────────────────────────
+  // "найди НОД 12 и 18"                       →  "НОД(12,18)"
+  // "наибольший общий делитель 12 18"          →  "НОД(12,18)"
+  // "greatest common divisor of 12 and 18"    →  "gcd(12,18)"
+  var gcdMatch = lo.match(/(?:наибольший\s+общий\s+делитель|НОД|нод|gcd|greatest\s+common\s+divisor|greatest\s+common\s+factor)\D*([\d]+)\s*(?:и|and|,|;)?\s*([\d]+)/i);
+  if(gcdMatch){
+    s = 'НОД('+gcdMatch[1]+','+gcdMatch[2]+')';
+  }
+
+  // ─── LCM / НОК ────────────────────────────────────────
+  // "наименьшее общее кратное 4 6"  →  "НОК(4,6)"
+  var lcmMatch = lo.match(/(?:наименьшее\s+общее\s+кратное|НОК|нок|lcm|least\s+common\s+multiple)\D*([\d]+)\s*(?:и|and|,|;)?\s*([\d]+)/i);
+  if(lcmMatch){
+    s = 'НОК('+lcmMatch[1]+','+lcmMatch[2]+')';
+  }
+
+  // ─── FACTORIAL ────────────────────────────────────────
+  // "факториал числа 7"  →  "факториал 7"
+  // "вычисли 7!"         →  "факториал 7"     (already handled by regex \d+! but normalize anyway)
+  var factNL = lo.match(/(?:факториал\s+(?:числа|чисел|от)?\s*|factorial\s+(?:of\s+)?)([\d]+)/i);
+  if(factNL && !/факториал\s+\d/i.test(s)){
+    s = 'факториал ' + factNL[1];
+  }
+
+  // ─── COMBINATIONS C(n,k) ──────────────────────────────
+  // "сочетания из 8 по 3"  →  "C(8,3)"
+  // "число сочетаний 8 и 3"  →  "C(8,3)"
+  var combNL = lo.match(/(?:сочетан\w*\s+(?:из|of)?\s*|число\s+сочетан\w*\s*|combin\w*\s+(?:of|from)?\s*)([\d]+)\s*(?:по|из|by|and|choose|,|;)?\s*([\d]+)/i);
+  if(combNL && !/c\s*\(/i.test(lo)){
+    s = 'C('+combNL[1]+','+combNL[2]+')';
+  }
+
+  // ─── PERMUTATIONS P(n,k) ──────────────────────────────
+  // "перестановки из 5 по 2"  →  "P(5,2)"
+  var permNL = lo.match(/(?:перестановк\w*\s+(?:из|of)?\s*|числ[оа]\s+перестановок\s*|permut\w*\s+(?:of|from)?\s*)([\d]+)\s*(?:по|из|by|and|choose|,|;)?\s*([\d]+)/i);
+  if(permNL && !/p\s*\(/i.test(lo)){
+    s = 'P('+permNL[1]+','+permNL[2]+')';
+  }
+
+  // ─── PERCENTAGE ───────────────────────────────────────
+  // "сколько это будет 15% от 200"  →  "15% от 200"
+  // "посчитай 30 процентов от 500"  →  "30% от 500"
+  var pctNL = lo.match(/([\d]+(?:[.,][\d]+)?)\s*(?:%|процент\w*)\s*(?:от|из|of|from)?\s*([\d]+(?:[.,][\d]+)?)/i);
+  if(pctNL){
+    var pv = pctNL[1].replace(',','.'), pn = pctNL[2].replace(',','.');
+    s = pv + '% от ' + pn;
+  }
+
+  // ─── SYSTEM OF EQUATIONS ─────────────────────────────
+  // "реши уравнения: 2x+y=5 и x-y=1"  →  prefix "система" for the system detector
+  // Also handles: "реши систему уравнений ...", "найди x и y если ..."
+  if(
+    /(?:реш[ии]|solve)\s+(?:уравнени\w+|систем\w+|equations?)/i.test(lo) &&
+    !/систем/i.test(lo)
+  ){
+    s = 'система: ' + stripVerbs(s)
+      .replace(/реш[ии]\s+уравнени\w*\s*/gi,'')
+      .replace(/solve\s+equations?\s*/gi,'')
+      .trim();
+  }
+  // "найди x и y если 2x+y=5, x-y=1" → "система: 2x+y=5, x-y=1"
+  if(
+    /(?:найди|find)\s+[xyz]/i.test(lo) &&
+    lo.indexOf('если') >= 0 &&
+    !/систем/i.test(lo)
+  ){
+    var ifIdx = lo.indexOf('если');
+    var afterIf = s.substring(ifIdx + 4).trim();
+    s = 'система: ' + afterIf;
+  }
+
+  // ─── SIMPLIFY/FACTOR/EXPAND ───────────────────────────
+  // "как упростить (x^2-9)/(x-3)" → "упростить (x^2-9)/(x-3)"
+  var simplNL = lo.match(/(?:как|how\s+to|можно)?\s*(упрост\w+|simplif\w+|разлож\w+|factor\w*|раскр\w+|expand\w*|вычисли|compute)\s+(?:это\s+)?(.+)/i);
+  if(simplNL && simplNL[2] && simplNL[2].trim()){
+    // only apply if not already in canonical form
+    if(!/^(?:упрост|simplif|разлож|factor|раскр|expand)/i.test(s.trim())){
+      s = simplNL[1] + ' ' + simplNL[2].trim();
+    }
+  }
+
+  // ─── LOGARITHM ────────────────────────────────────────
+  // "найди логарифм 1000 по основанию 10"  →  "log10(1000)"
+  var logNL = lo.match(/(?:логарифм|logarithm)\s+([\d.]+)\s+(?:по\s+основани[юю]|base|with\s+base|to\s+the\s+base)\s+([\d.]+)/i);
+  if(logNL){
+    s = 'log' + logNL[2] + '(' + logNL[1] + ')';
+  }
+  // "log по основанию 2 от 8"  →  "log2(8)"
+  var logNL2 = lo.match(/log\s+(?:по\s+основани[юю]|base|with\s+base)?\s*([\d.]+)\s+(?:от|of|=|for)?\s*([\d.]+)/i);
+  if(logNL2){
+    s = 'log' + logNL2[1] + '(' + logNL2[2] + ')';
+  }
+
+  // ─── POWER / СТЕПЕНЬ ──────────────────────────────────
+  // "2 в степени 8"  →  "2^8"
+  var powNL = lo.match(/([\d]+(?:[.,][\d]+)?)\s+(?:в\s+степени|в\s+степень|raised\s+to\s+the\s+power\s+of|to\s+the\s+power\s+of|pow(?:er)?)\s+([\d]+)/i);
+  if(powNL){
+    s = powNL[1] + '^' + powNL[2];
+  }
+
+  // ─── SQUARE ROOT / КОРЕНЬ ─────────────────────────────
+  // "квадратный корень из 144"  →  "sqrt(144)"
+  var sqrtNL = lo.match(/(?:квадратн\w*\s+корен\w*|корень\s+квадратн\w*|square\s+root\s+of|sqrt)\s+(?:из|from|of)?\s*([\d]+(?:[.,][\d]+)?)/i);
+  if(sqrtNL && !/sqrt\s*\(/i.test(s)){
+    s = 'sqrt(' + sqrtNL[1].replace(',','.') + ')';
+  }
+
+  // ─── GRAPH / ГРАФИК ───────────────────────────────────
+  // "нарисуй график y=sin(x)"  →  "график y=sin(x)"
+  // "построй функцию y=x^2"    →  "график y=x^2"
+  if(/(?:нарисуй|построй|plot|draw|graph)\s+(?:граф[а-я]*|функцию|function|y\s*=)/i.test(lo)){
+    s = stripVerbs(s)
+      .replace(/нарисуй\s+|построй\s+|plot\s+|draw\s+/gi,'')
+      .replace(/функцию\s+/gi,'')
+      .trim();
+    if(!/^граф/i.test(s)) s = 'график ' + s;
+  }
+
+  // ─── CLEAN TRAILING FILLER ────────────────────────────
+  // Remove common filler that doesn't help parsing
+  s = s
+    .replace(/\s*пожалуйста\.?\s*$/i,'')
+    .replace(/\s*please\.?\s*$/i,'')
+    .replace(/\s*(?:подробно|step by step|пошагово)\s*/i,' ')
+    .trim();
+
+  return s;
+}
+
 function createLocalSolution(userText, detailed){
+  // Run semantic NLP normalization first so natural-language queries
+  // are rewritten into the canonical keyword forms the parser expects
+  userText = semanticNormalizeQuery(userText);
   var lo=normalizeMathLower(userText);
   buildSolverRegistry();
   var ext=runSolverRegistry(lo,userText,detailed,false);
   if(ext)return ext;
   var triEarly=parseTriangleSides(lo,userText);
   if(triEarly)return solveTriangleHeron(triEarly.a,triEarly.b,triEarly.c,detailed);
+
+  // ─── GENERAL EXPRESSION SIMPLIFIER ──────────────────────────────────
+  // Fires for: "упростить", "simplify", "factor", "expand", "раскрыть",
+  //            "разложить", "факторизовать", or any no-'=' algebraic expression
+  var hasEq=userText.indexOf('=')>=0;
+  var simplKeyword=/упрост|simplif|factor|разлож|раскр|expand|фактор/i.test(lo);
+  var looksLikeExpr=!hasEq && typeof nerdamer!=='undefined' && (
+    /[a-zA-Z]/.test(userText) ||
+    /[\+\-\*\/\^]/.test(userText)
+  );
+
+  if((simplKeyword || looksLikeExpr) && typeof nerdamer !== 'undefined'){
+    try{
+      // ── normalise the expression ──
+      var rawExpr = userText
+        .replace(/упрост[а-я]*\s*/gi,'').replace(/simplif[a-z]*\s*/gi,'')
+        .replace(/разлож[а-я]*\s*/gi,'').replace(/factor[a-z]*\s*/gi,'')
+        .replace(/раскр[а-я]*\s*/gi,'').replace(/expand[a-z]*\s*/gi,'')
+        .replace(/фактор[а-я]*\s*/gi,'').replace(/выражение\s*/gi,'').replace(/expression\s*/gi,'')
+        .replace(/[−–—]/g,'-').replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4')
+        .replace(/\*\*/g,'^').replace(/\s+/g,'').trim();
+
+      if(!rawExpr) throw new Error('empty');
+
+      // insert explicit * for implicit multiplication: 2x → 2*x, x(x+1) → x*(x+1)
+      var normExpr = rawExpr
+        .replace(/(\d)([a-zA-Z])/g,'$1*$2')
+        .replace(/([a-zA-Z])\(/g,'$1*(')
+        .replace(/\)(\d)/g,')*$1')
+        .replace(/\)([a-zA-Z])/g,')*$1');
+
+      // ── run nerdamer operations ──
+      var expanded  = null, factored = null, simplified = null;
+      try{ expanded  = nerdamer('expand('+normExpr+')').toString(); }catch(e){}
+      try{ factored  = nerdamer('factor('+normExpr+')').toString(); }catch(e){}
+      try{ simplified= nerdamer(normExpr).toString(); }catch(e){}
+
+      // Pick the "best" result: shortest / most useful form
+      var results = [];
+      if(simplified && simplified !== normExpr) results.push({label:isEN()?'Simplified':'Упрощено', val:simplified});
+      if(factored   && factored   !== normExpr && factored   !== simplified) results.push({label:isEN()?'Factored':'Разложено на множители', val:factored});
+      if(expanded   && expanded   !== normExpr && expanded   !== simplified) results.push({label:isEN()?'Expanded':'Раскрыто', val:expanded});
+
+      // Detect what kind of simplification was done based on keyword intent
+      var wantFactor = /разлож|factor/i.test(lo);
+      var wantExpand = /раскр|expand/i.test(lo);
+      var primary = results.length > 0 ? results[0] : null;
+      if(wantFactor && factored)   primary = {label:isEN()?'Factored':'Разложено на множители', val:factored};
+      if(wantExpand && expanded)   primary = {label:isEN()?'Expanded':'Раскрыто', val:expanded};
+
+      if(!primary) throw new Error('no result');
+
+      // ── build step-by-step cards ──
+      var steps = [];
+
+      // Step 1: what we're working with
+      steps.push({
+        title: isEN()?'🎓 Given Expression':'🎓 Данное выражение',
+        body: '<b>'+rawExpr+'</b>'+(normExpr!==rawExpr?'<br><span style="color:var(--text3);font-size:12px">'+isEN()?'With explicit ×: ':'С явным ×: '+normExpr+'</span>':'')
+      });
+
+      // Step 2: type of simplification
+      var exprType = detectExprType(normExpr);
+      steps.push({
+        title: '📐 '+(isEN()?'Expression type: '+exprType.en:'Тип выражения: '+exprType.ru),
+        body: exprType.tip
+      });
+
+      // Step 3: the main result
+      steps.push({
+        title: '📊 '+(isEN()?'Step 1: '+primary.label:'Шаг 1: '+primary.label),
+        body: '<span style="font-size:15px;font-weight:700;color:var(--g)">'+primary.val+'</span>'
+      });
+
+      // Step 4: extra forms if available
+      var extras = results.filter(function(r){return r!==primary;});
+      extras.forEach(function(r,i){
+        steps.push({
+          title: '📊 '+(isEN()?'Also: '+r.label:'Также: '+r.label),
+          body: '<span style="color:var(--c)">'+r.val+'</span>'
+        });
+      });
+
+      // helper: detect expression type and give explanation tip
+      function detectExprType(e){
+        var hasDiv  = e.indexOf('/')>=0;
+        var hasPow  = e.indexOf('^')>=0;
+        var hasTrig = /sin|cos|tan/i.test(e);
+        var hasParen= e.indexOf('(')>=0;
+        var hasLog  = /log/i.test(e);
+        if(hasTrig) return {en:'Trigonometric',ru:'Тригонометрическое', tip:isEN()?'Use trig identities: sin²+cos²=1, double angle, etc.':'Применяем тождества: sin²+cos²=1, двойной угол и др.'};
+        if(hasDiv && hasPow) return {en:'Rational fraction',ru:'Рациональная дробь', tip:isEN()?'Factor numerator & denominator, cancel common factors.':'Разложить числитель и знаменатель, сократить общие множители.'};
+        if(hasDiv) return {en:'Fraction expression',ru:'Дробное выражение', tip:isEN()?'Find common denominator, then combine.':'Приводим к общему знаменателю, затем упрощаем.'};
+        if(hasPow && hasParen) return {en:'Polynomial',ru:'Многочлен', tip:isEN()?'Expand brackets, collect like terms, or factor.':'Раскрываем скобки, приводим подобные или разлагаем.'};
+        if(hasPow) return {en:'Power expression',ru:'Степенное выражение', tip:isEN()?'Apply power rules: aⁿ·aᵐ=aⁿ⁺ᵐ, (aⁿ)ᵐ=aⁿᵐ.':'Правила степеней: aⁿ·aᵐ=aⁿ⁺ᵐ, (aⁿ)ᵐ=aⁿᵐ.'};
+        return {en:'Algebraic',ru:'Алгебраическое', tip:isEN()?'Combine like terms and simplify.':'Приводим подобные слагаемые и упрощаем.'};
+      }
+
+      if(detailed){
+        var h='';
+        steps.forEach(function(s){
+          h+='<div class="mega-section"><div class="mega-section-title">'+s.title+'</div><div class="mega-section-body">'+s.body+'</div></div>';
+        });
+        // Verification: substitute x=2 and check both sides match
+        try{
+          var origVal = nerdamer(normExpr).evaluate({x:2}).toString();
+          var simpVal = nerdamer(primary.val).evaluate({x:2}).toString();
+          h+=megaExpandable(isEN()?'✅ Verification (x=2)':'✅ Проверка (x=2)',
+            '<div class="mega-section-body">'+
+            (isEN()?'Original at x=2: '+parseFloat(origVal).toFixed(4):'Исходное при x=2: '+parseFloat(origVal).toFixed(4))+'<br>'+
+            (isEN()?'Result at x=2: '+parseFloat(simpVal).toFixed(4):'Результат при x=2: '+parseFloat(simpVal).toFixed(4))+'<br>'+
+            (Math.abs(parseFloat(origVal)-parseFloat(simpVal))<0.001?'✓ Match!':'⚠️ Check your input')+'</div>');
+        }catch(ve){}
+        h+='<br><span style="color:var(--g);font-weight:800;font-size:15px">✓ '+t('answer')+': '+primary.val+'</span>';
+        h+=megaPractice(isEN()?
+          ['(x^2-9)/(x-3)','(x+1)^3','factor x^2+5x+6','(a+b)^2-(a-b)^2','simplify (x^2-4)/(x+2)']:
+          ['упростить (x^2-9)/(x-3)','раскрыть (x+1)^3','разложить x^2+5x+6','упростить (a+b)^2-(a-b)^2','упростить (x^2-4)/(x+2)']);
+        return h;
+      }
+      // compact mode
+      return '<b>'+(isEN()?'Simplify':'Упрощение')+'</b><br>'+
+        '<span style="color:var(--text2);font-size:11px">'+rawExpr+'</span><br>'+
+        steps.slice(2).map(function(s){return '<span style="color:var(--c);font-size:12px">'+s.title.replace(/<[^>]*>/g,'')+'</span><br>';}).join('')+
+        '<span style="color:var(--g);font-weight:700">= '+primary.val+'</span>';
+    }catch(ex){}
+  }
 
   // ─── PRE-PROCESS: expand fraction equations for hard problems ───
   var hasEq=userText.indexOf('=')>=0;
@@ -3773,7 +4278,7 @@ function createLocalSolution(userText, detailed){
 
   // 2. LINEAR
 
-  if((lo.indexOf('x')>=0||lo.indexOf('y')>=0)&&lo.indexOf('x^')<0&&lo.indexOf('x²')<0&&!lo.match(/систем|system/)){
+  if(hasEq&&(lo.indexOf('x')>=0||lo.indexOf('y')>=0)&&lo.indexOf('x^')<0&&lo.indexOf('x²')<0&&!lo.match(/систем|system/)){
     var leq=userText.replace(/\s+/g,'').replace(/−/g,'-');var lparts=leq.split('=');
     if(lparts.length===2){
       var lps=function(s){var xc=0,cc=0;var terms=s.match(/[+-]?\d*\.?\d*x?/g)||[];for(var i=0;i<terms.length;i++){var t=terms[i];if(!t)continue;if(t.indexOf('x')>=0){var c2=t.replace('x','');xc+=c2===''||c2==='+'?1:c2==='-'?-1:parseFloat(c2)}else{cc+=parseFloat(t)||0}}return{xc:xc,cc:cc}};
@@ -3918,6 +4423,83 @@ if (intm && intm[1].trim()) {
     if(detailed)return renderExplain(isEN()?'Logarithm':'Логарифм',isEN()?'logₐ(b)=ln(b)/ln(a).':'logₐ(b)=ln(b)/ln(a).',['log_'+lbase+'('+larg+')=ln('+larg+')/ln('+lbase+')','='+lres.toFixed(4)],lres.toFixed(4),null);
     return '<b>'+(isEN()?'Logarithm':'Логарифм')+'</b><br><span style="color:var(--g);font-weight:700">✓ '+lres.toFixed(4)+'</span>';
   }}
+
+  // 13b. SQRT EXPRESSION SIMPLIFIER
+  // Handles: sqrt(100)/2x^2+2+sqrt(100)/2x-2, sqrt(9)*x+2, etc.
+  if(!hasEq && /sqrt\s*\(\s*\d+\.?\d*\s*\)/i.test(lo)){
+    try{
+      // ── normalizeImplicit: make implicit multiplication explicit for nerdamer ──
+      // "2x"→"2*x", "10/2*x^2"→"10/(2*x^2)", etc.
+      function normalizeImplicit(s){
+        s = s.replace(/\s+/g,'').replace(/\*\*/g,'^');
+        // digit before letter: 2x → 2*x
+        s = s.replace(/(\d)([a-zA-Z])/g,'$1*$2');
+        // letter before digit (not after ^): x2 (rare) → x*2
+        s = s.replace(/([a-zA-Z])(\d)/g,function(m,a,b){return a+'^'===s[s.indexOf(a+b)-1]?m:a+'*'+b;});
+        // After division, if we have digit*var (possibly with ^N), wrap in parens:
+        // /2*x  → /(2*x),  /2*x^3 → /(2*x^3)
+        s = s.replace(/\/(\d+\.?\d*\*[a-zA-Z](?:\^\d+)?)/g,'/$1'.replace('/','/(')+')');;
+        // cleaner approach for /2*x^N pattern:
+        s = s.replace(/\/((\d+\.?\d*)\*([a-zA-Z])(\^\d+)?)/g, function(_,all){return '/('+all+')';});
+        return s;
+      }
+
+      // Step 1: replace sqrt(N) with value
+      var sqrtRaw = userText.replace(/sqrt\s*\(\s*(\d+\.?\d*)\s*\)/gi, function(_,n){
+        var v = Math.sqrt(parseFloat(n));
+        return Math.abs(Math.round(v)-v)<1e-9 ? String(Math.round(v)) : parseFloat(v.toFixed(8)).toString();
+      });
+
+      // Step 2: normalize implicit multiplication
+      var sqNorm = normalizeImplicit(sqrtRaw);
+
+      var steps = [
+        (isEN()?'Replace each √(n): ':'Заменяем √(n): ') + sqrtRaw.replace(/\s+/g,''),
+        (isEN()?'With explicit ×: ':'С явным умножением: ') + sqNorm
+      ];
+
+      // Step 3: nerdamer symbolic simplification
+      var simpResult = null;
+      if(typeof nerdamer !== 'undefined'){
+        try{
+          var nd = nerdamer(sqNorm);
+          simpResult = nd.toString();
+          // If result looks worse than input (e.g. nerdamer bug), don't use it
+          if(simpResult && simpResult.length < sqNorm.length + 20){
+            steps.push((isEN()?'Combine like terms: ':'Приводим подобные: ') + simpResult);
+          } else {
+            simpResult = sqNorm; // keep normalized form
+          }
+        }catch(e2){ simpResult = null; }
+      }
+
+      // Step 4: pure numeric fallback (no variables)
+      if(!simpResult){
+        var hasVarSq = /[a-df-wyzA-Z]/.test(sqNorm);
+        if(!hasVarSq){
+          try{
+            var numVal = Function('return ('+sqNorm.replace(/\^/g,'**')+')')();
+            if(isFinite(numVal)){
+              simpResult = parseFloat(numVal.toFixed(8)).toString();
+              steps.push((isEN()?'= ':'= ') + simpResult);
+            }
+          }catch(e){}
+        } else {
+          simpResult = sqNorm;
+        }
+      }
+
+      if(simpResult){
+        if(detailed) return renderExplain(
+          isEN()?'Simplify Expression':'Упрощение выражения',
+          isEN()?'Replace √(n) with its value, make multiplication explicit, then combine like terms.':'Заменяем √(n) на значение, расставляем знаки ×, затем приводим подобные.',
+          steps, simpResult, null);
+        return '<b>'+(isEN()?'Simplify':'Упрощение')+'</b><br>'+
+          '<span style="color:var(--text2);font-size:11px">'+userText+'</span><br>'+
+          '<span style="color:var(--g);font-weight:700">= '+simpResult+'</span>';
+      }
+    }catch(e){}
+  }
 
   // 14. SYSTEM (2×2 linear, 3×3 linear, quadratic systems)
   if(lo.match(/(?:система|system)/)){
@@ -4729,8 +5311,8 @@ renderSidebarTopics();
 }
 function renderQuickList(){
 var examples={
-RU:['x^2-5x+6=0','2x^2+3x-2=0','sin(x)=0.5','2^x=32','log2(x)=3','производная x^3+2x^2-x','интеграл 3x^2+2x','система: x+y=7, 2x-y=2','система: x+y+z=6, 2x-y+z=3, x+2y-z=2','система: x+y=5, x^2+y^2=13','C(8,3)=?','график y=x^2-4','площадь круга r=5','факториал 7','15% от 3400','фибоначчи 10','простое число 97','нод 24 36','имт вес 70 рост 1.75','скорость 120 за 2','среднее 2 5 8 10','255 в двоичн','пифагор a=3 b=4','сложный процент 1000 5 3','матрица определитель 2 1 4 3','векторное произведение 1 2 3 и 4 5 6','бином (x+2)^3','кинетическая энергия m=5 v=10','римское 2024','разложение на простые 360','паскаль строка 5','тейлор exp(1) n=8','определённый интеграл x^2 0 1','площадь сектора r=5 угол=60','правильный многоугольник n=6 a=4','объем тора R=5 r=2','среднее геометрическое 2 8 32','вероятность 3 10'],
-EN:['x^2-5x+6=0','2x^2+3x-2=0','sin(x)=0.5','2^x=32','log2(x)=3','derivative x^3+2x^2-x','integral 3x^2+2x','system: x+y=7, 2x-y=2','system: x+y+z=6, 2x-y+z=3, x+2y-z=2','system: x+y=5, x^2+y^2=13','C(8,3)=?','graph y=x^2-4','area of circle r=5','factorial 7','15% of 3400','fibonacci 10','is prime 97','gcd 24 36','bmi weight 70 height 1.75','speed 120 in 2','mean 2 5 8 10','255 to binary','pythagor a=3 b=4','compound interest 1000 5 3','matrix det 2 1 4 3','cross product 1 2 3 and 4 5 6','binomial (x+2)^3','kinetic energy m=5 v=10','roman 2024','prime factors 360','pascal row 5','taylor exp(1) n=8','definite integral x^2 0 1','sector area r=5 angle=60','regular polygon n=6 a=4','torus volume R=5 r=2','geometric mean 2 8 32','probability 3 10']
+RU:['x^2-5x+6=0','2x^2+3x-2=0','упростить (x^2-9)/(x-3)','разложить x^2+5x+6','раскрыть (x+2)^3','упростить (a+b)^2-(a-b)^2','упростить (x^2-4)/(x+2)+(x+2)','упростить 1/x+1/(x+1)','упростить (x^3-1)/(x-1)','разложить 2x^2-8','sin(x)=0.5','2^x=32','log2(x)=3','производная x^3+2x^2-x','интеграл 3x^2+2x','система: x+y=7, 2x-y=2','система: x+y+z=6, 2x-y+z=3, x+2y-z=2','система: x+y=5, x^2+y^2=13','C(8,3)=?','график y=x^2-4','площадь круга r=5','факториал 7','15% от 3400','фибоначчи 10','простое число 97','нод 24 36','имт вес 70 рост 1.75','скорость 120 за 2','среднее 2 5 8 10','255 в двоичн','пифагор a=3 b=4','сложный процент 1000 5 3','матрица определитель 2 1 4 3','векторное произведение 1 2 3 и 4 5 6','бином (x+2)^3','кинетическая энергия m=5 v=10','римское 2024','разложение на простые 360','паскаль строка 5','тейлор exp(1) n=8','определённый интеграл x^2 0 1','площадь сектора r=5 угол=60','правильный многоугольник n=6 a=4','объем тора R=5 r=2','среднее геометрическое 2 8 32','вероятность 3 10'],
+EN:['x^2-5x+6=0','2x^2+3x-2=0','simplify (x^2-9)/(x-3)','factor x^2+5x+6','expand (x+2)^3','simplify (a+b)^2-(a-b)^2','simplify (x^2-4)/(x+2)+(x+2)','simplify 1/x+1/(x+1)','simplify (x^3-1)/(x-1)','factor 2x^2-8','sin(x)=0.5','2^x=32','log2(x)=3','derivative x^3+2x^2-x','integral 3x^2+2x','system: x+y=7, 2x-y=2','system: x+y+z=6, 2x-y+z=3, x+2y-z=2','system: x+y=5, x^2+y^2=13','C(8,3)=?','graph y=x^2-4','area of circle r=5','factorial 7','15% of 3400','fibonacci 10','is prime 97','gcd 24 36','bmi weight 70 height 1.75','speed 120 in 2','mean 2 5 8 10','255 to binary','pythagor a=3 b=4','compound interest 1000 5 3','matrix det 2 1 4 3','cross product 1 2 3 and 4 5 6','binomial (x+2)^3','kinetic energy m=5 v=10','roman 2024','prime factors 360','pascal row 5','taylor exp(1) n=8','definite integral x^2 0 1','sector area r=5 angle=60','regular polygon n=6 a=4','torus volume R=5 r=2','geometric mean 2 8 32','probability 3 10']
 };
 document.getElementById('quickList').innerHTML=examples[LANG].map(function(e){return '<div class="qex" onclick="ex('+JSON.stringify(e)+')">'+e+'</div>'}).join('');
 }
@@ -4783,6 +5365,197 @@ function initApp(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initApp);
 else initApp();
+
+// ══════════════════════════════════════════════════════
+// OCR ENGINE  (Tesseract.js 5 · WebAssembly)
+// ══════════════════════════════════════════════════════
+var _ocrWorker = null;
+var _ocrCurrentResult = '';
+var _ocrRunning = false;
+
+function _oid(id){ return document.getElementById(id); }
+
+function triggerOCR(){
+  _oid('ocrFileInput').value = '';
+  _oid('ocrFileInput').click();
+}
+
+function handleOCRFile(e){
+  var file = e.target.files && e.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){
+    showToast('⚠️ Пожалуйста, выбери изображение');
+    return;
+  }
+  _ocrCurrentResult = '';
+  _ocrRunning = true;
+  _resetOCRUI();
+
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var dataUrl = ev.target.result;
+    _oid('ocrPreviewImg').src = dataUrl;
+    _oid('ocrPreviewWrap').style.display = 'flex';
+    _oid('ocrScanLine').style.display = 'block';
+    _oid('ocrOverlay').classList.add('show');
+    _oid('ocrBtn').classList.add('busy');
+    _runTesseract(dataUrl);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function _runTesseract(imageData){
+  _setOCRStatus('🔍 Инициализация движка OCR…', 2);
+  try {
+    if(!_ocrWorker){
+      _ocrWorker = await Tesseract.createWorker('rus+eng', 1, { logger: _ocrLogger });
+    }
+    _setOCRStatus('📖 Читаем изображение…', 15);
+    var result = await _ocrWorker.recognize(imageData);
+    var rawText = result.data.text || '';
+    if(!rawText.trim()){
+      _setOCRStatus('❌ Текст не найден. Попробуй более чёткое фото.', 100);
+      _oid('ocrScanLine').style.display = 'none';
+      _ocrRunning = false;
+      _oid('ocrBtn').classList.remove('busy');
+      return;
+    }
+    var cleaned = postProcessMathOCR(rawText);
+    _ocrCurrentResult = cleaned;
+    _oid('ocrProgressBar').style.width = '100%';
+    _oid('ocrScanLine').style.display = 'none';
+    _oid('ocrResultPreview').style.display = 'block';
+    _oid('ocrResultPreview').textContent = cleaned;
+    _oid('ocrWarn').style.display = 'block';
+    _oid('ocrUseBtn').style.display = '';
+    _setOCRStatus('✅ Распознано! Проверь текст и нажми «Использовать»', 100);
+    _ocrRunning = false;
+    _oid('ocrBtn').classList.remove('busy');
+  } catch(err) {
+    console.error('[OCR]', err);
+    _setOCRStatus('❌ Ошибка: ' + (err.message || 'неизвестная ошибка'), 100);
+    _oid('ocrScanLine').style.display = 'none';
+    _ocrRunning = false;
+    _oid('ocrBtn').classList.remove('busy');
+  }
+}
+
+function _ocrLogger(m){
+  if(!_ocrRunning) return;
+  var statusMap = {
+    'loading tesseract core':'Загружаем ядро Tesseract…',
+    'initializing tesseract':'Инициализация…',
+    'loading language traineddata':'Загружаем языковые данные…',
+    'initializing api':'Подготовка API…',
+    'recognizing text':'Читаем текст…'
+  };
+  var label = statusMap[(m.status||'').toLowerCase()] || m.status || '…';
+  var pct = m.progress ? Math.min(Math.round(m.progress*80)+15, 95) : null;
+  if(pct) _oid('ocrProgressBar').style.width = pct + '%';
+  _oid('ocrStatusText').textContent = '⚙️ ' + label + (m.progress ? ' ' + Math.round(m.progress*100) + '%' : '');
+}
+
+function _setOCRStatus(msg, pct){
+  _oid('ocrStatusText').textContent = msg;
+  if(pct != null) _oid('ocrProgressBar').style.width = pct + '%';
+}
+
+function _resetOCRUI(){
+  _oid('ocrProgressBar').style.width = '0%';
+  _oid('ocrResultPreview').style.display = 'none';
+  _oid('ocrResultPreview').textContent = '';
+  _oid('ocrWarn').style.display = 'none';
+  _oid('ocrUseBtn').style.display = 'none';
+  _oid('ocrPreviewWrap').style.display = 'none';
+  _oid('ocrScanLine').style.display = 'none';
+  _oid('ocrStatusText').textContent = 'Загрузи фото с задачей — бот прочитает и решит 📸';
+}
+
+function applyOCRResult(){
+  if(!_ocrCurrentResult) return;
+  var inp = document.getElementById('msgInput');
+  inp.value = _ocrCurrentResult;
+  inp.dispatchEvent(new Event('input'));
+  inp.focus();
+  cancelOCR();
+  showToast('📷 Текст распознан — проверь и нажми ➤');
+}
+
+function cancelOCR(){
+  _ocrRunning = false;
+  _oid('ocrOverlay').classList.remove('show');
+  _oid('ocrBtn').classList.remove('busy');
+  _resetOCRUI();
+}
+
+// ══════════════════════════════════════════════════════
+// MATH OCR POST-PROCESSOR  — ~40 symbol corrections
+// ══════════════════════════════════════════════════════
+function postProcessMathOCR(raw){
+  var s = raw;
+
+  // 1. Unicode math symbols → ASCII
+  s = s
+    .replace(/[×✕✗·]/g,'*')
+    .replace(/÷/g,'/')
+    .replace(/[−–—]/g,'-')
+    .replace(/≠/g,'!=')
+    .replace(/≤/g,'<=')
+    .replace(/≥/g,'>=')
+    .replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4')
+    .replace(/⁵/g,'^5').replace(/⁶/g,'^6').replace(/⁷/g,'^7')
+    .replace(/⁸/g,'^8').replace(/⁹/g,'^9').replace(/¹/g,'^1')
+    .replace(/√/g,'sqrt')
+    .replace(/∫/g,'интеграл ')
+    .replace(/π/g,'pi')
+    .replace(/∞/g,'inf')
+    .replace(/['']/g,"'")
+    .replace(/[""]/g,'"');
+
+  // 2. Digit-context character confusions
+  // l, I, | → 1 when between digits or at word boundary in numeric context
+  s = s.replace(/\b([lI|]+)\b/g, function(m){
+    return m.replace(/[lI|]/g,'1');
+  });
+  // О (Cyrillic O) → 0 when between digits
+  s = s.replace(/(\d)\s*[oоO]\s*(\d)/gi,'$10$2');
+  // S → 5, G → 6, Z → 2 between digits
+  s = s.replace(/(\d)\s*S\s*(\d)/g,'$15$2');
+  s = s.replace(/(\d)\s*G\s*(\d)/g,'$16$2');
+  s = s.replace(/(\d)\s*Z\s*(\d)/g,'$12$2');
+
+  // 3. Equation format fixes
+  s = s.replace(/\s*\^\s*/g,'^');         // x ^ 2 → x^2
+  s = s.replace(/==/g,'=');               // == → =
+  s = s.replace(/d\s*\/\s*d\s*x/gi,'d/dx'); // d / d x → d/dx
+
+  // 4. Strip task header noise
+  s = s.replace(/^(?:задани[ея]|задача|упражнение|exercise|task|problem|№|#)\s*[\d.]+[.):\s]*/gim,'');
+  // Remove lines that are only punctuation
+  s = s.replace(/^[\s.,;:*\-_=|]+$/gm,'');
+
+  // 5. Line merging for multi-line equations
+  s = s.replace(/([+\-*/=(])\s*\n\s*/g,'$1 ');
+  s = s.replace(/\n\s*([+\-*/=])/g,' $1');
+
+  // 6. Whitespace cleanup
+  s = s.replace(/[ \t]{2,}/g,' ');
+  s = s.replace(/\n{3,}/g,'\n\n');
+  s = s.split('\n').map(function(l){return l.trim();}).join('\n').trim();
+
+  // 7. Single vs multi-line result
+  var lines = s.split('\n').filter(function(l){return l.trim();});
+  if(lines.length === 1){
+    s = lines[0];
+  } else if(lines.length >= 2 && lines.length <= 4){
+    var allEq = lines.every(function(l){return l.indexOf('=') >= 0;});
+    s = allEq ? 'система: ' + lines.join(', ') : lines.join('\n');
+  } else {
+    s = lines.join('\n');
+  }
+
+  return s;
+}
 </script>
 
 </body>
