@@ -5530,12 +5530,13 @@ function cancelOCR(){
 }
 
 // ══════════════════════════════════════════════════════
-// MATH OCR POST-PROCESSOR  — ~40 symbol corrections
+// MATH OCR POST-PROCESSOR — Complete 10-phase rewrite
+// Handles every known Tesseract failure mode for math
 // ══════════════════════════════════════════════════════
 function postProcessMathOCR(raw){
   var s = raw;
 
-  // 1. Unicode math symbols → ASCII
+  // ── PHASE 1: Unicode math symbols → ASCII ─────────────
   s = s
     .replace(/[×✕✗·]/g,'*')
     .replace(/÷/g,'/')
@@ -5553,56 +5554,119 @@ function postProcessMathOCR(raw){
     .replace(/['']/g,"'")
     .replace(/[""]/g,'"');
 
-  // 2. Digit-context character confusions
-  // l, I, | → 1 when between digits or at word boundary in numeric context
-  s = s.replace(/\b([lI|]+)\b/g, function(m){
+  // ── PHASE 2: Cyrillic lookalikes → digits ─────────────
+  // When Tesseract runs with rus+eng it outputs Cyrillic characters
+  // that are visually identical to math digits/symbols.
+  // This is the ROOT CAUSE of "T*" → "7" not working —
+  // it was Cyrillic "Т" (U+0422), not Latin "T".
+
+  // Т (Cyrillic) → 7  — appears as T in output
+  // Pattern: Т followed by *, or Т between operators/at end of expr
+  s = s.replace(/Т\s*[\*×]/g,'7');                          // Т* → 7
+  s = s.replace(/([-+*/=(,;\s])\s*Т\s*(?=[-+*/=);,\s\n]|$)/g,'$17'); // lone Т after op
+  s = s.replace(/Т(?=\s*[-+*/=);,\n])/g,'7');              // Т before op
+  s = s.replace(/(?<=[-+*/=(,;\s\n])Т/g,'7');              // Т after op (lookbehind)
+
+  // В (Cyrillic) → 8  — В looks like B
+  s = s.replace(/(\d)\s*В\s*(\d)/g,'$18$2');
+  s = s.replace(/([-+*/=(,;\s])\s*В\s*(?=\d)/g,'$18');
+
+  // З (Cyrillic) → 3  — З looks like 3
+  s = s.replace(/(\d)\s*З\s*(\d)/g,'$13$2');
+  s = s.replace(/([-+*/=(,;\s])\s*З\s*(?=[-+\s]|$)/g,'$13');
+
+  // Э (Cyrillic) → 3 or E — Э looks like reversed E/3
+  s = s.replace(/(\d)\s*Э\s*(\d)/g,'$13$2');
+
+  // О/о (Cyrillic O) → 0 between digits
+  s = s.replace(/(\d)\s*[оО]\s*(\d)/g,'$10$2');
+
+  // ── PHASE 3: Latin lookalikes in numeric context ───────
+  // l, I, | → 1 at word boundaries (not inside words)
+  s = s.replace(/\b([lI|]+)\b/g,function(m){
     return m.replace(/[lI|]/g,'1');
   });
-  // О (Cyrillic O) → 0 when between digits
-  s = s.replace(/(\d)\s*[oоO]\s*(\d)/gi,'$10$2');
-  // S → 5, G → 6, Z → 2 between digits
+
+  // Latin T / T* → 7  (fallback for when OCR outputs Latin T)
+  s = s.replace(/\bT\s*[\*×]/g,'7');
+  s = s.replace(/([-+*(=,;\s])\s*T\s*(?=[-+*/=);,\s\n]|$)/g,'$17');
+
+  // S → 5, G → 6, Z → 2  between digits
   s = s.replace(/(\d)\s*S\s*(\d)/g,'$15$2');
   s = s.replace(/(\d)\s*G\s*(\d)/g,'$16$2');
   s = s.replace(/(\d)\s*Z\s*(\d)/g,'$12$2');
 
-  // ── Screenshot-discovered OCR fixes ─────────────────
-  // Fix 1: "x?" → "x^2"  (superscript ² misread as ?)
-  // e.g. "2x? - 5x" → "2x^2 - 5x"
+  // B → 8, Q → 0 between digits (common OCR digit confusions)
+  s = s.replace(/(\d)\s*B\s*(\d)/g,'$18$2');
+  s = s.replace(/(\d)\s*Q\s*(\d)/g,'$10$2');
+
+  // ── PHASE 4: Superscript / exponent fixes ──────────────
+  // "x?" → "x^2"  (superscript ² misread as ?)
   s = s.replace(/([a-zA-Z])\?/g,'$1^2');
 
-  // Fix 2: digit directly after variable letter without ^ → treat as exponent
-  // e.g. "2x2" → "2x^2", "x3" → "x^3"
-  // Only do this when it can't be a coefficient (no operator ahead)
-  s = s.replace(/([a-zA-Z])(\d)(?=\s*[-+*/=);,\s]|$)/g, function(m, v, d){
-    // Don't apply if d is clearly a separate number (preceded by space already handled)
-    return v + '^' + d;
-  });
+  // "x2" or "x3" → "x^2", "x^3" at end of math token
+  // Only when digit directly follows a letter with no space
+  s = s.replace(/([a-zA-Z])([2-9])(?=\s*[-+*/=);,\s\n]|$)/g,'$1^$2');
 
-  // Fix 3: "T*" or "T *" → "7" (Tesseract confuses 7 with T)
-  // Also lone "T" between operators/digits
-  s = s.replace(/\bT\s*\*/g,'7');
-  s = s.replace(/([+\-*/=(,\s])\s*T\s*(?=[-+*/=);,\s]|$)/g,'$17');
+  // ── PHASE 5: Bracket normalization ────────────────────
+  // Tesseract sometimes outputs curly/square brackets instead of round
+  s = s.replace(/[{[]/g,'(');
+  s = s.replace(/[}\]]/g,')');
 
-  // 3. Equation format fixes
-  s = s.replace(/\s*\^\s*/g,'^');         // x ^ 2 → x^2
-  s = s.replace(/==/g,'=');               // == → =
-  s = s.replace(/d\s*\/\s*d\s*x/gi,'d/dx'); // d / d x → d/dx
+  // ── PHASE 6: Equation format fixes ────────────────────
+  s = s.replace(/\s*\^\s*/g,'^');           // x ^ 2 → x^2
+  s = s.replace(/==/g,'=');                 // == → =
+  s = s.replace(/d\s*\/\s*d\s*x/gi,'d/dx');// d / d x → d/dx
+  // Plus/minus written as separate chars
+  s = s.replace(/\+\s*-/g,'-');
+  s = s.replace(/-\s*-/g,'+');
 
-  // 4. Strip task header noise
+  // ── PHASE 7: Fraction detection ───────────────────────
+  // Tesseract sees a fraction bar as a line separator.
+  // Output pattern: "numerator\ndenominator" or "numerator . denominator"
+  // Detect and convert to (num)/(denom)
+  var mathToken = /[0-9a-zA-Z^+\-*\/()]/;
+  // Case A: two lines where neither contains '=' (not equations, likely fraction)
+  var fLines = s.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+  if(fLines.length === 2 && fLines.every(function(l){
+    return l.indexOf('=') < 0 && mathToken.test(l);
+  })){
+    s = '(' + fLines[0] + ') / (' + fLines[1] + ')';
+  } else {
+    // Case B: "EXPR . EXPR" with dot separator (OCR reads fraction line as dot)
+    s = s.replace(/([0-9x\^+\-*\/()a-zA-Z]+)\.\s+([0-9x\^+\-*\/()a-zA-Z]+)/g,
+      function(m, a, b){
+        if(mathToken.test(a) && mathToken.test(b) && /[a-zA-Z\^]/.test(a+b)){
+          return '('+a.trim()+') / ('+b.trim()+')';
+        }
+        return m;
+      }
+    );
+    // Case C: semicolon as fraction separator
+    s = s.replace(/([0-9x\^+\-*\/()a-zA-Z]+);\s*([0-9x\^+\-*\/()a-zA-Z]+)/g,
+      function(m, a, b){
+        if(mathToken.test(a) && mathToken.test(b) && /[a-zA-Z\^]/.test(a+b)){
+          return '('+a.trim()+') / ('+b.trim()+')';
+        }
+        return m;
+      }
+    );
+  }
+
+  // ── PHASE 8: Strip task header noise ──────────────────
   s = s.replace(/^(?:задани[ея]|задача|упражнение|exercise|task|problem|№|#)\s*[\d.]+[.):\s]*/gim,'');
-  // Remove lines that are only punctuation
   s = s.replace(/^[\s.,;:*\-_=|]+$/gm,'');
 
-  // 5. Line merging for multi-line equations
+  // ── PHASE 9: Line merging ──────────────────────────────
+  // Only merge if already not handled as fraction above
   s = s.replace(/([+\-*/=(])\s*\n\s*/g,'$1 ');
   s = s.replace(/\n\s*([+\-*/=])/g,' $1');
 
-  // 6. Whitespace cleanup
+  // ── PHASE 10: Whitespace cleanup + final structure ─────
   s = s.replace(/[ \t]{2,}/g,' ');
   s = s.replace(/\n{3,}/g,'\n\n');
   s = s.split('\n').map(function(l){return l.trim();}).join('\n').trim();
 
-  // 7. Single vs multi-line result
   var lines = s.split('\n').filter(function(l){return l.trim();});
   if(lines.length === 1){
     s = lines[0];
