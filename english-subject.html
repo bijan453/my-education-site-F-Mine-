@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F.MINE English Premium</title>
+<!-- Modern Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<!-- Custom Styles -->
+<link rel="stylesheet" href="english.css">
+</head>
+<body class="dark-theme">
+
+  <!-- Background decorative elements -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- Main App Header -->
+  <header class="app-header">
+    <div class="logo" onclick="window.location.href='lobby.html'">F<span class="logo-dot">.</span>MINE <span class="logo-subtitle">ENGLISH</span></div>
+    <div class="header-right">
+      <div class="streak-badge" id="streakBadge">🔥 0</div>
+      <div class="xp-badge" id="totalXpBadge">⭐ 0 XP</div>
+      <button class="btn-ghost" onclick="window.location.href='lobby.html'">⬅ Назад</button>
+    </div>
+  </header>
+
+  <!-- Root Container for Dynamic JS Injection -->
+  <div id="app" class="app-container">
+    <!-- Content injected here -->
+  </div>
+
+  <!-- Audio elements for sounds -->
+  <audio id="snd-success" src="https://assets.mixkit.co/sfx/preview/mixkit-coin-win-notification-1992.mp3" preload="auto"></audio>
+  <audio id="snd-wrong" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3" preload="auto"></audio>
+  <audio id="snd-level" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+  <audio id="snd-pop" src="https://assets.mixkit.co/sfx/preview/mixkit-modern-click-box-check-1120.mp3" preload="auto"></audio>
+  
+  <!-- Canvas for Confetti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Custom Logic Engine -->
+  <script src="english.js"></script>
+</body>
+</html>

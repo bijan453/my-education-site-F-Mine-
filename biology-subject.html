@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Клеточная Биология - Обучение</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    color: #333;
+    background: #f8f9fc;
+    line-height: 1.6;
+  }
+  header {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-weight: 800; font-size: 24px; color: #1e0a3c; cursor: pointer;}
+  .logo-dot { color: #5c24e0; }
+  
+  .container {
+    max-width: 1100px;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 50px;
+    padding: 0 20px;
+  }
+
+  /* Main Column */
+  .main-col h1 {
+    font-size: 38px;
+    color: #240d45;
+    margin-bottom: 25px;
+    font-weight: 800;
+  }
+
+  .hero-block {
+    position: relative;
+    margin-bottom: 30px;
+    padding-top: 20px;
+    padding-left: 20px;
+  }
+  
+  .hero-bg {
+    position: absolute;
+    top: 0; left: 0; right: 20%; bottom: 15%;
+    background: #4812a3; /* Deep purple */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    z-index: 1;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 100%; width: 40%; height: 100%;
+    background: #eebbfa;
+  }
+
+  .hero-img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+
+  .intro-text {
+    font-size: 15px;
+    margin-bottom: 40px;
+  }
+  .intro-text p { margin-bottom: 12px; }
+  
+  .lessons-heading {
+    font-size: 26px;
+    color: #240d45;
+    margin-bottom: 25px;
+    font-weight: 800;
+  }
+
+  .lesson-card {
+    display: flex;
+    gap: 20px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    margin-bottom: 25px;
+    transition: transform 0.2s;
+  }
+  .lesson-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+  
+  .lesson-card-img {
+    width: 200px;
+    height: 140px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .lesson-card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .fav-icon {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(255,255,255,0.8);
+    width: 25px; height: 25px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #888;
+  }
+  
+  .lesson-card-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .lesson-title {
+    font-size: 20px;
+    color: #4812a3;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: rgba(72,18,163,0.3);
+    text-decoration-thickness: 2px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .lesson-title:hover { text-decoration-color: #4812a3; }
+  .lesson-desc { font-size: 14px; margin-bottom: 12px; }
+  .lesson-meta { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #666; font-weight: 600; }
+
+  /* Sidebar */
+  .sidebar {
+    padding-top: 10px;
+  }
+  .side-nav {
+    margin-bottom: 40px;
+  }
+  .side-nav ul { list-style: none; }
+  .side-nav li {
+    margin-bottom: 15px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: #333;
+    transition: 0.2s;
+  }
+  .side-nav li:before {
+    content: '✓';
+    color: #4812a3;
+    font-weight: bold;
+  }
+  .side-nav li.active { color: #16a34a; font-weight: 600; }
+  .side-nav li:hover:not(.active) { color: #4812a3; }
+
+  .promo-banner {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 180px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .promo-banner:hover { transform: scale(1.02); }
+  .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
+  .promo-overlay {
+    position: absolute; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 20px; color: white;
+  }
+  .promo-text { font-size: 14px; font-weight: 600; margin-bottom: 10px; line-height: 1.4;}
+  .promo-link { color: #cbd5e1; font-size: 13px; font-weight: 700; }
+
+  .side-group { margin-bottom: 30px; }
+  .side-group h4 { font-size: 16px; color: #240d45; margin-bottom: 15px; font-weight: 700; }
+  
+  @media(max-width: 900px) {
+    .container { grid-template-columns: 1fr; }
+    .hero-bg { right: 0; bottom: 0; }
+    .hero-bg::after { display: none; }
+  }
+  @media(max-width: 600px) {
+    .lesson-card { flex-direction: column; }
+    .lesson-card-img { width: 100%; height: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="window.location.href='lobby.html'">F<span class="logo-dot">.</span>MINE</div>
+  <div>
+    <button onclick="window.location.href='lobby.html'" style="padding:8px 16px; background:#f0f0f5; border:none; border-radius:8px; cursor:pointer; font-weight:600; color:#4812a3;">⬅ Назад в лобби</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="main-col">
+    <h1>Клеточная Биология</h1>
+    
+    <div class="hero-block">
+      <div class="hero-bg"></div>
+      <img src="https://images.unsplash.com/photo-1530026405186-ed1f49663284?auto=format&fit=crop&w=800&q=80" class="hero-img" alt="Hero">
+    </div>
+
+    <div class="intro-text">
+      <p>Изучайте строение живых организмов на клеточном уровне интерактивно.</p>
+      <p>В этом разделе вы можете улучшить свои навыки с помощью понятных уроков, пройти теорию и затем проверить себя на интерактивных задачах.</p>
+      <p>Выберите нужную тему и начните свое обучение прямо сейчас!</p>
+    </div>
+
+    <h2 class="lessons-heading">Разделы</h2>
+    <div class="lessons-list">
+      
+    <div class="lesson-card">
+      <div class="lesson-card-img">
+        <div class="fav-icon">♡</div>
+        <img src="${l.img}" alt="${l.title}">
+      </div>
+      <div class="lesson-card-info">
+        <div class="lesson-title" onclick="jumpToBot()">${l.title}</div>
+        <div class="lesson-desc">${l.desc}</div>
+        <div class="lesson-meta">💬 ${l.comments}</div>
+      </div>
+    </div>
+  
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="side-nav">
+      <ul>
+        <li>A1-A2 Начальный</li>
+        <li class="active">Основы Цитологии</li>
+        <li>C1 Продвинутый</li>
+        <li>Справочник</li>
+      </ul>
+    </div>
+
+    <div class="promo-banner" onclick="window.location.href='chat-biology.html'">
+      <img src="https://images.unsplash.com/photo-1518152006812-edab29b069ac?auto=format&fit=crop&w=600&q=80" alt="Promo">
+      <div class="promo-overlay">
+        <div class="promo-text">Наш ИИ-репетитор по биологии поможет тебе разобраться в любой сложной теме 1 на 1.</div>
+        <div class="promo-link">Попробовать ИИ-Уроки →</div>
+      </div>
+    </div>
+
+    <div class="side-group">
+      <h4>Другие предметы</h4>
+      <div class="side-nav">
+        <ul>
+          <li onclick="window.location.href='math-subject.html'">Математика</li>
+          <li onclick="window.location.href='physics-subject.html'">Физика</li>
+          <li onclick="window.location.href='history-subject.html'">История</li>
+          <li onclick="window.location.href='biology-subject.html'">Биология</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="side-group">
+      <h4>Помощь</h4>
+      <div class="side-nav">
+        <ul>
+          <li>FAQ / Частые вопросы</li>
+          <li>Правила сервиса</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function jumpToBot() {
+    window.location.href = 'chat-biology.html';
+  }
+</script>
+</body>
+</html>

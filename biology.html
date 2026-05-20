@@ -335,7 +335,7 @@ if (!currentUser) location.href = "index.html";
 const userRef = doc(db, "users", currentUser);
 
 // ─── LANGUAGE SYSTEM ─────────────────────────────────────────
-let LANG = localStorage.getItem("fmine_lang") || "ru";
+let LANG = (localStorage.getItem("fmine_lang") || "ru").toLowerCase();
 
 const T = {
   ru: {
@@ -939,7 +939,7 @@ function initAnimations() {
 async function init() {
   if (localStorage.getItem("accountTheme") === "light") document.body.classList.add("light");
   // Restore language preference
-  LANG = localStorage.getItem("fmine_lang") || "ru";
+  LANG = (localStorage.getItem("fmine_lang") || "ru").toLowerCase();
   document.getElementById("langRuBtn").classList.toggle("active", LANG === "ru");
   document.getElementById("langEnBtn").classList.toggle("active", LANG === "en");
   applyTranslations();
