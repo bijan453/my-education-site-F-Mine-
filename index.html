@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -152,7 +153,7 @@ button {
 
     <div class="language-select" style="margin-bottom:10px;">
       <button id="btnRU" class="alt" onclick="setLang('RU')" style="width:auto;min-width:74px;">RU</button>
-      <button id="btnEN" class="alt" onclick="setLang('EN')" style="width:auto;min-width:74px;">EN</button>
+      <button id="btnEN" onclick="setLang('EN')" style="width:auto;min-width:74px;">EN</button>
     </div>
 
     <!-- REGISTER -->
@@ -245,7 +246,7 @@ const db = getFirestore(app);
     emailjs.init("Y9LA_RWTTvSW0hk_w");
 })();
 
-let lang = localStorage.getItem("fmine_lang") || "RU";
+let lang = localStorage.getItem("fmine_lang") || "EN";
 
 let regState = {
   code: "",
