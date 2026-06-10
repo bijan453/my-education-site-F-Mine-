@@ -340,9 +340,11 @@ window.switchSideTab = function(tab) {
 };
 
 // --- SERVER HTTP HELPER ---
+const SERVER_URL = 'https://my-education-site-f-mine.onrender.com';
+
 async function apiCall(endpoint, body = {}) {
   try {
-    const res = await fetch(`/api/chess/${endpoint}`, {
+    const res = await fetch(`${SERVER_URL}/api/chess/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
@@ -505,7 +507,8 @@ function setupSSE(gameId) {
   
   if (!gameId) return;
   
-  sseSource = new EventSource(`/api/chess/stream/${gameId}`);
+  sseSource = new EventSource(`${SERVER_URL}/api/chess/stream/${gameId}`);
+
   
   sseSource.onmessage = function(event) {
     const data = JSON.parse(event.data);
