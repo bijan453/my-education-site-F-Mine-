@@ -411,6 +411,11 @@ app.post("/api/chess/create", (req, res) => {
   res.json({ ok: true, gameId, color: assignedColor });
 });
 
+// Ping endpoint — keeps Render server awake
+app.get("/api/chess/ping", (req, res) => {
+  res.json({ ok: true, status: "awake" });
+});
+
 app.post("/api/chess/join", (req, res) => {
   const { gameId, player } = req.body;
   if (!gameId || !player) {

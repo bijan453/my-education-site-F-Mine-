@@ -342,6 +342,10 @@ window.switchSideTab = function(tab) {
 // --- SERVER HTTP HELPER ---
 const SERVER_URL = 'https://my-education-site-f-mine.onrender.com';
 
+// Wake up the Render server silently when the page loads
+// (free tier sleeps after 15min inactivity — this prevents 30s delay on first click)
+fetch(`${SERVER_URL}/api/chess/ping`).catch(() => {});
+
 async function apiCall(endpoint, body = {}) {
   try {
     const res = await fetch(`${SERVER_URL}/api/chess/${endpoint}`, {
