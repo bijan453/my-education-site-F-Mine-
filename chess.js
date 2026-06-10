@@ -2061,24 +2061,22 @@ window.startGameAnalysis = function() {
     }
     
     let classification = 'good';
-    const isBook = (i < 8); // Book check (first 4 full moves)
+    const isBookCandidate = (i < 8); // Book check (first 4 full moves)
     
-    if (isBook) {
-      classification = 'book';
-    } else if (bestMoveObj && move.from === bestMoveObj.from && move.to === bestMoveObj.to) {
-      classification = 'best';
+    if (evalLoss > 2.0) {
+      classification = 'blunder';
+    } else if (evalLoss > 1.0) {
+      classification = 'mistake';
+    } else if (evalLoss > 0.4) {
+      classification = 'inaccuracy';
     } else if (evalLoss <= -1.5) {
       classification = 'brilliant';
+    } else if (bestMoveObj && move.from === bestMoveObj.from && move.to === bestMoveObj.to) {
+      classification = isBookCandidate ? 'book' : 'best';
     } else if (evalLoss <= 0.1) {
-      classification = 'excellent';
-    } else if (evalLoss <= 0.4) {
-      classification = 'good';
-    } else if (evalLoss <= 1.0) {
-      classification = 'inaccuracy';
-    } else if (evalLoss <= 2.0) {
-      classification = 'mistake';
+      classification = isBookCandidate ? 'book' : 'excellent';
     } else {
-      classification = 'blunder';
+      classification = 'good';
     }
     
     stats[turn][classification]++;
