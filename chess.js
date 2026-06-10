@@ -14,6 +14,12 @@ let isPersonalityActive = true;
 let pendingPromotionMove = null;
 let capturedPieces = { white: [], black: [] };
 
+// Analysis Mode State
+let isAnalysisMode = false;
+let analysisMoves = []; // Array of { fen, move, score, classification, bestMove }
+let currentAnalysisIndex = -1; // -1 means start position, 0 means move 1, etc.
+let isAnalyzing = false;
+
 let currentSkin = localStorage.getItem("fmine_chess_skin") || "neon";
 let isVoiceMuted = localStorage.getItem("fmine_chess_voice_muted") === "true";
 let currentTtsAudio = null;
@@ -78,7 +84,23 @@ const T = {
     draw50Moves: "Ничья (правило 50 ходов)!",
     botThink: "Бот думает...",
     botName: "Бот",
-    opponent: "Оппонент"
+    opponent: "Оппонент",
+    btnGameOverAnalysis: "🔍 Анализ",
+    accuracy: "🎯 Точность",
+    category: "Категория",
+    coachSummary: "Итог тренера",
+    explainBtn: "💡 Объяснить этот ход",
+    exitAnalysis: "↩️ Выйти из анализа",
+    brilliant: "Блестящий ход",
+    best: "Лучший ход",
+    excellent: "Отличный ход",
+    good: "Хороший ход",
+    book: "Теория",
+    inaccuracy: "Неточность",
+    mistake: "Ошибка",
+    blunder: "Зевок",
+    noMoveSelected: "Ход не выбран",
+    coachCommentaryText: "Выберите ход для просмотра детального анализа и лучшего продолжения."
   },
   en: {
     title: "Chess Arena",
@@ -129,7 +151,23 @@ const T = {
     draw50Moves: "Draw (50-move rule)!",
     botThink: "Bot is thinking...",
     botName: "Bot",
-    opponent: "Opponent"
+    opponent: "Opponent",
+    btnGameOverAnalysis: "🔍 Analyze",
+    accuracy: "🎯 Accuracy",
+    category: "Category",
+    coachSummary: "Coach Summary",
+    explainBtn: "💡 Explain this move",
+    exitAnalysis: "↩️ Exit Analysis",
+    brilliant: "Brilliant",
+    best: "Best Move",
+    excellent: "Excellent",
+    good: "Good",
+    book: "Book Move",
+    inaccuracy: "Inaccuracy",
+    mistake: "Mistake",
+    blunder: "Blunder",
+    noMoveSelected: "No move selected",
+    coachCommentaryText: "Select a move to view detailed analysis and the best continuation."
   }
 };
 
@@ -288,6 +326,36 @@ function applyTranslations() {
   document.getElementById("btnGameOverExit").textContent = t("exit");
   document.getElementById("btnGameOverRematch").textContent = t("rematch");
   
+  const btnAnalysis = document.getElementById("btnGameOverAnalysis");
+  if (btnAnalysis) btnAnalysis.textContent = t("btnGameOverAnalysis") || "🔍 Анализ";
+  
+  const lblAnalysisAccuracy = document.getElementById("lblAnalysisAccuracy");
+  if (lblAnalysisAccuracy) lblAnalysisAccuracy.textContent = t("accuracy");
+  
+  const lblAnalysisCategory = document.getElementById("lblAnalysisCategory");
+  if (lblAnalysisCategory) lblAnalysisCategory.textContent = t("category");
+  
+  const coachNameTitle = document.getElementById("coachNameTitle");
+  if (coachNameTitle) coachNameTitle.textContent = LANG === 'ru' ? "ИИ Тренер" : "AI Coach";
+  
+  const coachSubTitle = document.getElementById("coachSubTitle");
+  if (coachSubTitle) coachSubTitle.textContent = LANG === 'ru' ? "Анализ партии" : "Game Review";
+  
+  const btnExplainMove = document.getElementById("btnExplainMove");
+  if (btnExplainMove) btnExplainMove.textContent = t("explainBtn");
+  
+  const btnExitAnalysis = document.getElementById("btnExitAnalysis");
+  if (btnExitAnalysis) btnExitAnalysis.textContent = t("exitAnalysis");
+  
+  const tabAnalysisBtn = document.getElementById("tabAnalysisBtn");
+  if (tabAnalysisBtn) tabAnalysisBtn.textContent = LANG === 'ru' ? "🔍 Анализ" : "🔍 Analysis";
+  
+  const loadingTitle = document.getElementById("analysisLoadingTitle");
+  if (loadingTitle) loadingTitle.textContent = LANG === 'ru' ? "Анализ партии..." : "Analyzing game...";
+  
+  const loadingDesc = document.getElementById("analysisLoadingDesc");
+  if (loadingDesc) loadingDesc.textContent = LANG === 'ru' ? "ИИ сканирует ходы на наличие блестящих решений и зевков." : "AI is scanning moves for brilliant ideas and blunders.";
+
   updateTurnIndicator();
   renderMovesLog();
 }
@@ -333,10 +401,21 @@ window.togglePersonality = function(active) {
 
 // --- CHAT WIDGET SWITCHING ---
 window.switchSideTab = function(tab) {
-  document.getElementById("tabMovesBtn").classList.toggle("active", tab === "moves");
-  document.getElementById("tabChatBtn").classList.toggle("active", tab === "chat");
-  document.getElementById("panelMoves").classList.toggle("active", tab === "moves");
-  document.getElementById("panelChat").classList.toggle("active", tab === "chat");
+  const tabMoves = document.getElementById("tabMovesBtn");
+  const tabChat = document.getElementById("tabChatBtn");
+  const tabAnalysis = document.getElementById("tabAnalysisBtn");
+  
+  if (tabMoves) tabMoves.classList.toggle("active", tab === "moves");
+  if (tabChat) tabChat.classList.toggle("active", tab === "chat");
+  if (tabAnalysis) tabAnalysis.classList.toggle("active", tab === "analysis");
+  
+  const panelMoves = document.getElementById("panelMoves");
+  const panelChat = document.getElementById("panelChat");
+  const panelAnalysis = document.getElementById("panelAnalysis");
+  
+  if (panelMoves) panelMoves.classList.toggle("active", tab === "moves");
+  if (panelChat) panelChat.classList.toggle("active", tab === "chat");
+  if (panelAnalysis) panelAnalysis.classList.toggle("active", tab === "analysis");
 };
 
 // --- SERVER HTTP HELPER ---
@@ -518,11 +597,25 @@ function setupSSE(gameId) {
     const data = JSON.parse(event.data);
     
     if (data.type === "init") {
-      game = new Chess(data.game.fen);
+      game = new Chess();
+      if (data.game.moves && data.game.moves.length > 0) {
+        for (const m of data.game.moves) {
+          game.move({ from: m.from, to: m.to, promotion: m.promotion });
+        }
+      } else {
+        game = new Chess(data.game.fen);
+      }
       loadGameSnapshot(data.game);
     } else if (data.type === "update") {
       const oldFen = game.fen();
-      game = new Chess(data.game.fen);
+      game = new Chess();
+      if (data.game.moves && data.game.moves.length > 0) {
+        for (const m of data.game.moves) {
+          game.move({ from: m.from, to: m.to, promotion: m.promotion });
+        }
+      } else {
+        game = new Chess(data.game.fen);
+      }
       
       loadGameSnapshot(data.game);
       
@@ -621,11 +714,19 @@ function renderBoard() {
   // Find last move squares for highlighting
   let lastMoveFrom = null;
   let lastMoveTo = null;
-  const history = game.history({ verbose: true });
-  if (history.length > 0) {
-    const lm = history[history.length - 1];
-    lastMoveFrom = lm.from;
-    lastMoveTo = lm.to;
+  if (isAnalysisMode && currentAnalysisIndex >= 0) {
+    const am = analysisMoves[currentAnalysisIndex];
+    if (am && am.move) {
+      lastMoveFrom = am.move.from;
+      lastMoveTo = am.move.to;
+    }
+  } else {
+    const history = game.history({ verbose: true });
+    if (history.length > 0) {
+      const lm = history[history.length - 1];
+      lastMoveFrom = lm.from;
+      lastMoveTo = lm.to;
+    }
   }
   
   // Draw file/rank squares (White views 1-8, Black views 8-1)
@@ -695,16 +796,33 @@ function renderBoard() {
         sqEl.appendChild(hint);
       }
       
+      // Render Move Quality Badge on Board in Analysis Mode
+      if (isAnalysisMode && currentAnalysisIndex >= 0 && sqName === lastMoveTo) {
+        const am = analysisMoves[currentAnalysisIndex];
+        if (am && am.classification) {
+          const badgeEl = document.createElement("div");
+          badgeEl.className = `square-badge ${am.classification}`;
+          const symbols = { brilliant: '🌟', best: '👑', excellent: '✨', good: '👍', book: '📖', inaccuracy: '❓', mistake: '⚠️', blunder: '❌' };
+          badgeEl.textContent = symbols[am.classification] || '';
+          badgeEl.title = t(am.classification);
+          sqEl.appendChild(badgeEl);
+        }
+      }
+      
       // Render Piece graphic
       if (piece) {
         const pieceKey = `${piece.color}${piece.type}`;
         const pEl = document.createElement("div");
         pEl.className = "piece";
-        pEl.draggable = (piece.color === pc()) && (game.turn() === pc());
+        pEl.draggable = !isAnalysisMode && (piece.color === pc()) && (game.turn() === pc());
         pEl.innerHTML = getPieceSvg(pieceKey, currentSkin);
         
         // Drag-and-Drop Event Handlers
         pEl.ondragstart = (e) => {
+          if (isAnalysisMode) {
+            e.preventDefault();
+            return;
+          }
           if (mode === 'multiplayer' && game.turn() !== pc()) {
             e.preventDefault();
             return;
@@ -729,6 +847,7 @@ function renderBoard() {
       
       // Click Handlers (alternative to drag-and-drop)
       sqEl.onclick = () => {
+        if (isAnalysisMode) return;
         handleSquareClick(sqName);
       };
       
@@ -1839,3 +1958,488 @@ setTimeout(() => {
     btn.textContent = isVoiceMuted ? "🔇" : "🔊";
   }
 }, 100);
+
+// --- CHESS REVIEW & AI ANALYSIS ENGINE ---
+
+function getPositionEval(chessInstance) {
+  if (chessInstance.game_over()) {
+    if (chessInstance.in_checkmate()) {
+      return chessInstance.turn() === 'b' ? 99.0 : -99.0;
+    }
+    return 0.0;
+  }
+  const clone = new Chess(chessInstance.fen());
+  const score = minimax(2, clone, -Infinity, Infinity, clone.turn() === 'w');
+  return score / 100;
+}
+
+function selectBestMoveForEval(chessInstance) {
+  const moves = chessInstance.moves({ verbose: true });
+  if (moves.length === 0) return null;
+  const clone = new Chess(chessInstance.fen());
+  const turn = clone.turn();
+  const isWhite = (turn === 'w');
+  
+  let bestMove = null;
+  let bestVal = isWhite ? -Infinity : Infinity;
+  
+  for (const move of moves) {
+    clone.move(move);
+    const scoreVal = minimax(2, clone, -Infinity, Infinity, !isWhite);
+    clone.undo();
+    
+    if (isWhite) {
+      if (scoreVal > bestVal) {
+        bestVal = scoreVal;
+        bestMove = move;
+      }
+    } else {
+      if (scoreVal < bestVal) {
+        bestVal = scoreVal;
+        bestMove = move;
+      }
+    }
+  }
+  return bestMove;
+}
+
+function getMoveSan(chessInstance, moveObj) {
+  const clone = new Chess(chessInstance.fen());
+  const m = clone.move(moveObj);
+  return m ? m.san : '';
+}
+
+window.startGameAnalysis = function() {
+  const movesToAnalyze = game.history({ verbose: true });
+  if (movesToAnalyze.length === 0) {
+    showToast(LANG === 'ru' ? "Нет ходов для анализа!" : "No moves to analyze!");
+    return;
+  }
+
+  document.getElementById("gameOverModal").classList.remove("active");
+  const overlay = document.getElementById("analysisLoadingOverlay");
+  if (overlay) overlay.style.display = "flex";
+  
+  isAnalyzing = true;
+  analysisMoves = [];
+  
+  const total = movesToAnalyze.length;
+  let i = 0;
+  const tempGame = new Chess();
+  
+  const stats = {
+    w: { brilliant: 0, best: 0, excellent: 0, good: 0, book: 0, inaccuracy: 0, mistake: 0, blunder: 0, scoreSum: 0, count: 0 },
+    b: { brilliant: 0, best: 0, excellent: 0, good: 0, book: 0, inaccuracy: 0, mistake: 0, blunder: 0, scoreSum: 0, count: 0 }
+  };
+  
+  function analyzeStep() {
+    if (!isAnalyzing) return; // Guard in case of cancellation
+    
+    if (i >= total) {
+      finishAnalysis(stats);
+      return;
+    }
+    
+    const move = movesToAnalyze[i];
+    const turn = tempGame.turn();
+    
+    // Get evaluation before move
+    const beforeEval = getPositionEval(tempGame);
+    const bestMoveObj = selectBestMoveForEval(tempGame);
+    const bestMoveSan = bestMoveObj ? getMoveSan(tempGame, bestMoveObj) : '';
+    
+    // Play the move
+    tempGame.move({ from: move.from, to: move.to, promotion: move.promotion });
+    const afterEval = getPositionEval(tempGame);
+    
+    // Calculate evaluation loss
+    let evalLoss = 0;
+    if (turn === 'w') {
+      evalLoss = beforeEval - afterEval;
+    } else {
+      evalLoss = afterEval - beforeEval;
+    }
+    
+    let classification = 'good';
+    const isBook = (i < 8); // Book check (first 4 full moves)
+    
+    if (isBook) {
+      classification = 'book';
+    } else if (bestMoveObj && move.from === bestMoveObj.from && move.to === bestMoveObj.to) {
+      classification = 'best';
+    } else if (evalLoss <= -1.5) {
+      classification = 'brilliant';
+    } else if (evalLoss <= 0.1) {
+      classification = 'excellent';
+    } else if (evalLoss <= 0.4) {
+      classification = 'good';
+    } else if (evalLoss <= 1.0) {
+      classification = 'inaccuracy';
+    } else if (evalLoss <= 2.0) {
+      classification = 'mistake';
+    } else {
+      classification = 'blunder';
+    }
+    
+    stats[turn][classification]++;
+    stats[turn].count++;
+    
+    const pointsMap = {
+      brilliant: 100,
+      best: 100,
+      excellent: 95,
+      good: 80,
+      book: 100,
+      inaccuracy: 60,
+      mistake: 30,
+      blunder: 0
+    };
+    stats[turn].scoreSum += pointsMap[classification];
+    
+    analysisMoves.push({
+      fen: tempGame.fen(),
+      move: move,
+      score: afterEval,
+      classification: classification,
+      bestMoveSan: bestMoveSan,
+      turn: turn
+    });
+    
+    i++;
+    const progress = Math.round((i / total) * 100);
+    const progressBar = document.getElementById("analysisProgressBar");
+    const progressText = document.getElementById("analysisProgressText");
+    if (progressBar) progressBar.style.width = `${progress}%`;
+    if (progressText) progressText.textContent = `${progress}%`;
+    
+    setTimeout(analyzeStep, 25);
+  }
+  
+  analyzeStep();
+};
+
+async function finishAnalysis(stats) {
+  isAnalyzing = false;
+  const overlay = document.getElementById("analysisLoadingOverlay");
+  if (overlay) overlay.style.display = "none";
+  
+  isAnalysisMode = true;
+  
+  // Display tab and controls
+  const tabBtn = document.getElementById("tabAnalysisBtn");
+  if (tabBtn) tabBtn.style.display = "inline-block";
+  switchSideTab('analysis');
+  
+  const controls = document.getElementById("analysisControls");
+  if (controls) controls.style.display = "flex";
+  
+  // Calculate accuracies
+  const wAccuracy = stats.w.count > 0 ? Math.round(stats.w.scoreSum / stats.w.count) : 100;
+  const bAccuracy = stats.b.count > 0 ? Math.round(stats.b.scoreSum / stats.b.count) : 100;
+  
+  const wFill = document.getElementById("accuracyFillWhite");
+  const bFill = document.getElementById("accuracyFillBlack");
+  if (wFill) {
+    wFill.style.width = `${wAccuracy}%`;
+    wFill.textContent = `W: ${wAccuracy}%`;
+  }
+  if (bFill) {
+    bFill.style.width = `${bAccuracy}%`;
+    bFill.textContent = `B: ${bAccuracy}%`;
+  }
+  
+  // Fill stats counts
+  const categories = ['Brilliant', 'Best', 'Excellent', 'Good', 'Book', 'Inaccuracy', 'Mistake', 'Blunder'];
+  categories.forEach(cat => {
+    const key = cat.toLowerCase();
+    const wEl = document.getElementById(`summaryW${cat}`);
+    const bEl = document.getElementById(`summaryB${cat}`);
+    if (wEl) wEl.textContent = stats.w[key];
+    if (bEl) bEl.textContent = stats.b[key];
+  });
+  
+  // Load analysis view
+  jumpToAnalysisMove(-1);
+  renderAnalysisMovesList();
+  
+  // AI Coach Summary request
+  const coachText = document.getElementById("coachText");
+  if (coachText) coachText.textContent = LANG === 'ru' ? "ИИ Тренер изучает партию..." : "AI Coach is reviewing the match...";
+  
+  try {
+    const movesListStr = analysisMoves.map((am, idx) => (idx % 2 === 0 ? `${Math.floor(idx / 2) + 1}. ` : '') + am.move.san).join(' ');
+    const prompt = `You are a supportive, wise chess coach. Write a very brief summary of this chess match (max 80 words).
+    White Accuracy: ${wAccuracy}%.
+    Black Accuracy: ${bAccuracy}%.
+    Moves: ${movesListStr}.
+    Format: Start directly with the analysis. Make sure to write in ${LANG === 'ru' ? 'Russian' : 'English'}. Be encouraging and highlight the turning point.`;
+
+    const res = await fetch(`${SERVER_URL}/api/chat-stream`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [{ role: "user", content: prompt }],
+        stream: false
+      })
+    });
+    
+    if (!res.ok) throw new Error("API call failed");
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || "";
+    if (coachText) coachText.textContent = reply || (LANG === 'ru' ? "Не удалось получить итог." : "Failed to load summary.");
+  } catch (err) {
+    console.error(err);
+    if (coachText) coachText.textContent = LANG === 'ru' ? "Не удалось связаться с ИИ тренером." : "Could not connect with AI Coach.";
+  }
+}
+
+function renderAnalysisMovesList() {
+  const listEl = document.getElementById("analysisMovesList");
+  if (!listEl) return;
+  listEl.innerHTML = "";
+  
+  for (let i = 0; i < analysisMoves.length; i += 2) {
+    const moveNum = Math.floor(i / 2) + 1;
+    const moveW = analysisMoves[i];
+    const moveB = analysisMoves[i + 1];
+    
+    const numEl = document.createElement("div");
+    numEl.className = "move-num";
+    numEl.textContent = `${moveNum}.`;
+    listEl.appendChild(numEl);
+    
+    const wEl = document.createElement("div");
+    wEl.className = "move-cell";
+    if (currentAnalysisIndex === i) wEl.classList.add("current");
+    
+    const wSymbols = { brilliant: '🌟', best: '👑', excellent: '✨', good: '👍', book: '📖', inaccuracy: '❓', mistake: '⚠️', blunder: '❌' };
+    wEl.innerHTML = `${moveW.move.san} <span class="square-badge-inline ${moveW.classification}">${wSymbols[moveW.classification]}</span>`;
+    wEl.onclick = () => jumpToAnalysisMove(i);
+    listEl.appendChild(wEl);
+    
+    if (moveB) {
+      const bEl = document.createElement("div");
+      bEl.className = "move-cell";
+      if (currentAnalysisIndex === i + 1) bEl.classList.add("current");
+      
+      const bSymbols = { brilliant: '🌟', best: '👑', excellent: '✨', good: '👍', book: '📖', inaccuracy: '❓', mistake: '⚠️', blunder: '❌' };
+      bEl.innerHTML = `${moveB.move.san} <span class="square-badge-inline ${moveB.classification}">${bSymbols[moveB.classification]}</span>`;
+      bEl.onclick = () => jumpToAnalysisMove(i + 1);
+      listEl.appendChild(bEl);
+    } else {
+      listEl.appendChild(document.createElement("div"));
+    }
+  }
+}
+
+window.jumpToAnalysisMove = function(index) {
+  currentAnalysisIndex = index;
+  
+  let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  let score = 0.0;
+  
+  if (index >= 0 && index < analysisMoves.length) {
+    fen = analysisMoves[index].fen;
+    score = analysisMoves[index].score;
+  }
+  
+  game = new Chess(fen);
+  renderBoard();
+  
+  // Highlight active move in sidebar
+  const cells = document.querySelectorAll("#analysisMovesList .move-cell");
+  cells.forEach((cell, idx) => {
+    cell.classList.toggle("current", idx === index);
+  });
+  
+  // Auto-scroll moves list to active move
+  const currentCell = document.querySelector("#analysisMovesList .move-cell.current");
+  if (currentCell) {
+    currentCell.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+  
+  updateEvalBar(score);
+  renderAnalysisSelectedMoveCard();
+};
+
+window.stepAnalysisMove = function(dir) {
+  let index = currentAnalysisIndex + dir;
+  if (index < -1) index = -1;
+  if (index >= analysisMoves.length) index = analysisMoves.length - 1;
+  jumpToAnalysisMove(index);
+};
+
+function updateEvalBar(score) {
+  const container = document.getElementById("evalBarContainer");
+  const fill = document.getElementById("evalBarFill");
+  const label = document.getElementById("evalBarScore");
+  if (!container || !fill || !label) return;
+  
+  container.style.display = "block";
+  
+  // Clamp evaluation score between -8.0 and +8.0 pawns
+  let scoreVal = score;
+  if (Math.abs(scoreVal) > 90) {
+    // Checkmate
+    const whiteWon = scoreVal > 0;
+    fill.style.top = whiteWon ? "0%" : "100%";
+    label.textContent = whiteWon ? "M" : "-M";
+    return;
+  }
+  
+  let clamped = Math.max(-8.0, Math.min(8.0, scoreVal));
+  // topPercent represents the size of black's area (which starts at top)
+  let topPercent = 50 - (clamped / 16) * 100;
+  topPercent = Math.max(5, Math.min(95, topPercent));
+  
+  fill.style.top = `${topPercent}%`;
+  label.textContent = scoreVal > 0 ? `+${scoreVal.toFixed(1)}` : scoreVal.toFixed(1);
+}
+
+function renderAnalysisSelectedMoveCard() {
+  const textEl = document.getElementById("analysisSelectedMoveText");
+  const badgeEl = document.getElementById("analysisSelectedMoveBadge");
+  const commentEl = document.getElementById("analysisSelectedMoveComment");
+  const explainBtn = document.getElementById("btnExplainMove");
+  const explainText = document.getElementById("coachMoveExplanationText");
+  
+  if (!textEl || !badgeEl || !commentEl) return;
+  
+  if (explainBtn) explainBtn.style.display = "none";
+  if (explainText) explainText.style.display = "none";
+  
+  if (currentAnalysisIndex === -1) {
+    textEl.textContent = LANG === 'ru' ? "Начальная позиция" : "Starting Position";
+    badgeEl.style.display = "none";
+    commentEl.textContent = LANG === 'ru' ? "Начало партии. Сделайте первый ход!" : "Game start. Make the first move!";
+    return;
+  }
+  
+  const am = analysisMoves[currentAnalysisIndex];
+  const isWhite = am.turn === 'w';
+  const ply = Math.floor(currentAnalysisIndex / 2) + 1;
+  const moveText = `${ply}.${isWhite ? '' : '..'}${am.move.san}`;
+  
+  textEl.textContent = moveText;
+  badgeEl.style.display = "inline-flex";
+  badgeEl.className = `square-badge-inline ${am.classification}`;
+  badgeEl.textContent = t(am.classification);
+  
+  // Custom comments for classifications
+  let comment = "";
+  const best = am.bestMoveSan;
+  
+  if (am.classification === 'book') {
+    comment = LANG === 'ru' ? "Теоретический ход." : "Book move.";
+  } else if (am.classification === 'best') {
+    comment = LANG === 'ru' ? "Лучший ход в этой позиции!" : "The best move in this position!";
+  } else if (am.classification === 'brilliant') {
+    comment = LANG === 'ru' ? "Блестящий ход! Замечательная идея." : "Brilliant move! A beautiful concept.";
+  } else if (am.classification === 'excellent') {
+    comment = LANG === 'ru' ? "Отличный ход, удерживающий перевес." : "An excellent move that maintains your standing.";
+  } else if (am.classification === 'good') {
+    comment = LANG === 'ru' ? "Хороший, естественный ход." : "A good, natural move.";
+  } else if (am.classification === 'inaccuracy') {
+    comment = LANG === 'ru' ? `Неточность. Лучше было играть: ${best}` : `Inaccuracy. Better was: ${best}`;
+  } else if (am.classification === 'mistake') {
+    comment = LANG === 'ru' ? `Ошибка. Сильнее было: ${best}` : `Mistake. Stronger was: ${best}`;
+  } else if (am.classification === 'blunder') {
+    comment = LANG === 'ru' ? `Зевок! Вы упустили инициативу. Лучший ход: ${best}` : `Blunder! You lost the advantage. Best move: ${best}`;
+  }
+  
+  commentEl.textContent = comment;
+  
+  // Show AI explanation button for mistakes and blunders
+  if (explainBtn && (am.classification === 'blunder' || am.classification === 'mistake' || am.classification === 'inaccuracy')) {
+    explainBtn.style.display = "block";
+    explainBtn.disabled = false;
+  }
+}
+
+window.explainCurrentMove = async function() {
+  const explainBtn = document.getElementById("btnExplainMove");
+  const explainText = document.getElementById("coachMoveExplanationText");
+  if (!explainBtn || !explainText || currentAnalysisIndex < 0) return;
+  
+  explainBtn.disabled = true;
+  explainText.style.display = "block";
+  explainText.textContent = LANG === 'ru' ? "ИИ Тренер думает..." : "AI Coach is thinking...";
+  
+  try {
+    const am = analysisMoves[currentAnalysisIndex];
+    const pgnContext = getPgnUpTo(currentAnalysisIndex);
+    const prompt = `You are a chess coach. Explain why playing the move "${am.move.san}" is classified as a "${am.classification}" (worse than the best move "${am.bestMoveSan}").
+    PGN context: ${pgnContext}.
+    Write a brief explanation (max 50 words) outlining the tactical or positional drawback. Answer in ${LANG === 'ru' ? 'Russian' : 'English'}.`;
+
+    const res = await fetch(`${SERVER_URL}/api/chat-stream`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [{ role: "user", content: prompt }],
+        stream: false
+      })
+    });
+    
+    if (!res.ok) throw new Error("API call failed");
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || "";
+    explainText.textContent = reply || (LANG === 'ru' ? "Не удалось получить объяснение." : "Failed to load explanation.");
+  } catch (err) {
+    console.error(err);
+    explainText.textContent = LANG === 'ru' ? "Не удалось соединиться с сервером." : "Could not connect to server.";
+    explainBtn.disabled = false;
+  }
+};
+
+function getPgnUpTo(index) {
+  let pgn = "";
+  for (let i = 0; i <= index; i++) {
+    const isWhite = (i % 2 === 0);
+    const moveNum = Math.floor(i / 2) + 1;
+    if (isWhite) pgn += `${moveNum}. `;
+    pgn += `${analysisMoves[i].move.san} `;
+  }
+  return pgn.trim();
+}
+
+window.exitAnalysisMode = function() {
+  isAnalysisMode = false;
+  
+  // Hide controls and tab
+  const controls = document.getElementById("analysisControls");
+  if (controls) controls.style.display = "none";
+  
+  const evalBar = document.getElementById("evalBarContainer");
+  if (evalBar) evalBar.style.display = "none";
+  
+  const tabBtn = document.getElementById("tabAnalysisBtn");
+  if (tabBtn) tabBtn.style.display = "none";
+  
+  exitGameView();
+};
+
+window.copyGamePgn = function() {
+  let pgn = "";
+  for (let i = 0; i < analysisMoves.length; i++) {
+    const isWhite = (i % 2 === 0);
+    const moveNum = Math.floor(i / 2) + 1;
+    if (isWhite) pgn += `${moveNum}. `;
+    pgn += `${analysisMoves[i].move.san} `;
+  }
+  navigator.clipboard.writeText(pgn.trim());
+  showToast(LANG === 'ru' ? "PGN скопирован в буфер обмена!" : "PGN copied to clipboard!");
+};
+
+// Keyboard listener for analysis navigation
+window.addEventListener("keydown", (e) => {
+  if (!isAnalysisMode) return;
+  if (e.key === "ArrowLeft") {
+    stepAnalysisMove(-1);
+  } else if (e.key === "ArrowRight") {
+    stepAnalysisMove(1);
+  }
+});
+

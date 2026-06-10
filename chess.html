@@ -1012,6 +1012,127 @@
         flex-direction: column;
       }
     }
+
+    /* Evaluation Bar styles */
+    .board-wrapper-flex {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      width: 100%;
+    }
+    .eval-bar-container {
+      width: 24px;
+      background: #1e293b;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      transition: display 0.3s ease;
+    }
+    body.light .eval-bar-container {
+      background: #cbd5e1;
+    }
+    .eval-bar-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 10px rgba(255,255,255,0.4);
+      transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body.light .eval-bar-fill {
+      background: #ffffff;
+      box-shadow: 0 0 5px rgba(255,255,255,0.8);
+    }
+    .eval-bar-score {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 800;
+      font-family: 'DM Mono', monospace;
+      z-index: 10;
+      color: #fff;
+      mix-blend-mode: difference;
+      top: 10px;
+    }
+
+    /* Square Badge Styles (Move Quality Badges on Board) */
+    .square-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      z-index: 15;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      pointer-events: none;
+      animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes badgePop {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+    .square-badge.brilliant { background: #00f3ff; color: #000; box-shadow: 0 0 8px #00f3ff; }
+    .square-badge.best { background: #34d399; }
+    .square-badge.excellent { background: #a78bfa; }
+    .square-badge.good { background: #7c5cf6; }
+    .square-badge.book { background: #d97706; }
+    .square-badge.inaccuracy { background: #6b7280; }
+    .square-badge.mistake { background: #f59e0b; }
+    .square-badge.blunder { background: #ef4444; animation: blunderBlink 1s infinite alternate; }
+
+    @keyframes blunderBlink {
+      0% { box-shadow: 0 0 0px #ef4444; }
+      100% { box-shadow: 0 0 10px #ef4444; }
+    }
+
+    .square-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      font-size: 9px;
+      font-weight: 800;
+      color: #fff;
+      margin-left: 5px;
+      flex-shrink: 0;
+    }
+    .square-badge-inline.brilliant { background: #00f3ff; color: #000; }
+    .square-badge-inline.best { background: #34d399; }
+    .square-badge-inline.excellent { background: #a78bfa; }
+    .square-badge-inline.good { background: #7c5cf6; }
+    .square-badge-inline.book { background: #d97706; }
+    .square-badge-inline.inaccuracy { background: #6b7280; }
+    .square-badge-inline.mistake { background: #f59e0b; }
+    .square-badge-inline.blunder { background: #ef4444; }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Analysis Controls beneath board */
+    .analysis-controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
@@ -1178,10 +1299,19 @@
           <div class="player-captured" id="opponentCaptured"></div>
         </div>
 
-        <!-- The board wrapper -->
-        <div class="chessboard-wrapper">
-          <div class="board-grid" id="board">
-            <!-- Squares generated dynamically by JS -->
+        <!-- The board container (holding evaluation bar + chessboard) -->
+        <div class="board-wrapper-flex">
+          <!-- Evaluation Bar -->
+          <div class="eval-bar-container" id="evalBarContainer" style="display: none;">
+            <div class="eval-bar-fill" id="evalBarFill"></div>
+            <div class="eval-bar-score" id="evalBarScore">0.0</div>
+          </div>
+
+          <!-- The board wrapper -->
+          <div class="chessboard-wrapper" style="flex: 1; aspect-ratio: 1;">
+            <div class="board-grid" id="board">
+              <!-- Squares generated dynamically by JS -->
+            </div>
           </div>
         </div>
 
@@ -1193,6 +1323,16 @@
             <span class="player-score-record" id="playerRecord"></span>
           </div>
           <div class="player-captured" id="playerCaptured"></div>
+        </div>
+
+        <!-- Navigation Controls under the board (visible only in analysis mode) -->
+        <div class="analysis-controls" id="analysisControls" style="display: none;">
+          <button class="btn ghost" onclick="jumpToAnalysisMove(-1)" title="В начало" style="padding: 10px 14px;"><span style="transform: scaleX(-1); display: inline-block;">⏭</span></button>
+          <button class="btn ghost" onclick="stepAnalysisMove(-1)" title="Назад" style="padding: 10px 14px;"><span style="transform: scaleX(-1); display: inline-block;">▶</span></button>
+          <button class="btn ghost" onclick="stepAnalysisMove(1)" title="Вперед" style="padding: 10px 14px;">▶</button>
+          <button class="btn ghost" onclick="jumpToAnalysisMove(analysisMoves.length - 1)" title="В конец" style="padding: 10px 14px;">⏭</button>
+          <button class="btn ghost" onclick="copyGamePgn()" id="btnCopyPgn" style="font-size: 12px; font-weight: 700;">📋 PGN</button>
+          <button class="btn primary" onclick="exitAnalysisMode()" id="btnExitAnalysis" style="font-size: 12px; font-weight: 700;">↩️ Выйти</button>
         </div>
       </div>
 
@@ -1214,6 +1354,7 @@
         <div class="side-tabs">
           <button class="side-tab-btn active" id="tabMovesBtn" onclick="switchSideTab('moves')">📝 Ходы</button>
           <button class="side-tab-btn" id="tabChatBtn" onclick="switchSideTab('chat')">💬 Чат</button>
+          <button class="side-tab-btn" id="tabAnalysisBtn" onclick="switchSideTab('analysis')" style="display: none;">🔍 Анализ</button>
         </div>
 
         <div class="side-content">
@@ -1234,6 +1375,98 @@
                 <button class="btn ghost" onclick="toggleVoiceMute()" style="padding: 10px;" id="btnVoiceToggle" title="Включить/выключить звук">🔊</button>
                 <input type="text" class="text-input" id="chatInput" placeholder="Введите сообщение..." onkeydown="if(event.key==='Enter') sendChat()">
                 <button class="btn primary" onclick="sendChat()" style="padding: 10px;" id="btnSendChat">▶</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ANALYSIS PANEL -->
+          <div class="panel-content" id="panelAnalysis">
+            <div style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
+              <!-- Overall Stats Card -->
+              <div class="analysis-stats-card" style="background: var(--bg2); border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 13px;">
+                  <span id="lblAnalysisAccuracy">🎯 Точность (Accuracy)</span>
+                </div>
+                <!-- Accuracy Bar -->
+                <div style="display: flex; height: 16px; background: rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
+                  <div id="accuracyFillWhite" style="width: 50%; background: #fff; color: #000; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: width 0.6s var(--ease);">W: 50%</div>
+                  <div id="accuracyFillBlack" style="width: 50%; background: #171329; color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: width 0.6s var(--ease); border-left: 1px solid var(--border);">B: 50%</div>
+                </div>
+                <!-- Move Category Grid Summary -->
+                <div class="analysis-summary-grid" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 4px; font-size: 11px; color: var(--text2); margin-top: 5px;">
+                  <div style="font-weight: 700; text-align: left;">W</div>
+                  <div style="font-weight: 700; text-align: center; color: var(--text3);" id="lblAnalysisCategory">Категория</div>
+                  <div style="font-weight: 700; text-align: right;">B</div>
+
+                  <div id="summaryWBrilliant" style="text-align: left; color: var(--cyan); font-weight: 700;">0</div>
+                  <div style="text-align: center; color: var(--text3);">🌟 Brilliant</div>
+                  <div id="summaryBBrilliant" style="text-align: right; color: var(--cyan); font-weight: 700;">0</div>
+
+                  <div id="summaryWBest" style="text-align: left; color: var(--emerald); font-weight: 700;">0</div>
+                  <div style="text-align: center; color: var(--text3);">👑 Best</div>
+                  <div id="summaryBBest" style="text-align: right; color: var(--emerald); font-weight: 700;">0</div>
+
+                  <div id="summaryWExcellent" style="text-align: left; color: var(--violet);">0</div>
+                  <div style="text-align: center; color: var(--text3);">✨ Excellent</div>
+                  <div id="summaryBExcellent" style="text-align: right; color: var(--violet);">0</div>
+
+                  <div id="summaryWGood" style="text-align: left; color: var(--text);">0</div>
+                  <div style="text-align: center; color: var(--text3);">👍 Good</div>
+                  <div id="summaryBGood" style="text-align: right; color: var(--text);">0</div>
+
+                  <div id="summaryWBook" style="text-align: left; color: #d97706;">0</div>
+                  <div style="text-align: center; color: var(--text3);">📖 Book</div>
+                  <div id="summaryBBook" style="text-align: right; color: #d97706;">0</div>
+
+                  <div id="summaryWInaccuracy" style="text-align: left; color: #6b7280;">0</div>
+                  <div style="text-align: center; color: var(--text3);">❓ Inaccuracy</div>
+                  <div id="summaryBInaccuracy" style="text-align: right; color: #6b7280;">0</div>
+
+                  <div id="summaryWMistake" style="text-align: left; color: #f59e0b; font-weight: 700;">0</div>
+                  <div style="text-align: center; color: var(--text3);">⚠️ Mistake</div>
+                  <div id="summaryBMistake" style="text-align: right; color: #f59e0b; font-weight: 700;">0</div>
+
+                  <div id="summaryWBlunder" style="text-align: left; color: var(--rose); font-weight: 700;">0</div>
+                  <div style="text-align: center; color: var(--text3);">❌ Blunder</div>
+                  <div id="summaryBBlunder" style="text-align: right; color: var(--rose); font-weight: 700;">0</div>
+                </div>
+              </div>
+
+              <!-- AI Coach commentary card -->
+              <div class="analysis-coach-card" style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.08) 0%, rgba(0, 243, 255, 0.03) 100%); border: 1.5px solid rgba(167, 139, 250, 0.25); border-radius: var(--r-sm); padding: 12px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 20px;">🤖</span>
+                  <div>
+                    <div style="font-weight: 700; font-size: 13px; color: var(--violet);" id="coachNameTitle">ИИ Тренер (AI Coach)</div>
+                    <div style="font-size: 10px; color: var(--text3);" id="coachSubTitle">Анализ партии</div>
+                  </div>
+                </div>
+                <div id="coachText" style="font-size: 12px; line-height: 1.4; color: var(--text2); font-style: italic; min-height: 30px; word-break: break-word;">
+                  Загрузка разбора...
+                </div>
+              </div>
+
+              <!-- Selected Move Details Card -->
+              <div id="analysisMoveDetailCard" style="background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 12px; display: flex; flex-direction: column; gap: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span id="analysisSelectedMoveText" style="font-weight: 700; font-size: 13px; font-family: 'DM Mono', monospace;">Ход не выбран</span>
+                  <span id="analysisSelectedMoveBadge" class="square-badge-inline" style="display: none;">-</span>
+                </div>
+                <div id="analysisSelectedMoveComment" style="font-size: 11px; color: var(--text2); line-height: 1.35;">
+                  Выберите ход для просмотра.
+                </div>
+                <button class="btn ghost" id="btnExplainMove" onclick="explainCurrentMove()" style="width: 100%; justify-content: center; padding: 4px; font-size: 11px; margin-top: 4px; display: none;">
+                  💡 Объяснить этот ход
+                </button>
+                <div id="coachMoveExplanationText" style="font-size: 11.5px; color: var(--text2); line-height: 1.4; font-style: italic; border-left: 2px solid var(--violet); padding-left: 8px; margin-top: 4px; display: none; word-break: break-word;">
+                </div>
+              </div>
+
+              <!-- Scrollable Move List with badges -->
+              <div style="flex: 1; overflow-y: auto; max-height: 160px; scrollbar-width: thin; background: rgba(0,0,0,0.1); border-radius: 6px; padding: 6px;">
+                <div class="moves-list" id="analysisMovesList">
+                  <!-- Move items with inline badges -->
+                </div>
               </div>
             </div>
           </div>
@@ -1269,10 +1502,24 @@
     <div class="modal-card">
       <h3 class="modal-title" id="gameOverTitle">Матч завершен!</h3>
       <p class="modal-desc" id="gameOverDesc">Белые победили матом.</p>
-      <div class="modal-buttons">
-        <button class="btn primary" onclick="closeGameOverAndExit()" id="btnGameOverExit">Выйти</button>
+      <div class="modal-buttons" style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+        <button class="btn primary" onclick="startGameAnalysis()" id="btnGameOverAnalysis">🔍 Анализ</button>
         <button class="btn cyan hidden" onclick="restartBotGame()" id="btnGameOverRematch">Сыграть ещё</button>
+        <button class="btn ghost" onclick="closeGameOverAndExit()" id="btnGameOverExit">Выйти</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ANALYSIS LOADING OVERLAY -->
+  <div class="modal-overlay" id="analysisLoadingOverlay" style="z-index: 1500; display: none; flex-direction: column; align-items: center; justify-content: center;">
+    <div class="modal-card" style="max-width: 320px; text-align: center; border-color: var(--cyan); box-shadow: 0 0 25px var(--cyan-glow);">
+      <div class="loading-scanner-anim" style="width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--cyan); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px auto;"></div>
+      <h3 class="modal-title" style="color: var(--cyan);" id="analysisLoadingTitle">Анализ партии...</h3>
+      <p class="modal-desc" id="analysisLoadingDesc">ИИ сканирует ходы на наличие блестящих решений и зевков.</p>
+      <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin-top: 10px;">
+        <div id="analysisProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--violet)); transition: width 0.15s ease;"></div>
+      </div>
+      <div id="analysisProgressText" style="font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text3); margin-top: 6px;">0%</div>
     </div>
   </div>
 
