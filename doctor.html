@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🤖 Научный Бот AI</title>
+<style>
+  body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:20px;
+  }
+  .container{
+    width:90%;
+    max-width:700px;
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(15px);
+    border-radius:20px;
+    padding:24px;
+    box-shadow:0 0 30px rgba(0,0,0,0.25);
+  }
+  h1{
+    text-align:center;
+    margin:0 0 12px;
+  }
+  .topbar{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  button{
+    padding:10px 14px;
+    border:none;
+    border-radius:10px;
+    background:#6c63ff;
+    color:white;
+    cursor:pointer;
+  }
+  button.alt{
+    background:#444;
+  }
+  #chat{
+    height:420px;
+    overflow-y:auto;
+    background:rgba(0,0,0,0.15);
+    border:1px solid rgba(255,255,255,0.25);
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:12px;
+    white-space:pre-wrap;
+  }
+  .message{ margin:6px 0; }
+  .user{ color:#8ea2ff; }
+  .bot{ color:#ffd966; }
+  .controls{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  input{
+    flex:1 1 240px;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+  }
+  #toast{
+    position:fixed;
+    right:16px;
+    bottom:16px;
+    background:#222;
+    color:white;
+    padding:10px 14px;
+    border-radius:10px;
+    display:none;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Научный Бот AI</h1>
+
+    <div class="topbar">
+      <button onclick="setLang('RU')" id="btnRU">RU</button>
+      <button onclick="setLang('EN')" id="btnEN">EN</button>
+      <button class="alt" onclick="clearChat()">🗑 Очистить чат</button>
+    </div>
+
+    <div id="chat"></div>
+
+    <div class="controls">
+      <input id="userInput" placeholder="Введите вопрос" />
+      <button onclick="sendMessage()">Отправить</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+<script>
+const chat = document.getElementById("chat");
+const input = document.getElementById("userInput");
+let lang = localStorage.getItem("bot_lang") || "RU";
+let messages = JSON.parse(localStorage.getItem("bot_history")) || [];
+
+const UI = {
+  RU: {
+    placeholder: "Введите вопрос",
+    intro: "Привет! Я могу объяснять биологию, физику, химию и отвечать на вопросы.",
+    thinking: "Думаю...",
+    error: "Ошибка соединения.",
+    cleared: "Чат очищен.",
+  },
+  EN: {
+    placeholder: "Enter your question",
+    intro: "Hi! I can explain biology, physics, chemistry and answer questions.",
+    thinking: "Thinking...",
+    error: "Connection error.",
+    cleared: "Chat cleared.",
+  }
+};
+
+function save(){
+  localStorage.setItem("bot_history", JSON.stringify(messages));
+  localStorage.setItem("bot_lang", lang);
+}
+
+function toast(msg){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.style.display = "block";
+  setTimeout(() => el.style.display = "none", 2000);
+}
+
+function setLang(l){
+  lang = l;
+  input.placeholder = UI[lang].placeholder;
+  addMessage("Bot", lang === "RU" ? "Язык изменён." : "Language changed.", "bot");
+  save();
+}
+
+function addMessage(sender, text, cls){
+  const div = document.createElement("div");
+  div.className = "message " + cls;
+  div.textContent = sender + ": " + text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+
+  messages.push({ role: cls === "user" ? "user" : "assistant", content: text, sender, cls });
+  save();
+}
+
+function renderHistory(){
+  chat.innerHTML = "";
+  if(messages.length === 0){
+    addMessage("Bot", UI[lang].intro, "bot");
+    messages = messages.filter(m => m.content !== UI[lang].intro);
+    save();
+    return;
+  }
+
+  for(const m of messages){
+    const div = document.createElement("div");
+    div.className = "message " + (m.cls || (m.role === "user" ? "user" : "bot"));
+    div.textContent = (m.sender || (m.role === "user" ? "Вы" : "Бот")) + ": " + m.content;
+    chat.appendChild(div);
+  }
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function clearChat(){
+  messages = [];
+  localStorage.removeItem("bot_history");
+  chat.innerHTML = "";
+  addMessage("Bot", UI[lang].cleared, "bot");
+}
+
+async function sendMessage(){
+  const text = input.value.trim();
+  if(!text) return;
+
+  chat.innerHTML += `<div class="message user">Вы: ${escapeHtml(text)}</div>`;
+  messages.push({ role: "user", content: text, sender: "Вы", cls: "user" });
+  save();
+  input.value = "";
+
+  const thinking = document.createElement("div");
+  thinking.className = "message bot";
+  thinking.id = "thinking";
+  thinking.textContent = "Бот: " + UI[lang].thinking;
+  chat.appendChild(thinking);
+  chat.scrollTop = chat.scrollHeight;
+
+  try{
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: messages.map(m => ({
+          role: m.role,
+          content: m.content
+        }))
+      })
+    });
+
+    const data = await res.json();
+    document.getElementById("thinking")?.remove();
+
+    const reply = data.reply || (lang === "RU" ? UI[lang].error : UI[lang].error);
+    messages.push({ role: "assistant", content: reply, sender: "Бот", cls: "bot" });
+    save();
+
+    const div = document.createElement("div");
+    div.className = "message bot";
+    div.textContent = "Бот: " + reply;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  } catch (e){
+    document.getElementById("thinking")?.remove();
+    toast(UI[lang].error);
+    const div = document.createElement("div");
+    div.className = "message bot";
+    div.textContent = "Бот: " + UI[lang].error;
+    chat.appendChild(div);
+  }
+}
+
+function escapeHtml(str){
+  return str
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+document.getElementById("btnRU").classList.toggle("active", lang === "RU");
+document.getElementById("btnEN").classList.toggle("active", lang === "EN");
+input.placeholder = UI[lang].placeholder;
+renderHistory();
+
+input.addEventListener("keydown", e => {
+  if(e.key === "Enter") sendMessage();
+});
+</script>
+<script src="pomo-shared.js"></script>
+</body>
+</html>

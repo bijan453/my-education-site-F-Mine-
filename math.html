@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>F‑Mine | Математика</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06080f;--bg2:#0b0e1a;--bg3:#101524;--bg4:#161b2e;
+  --surface:rgba(255,255,255,.025);--surface2:rgba(255,255,255,.045);--surface3:rgba(255,255,255,.075);
+  --glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.12);--border3:rgba(255,255,255,.18);
+  --text:#e8ecf8;--text2:#7e87b0;--text3:#4a5070;
+  --violet:#8b5cf6;--violet2:#6d3fec;--violet-glow:rgba(139,92,246,.4);
+  --amber:#f59e0b;--amber2:#fbbf24;--amber-glow:rgba(245,158,11,.35);
+  --emerald:#10b981;--emerald-glow:rgba(16,185,129,.3);
+  --rose:#f43f5e;--rose-glow:rgba(244,63,94,.3);
+  --sky:#38bdf8;--sky-glow:rgba(56,189,248,.3);
+  --teal:#40E0D0;--teal-glow:rgba(64,224,208,.45);
+  --blue:#3b82f6;--blue-glow:rgba(59,130,246,.35);
+  --shadow-xs:0 1px 3px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.02);
+  --shadow-sm:0 2px 8px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.03);
+  --shadow:0 4px 16px rgba(0,0,0,.7),0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.8),0 16px 48px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05),0 0 40px rgba(59,130,246,.08);
+  --shadow-xl:0 12px 32px rgba(0,0,0,.9),0 24px 64px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);
+  --shadow-glow-violet:0 0 0 1px rgba(139,92,246,.4),0 0 30px rgba(139,92,246,.3),0 8px 32px rgba(0,0,0,.5);
+  --shadow-glow-blue:0 0 0 1px rgba(59,130,246,.4),0 0 30px rgba(59,130,246,.3),0 8px 32px rgba(0,0,0,.5);
+  --r:18px;--r-sm:13px;--ease:.25s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-top:70px;padding-bottom:80px;overflow-x:hidden;background-image:radial-gradient(ellipse 65% 45% at 85% -5%,rgba(59,130,246,.07),transparent 58%),radial-gradient(ellipse 50% 35% at 5% 92%,rgba(139,92,246,.04),transparent 52%),radial-gradient(ellipse 35% 30% at 50% 45%,rgba(59,130,246,.025),transparent 58%);-webkit-font-smoothing:antialiased}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-size:200px 200px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border3);border-radius:99px}
+
+/* HEADER */
+.hd{position:fixed;top:0;left:0;right:0;z-index:200;height:68px;background:rgba(6,8,15,.85);backdrop-filter:blur(28px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,3vw,30px);gap:12px;box-shadow:0 1px 0 rgba(255,255,255,.02),0 6px 28px rgba(0,0,0,.7)}
+.logo{font-family:'Syne',sans-serif;font-size:clamp(20px,3vw,26px);font-weight:800;letter-spacing:-.5px;cursor:pointer;display:flex;align-items:center;gap:0;text-decoration:none}
+.logo-f{color:var(--amber);text-shadow:0 0 30px var(--amber-glow),0 0 60px rgba(245,158,11,.3)}
+.logo-dot{width:5px;height:5px;background:var(--violet);border-radius:50%;margin:0 3px;align-self:center;margin-bottom:5px;box-shadow:0 0 15px var(--violet-glow);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 10px var(--violet-glow)}50%{box-shadow:0 0 25px rgba(139,92,246,.7)}}
+.logo-mine{color:var(--text);letter-spacing:-1px;text-shadow:0 0 15px rgba(255,255,255,.15)}
+.hd-right{display:flex;align-items:center;gap:10px}
+
+/* LANGUAGE TOGGLE */
+.lang-toggle{display:flex;align-items:center;background:var(--surface2);border:1.5px solid var(--border2);border-radius:999px;padding:3px;gap:2px;box-shadow:var(--shadow-xs)}
+.lang-btn{padding:5px 14px;border:none;border-radius:999px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;transition:var(--ease);color:var(--text3);background:transparent;letter-spacing:.04em}
+.lang-btn.active{background:linear-gradient(135deg,var(--blue),#2563eb);color:#fff;box-shadow:0 2px 10px var(--blue-glow)}
+.lang-btn:not(.active):hover{color:var(--text);background:var(--surface3)}
+
+/* BTN SYSTEM */
+.btn{padding:10px 20px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:var(--ease);text-align:center;letter-spacing:.02em;white-space:nowrap;position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:linear-gradient(135deg,var(--violet),var(--violet2));color:#fff;box-shadow:0 4px 20px var(--violet-glow)}
+.btn.primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 8px 30px var(--violet-glow)}
+.btn.ghost{background:transparent;border:1.5px solid var(--border2);color:var(--text2)}
+.btn.ghost:hover{background:var(--surface3);border-color:var(--blue);color:var(--blue);box-shadow:0 0 22px rgba(59,130,246,.2)}
+.btn.blue{background:linear-gradient(135deg,var(--blue),#2563eb);color:#fff;box-shadow:0 4px 20px var(--blue-glow)}
+.btn.blue:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 8px 28px var(--blue-glow)}
+.btn.rose{background:linear-gradient(135deg,var(--rose),#e11d48);color:#fff;box-shadow:0 4px 20px var(--rose-glow)}
+.btn:active{transform:scale(.93)!important;transition:.08s ease!important}
+
+/* WRAP */
+.wrap{max-width:1040px;margin:0 auto;padding:clamp(16px,3vw,28px) clamp(14px,3vw,22px) 50px}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+.section{margin-bottom:clamp(14px,2.2vw,20px);opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.section.visible{opacity:1;transform:translateY(0)}
+
+/* HERO */
+.hero{background:var(--bg3);border:1px solid rgba(59,130,246,.18);border-radius:var(--r);padding:clamp(22px,4vw,38px) clamp(20px,4vw,38px);margin-bottom:clamp(16px,2.5vw,20px);position:relative;overflow:hidden;box-shadow:var(--shadow-lg);opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.hero.visible{opacity:1;transform:translateY(0)}
+.hero:hover{box-shadow:var(--shadow-xl),0 0 50px rgba(59,130,246,.1)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 55% 80% at 85% -10%,rgba(59,130,246,.13),transparent 55%),radial-gradient(ellipse 40% 40% at 10% 100%,rgba(139,92,246,.06),transparent 50%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;position:relative;z-index:1}
+.hero-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px;opacity:.85}
+.hero-name{font-family:'Syne',sans-serif;font-size:clamp(28px,5.5vw,48px);font-weight:800;color:#fff;line-height:1;letter-spacing:-1px;text-shadow:0 0 25px rgba(255,255,255,.3),0 0 50px rgba(59,130,246,.3)}
+.hero-sub{font-size:14px;color:var(--text2);margin-top:8px}
+.hero-badge{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.22);border-radius:999px;padding:8px 18px;font-size:12px;font-weight:700;color:var(--blue);white-space:nowrap;letter-spacing:.02em;box-shadow:0 0 22px rgba(59,130,246,.2)}
+.hero-stats{display:flex;gap:clamp(20px,4vw,48px);margin-top:18px;flex-wrap:wrap;position:relative;z-index:1}
+.hero-stat{transition:var(--ease);cursor:default;padding:4px 0}
+.hero-stat:hover{transform:translateY(-3px)}
+.hero-stat-val{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,42px);font-weight:800;color:white;line-height:1;letter-spacing:-1px;text-shadow:0 0 30px rgba(255,255,255,.4),0 0 60px rgba(59,130,246,.3)}
+.hero-stat-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:.1em}
+
+/* XP BAR */
+.xp-section{position:relative;z-index:1;margin-top:20px;background:rgba(0,0,0,.22);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow-sm)}
+.xp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:12px}
+.xp-level-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--blue),#2563eb);border-radius:999px;padding:5px 14px 5px 6px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:white;box-shadow:0 4px 20px var(--blue-glow),inset 0 1px 0 rgba(255,255,255,.2)}
+.xp-level-num{background:rgba(255,255,255,.2);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.xp-info{font-size:12px;color:var(--text2)}
+.xp-info span{color:var(--blue);font-weight:700}
+.xp-bar-track{height:8px;background:rgba(255,255,255,.04);border-radius:999px;overflow:visible;position:relative}
+.xp-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#2563eb,var(--blue),#60a5fa);background-size:200% auto;animation:shimmer 2.5s linear infinite;transition:width .8s ease;position:relative;box-shadow:0 0 15px rgba(59,130,246,.5)}
+.xp-bar-fill::after{content:'';position:absolute;right:-5px;top:-4px;width:16px;height:16px;background:var(--blue);border-radius:50%;border:3px solid var(--bg3);box-shadow:0 0 20px var(--blue-glow);animation:pulse-ring 2s ease-in-out infinite}
+@keyframes pulse-ring{0%,100%{box-shadow:0 0 0 0 var(--blue-glow)}50%{box-shadow:0 0 0 10px transparent}}
+
+/* SECTION HEADERS */
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sec-title{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.14em;white-space:nowrap}
+.sec-line{flex:1;height:1px;background:var(--border);border-radius:99px}
+.sec-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--blue);background:rgba(59,130,246,.1);padding:3px 10px;border-radius:99px;font-weight:500;letter-spacing:.05em;border:1px solid rgba(59,130,246,.15)}
+
+/* CLASS GRID */
+.class-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1.5vw,14px)}
+.class-card{background:var(--glass);border:1.5px solid var(--border);border-radius:16px;padding:clamp(16px,2.5vw,24px);cursor:pointer;transition:var(--ease);text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.class-card:hover{transform:translateY(-5px);border-color:var(--blue);box-shadow:0 0 30px rgba(59,130,246,.3),0 16px 40px rgba(0,0,0,.6)}
+.class-card.active{border-color:rgba(59,130,246,.6);background:rgba(59,130,246,.07);box-shadow:0 0 25px rgba(59,130,246,.25)}
+.class-icon{font-size:clamp(38px,6vw,56px);line-height:1;margin-bottom:4px}
+.class-name{font-family:'Syne',sans-serif;font-size:clamp(15px,2.5vw,18px);font-weight:800;color:#fff;letter-spacing:-.5px}
+.class-progress{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-top:4px}
+.class-progress span{color:var(--blue);font-weight:700}
+
+/* TOPIC GRID */
+.topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(10px,2vw,16px)}
+.topic-card{background:var(--glass);border:1.5px solid var(--border);border-radius:16px;padding:clamp(18px,3vw,26px);cursor:pointer;transition:var(--ease);position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.topic-card:hover{transform:translateY(-5px);border-color:var(--blue);box-shadow:0 0 30px rgba(59,130,246,.3),0 16px 40px rgba(0,0,0,.6)}
+.topic-card.completed{border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.06)}
+.topic-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.topic-icon{font-size:clamp(32px,5vw,44px);line-height:1;flex-shrink:0}
+.topic-info{flex:1;min-width:0}
+.topic-name{font-family:'Syne',sans-serif;font-size:clamp(16px,2.8vw,20px);font-weight:800;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
+.topic-desc{font-size:12px;color:var(--text2);line-height:1.5}
+.topic-prog{display:flex;align-items:center;gap:8px;margin-top:12px}
+.topic-prog-bar{flex:1;height:6px;background:rgba(255,255,255,.04);border-radius:999px;overflow:hidden}
+.topic-prog-fill{height:100%;background:linear-gradient(90deg,#2563eb,var(--blue));border-radius:999px;transition:width .5s ease}
+.topic-prog-text{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);white-space:nowrap}
+.topic-prog-text span{color:var(--blue);font-weight:700}
+
+/* LEVEL GRID */
+.level-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:clamp(6px,1vw,10px)}
+.level-btn{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:clamp(10px,2vw,16px);cursor:pointer;transition:var(--ease);text-align:center;font-family:'Syne',sans-serif;font-size:clamp(14px,2.5vw,18px);font-weight:800;color:var(--text3);position:relative;overflow:hidden}
+.level-btn:hover:not(.locked){transform:translateY(-3px);border-color:var(--blue);color:var(--blue);box-shadow:0 4px 16px rgba(59,130,246,.2)}
+.level-btn.completed{border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.1);color:var(--blue)}
+.level-btn.locked{opacity:.4;cursor:not-allowed}
+.level-btn.locked:hover{transform:none;box-shadow:none}
+
+/* QUIZ SCREEN */
+.quiz-card{background:var(--bg3);border:1px solid rgba(59,130,246,.18);border-radius:var(--r);padding:clamp(24px,4vw,40px);position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.quiz-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 0%,rgba(59,130,246,.12),transparent 55%);pointer-events:none}
+.q-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px;position:relative;z-index:1}
+.q-badge{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--blue);background:rgba(59,130,246,.1);padding:6px 14px;border-radius:999px;border:1px solid rgba(59,130,246,.2)}
+.q-lang-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);background:var(--surface2);padding:5px 12px;border-radius:999px;border:1px solid var(--border)}
+.q-score{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)}
+.q-score span{color:var(--blue);font-weight:700}
+.q-prog-track{height:6px;background:rgba(255,255,255,.04);border-radius:999px;overflow:hidden;margin-bottom:24px;position:relative;z-index:1}
+.q-prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--sky));border-radius:999px;transition:width .5s ease}
+.question-text{font-family:'Syne',sans-serif;font-size:clamp(18px,3vw,26px);font-weight:700;color:#fff;line-height:1.4;margin-bottom:24px;position:relative;z-index:1;text-shadow:0 0 20px rgba(255,255,255,.1)}
+.options-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;position:relative;z-index:1}
+.opt-btn{background:var(--surface2);border:1.5px solid var(--border2);border-radius:12px;padding:14px 18px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--ease);text-align:left;line-height:1.4;position:relative;overflow:hidden}
+.opt-btn:hover:not(:disabled){background:var(--surface3);border-color:var(--blue);transform:translateY(-2px);box-shadow:0 4px 16px rgba(59,130,246,.2)}
+.opt-btn.selected{border-color:var(--blue);background:rgba(59,130,246,.1);box-shadow:0 0 20px rgba(59,130,246,.2)}
+.opt-btn.correct{background:rgba(16,185,129,.2)!important;border-color:var(--emerald)!important;color:#fff!important;box-shadow:0 0 24px rgba(16,185,129,.4)!important}
+.opt-btn.wrong{background:rgba(244,63,94,.18)!important;border-color:var(--rose)!important;color:#fff!important}
+.opt-btn:disabled{cursor:not-allowed}
+.opt-btn:active:not(:disabled){transform:scale(.96)!important;transition:.08s ease!important}
+.quiz-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;position:relative;z-index:1}
+.result-box{margin-top:16px;padding:14px 18px;border-radius:12px;font-size:14px;font-weight:700;line-height:1.5;position:relative;z-index:1}
+.result-box.correct{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:var(--emerald)}
+.result-box.wrong{background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.25);color:var(--rose)}
+.result-box.hint{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--amber2)}
+.result-box.neutral{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);color:var(--sky)}
+
+/* FINISH SCREEN */
+.finish-card{background:var(--bg3);border:1px solid rgba(59,130,246,.18);border-radius:var(--r);padding:clamp(30px,5vw,52px);text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.finish-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 0%,rgba(59,130,246,.15),transparent 55%);pointer-events:none}
+.finish-icon{font-size:64px;margin-bottom:16px;position:relative;z-index:1;animation:bounce-in .5s ease}
+@keyframes bounce-in{0%{transform:scale(0) rotate(-10deg)}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+.finish-title{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,42px);font-weight:800;color:#fff;letter-spacing:-1px;position:relative;z-index:1;text-shadow:0 0 30px rgba(59,130,246,.5)}
+.finish-score{font-family:'DM Mono',monospace;font-size:16px;color:var(--text2);margin-top:8px;position:relative;z-index:1}
+.finish-score span{color:var(--blue);font-weight:700}
+.finish-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:999px;padding:10px 24px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--blue);margin-top:16px;position:relative;z-index:1;box-shadow:0 0 24px rgba(59,130,246,.3)}
+.finish-fail{display:inline-flex;align-items:center;gap:8px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);border-radius:999px;padding:10px 24px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--rose);margin-top:16px;position:relative;z-index:1}
+.finish-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px;position:relative;z-index:1}
+
+/* BACK NAV */
+.back-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.breadcrumb{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.breadcrumb span{color:var(--text2)}
+.breadcrumb .sep{color:var(--text3);opacity:.5}
+
+/* LOADING */
+.loading-state{text-align:center;padding:48px 20px}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)}
+
+/* TOAST */
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(16px);background:#13172a;border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:10px 24px;font-size:13px;font-weight:700;opacity:0;transition:all .32s ease;z-index:9999;white-space:nowrap;box-shadow:var(--shadow-xl);pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* LIGHT MODE */
+body.light{--bg:#f2f4ff;--bg2:#e7eaff;--bg3:#dfe2fc;--bg4:#d5d9f7;--glass:rgba(255,255,255,.55);--border:rgba(59,130,246,.1);--border2:rgba(59,130,246,.18);--text:#1a1730;--text2:#5a5580;--text3:#8884b0}
+body.light .hd{background:rgba(242,244,255,.86)}
+body.light #toast{background:#1a1730;color:#fff}
+.hidden{display:none!important}
+
+@media(max-width:820px){.class-grid{grid-template-columns:repeat(2,1fr)}.level-grid{grid-template-columns:repeat(4,1fr)}.options-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.level-grid{grid-template-columns:repeat(3,1fr)}.class-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <a class="logo" href="lobby.html">
+    <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+  </a>
+  <div class="hd-right">
+    <!-- LANGUAGE TOGGLE -->
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="langRuBtn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="btn ghost" onclick="toggleTheme()" style="padding:8px 14px;font-size:12px">🌓</button>
+    <button class="btn ghost" onclick="location.href='lobby.html'" style="padding:8px 14px;font-size:12px" id="backLobbyBtn">⬅ Лобби</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero" id="heroBlock">
+    <div class="hero-bg"></div><div class="hero-grid"></div>
+    <div class="hero-top">
+      <div>
+        <div class="hero-label" id="heroLabel">// математика</div>
+        <div class="hero-name">📐 <span id="heroTitle">МАТЕМАТИКА</span></div>
+        <div class="hero-sub" id="heroSub">Выбери класс, тему и уровень — от простых к сложным задачам</div>
+      </div>
+      <div class="hero-badge" id="heroBadge">🔢 Загрузка...</div>
+    </div>
+    <div class="xp-section">
+      <div class="xp-top">
+        <div class="xp-level-badge"><div class="xp-level-num" id="xpLvlNum">—</div><span id="xpLevelWord">УРОВЕНЬ</span></div>
+        <div class="xp-info"><span id="xpCur">0</span> / <span id="xpNxt">100</span> XP</div>
+      </div>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val" id="statLevels">0</div><div class="hero-stat-label" id="statLevelsLabel">Уровней пройдено</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" id="statTopics">0</div><div class="hero-stat-label" id="statTopicsLabel">Тем закрыто</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" id="statStreak">0</div><div class="hero-stat-label" id="statStreakLabel">Дней подряд</div></div>
+    </div>
+  </div>
+
+  <!-- CLASS SCREEN -->
+  <div class="section" id="screenClass">
+    <div class="sec-head"><div class="sec-title" id="secClassTitle">📚 Выбери класс</div><div class="sec-line"></div><div class="sec-badge">4 <span id="classWord">класса</span></div></div>
+    <div class="class-grid" id="classGrid"></div>
+  </div>
+
+  <!-- TOPIC SCREEN -->
+  <div class="section hidden" id="screenTopic">
+    <div class="back-row">
+      <button class="btn ghost" onclick="goToClass()" style="padding:7px 14px;font-size:12px" id="backToClassBtn">⬅ Классы</button>
+      <div class="breadcrumb"><span id="bcMath">Математика</span> <span class="sep">›</span> <span id="breadClass">7 класс</span></div>
+    </div>
+    <div class="sec-head"><div class="sec-title" id="secTopicTitle">📊 Темы</div><div class="sec-line"></div><div class="sec-badge" id="topicBadge">4 темы</div></div>
+    <div class="topic-grid" id="topicGrid"></div>
+  </div>
+
+  <!-- LEVEL SCREEN -->
+  <div class="section hidden" id="screenLevel">
+    <div class="back-row">
+      <button class="btn ghost" onclick="goToTopics()" style="padding:7px 14px;font-size:12px" id="backToTopicsBtn">⬅ Темы</button>
+      <div class="breadcrumb"><span id="bcMath2">Математика</span> <span class="sep">›</span> <span id="breadClass2"></span> <span class="sep">›</span> <span id="breadTopic"></span></div>
+    </div>
+    <div class="sec-head"><div class="sec-title" id="levelSecTitle">📈 Уровни сложности</div><div class="sec-line"></div><div class="sec-badge" id="levelBadge">0/16</div></div>
+    <div class="level-grid" id="levelGrid"></div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="section hidden" id="screenQuiz">
+    <div class="back-row">
+      <button class="btn ghost" onclick="goToLevels()" style="padding:7px 14px;font-size:12px" id="backToLevelsBtn">⬅ К уровням</button>
+      <div class="breadcrumb"><span id="breadQuiz"></span></div>
+    </div>
+    <div class="quiz-card">
+      <div class="quiz-bg"></div>
+      <div class="q-header">
+        <div class="q-badge" id="qBadge">Вопрос 1/10</div>
+        <div class="q-lang-label" id="qLangLabel">🇷🇺 Русский</div>
+        <div class="q-score"><span id="qScoreWord">Правильно</span>: <span id="qScore">0</span></div>
+      </div>
+      <div class="q-prog-track"><div class="q-prog-fill" id="qProgFill" style="width:10%"></div></div>
+      <div class="question-text" id="questionText">Загрузка задачи...</div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="quiz-actions">
+        <button class="btn blue" id="checkBtn" onclick="checkAnswer()" id="checkBtnEl">✓ <span id="checkBtnText">Проверить</span></button>
+        <button class="btn ghost" onclick="showHint()" style="font-size:12px">💡 <span id="hintBtnText">Подсказка</span></button>
+        <button class="btn primary hidden" id="nextBtn" onclick="nextQuestion()"><span id="nextBtnText">Далее</span> →</button>
+      </div>
+      <div id="resultBox" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- FINISH SCREEN -->
+  <div class="section hidden" id="screenFinish">
+    <div class="finish-card">
+      <div class="finish-bg"></div>
+      <div class="finish-icon" id="finishIcon">🎉</div>
+      <div class="finish-title" id="finishTitle">Уровень пройден!</div>
+      <div class="finish-score"><span id="finishScore">10/10</span> <span id="finishScoreWord">правильных ответов</span></div>
+      <div id="finishXPBadge"></div>
+      <div class="finish-actions">
+        <button class="btn blue" onclick="goToLevels()" id="finishBackBtn">⬅ <span id="finishBackText">К уровням</span></button>
+        <button class="btn primary" onclick="retryLevel()" id="finishRetryBtn">🔄 <span id="finishRetryText">Ещё раз</span></button>
+        <button class="btn ghost" onclick="goToTopics()" id="finishTopicsBtn">📚 <span id="finishTopicsText">Темы</span></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+  authDomain:"fmine-auth.firebaseapp.com",
+  projectId:"fmine-auth",
+  storageBucket:"fmine-auth.firebasestorage.app",
+  messagingSenderId:"219769927531",
+  appId:"1:219769927531:web:fbd45a0876f32927d23e2e"
+});
+const db = getFirestore(app);
+const currentUser = localStorage.getItem("currentUser");
+if (!currentUser) location.href = "index.html";
+const userRef = doc(db, "users", currentUser);
+
+// ─── LANGUAGE SYSTEM ─────────────────────────────────────────
+let LANG = (localStorage.getItem("fmine_lang") || "ru").toLowerCase();
+
+const T = {
+  ru: {
+    heroLabel: "// математика",
+    heroTitle: "МАТЕМАТИКА",
+    heroSub: "Выбери класс, тему и уровень — от простых к сложным задачам",
+    xpLevel: "УРОВЕНЬ",
+    statLevels: "Уровней пройдено",
+    statTopics: "Тем закрыто",
+    statStreak: "Дней подряд",
+    secClass: "📚 Выбери класс",
+    classWord: "класса",
+    secTopic: "📊 Темы",
+    backClasses: "⬅ Классы",
+    backTopics: "⬅ Темы",
+    backLevels: "⬅ К уровням",
+    backLobby: "⬅ Лобби",
+    math: "Математика",
+    checkBtn: "Проверить",
+    hintBtn: "Подсказка",
+    nextBtn: "Далее",
+    correctWord: "Правильно",
+    finishScoreWord: "правильных ответов",
+    finishBack: "К уровням",
+    finishRetry: "Ещё раз",
+    finishTopics: "Темы",
+    langLabel: "🇷🇺 Русский",
+    selectAnswer: "Выбери ответ!",
+    correct: "✓ Верно!",
+    wrong: "✗ Неправильно. ",
+    hint: "💡 Подсказка: ",
+    finishPassed: "Уровень пройден!",
+    finishFailed: "Уровень не пройден",
+    xpEarned: "XP получено",
+    levelPassed: "пройден",
+    needMore: "Нужно минимум",
+    forCredit: "правильных",
+    noConnection: "⚠️ Ошибка сохранения",
+    grade7: "7 класс",
+    grade8: "8 класс",
+    grade9: "9 класс",
+    grade10: "10 класс"
+  },
+  en: {
+    heroLabel: "// mathematics",
+    heroTitle: "MATHEMATICS",
+    heroSub: "Choose grade, topic, and level — from easy to hard problems",
+    xpLevel: "LEVEL",
+    statLevels: "Levels passed",
+    statTopics: "Topics completed",
+    statStreak: "Day streak",
+    secClass: "📚 Choose grade",
+    classWord: "grades",
+    secTopic: "📊 Topics",
+    backClasses: "⬅ Grades",
+    backTopics: "⬅ Topics",
+    backLevels: "⬅ To levels",
+    backLobby: "⬅ Lobby",
+    math: "Mathematics",
+    checkBtn: "Check",
+    hintBtn: "Hint",
+    nextBtn: "Next",
+    correctWord: "Correct",
+    finishScoreWord: "correct answers",
+    finishBack: "To levels",
+    finishRetry: "Retry",
+    finishTopics: "Topics",
+    langLabel: "🇬🇧 English",
+    selectAnswer: "Select an answer!",
+    correct: "✓ Correct!",
+    wrong: "✗ Wrong. ",
+    hint: "💡 Hint: ",
+    finishPassed: "Level passed!",
+    finishFailed: "Level failed",
+    xpEarned: "XP earned",
+    levelPassed: "passed",
+    needMore: "Need at least",
+    forCredit: "correct",
+    noConnection: "⚠️ Save error",
+    grade7: "Grade 7",
+    grade8: "Grade 8",
+    grade9: "Grade 9",
+    grade10: "Grade 10"
+  }
+};
+
+function t(key) { return T[LANG]?.[key] || T.ru[key] || key; }
+
+window.setLang = function(lang) {
+  LANG = lang;
+  localStorage.setItem("fmine_lang", lang);
+  document.getElementById("langRuBtn").classList.toggle("active", lang === "ru");
+  document.getElementById("langEnBtn").classList.toggle("active", lang === "en");
+  applyTranslations();
+  // Re-render current screen with new language
+  if (!document.getElementById("screenClass").classList.contains("hidden")) renderClasses();
+  if (!document.getElementById("screenTopic").classList.contains("hidden")) renderTopics();
+  if (!document.getElementById("screenLevel").classList.contains("hidden")) renderLevels();
+  showToast(lang === "ru" ? "🇷🇺 Русский язык" : "🇬🇧 English language");
+};
+
+function applyTranslations() {
+  const ids = {
+    heroLabel:"heroLabel", heroTitle:"heroTitle", heroSub:"heroSub",
+    xpLevelWord:"xpLevel", statLevelsLabel:"statLevels", statTopicsLabel:"statTopics",
+    statStreakLabel:"statStreak", secClassTitle:"secClass", classWord:"classWord",
+    secTopicTitle:"secTopic", backToClassBtn:"backClasses", backToTopicsBtn:"backTopics",
+    backToLevelsBtn:"backLevels", backLobbyBtn:"backLobby",
+    bcMath:"math", bcMath2:"math",
+    checkBtnText:"checkBtn", hintBtnText:"hintBtn", nextBtnText:"nextBtn",
+    qScoreWord:"correctWord", finishScoreWord:"finishScoreWord",
+    finishBackText:"finishBack", finishRetryText:"finishRetry", finishTopicsText:"finishTopics",
+    qLangLabel:"langLabel"
+  };
+  for (const [id, key] of Object.entries(ids)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(key);
+  }
+}
+
+// ─── CONSTANTS ───────────────────────────────────────────────
+const SUBJECT = "math";
+const LEVELS_PER_TOPIC = 16;
+const QUESTIONS_PER_LEVEL = 10;
+const PASS_THRESHOLD = 6;
+
+// ─── SPEC (bilingual) ────────────────────────────────────────
+const SPEC = {
+  "7": { id:"7", topics:{
+    algebra:    { title:{ru:"Алгебра",           en:"Algebra"},        icon:"🔢", desc:{ru:"Уравнения и выражения",            en:"Equations and expressions"} },
+    geometry:   { title:{ru:"Геометрия",         en:"Geometry"},       icon:"📐", desc:{ru:"Углы, треугольники, площади",     en:"Angles, triangles, areas"} },
+    fractions:  { title:{ru:"Дроби",             en:"Fractions"},      icon:"➗", desc:{ru:"Операции с дробями",               en:"Operations with fractions"} },
+    mixed7:     { title:{ru:"Смешанные",         en:"Mixed"},          icon:"🎲", desc:{ru:"Разнообразные задачи 7 кл.",       en:"Various problems — grade 7"} }
+  }},
+  "8": { id:"8", topics:{
+    quadratic:  { title:{ru:"Квадратные ур-я",   en:"Quadratic eqs"},  icon:"²", desc:{ru:"Квадратные уравнения",             en:"Quadratic equations"} },
+    powers:     { title:{ru:"Степени",           en:"Powers"},         icon:"ⁿ", desc:{ru:"Степени и корни",                  en:"Powers and roots"} },
+    statistics: { title:{ru:"Статистика",        en:"Statistics"},     icon:"📊", desc:{ru:"Среднее, медиана, вероятность",   en:"Mean, median, probability"} },
+    mixed8:     { title:{ru:"Смешанные",         en:"Mixed"},          icon:"🎲", desc:{ru:"Разнообразные задачи 8 кл.",       en:"Various problems — grade 8"} }
+  }},
+  "9": { id:"9", topics:{
+    functions:  { title:{ru:"Функции",           en:"Functions"},      icon:"ƒ", desc:{ru:"Графики и свойства функций",       en:"Graphs and function properties"} },
+    sequences:  { title:{ru:"Последовательности",en:"Sequences"},      icon:"∑", desc:{ru:"Прогрессии и ряды",                en:"Progressions and series"} },
+    trigonometry:{title:{ru:"Тригонометрия",     en:"Trigonometry"},   icon:"∿", desc:{ru:"Sin, cos, tan и их свойства",       en:"Sin, cos, tan and properties"} },
+    mixed9:     { title:{ru:"Смешанные",         en:"Mixed"},          icon:"🎲", desc:{ru:"Разнообразные задачи 9 кл.",       en:"Various problems — grade 9"} }
+  }},
+  "10": { id:"10", topics:{
+    derivatives:{ title:{ru:"Производные",       en:"Derivatives"},    icon:"d/dx", desc:{ru:"Производные и экстремумы",       en:"Derivatives and extrema"} },
+    logarithms: { title:{ru:"Логарифмы",         en:"Logarithms"},     icon:"log", desc:{ru:"Логарифмические уравнения",       en:"Logarithmic equations"} },
+    combinatorics:{title:{ru:"Комбинаторика",    en:"Combinatorics"},  icon:"C", desc:{ru:"Перестановки и сочетания",         en:"Permutations and combinations"} },
+    mixed10:    { title:{ru:"Смешанные",         en:"Mixed"},          icon:"🎲", desc:{ru:"Разнообразные задачи 10 кл.",      en:"Various problems — grade 10"} }
+  }}
+};
+
+// ─── DIFFICULTY MAPPING ──────────────────────────────────────
+// Level 1-4: Easy, Level 5-8: Medium-Easy, Level 9-12: Medium-Hard, Level 13-16: Hard
+function getDifficultyRange(level) {
+  if (level <= 4) return 'easy';
+  if (level <= 8) return 'medium_easy';
+  if (level <= 12) return 'medium_hard';
+  return 'hard';
+}
+
+// ─── QUESTION BANKS ──────────────────────────────────────────
+// Problems organized by difficulty
+const BANK_RU = {
+  easy: [
+    {q:"2 + 2 = ?",c:"4",w:["3","5","6"],h:"Простое сложение.",s:"2 + 2 = 4"},
+    {q:"5 × 3 = ?",c:"15",w:["12","18","20"],h:"Умножь 5 на 3.",s:"5 × 3 = 15"},
+    {q:"10 − 4 = ?",c:"6",w:["5","7","8"],h:"Вычти 4 из 10.",s:"10 − 4 = 6"},
+    {q:"12 ÷ 3 = ?",c:"4",w:["3","5","6"],h:"Раздели 12 на 3.",s:"12 ÷ 3 = 4"},
+    {q:"Сколько углов у треугольника?",c:"3",w:["4","5","6"],h:"Три = tri.",s:"У треугольника 3 угла."},
+    {q:"½ + ½ = ?",c:"1",w:["2","½","¼"],h:"Две половины = целое.",s:"½ + ½ = 1"},
+    {q:"3² = ?",c:"9",w:["6","12","27"],h:"3 × 3.",s:"3² = 3 × 3 = 9"},
+    {q:"Что такое периметр квадрата со стороной 4?",c:"16",w:["8","12","20"],h:"4 стороны по 4.",s:"P = 4 × 4 = 16"},
+    {q:"7 + 8 = ?",c:"15",w:["14","16","17"],h:"7 + 8.",s:"7 + 8 = 15"},
+    {q:"20 ÷ 4 = ?",c:"5",w:["4","6","8"],h:"Раздели 20 на 4.",s:"20 ÷ 4 = 5"},
+    {q:"√16 = ?",c:"4",w:["2","8","16"],h:"Какое число в квадрате даёт 16?",s:"√16 = 4"},
+    {q:"⅓ от 12 = ?",c:"4",w:["3","6","8"],h:"Раздели 12 на 3.",s:"12 ÷ 3 = 4"},
+    {q:"4 × 5 = ?",c:"20",w:["15","25","30"],h:"Умножь 4 на 5.",s:"4 × 5 = 20"},
+    {q:"15 − 7 = ?",c:"8",w:["6","9","10"],h:"Вычти 7 из 15.",s:"15 − 7 = 8"},
+    {q:"2³ = ?",c:"8",w:["6","9","16"],h:"2 × 2 × 2.",s:"2³ = 8"},
+    {q:"Площадь квадрата со стороной 5?",c:"25",w:["10","20","50"],h:"5 × 5.",s:"S = 5² = 25"},
+    {q:"6 + 9 = ?",c:"15",w:["14","16","17"],h:"Сложи 6 и 9.",s:"6 + 9 = 15"},
+    {q:"18 ÷ 2 = ?",c:"9",w:["6","8","10"],h:"Раздели 18 на 2.",s:"18 ÷ 2 = 9"},
+    {q:"1/4 + 1/4 = ?",c:"1/2",w:["1/8","2/4","1"],h:"Сложи две четверти.",s:"1/4 + 1/4 = 2/4 = 1/2"},
+    {q:"5² = ?",c:"25",w:["10","15","50"],h:"5 × 5.",s:"5² = 25"}
+  ],
+  medium_easy: [
+    {q:"Реши: 2x = 10",c:"x = 5",w:["x = 2","x = 10","x = 20"],h:"Раздели обе части на 2.",s:"2x = 10 → x = 5"},
+    {q:"Сумма углов треугольника?",c:"180°",w:["90°","270°","360°"],h:"Всегда одинаковая.",s:"Сумма углов = 180°"},
+    {q:"¾ + ¼ = ?",c:"1",w:["½","¼","2"],h:"Три четверти плюс одна четверть.",s:"¾ + ¼ = 4/4 = 1"},
+    {q:"Реши: x + 7 = 12",c:"x = 5",w:["x = 7","x = 12","x = 19"],h:"Вычти 7 из обеих частей.",s:"x = 12 − 7 = 5"},
+    {q:"Площадь прямоугольника 4×6?",c:"24",w:["10","20","30"],h:"Умножь длину на ширину.",s:"S = 4 × 6 = 24"},
+    {q:"√25 = ?",c:"5",w:["3","10","25"],h:"Какое число в квадрате даёт 25?",s:"√25 = 5"},
+    {q:"2/3 × 6 = ?",c:"4",w:["2","3","12"],h:"(2 × 6) ÷ 3.",s:"(2/3) × 6 = 4"},
+    {q:"Реши: 3x − 6 = 9",c:"x = 5",w:["x = 3","x = 6","x = 15"],h:"Добавь 6, потом раздели на 3.",s:"3x = 15 → x = 5"},
+    {q:"Периметр прямоугольника 3×5?",c:"16",w:["8","15","30"],h:"2(a + b).",s:"P = 2(3 + 5) = 16"},
+    {q:"4² + 3² = ?",c:"25",w:["7","16","49"],h:"16 + 9.",s:"16 + 9 = 25"},
+    {q:"0.5 × 8 = ?",c:"4",w:["2","8","16"],h:"Половина от 8.",s:"0.5 × 8 = 4"},
+    {q:"Реши: 5x = 25",c:"x = 5",w:["x = 20","x = 25","x = 125"],h:"Раздели на 5.",s:"x = 25 ÷ 5 = 5"},
+    {q:"⅔ от 15 = ?",c:"10",w:["5","15","30"],h:"(15 × 2) ÷ 3.",s:"(15 × 2) ÷ 3 = 10"},
+    {q:"√36 = ?",c:"6",w:["4","9","18"],h:"Какое число в квадрате = 36?",s:"√36 = 6"},
+    {q:"Площадь треугольника: основание 6, высота 4?",c:"12",w:["10","24","48"],h:"(b × h) ÷ 2.",s:"S = (6 × 4) ÷ 2 = 12"},
+    {q:"7² − 5² = ?",c:"24",w:["2","12","74"],h:"49 − 25.",s:"49 − 25 = 24"},
+    {q:"Реши: x/4 = 3",c:"x = 12",w:["x = 3","x = 4","x = 7"],h:"Умножь обе части на 4.",s:"x = 3 × 4 = 12"},
+    {q:"0.25 × 16 = ?",c:"4",w:["2","8","64"],h:"Четверть от 16.",s:"0.25 × 16 = 4"},
+    {q:"3/5 + 1/5 = ?",c:"4/5",w:["2/5","1","4/10"],h:"Сложи числители.",s:"3/5 + 1/5 = 4/5"},
+    {q:"Сумма первых 5 натуральных чисел?",c:"15",w:["10","20","25"],h:"1+2+3+4+5.",s:"1+2+3+4+5 = 15"}
+  ],
+  medium_hard: [
+    {q:"Реши: x² = 49",c:"x = ±7",w:["x = 7","x = 24.5","x = 49"],h:"Извлеки корень из обеих частей.",s:"x = ±√49 = ±7"},
+    {q:"Среднее арифметическое 4, 8, 12?",c:"8",w:["6","10","12"],h:"Сумма делённая на 3.",s:"(4+8+12)÷3 = 8"},
+    {q:"sin 30° = ?",c:"0.5",w:["0","1","√3/2"],h:"Табличное значение.",s:"sin 30° = 1/2 = 0.5"},
+    {q:"Реши: 2x² − 8 = 0",c:"x = ±2",w:["x = 2","x = 4","x = 8"],h:"2x² = 8 → x² = 4.",s:"x² = 4 → x = ±2"},
+    {q:"log₂ 8 = ?",c:"3",w:["2","4","8"],h:"2³ = 8.",s:"log₂ 8 = 3"},
+    {q:"Производная x³?",c:"3x²",w:["x²","x³","3x³"],h:"Степень спускается.",s:"d/dx(x³) = 3x²"},
+    {q:"5ⁿ = 125, n = ?",c:"3",w:["2","5","25"],h:"5³ = 125.",s:"5³ = 125 → n = 3"},
+    {q:"Гипотенуза прямоугольного треугольника: катеты 3 и 4?",c:"5",w:["4","7","12"],h:"Теорема Пифагора.",s:"c = √(3² + 4²) = 5"},
+    {q:"Реши систему: x+y=5, x−y=1",c:"x=3, y=2",w:["x=2, y=3","x=5, y=0","x=1, y=4"],h:"Сложи уравнения.",s:"2x = 6 → x = 3, y = 2"},
+    {q:"cos 60° = ?",c:"0.5",w:["0","1","√3/2"],h:"Табличное значение.",s:"cos 60° = 1/2 = 0.5"},
+    {q:"Площадь круга радиуса 3?",c:"9π",w:["3π","6π","27π"],h:"πr².",s:"S = π × 3² = 9π"},
+    {q:"Реши: |x| = 7",c:"x = ±7",w:["x = 7","x = −7","x = 0"],h:"Модуль — расстояние.",s:"|x| = 7 → x = ±7"},
+    {q:"Производная sin(x)?",c:"cos(x)",w:["sin(x)","−cos(x)","tan(x)"],h:"Производная синуса.",s:"d/dx sin(x) = cos(x)"},
+    {q:"log₁₀ 100 = ?",c:"2",w:["10","100","1"],h:"10² = 100.",s:"log₁₀ 100 = 2"},
+    {q:"Объём куба со стороной 4?",c:"64",w:["16","48","256"],h:"a³.",s:"V = 4³ = 64"},
+    {q:"Сколько способов выбрать 2 из 4?",c:"6",w:["2","4","8"],h:"C(4,2) = 4!/(2!2!).",s:"C(4,2) = 6"},
+    {q:"Реши: e^x = 1",c:"x = 0",w:["x = 1","x = e","x = −1"],h:"e⁰ = 1.",s:"e⁰ = 1 → x = 0"},
+    {q:"tan 45° = ?",c:"1",w:["0","0.5","√2"],h:"sin 45° = cos 45°.",s:"tan 45° = 1"},
+    {q:"Длина окружности радиуса 5?",c:"10π",w:["5π","25π","2π"],h:"2πr.",s:"C = 2π × 5 = 10π"},
+    {q:"Медиана набора: 2, 5, 7, 9, 11?",c:"7",w:["5","9","6.8"],h:"Средний элемент.",s:"Медиана = 7"}
+  ],
+  hard: [
+    {q:"Реши: x² − 5x + 6 = 0",c:"x = 2 или x = 3",w:["x = 1 или x = 6","x = −2 или x = −3","x = 5"],h:"Разложи на множители.",s:"(x−2)(x−3) = 0 → x = 2 или 3"},
+    {q:"∫x² dx = ?",c:"x³/3 + C",w:["x²","2x","x³"],h:"Увеличь степень на 1.",s:"∫x² dx = x³/3 + C"},
+    {q:"Сумма бесконечной геометрической прогрессии с a=1, r=½?",c:"2",w:["1","½","∞"],h:"S = a/(1−r) при |r| < 1.",s:"S = 1/(1−0.5) = 2"},
+    {q:"Решите уравнение: 2^x = 32",c:"x = 5",w:["x = 4","x = 6","x = 16"],h:"2⁵ = 32.",s:"2⁵ = 32 → x = 5"},
+    {q:"Производная ln(x)?",c:"1/x",w:["ln(x)","x","e^x"],h:"Производная натурального логарифма.",s:"d/dx ln(x) = 1/x"},
+    {q:"Вероятность выпадения орла 3 раза подряд?",c:"1/8",w:["1/2","1/4","3/8"],h:"(1/2)³.",s:"P = (1/2)³ = 1/8"},
+    {q:"lim(x→0) sin(x)/x = ?",c:"1",w:["0","∞","sin(0)"],h:"Первый замечательный предел.",s:"lim = 1"},
+    {q:"Корни уравнения x² + x − 6 = 0?",c:"x = −3 или x = 2",w:["x = 3 или x = −2","x = 1 или x = −6","x = 6 или x = −1"],h:"Факторизуй: (x+3)(x−2).",s:"x = −3 или x = 2"},
+    {q:"Сколько диагоналей у шестиугольника?",c:"9",w:["6","12","15"],h:"n(n−3)/2.",s:"6(6−3)/2 = 9"},
+    {q:"e^(iπ) + 1 = ?",c:"0",w:["1","e","−1"],h:"Формула Эйлера.",s:"e^(iπ) = −1, −1+1 = 0"},
+    {q:"∫(1/x) dx = ?",c:"ln|x| + C",w:["x","1/x²","log(x)"],h:"Интеграл 1/x.",s:"∫(1/x) dx = ln|x| + C"},
+    {q:"Дискриминант x² − 4x + 4 = 0?",c:"0",w:["4","16","−12"],h:"D = b² − 4ac.",s:"D = 16 − 16 = 0"},
+    {q:"Реши: log(x) + log(x+3) = 1 (основание 10)",c:"x = 2",w:["x = 1","x = 3","x = 7"],h:"log(x(x+3)) = 1 → x(x+3) = 10.",s:"x² + 3x − 10 = 0 → x = 2"},
+    {q:"Производная e^x?",c:"e^x",w:["xe^(x−1)","ln(x)","1"],h:"e^x не меняется при дифференцировании.",s:"d/dx e^x = e^x"},
+    {q:"Площадь эллипса: a=5, b=3?",c:"15π",w:["8π","30π","75"],h:"πab.",s:"S = π × 5 × 3 = 15π"},
+    {q:"Сколько перестановок из 5 элементов?",c:"120",w:["5","25","60"],h:"5!.",s:"5! = 120"},
+    {q:"Реши: 3^(2x) = 81",c:"x = 2",w:["x = 3","x = 4","x = 27"],h:"3⁴ = 81.",s:"2x = 4 → x = 2"},
+    {q:"Второй замечательный предел?",c:"e",w:["1","0","∞"],h:"lim(x→∞) (1+1/x)^x.",s:"= e ≈ 2.718"},
+    {q:"Объём сферы радиуса 3?",c:"36π",w:["27π","9π","108π"],h:"(4/3)πr³.",s:"V = (4/3)π(3³) = 36π"},
+    {q:"Реши: sin(x) = 1 на [0, 2π]",c:"x = π/2",w:["x = 0","x = π","x = 2π"],h:"sin максимален в π/2.",s:"x = π/2"}
+  ]
+};
+
+const BANK_EN = {
+  easy: [
+    {q:"2 + 2 = ?",c:"4",w:["3","5","6"],h:"Simple addition.",s:"2 + 2 = 4"},
+    {q:"5 × 3 = ?",c:"15",w:["12","18","20"],h:"Multiply 5 by 3.",s:"5 × 3 = 15"},
+    {q:"10 − 4 = ?",c:"6",w:["5","7","8"],h:"Subtract 4 from 10.",s:"10 − 4 = 6"},
+    {q:"12 ÷ 3 = ?",c:"4",w:["3","5","6"],h:"Divide 12 by 3.",s:"12 ÷ 3 = 4"},
+    {q:"How many angles in a triangle?",c:"3",w:["4","5","6"],h:"Tri = three.",s:"A triangle has 3 angles."},
+    {q:"½ + ½ = ?",c:"1",w:["2","½","¼"],h:"Two halves = whole.",s:"½ + ½ = 1"},
+    {q:"3² = ?",c:"9",w:["6","12","27"],h:"3 × 3.",s:"3² = 3 × 3 = 9"},
+    {q:"Perimeter of square with side 4?",c:"16",w:["8","12","20"],h:"4 sides of 4.",s:"P = 4 × 4 = 16"},
+    {q:"7 + 8 = ?",c:"15",w:["14","16","17"],h:"7 + 8.",s:"7 + 8 = 15"},
+    {q:"20 ÷ 4 = ?",c:"5",w:["4","6","8"],h:"Divide 20 by 4.",s:"20 ÷ 4 = 5"},
+    {q:"√16 = ?",c:"4",w:["2","8","16"],h:"What squared equals 16?",s:"√16 = 4"},
+    {q:"⅓ of 12 = ?",c:"4",w:["3","6","8"],h:"Divide 12 by 3.",s:"12 ÷ 3 = 4"},
+    {q:"4 × 5 = ?",c:"20",w:["15","25","30"],h:"Multiply 4 by 5.",s:"4 × 5 = 20"},
+    {q:"15 − 7 = ?",c:"8",w:["6","9","10"],h:"Subtract 7 from 15.",s:"15 − 7 = 8"},
+    {q:"2³ = ?",c:"8",w:["6","9","16"],h:"2 × 2 × 2.",s:"2³ = 8"},
+    {q:"Area of square with side 5?",c:"25",w:["10","20","50"],h:"5 × 5.",s:"A = 5² = 25"},
+    {q:"6 + 9 = ?",c:"15",w:["14","16","17"],h:"Add 6 and 9.",s:"6 + 9 = 15"},
+    {q:"18 ÷ 2 = ?",c:"9",w:["6","8","10"],h:"Divide 18 by 2.",s:"18 ÷ 2 = 9"},
+    {q:"1/4 + 1/4 = ?",c:"1/2",w:["1/8","2/4","1"],h:"Add two quarters.",s:"1/4 + 1/4 = 2/4 = 1/2"},
+    {q:"5² = ?",c:"25",w:["10","15","50"],h:"5 × 5.",s:"5² = 25"}
+  ],
+  medium_easy: [
+    {q:"Solve: 2x = 10",c:"x = 5",w:["x = 2","x = 10","x = 20"],h:"Divide both sides by 2.",s:"2x = 10 → x = 5"},
+    {q:"Sum of triangle angles?",c:"180°",w:["90°","270°","360°"],h:"Always the same.",s:"Sum = 180°"},
+    {q:"¾ + ¼ = ?",c:"1",w:["½","¼","2"],h:"Three quarters plus one quarter.",s:"¾ + ¼ = 4/4 = 1"},
+    {q:"Solve: x + 7 = 12",c:"x = 5",w:["x = 7","x = 12","x = 19"],h:"Subtract 7 from both sides.",s:"x = 12 − 7 = 5"},
+    {q:"Area of rectangle 4×6?",c:"24",w:["10","20","30"],h:"Multiply length by width.",s:"A = 4 × 6 = 24"},
+    {q:"√25 = ?",c:"5",w:["3","10","25"],h:"What squared equals 25?",s:"√25 = 5"},
+    {q:"2/3 × 6 = ?",c:"4",w:["2","3","12"],h:"(2 × 6) ÷ 3.",s:"(2/3) × 6 = 4"},
+    {q:"Solve: 3x − 6 = 9",c:"x = 5",w:["x = 3","x = 6","x = 15"],h:"Add 6, then divide by 3.",s:"3x = 15 → x = 5"},
+    {q:"Perimeter of rectangle 3×5?",c:"16",w:["8","15","30"],h:"2(a + b).",s:"P = 2(3 + 5) = 16"},
+    {q:"4² + 3² = ?",c:"25",w:["7","16","49"],h:"16 + 9.",s:"16 + 9 = 25"},
+    {q:"0.5 × 8 = ?",c:"4",w:["2","8","16"],h:"Half of 8.",s:"0.5 × 8 = 4"},
+    {q:"Solve: 5x = 25",c:"x = 5",w:["x = 20","x = 25","x = 125"],h:"Divide by 5.",s:"x = 25 ÷ 5 = 5"},
+    {q:"⅔ of 15 = ?",c:"10",w:["5","15","30"],h:"(15 × 2) ÷ 3.",s:"(15 × 2) ÷ 3 = 10"},
+    {q:"√36 = ?",c:"6",w:["4","9","18"],h:"What squared = 36?",s:"√36 = 6"},
+    {q:"Triangle area: base 6, height 4?",c:"12",w:["10","24","48"],h:"(b × h) ÷ 2.",s:"A = (6 × 4) ÷ 2 = 12"},
+    {q:"7² − 5² = ?",c:"24",w:["2","12","74"],h:"49 − 25.",s:"49 − 25 = 24"},
+    {q:"Solve: x/4 = 3",c:"x = 12",w:["x = 3","x = 4","x = 7"],h:"Multiply both sides by 4.",s:"x = 3 × 4 = 12"},
+    {q:"0.25 × 16 = ?",c:"4",w:["2","8","64"],h:"Quarter of 16.",s:"0.25 × 16 = 4"},
+    {q:"3/5 + 1/5 = ?",c:"4/5",w:["2/5","1","4/10"],h:"Add numerators.",s:"3/5 + 1/5 = 4/5"},
+    {q:"Sum of first 5 natural numbers?",c:"15",w:["10","20","25"],h:"1+2+3+4+5.",s:"1+2+3+4+5 = 15"}
+  ],
+  medium_hard: [
+    {q:"Solve: x² = 49",c:"x = ±7",w:["x = 7","x = 24.5","x = 49"],h:"Take square root of both sides.",s:"x = ±√49 = ±7"},
+    {q:"Average of 4, 8, 12?",c:"8",w:["6","10","12"],h:"Sum divided by 3.",s:"(4+8+12)÷3 = 8"},
+    {q:"sin 30° = ?",c:"0.5",w:["0","1","√3/2"],h:"Table value.",s:"sin 30° = 1/2 = 0.5"},
+    {q:"Solve: 2x² − 8 = 0",c:"x = ±2",w:["x = 2","x = 4","x = 8"],h:"2x² = 8 → x² = 4.",s:"x² = 4 → x = ±2"},
+    {q:"log₂ 8 = ?",c:"3",w:["2","4","8"],h:"2³ = 8.",s:"log₂ 8 = 3"},
+    {q:"Derivative of x³?",c:"3x²",w:["x²","x³","3x³"],h:"Power rule.",s:"d/dx(x³) = 3x²"},
+    {q:"5ⁿ = 125, n = ?",c:"3",w:["2","5","25"],h:"5³ = 125.",s:"5³ = 125 → n = 3"},
+    {q:"Hypotenuse with legs 3 and 4?",c:"5",w:["4","7","12"],h:"Pythagorean theorem.",s:"c = √(3² + 4²) = 5"},
+    {q:"Solve system: x+y=5, x−y=1",c:"x=3, y=2",w:["x=2, y=3","x=5, y=0","x=1, y=4"],h:"Add equations.",s:"2x = 6 → x = 3, y = 2"},
+    {q:"cos 60° = ?",c:"0.5",w:["0","1","√3/2"],h:"Table value.",s:"cos 60° = 1/2 = 0.5"},
+    {q:"Area of circle radius 3?",c:"9π",w:["3π","6π","27π"],h:"πr².",s:"A = π × 3² = 9π"},
+    {q:"Solve: |x| = 7",c:"x = ±7",w:["x = 7","x = −7","x = 0"],h:"Absolute value.",s:"|x| = 7 → x = ±7"},
+    {q:"Derivative of sin(x)?",c:"cos(x)",w:["sin(x)","−cos(x)","tan(x)"],h:"Derivative of sine.",s:"d/dx sin(x) = cos(x)"},
+    {q:"log₁₀ 100 = ?",c:"2",w:["10","100","1"],h:"10² = 100.",s:"log₁₀ 100 = 2"},
+    {q:"Volume of cube with side 4?",c:"64",w:["16","48","256"],h:"a³.",s:"V = 4³ = 64"},
+    {q:"Ways to choose 2 from 4?",c:"6",w:["2","4","8"],h:"C(4,2) = 4!/(2!2!).",s:"C(4,2) = 6"},
+    {q:"Solve: e^x = 1",c:"x = 0",w:["x = 1","x = e","x = −1"],h:"e⁰ = 1.",s:"e⁰ = 1 → x = 0"},
+    {q:"tan 45° = ?",c:"1",w:["0","0.5","√2"],h:"sin 45° = cos 45°.",s:"tan 45° = 1"},
+    {q:"Circumference radius 5?",c:"10π",w:["5π","25π","2π"],h:"2πr.",s:"C = 2π × 5 = 10π"},
+    {q:"Median: 2, 5, 7, 9, 11?",c:"7",w:["5","9","6.8"],h:"Middle element.",s:"Median = 7"}
+  ],
+  hard: [
+    {q:"Solve: x² − 5x + 6 = 0",c:"x = 2 or x = 3",w:["x = 1 or x = 6","x = −2 or x = −3","x = 5"],h:"Factor it.",s:"(x−2)(x−3) = 0 → x = 2 or 3"},
+    {q:"∫x² dx = ?",c:"x³/3 + C",w:["x²","2x","x³"],h:"Increase power by 1.",s:"∫x² dx = x³/3 + C"},
+    {q:"Sum of infinite geometric series a=1, r=½?",c:"2",w:["1","½","∞"],h:"S = a/(1−r) when |r| < 1.",s:"S = 1/(1−0.5) = 2"},
+    {q:"Solve: 2^x = 32",c:"x = 5",w:["x = 4","x = 6","x = 16"],h:"2⁵ = 32.",s:"2⁵ = 32 → x = 5"},
+    {q:"Derivative of ln(x)?",c:"1/x",w:["ln(x)","x","e^x"],h:"Natural log derivative.",s:"d/dx ln(x) = 1/x"},
+    {q:"Probability of 3 heads in a row?",c:"1/8",w:["1/2","1/4","3/8"],h:"(1/2)³.",s:"P = (1/2)³ = 1/8"},
+    {q:"lim(x→0) sin(x)/x = ?",c:"1",w:["0","∞","sin(0)"],h:"Famous limit.",s:"lim = 1"},
+    {q:"Roots of x² + x − 6 = 0?",c:"x = −3 or x = 2",w:["x = 3 or x = −2","x = 1 or x = −6","x = 6 or x = −1"],h:"Factor: (x+3)(x−2).",s:"x = −3 or x = 2"},
+    {q:"Diagonals in hexagon?",c:"9",w:["6","12","15"],h:"n(n−3)/2.",s:"6(6−3)/2 = 9"},
+    {q:"e^(iπ) + 1 = ?",c:"0",w:["1","e","−1"],h:"Euler's formula.",s:"e^(iπ) = −1, −1+1 = 0"},
+    {q:"∫(1/x) dx = ?",c:"ln|x| + C",w:["x","1/x²","log(x)"],h:"Integral of 1/x.",s:"∫(1/x) dx = ln|x| + C"},
+    {q:"Discriminant of x² − 4x + 4 = 0?",c:"0",w:["4","16","−12"],h:"D = b² − 4ac.",s:"D = 16 − 16 = 0"},
+    {q:"Solve: log(x) + log(x+3) = 1 (base 10)",c:"x = 2",w:["x = 1","x = 3","x = 7"],h:"log(x(x+3)) = 1 → x(x+3) = 10.",s:"x² + 3x − 10 = 0 → x = 2"},
+    {q:"Derivative of e^x?",c:"e^x",w:["xe^(x−1)","ln(x)","1"],h:"e^x unchanged.",s:"d/dx e^x = e^x"},
+    {q:"Ellipse area: a=5, b=3?",c:"15π",w:["8π","30π","75"],h:"πab.",s:"A = π × 5 × 3 = 15π"},
+    {q:"Permutations of 5 elements?",c:"120",w:["5","25","60"],h:"5!.",s:"5! = 120"},
+    {q:"Solve: 3^(2x) = 81",c:"x = 2",w:["x = 3","x = 4","x = 27"],h:"3⁴ = 81.",s:"2x = 4 → x = 2"},
+    {q:"Second remarkable limit?",c:"e",w:["1","0","∞"],h:"lim(x→∞) (1+1/x)^x.",s:"= e ≈ 2.718"},
+    {q:"Sphere volume radius 3?",c:"36π",w:["27π","9π","108π"],h:"(4/3)πr³.",s:"V = (4/3)π(3³) = 36π"},
+    {q:"Solve: sin(x) = 1 on [0, 2π]",c:"x = π/2",w:["x = 0","x = π","x = 2π"],h:"sin max at π/2.",s:"x = π/2"}
+  ]
+};
+
+// ─── STATE ───────────────────────────────────────────────────
+let fd = null;
+let currentClass = null, currentTopic = null, currentLevel = null;
+let quiz = { tasks:[], index:0, correct:0, selected:null, checked:false };
+
+// ─── FIREBASE ────────────────────────────────────────────────
+async function loadUser() {
+  try {
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      await setDoc(userRef, { profile:{nickname:currentUser,avatar:""}, studyMeta:{streak:0,lastDate:"",studyDays:{},totalXP:0,bonusXP:0,weeklyGoal:20}, progress:{math:{},biology:{},physics:{},history:{}}, lastResults:{}, achievements:[], dailyCompleted:{} });
+      fd = (await getDoc(userRef)).data();
+    } else { fd = snap.data(); }
+    fd.progress = fd.progress || {};
+    fd.progress.math = fd.progress.math || {};
+    fd.studyMeta = fd.studyMeta || { streak:0, studyDays:{}, totalXP:0, bonusXP:0 };
+  } catch(e) {
+    fd = { progress:{ math:{} }, studyMeta:{ streak:0, studyDays:{}, totalXP:0, bonusXP:0 }, profile:{} };
+  }
+}
+
+async function onLevelComplete(cls, topicId, newHighest) {
+  const today = new Date().toISOString().slice(0, 10);
+  const topicData = { highestCompleted: newHighest, lastPassedAt: Date.now() };
+  if (!fd.progress.math[cls]) fd.progress.math[cls] = {};
+  fd.progress.math[cls][topicId] = topicData;
+  let freshFd = fd;
+  try { const snap = await getDoc(userRef); freshFd = snap.data() || fd; } catch(e) {}
+  const studyDays = freshFd?.studyMeta?.studyDays || {};
+  const todayCount = (studyDays[today] || 0) + 1;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const hadYesterday = (studyDays[yesterday] || 0) > 0;
+  const currentStreak = freshFd?.studyMeta?.streak || 0;
+  const alreadyToday = (studyDays[today] || 0) > 0;
+  const newStreak = alreadyToday ? currentStreak : (hadYesterday ? currentStreak + 1 : 1);
+  const allProgress = freshFd?.progress || {};
+  allProgress.math = allProgress.math || {};
+  if (!allProgress.math[cls]) allProgress.math[cls] = {};
+  allProgress.math[cls][topicId] = topicData;
+  let levelsTotal = 0, topicsDone = 0;
+  for (const sk of ["math","biology","physics","history"]) {
+    const sp = allProgress[sk] || {};
+    for (const c of Object.keys(sp)) {
+      for (const tt of Object.keys(sp[c])) {
+        const h = sp[c][tt]?.highestCompleted || 0;
+        levelsTotal += Math.min(LEVELS_PER_TOPIC, h);
+        if (h >= LEVELS_PER_TOPIC) topicsDone++;
+      }
+    }
+  }
+  const bonusXP = freshFd?.studyMeta?.bonusXP || 0;
+  const newTotalXP = levelsTotal * 10 + topicsDone * 50 + newStreak * 5 + bonusXP;
+  try {
+    await updateDoc(userRef, {
+      [`progress.math.${cls}.${topicId}`]: topicData,
+      [`studyMeta.studyDays.${today}`]: todayCount,
+      "studyMeta.streak": newStreak,
+      "studyMeta.totalXP": newTotalXP,
+      [`lastResults.math`]: { time: Date.now(), class: cls, topic: topicId, level: currentLevel }
+    });
+  } catch(e) { showToast(t("noConnection")); }
+  fd.studyMeta.streak = newStreak;
+  fd.studyMeta.totalXP = newTotalXP;
+  fd.studyMeta.studyDays = fd.studyMeta.studyDays || {};
+  fd.studyMeta.studyDays[today] = todayCount;
+}
+
+// ─── XP CALC ─────────────────────────────────────────────────
+function calcXP() {
+  let levels = 0, topics = 0;
+  const math = fd?.progress?.math || {};
+  for (const cls of Object.keys(SPEC)) {
+    for (const tid of Object.keys(SPEC[cls].topics)) {
+      const h = math[cls]?.[tid]?.highestCompleted || 0;
+      levels += Math.min(LEVELS_PER_TOPIC, h);
+      if (h >= LEVELS_PER_TOPIC) topics++;
+    }
+  }
+  return levels * 10 + topics * 50 + (fd?.studyMeta?.streak || 0) * 5 + (fd?.studyMeta?.bonusXP || 0);
+}
+function xpForLevel(lvl) { return lvl <= 1 ? 0 : Math.floor(100 * Math.pow(lvl - 1, 1.5)); }
+function calcLevel(xp) { let l = 1; while (xpForLevel(l + 1) <= xp) l++; return l; }
+function getHighest(cls, tid) { return fd?.progress?.math?.[cls]?.[tid]?.highestCompleted || 0; }
+function totalMathLevels() { let s=0; for(const c of Object.keys(SPEC)) for(const t of Object.keys(SPEC[c].topics)) s+=Math.min(16,getHighest(c,t)); return s; }
+function totalMathTopics() { let s=0; for(const c of Object.keys(SPEC)) for(const t of Object.keys(SPEC[c].topics)) if(getHighest(c,t)>=16) s++; return s; }
+
+function renderHero() {
+  const xp = calcXP();
+  const lvl = calcLevel(xp);
+  const curXP = xp - xpForLevel(lvl);
+  const nxtXP = xpForLevel(lvl + 1) - xpForLevel(lvl);
+  const pct = (curXP / nxtXP) * 100;
+  document.getElementById("xpLvlNum").textContent = lvl;
+  document.getElementById("xpCur").textContent = curXP;
+  document.getElementById("xpNxt").textContent = nxtXP;
+  document.getElementById("xpBarFill").style.width = `${Math.min(pct, 100)}%`;
+  document.getElementById("statLevels").textContent = totalMathLevels();
+  document.getElementById("statTopics").textContent = totalMathTopics();
+  document.getElementById("statStreak").textContent = fd?.studyMeta?.streak || 0;
+  document.getElementById("heroBadge").textContent = `🔢 ${t("grade" + (currentClass || "7"))}`;
+}
+
+// ─── SCREENS ─────────────────────────────────────────────────
+function showScreen(id) {
+  ["screenClass","screenTopic","screenLevel","screenQuiz","screenFinish"].forEach(s => document.getElementById(s).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  setTimeout(() => document.getElementById(id).classList.add("visible"), 50);
+}
+
+function renderClasses() {
+  const grid = document.getElementById("classGrid");
+  grid.innerHTML = "";
+  for (const cls of Object.keys(SPEC)) {
+    const card = document.createElement("div");
+    card.className = "class-card";
+    const icon = document.createElement("div");
+    icon.className = "class-icon";
+    icon.textContent = cls === "7" ? "7️⃣" : cls === "8" ? "8️⃣" : cls === "9" ? "9️⃣" : "🔟";
+    const name = document.createElement("div");
+    name.className = "class-name";
+    name.textContent = t(`grade${cls}`);
+    const prog = document.createElement("div");
+    prog.className = "class-progress";
+    let done = 0;
+    for (const tid of Object.keys(SPEC[cls].topics)) {
+      if (getHighest(cls, tid) >= LEVELS_PER_TOPIC) done++;
+    }
+    prog.innerHTML = `<span>${done}</span>/4 ${LANG === "ru" ? "тем" : "topics"}`;
+    card.appendChild(icon);
+    card.appendChild(name);
+    card.appendChild(prog);
+    card.onclick = () => selectClass(cls);
+    grid.appendChild(card);
+  }
+}
+
+function selectClass(cls) {
+  currentClass = cls;
+  renderTopics();
+  showScreen("screenTopic");
+  document.getElementById("breadClass").textContent = t(`grade${cls}`);
+}
+
+function renderTopics() {
+  const grid = document.getElementById("topicGrid");
+  grid.innerHTML = "";
+  const topics = SPEC[currentClass].topics;
+  document.getElementById("topicBadge").textContent = `${Object.keys(topics).length} ${LANG === "ru" ? "темы" : "topics"}`;
+  for (const tid of Object.keys(topics)) {
+    const top = topics[tid];
+    const card = document.createElement("div");
+    card.className = "topic-card";
+    const highest = getHighest(currentClass, tid);
+    if (highest >= LEVELS_PER_TOPIC) card.classList.add("completed");
+    const topDiv = document.createElement("div");
+    topDiv.className = "topic-top";
+    const icon = document.createElement("div");
+    icon.className = "topic-icon";
+    icon.textContent = top.icon;
+    const info = document.createElement("div");
+    info.className = "topic-info";
+    const namee = document.createElement("div");
+    namee.className = "topic-name";
+    namee.textContent = top.title[LANG];
+    const desc = document.createElement("div");
+    desc.className = "topic-desc";
+    desc.textContent = top.desc[LANG];
+    info.appendChild(namee);
+    info.appendChild(desc);
+    topDiv.appendChild(icon);
+    topDiv.appendChild(info);
+    const progDiv = document.createElement("div");
+    progDiv.className = "topic-prog";
+    const bar = document.createElement("div");
+    bar.className = "topic-prog-bar";
+    const fill = document.createElement("div");
+    fill.className = "topic-prog-fill";
+    fill.style.width = `${(highest / LEVELS_PER_TOPIC) * 100}%`;
+    bar.appendChild(fill);
+    const txt = document.createElement("div");
+    txt.className = "topic-prog-text";
+    txt.innerHTML = `<span>${highest}</span>/16`;
+    progDiv.appendChild(bar);
+    progDiv.appendChild(txt);
+    card.appendChild(topDiv);
+    card.appendChild(progDiv);
+    card.onclick = () => selectTopic(tid);
+    grid.appendChild(card);
+  }
+}
+
+function selectTopic(tid) {
+  currentTopic = tid;
+  renderLevels();
+  showScreen("screenLevel");
+  document.getElementById("breadClass2").textContent = t(`grade${currentClass}`);
+  document.getElementById("breadTopic").textContent = SPEC[currentClass].topics[tid].title[LANG];
+}
+
+function renderLevels() {
+  const grid = document.getElementById("levelGrid");
+  grid.innerHTML = "";
+  const highest = getHighest(currentClass, currentTopic);
+  document.getElementById("levelBadge").textContent = `${highest}/16`;
+  for (let i = 1; i <= LEVELS_PER_TOPIC; i++) {
+    const btn = document.createElement("div");
+    btn.className = "level-btn";
+    btn.textContent = i;
+    if (i <= highest) btn.classList.add("completed");
+    else if (i > highest + 1) btn.classList.add("locked");
+    if (i <= highest || i === highest + 1) {
+      btn.onclick = () => startLevel(i);
+    }
+    grid.appendChild(btn);
+  }
+}
+
+function startLevel(lvl) {
+  currentLevel = lvl;
+  generateQuiz();
+  renderQuestion();
+  showScreen("screenQuiz");
+  document.getElementById("breadQuiz").textContent = `${SPEC[currentClass].topics[currentTopic].title[LANG]} — ${LANG === "ru" ? "Уровень" : "Level"} ${lvl}`;
+}
+
+function generateQuiz() {
+  quiz = { tasks: [], index: 0, correct: 0, selected: null, checked: false };
+  const difficulty = getDifficultyRange(currentLevel);
+  const bank = (LANG === "ru" ? BANK_RU : BANK_EN)[difficulty];
+  const shuffled = [...bank].sort(() => Math.random() - 0.5);
+  for (let i = 0; i < QUESTIONS_PER_LEVEL; i++) {
+    const item = shuffled[i % shuffled.length];
+    const opts = [item.c, ...item.w].sort(() => Math.random() - 0.5);
+    quiz.tasks.push({ q: item.q, opts, answer: opts.indexOf(item.c), hint: item.h, sol: item.s });
+  }
+}
+
+function renderQuestion() {
+  if (quiz.index >= quiz.tasks.length) { finishLevel(); return; }
+  const task = quiz.tasks[quiz.index];
+  quiz.selected = null;
+  quiz.checked = false;
+  document.getElementById("qBadge").textContent = `${LANG === "ru" ? "Вопрос" : "Question"} ${quiz.index + 1}/${quiz.tasks.length}`;
+  document.getElementById("qScore").textContent = quiz.correct;
+  document.getElementById("qProgFill").style.width = `${((quiz.index + 1) / quiz.tasks.length) * 100}%`;
+  document.getElementById("questionText").textContent = task.q;
+  document.getElementById("checkBtn").disabled = false;
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("resultBox").className = "hidden";
+  const grid = document.getElementById("optionsGrid");
+  grid.innerHTML = "";
+  task.opts.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = opt;
+    btn.onclick = () => selectOption(i);
+    grid.appendChild(btn);
+  });
+}
+
+function selectOption(i) {
+  if (quiz.checked) return;
+  quiz.selected = i;
+  document.querySelectorAll(".opt-btn").forEach((b, idx) => b.classList.toggle("selected", idx === i));
+}
+
+window.checkAnswer = () => {
+  if (quiz.checked) return;
+  const task = quiz.tasks[quiz.index];
+  if (quiz.selected === null) { showResult("neutral", t("selectAnswer")); return; }
+  quiz.checked = true;
+  const correct = quiz.selected === task.answer;
+  if (correct) quiz.correct++;
+  document.querySelectorAll(".opt-btn").forEach((b, i) => {
+    b.disabled = true;
+    if (i === task.answer) b.classList.add("correct");
+    if (i === quiz.selected && !correct) b.classList.add("wrong");
+  });
+  document.getElementById("checkBtn").disabled = true;
+  document.getElementById("nextBtn").classList.remove("hidden");
+  showResult(correct ? "correct" : "wrong", correct ? t("correct") : t("wrong") + task.sol);
+};
+
+window.showHint = () => {
+  const task = quiz.tasks[quiz.index];
+  if (task) showResult("hint", t("hint") + task.hint);
+};
+
+window.nextQuestion = () => {
+  if (quiz.index < quiz.tasks.length - 1) { quiz.index++; renderQuestion(); }
+  else finishLevel();
+};
+
+function showResult(type, text) {
+  const box = document.getElementById("resultBox");
+  box.className = "result-box " + type;
+  box.textContent = text;
+}
+
+async function finishLevel() {
+  const passed = quiz.correct >= PASS_THRESHOLD;
+  showScreen("screenFinish");
+  if (passed) {
+    const h = getHighest(currentClass, currentTopic);
+    const newHighest = Math.max(h, currentLevel);
+    await onLevelComplete(currentClass, currentTopic, newHighest);
+    renderHero();
+    renderLevels();
+    document.getElementById("finishIcon").textContent = "🎉";
+    document.getElementById("finishTitle").textContent = t("finishPassed");
+    document.getElementById("finishScore").textContent = `${quiz.correct}/${quiz.tasks.length}`;
+    document.getElementById("finishScoreWord").textContent = t("finishScoreWord");
+    document.getElementById("finishXPBadge").innerHTML = `<div class="finish-xp">⭐ +10 ${t("xpEarned")}</div>`;
+    showToast(`🎉 ${LANG==="ru"?"Уровень":"Level"} ${currentLevel} ${t("levelPassed")}! +10 XP`);
+  } else {
+    document.getElementById("finishIcon").textContent = "😔";
+    document.getElementById("finishTitle").textContent = t("finishFailed");
+    document.getElementById("finishScore").textContent = `${quiz.correct}/${quiz.tasks.length}`;
+    document.getElementById("finishScoreWord").textContent = t("finishScoreWord");
+    document.getElementById("finishXPBadge").innerHTML = `<div class="finish-fail">⚠️ ${t("needMore")} ${PASS_THRESHOLD}/10 ${t("forCredit")}</div>`;
+    showToast(`⚠️ ${quiz.correct}/${quiz.tasks.length} — ${LANG==="ru"?"уровень не засчитан":"level not passed"}`);
+  }
+}
+
+window.goToClass = () => { showScreen("screenClass"); };
+window.goToTopics = () => { renderTopics(); showScreen("screenTopic"); };
+window.goToLevels = () => { renderLevels(); showScreen("screenLevel"); };
+window.retryLevel = () => { startLevel(currentLevel); };
+
+// ─── UTILS ───────────────────────────────────────────────────
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 3000);
+}
+
+window.toggleTheme = () => {
+  document.body.classList.toggle("light");
+  localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
+};
+
+function initAnimations() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
+  }, { threshold: .08 });
+  document.querySelectorAll(".section, .hero").forEach(el => obs.observe(el));
+}
+
+async function init() {
+  if (localStorage.getItem("accountTheme") === "light") document.body.classList.add("light");
+  // Restore language preference
+  LANG = (localStorage.getItem("fmine_lang") || "ru").toLowerCase();
+  document.getElementById("langRuBtn").classList.toggle("active", LANG === "ru");
+  document.getElementById("langEnBtn").classList.toggle("active", LANG === "en");
+  applyTranslations();
+  await loadUser();
+  renderHero();
+  renderClasses();
+  showScreen("screenClass");
+  initAnimations();
+}
+
+init();
+</script>
+<script src="pomo-shared.js"></script>
+</body>
+</html>

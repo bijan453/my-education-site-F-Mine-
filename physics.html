@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>F‑Mine | Физика</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #06080f;
+      --bg2: #0b0e1a;
+      --bg3: #101524;
+      --bg4: #161b2e;
+      --surface: rgba(255, 255, 255, .025);
+      --surface2: rgba(255, 255, 255, .045);
+      --surface3: rgba(255, 255, 255, .075);
+      --glass: rgba(255, 255, 255, .035);
+      --border: rgba(255, 255, 255, .06);
+      --border2: rgba(255, 255, 255, .12);
+      --border3: rgba(255, 255, 255, .18);
+      --text: #e8ecf8;
+      --text2: #7e87b0;
+      --text3: #4a5070;
+      --violet: #8b5cf6;
+      --violet2: #6d3fec;
+      --violet-glow: rgba(139, 92, 246, .4);
+      --amber: #f59e0b;
+      --amber2: #fbbf24;
+      --amber-glow: rgba(245, 158, 11, .35);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, .3);
+      --rose: #f43f5e;
+      --rose-glow: rgba(244, 63, 94, .3);
+      --sky: #38bdf8;
+      --sky2: #0ea5e9;
+      --sky-glow: rgba(56, 189, 248, .4);
+      --teal: #40E0D0;
+      --teal-glow: rgba(64, 224, 208, .45);
+      --shadow-xs: 0 1px 3px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .02);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .03);
+      --shadow: 0 4px 16px rgba(0, 0, 0, .7), 0 8px 32px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .04);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, .8), 0 16px 48px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .05), 0 0 40px rgba(56, 189, 248, .08);
+      --shadow-xl: 0 12px 32px rgba(0, 0, 0, .9), 0 24px 64px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 255, 255, .06);
+      --shadow-glow-sky: 0 0 0 1px rgba(56, 189, 248, .4), 0 0 30px rgba(56, 189, 248, .3), 0 8px 32px rgba(0, 0, 0, .5);
+      --r: 18px;
+      --r-sm: 13px;
+      --ease: .25s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: 70px;
+      padding-bottom: 80px;
+      overflow-x: hidden;
+      background-image: radial-gradient(ellipse 65% 45% at 85% -5%, rgba(56, 189, 248, .07), transparent 58%), radial-gradient(ellipse 50% 35% at 5% 92%, rgba(56, 189, 248, .04), transparent 52%), radial-gradient(ellipse 35% 30% at 50% 45%, rgba(56, 189, 248, .025), transparent 58%);
+      -webkit-font-smoothing: antialiased
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: .03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border3);
+      border-radius: 99px
+    }
+
+    /* HEADER */
+    .hd {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      height: 68px;
+      background: rgba(6, 8, 15, .85);
+      backdrop-filter: blur(28px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(14px, 3vw, 30px);
+      gap: 12px;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .02), 0 6px 28px rgba(0, 0, 0, .7)
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(20px, 3vw, 26px);
+      font-weight: 800;
+      letter-spacing: -.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none
+    }
+
+    .logo-f {
+      color: var(--amber);
+      text-shadow: 0 0 30px var(--amber-glow), 0 0 60px rgba(245, 158, 11, .3)
+    }
+
+    .logo-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--violet);
+      border-radius: 50%;
+      margin: 0 3px;
+      align-self: center;
+      margin-bottom: 5px;
+      box-shadow: 0 0 15px var(--violet-glow);
+      animation: pulse-dot 2s ease-in-out infinite
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        box-shadow: 0 0 10px var(--violet-glow)
+      }
+
+      50% {
+        box-shadow: 0 0 25px rgba(139, 92, 246, .7)
+      }
+    }
+
+    .logo-mine {
+      color: var(--text);
+      letter-spacing: -1px;
+      text-shadow: 0 0 15px rgba(255, 255, 255, .15)
+    }
+
+    .hd-right {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 2px;
+      box-shadow: var(--shadow-xs)
+    }
+
+    .lang-btn {
+      padding: 5px 14px;
+      border: none;
+      border-radius: 999px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--ease);
+      color: var(--text3);
+      background: transparent;
+      letter-spacing: .04em
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, var(--sky), var(--sky2));
+      color: #fff;
+      box-shadow: 0 2px 10px var(--sky-glow)
+    }
+
+    .lang-btn:not(.active):hover {
+      color: var(--text);
+      background: var(--surface3)
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--ease);
+      text-align: center;
+      letter-spacing: .02em;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--violet), var(--violet2));
+      color: #fff;
+      box-shadow: 0 4px 20px var(--violet-glow)
+    }
+
+    .btn.primary:hover {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--violet-glow)
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border: 1.5px solid var(--border2);
+      color: var(--text2)
+    }
+
+    .btn.ghost:hover {
+      background: var(--surface3);
+      border-color: var(--violet);
+      color: var(--violet);
+      box-shadow: 0 0 22px rgba(139, 92, 246, .2)
+    }
+
+    .btn.sky {
+      background: linear-gradient(135deg, var(--sky), var(--sky2));
+      color: #fff;
+      box-shadow: 0 4px 20px var(--sky-glow)
+    }
+
+    .btn.sky:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px var(--sky-glow)
+    }
+
+    .btn:active {
+      transform: scale(.93) !important;
+      transition: .08s ease !important
+    }
+
+    .wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: clamp(16px, 3vw, 28px) clamp(14px, 3vw, 22px) 50px
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% center
+      }
+
+      100% {
+        background-position: -200% center
+      }
+    }
+
+    .section {
+      margin-bottom: clamp(14px, 2.2vw, 20px);
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .45s ease, transform .45s ease
+    }
+
+    .section.visible {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    /* HERO */
+    .hero {
+      background: var(--bg3);
+      border: 1px solid rgba(56, 189, 248, .18);
+      border-radius: var(--r);
+      padding: clamp(22px, 4vw, 38px) clamp(20px, 4vw, 38px);
+      margin-bottom: clamp(16px, 2.5vw, 20px);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .45s ease, transform .45s ease
+    }
+
+    .hero.visible {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .hero:hover {
+      box-shadow: var(--shadow-xl), 0 0 50px rgba(56, 189, 248, .1)
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 55% 80% at 85% -10%, rgba(56, 189, 248, .13), transparent 55%), radial-gradient(ellipse 40% 40% at 10% 100%, rgba(56, 189, 248, .06), transparent 50%);
+      pointer-events: none
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(56, 189, 248, .025) 1px, transparent 1px), linear-gradient(90deg, rgba(56, 189, 248, .025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--sky);
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      margin-bottom: 8px;
+      opacity: .85;
+      text-shadow: 0 0 10px rgba(56, 189, 248, .5)
+    }
+
+    .hero-name {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(28px, 5.5vw, 48px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -1px;
+      text-shadow: 0 0 25px rgba(255, 255, 255, .3), 0 0 50px rgba(56, 189, 248, .3)
+    }
+
+    .hero-sub {
+      font-size: 14px;
+      color: var(--text2);
+      margin-top: 8px
+    }
+
+    .hero-badge {
+      background: rgba(56, 189, 248, .08);
+      border: 1px solid rgba(56, 189, 248, .22);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--sky);
+      white-space: nowrap;
+      letter-spacing: .02em;
+      box-shadow: 0 0 22px rgba(56, 189, 248, .2);
+      text-shadow: 0 0 12px rgba(56, 189, 248, .4)
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: clamp(20px, 4vw, 48px);
+      margin-top: 18px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-stat {
+      transition: var(--ease);
+      cursor: default;
+      padding: 4px 0
+    }
+
+    .hero-stat:hover {
+      transform: translateY(-3px)
+    }
+
+    .hero-stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+      letter-spacing: -1px;
+      text-shadow: 0 0 30px rgba(255, 255, 255, .4), 0 0 60px rgba(56, 189, 248, .3)
+    }
+
+    .hero-stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      text-shadow: 0 0 10px rgba(255, 255, 255, .15)
+    }
+
+    /* XP BAR */
+    .xp-section {
+      position: relative;
+      z-index: 1;
+      margin-top: 20px;
+      background: rgba(0, 0, 0, .22);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm)
+    }
+
+    .xp-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 12px
+    }
+
+    .xp-level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--sky), var(--sky2));
+      border-radius: 999px;
+      padding: 5px 14px 5px 6px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 4px 20px var(--sky-glow), inset 0 1px 0 rgba(255, 255, 255, .2);
+      text-shadow: 0 0 12px rgba(255, 255, 255, .3)
+    }
+
+    .xp-level-num {
+      background: rgba(255, 255, 255, .2);
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px
+    }
+
+    .xp-info {
+      font-size: 12px;
+      color: var(--text2)
+    }
+
+    .xp-info span {
+      color: var(--sky);
+      font-weight: 700;
+      text-shadow: 0 0 8px rgba(56, 189, 248, .4)
+    }
+
+    .xp-bar-track {
+      height: 8px;
+      background: rgba(255, 255, 255, .04);
+      border-radius: 999px;
+      overflow: visible;
+      position: relative
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--sky2), var(--sky), #7dd3fc);
+      background-size: 200% auto;
+      animation: shimmer 2.5s linear infinite;
+      transition: width .8s ease;
+      position: relative;
+      box-shadow: 0 0 15px rgba(56, 189, 248, .5)
+    }
+
+    .xp-bar-fill::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: -4px;
+      width: 16px;
+      height: 16px;
+      background: var(--sky);
+      border-radius: 50%;
+      border: 3px solid var(--bg3);
+      box-shadow: 0 0 20px var(--sky-glow);
+      animation: pulse-ring 2s ease-in-out infinite
+    }
+
+    @keyframes pulse-ring {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 var(--sky-glow)
+      }
+
+      50% {
+        box-shadow: 0 0 0 10px transparent
+      }
+    }
+
+    .sec-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px
+    }
+
+    .sec-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      white-space: nowrap
+    }
+
+    .sec-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      border-radius: 99px
+    }
+
+    .sec-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--sky);
+      background: rgba(56, 189, 248, .1);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 500;
+      letter-spacing: .05em;
+      border: 1px solid rgba(56, 189, 248, .15)
+    }
+
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(8px, 1.5vw, 14px)
+    }
+
+    .class-card {
+      background: var(--glass);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: clamp(16px, 2.5vw, 24px);
+      cursor: pointer;
+      transition: var(--ease);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px)
+    }
+
+    .class-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--sky);
+      box-shadow: 0 0 30px rgba(56, 189, 248, .3), 0 16px 40px rgba(0, 0, 0, .6)
+    }
+
+    .class-card.active {
+      border-color: rgba(56, 189, 248, .6);
+      background: rgba(56, 189, 248, .07);
+      box-shadow: 0 0 25px rgba(56, 189, 248, .25)
+    }
+
+    .class-num {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(32px, 5vw, 44px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 0 20px rgba(56, 189, 248, .4)
+    }
+
+    .class-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .12em
+    }
+
+    .class-prog {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--sky)
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(clamp(160px, 20vw, 220px), 1fr));
+      gap: clamp(8px, 1.5vw, 14px)
+    }
+
+    .topic-card {
+      background: var(--glass);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: clamp(16px, 2.5vw, 22px);
+      cursor: pointer;
+      transition: var(--ease);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px)
+    }
+
+    .topic-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2.5px;
+      background: linear-gradient(90deg, var(--sky), var(--sky2));
+      transform: scaleX(0);
+      transition: var(--ease);
+      transform-origin: left
+    }
+
+    .topic-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border2);
+      box-shadow: var(--shadow-lg)
+    }
+
+    .topic-card:hover::after {
+      transform: scaleX(1)
+    }
+
+    .topic-icon {
+      font-size: clamp(24px, 4vw, 32px);
+      margin-bottom: 8px;
+      line-height: 1
+    }
+
+    .topic-name {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(14px, 2vw, 17px);
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.3px;
+      margin-bottom: 4px
+    }
+
+    .topic-desc {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.5;
+      margin-bottom: 10px
+    }
+
+    .topic-prog-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: auto
+    }
+
+    .topic-prog-bar {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 999px;
+      overflow: hidden
+    }
+
+    .topic-prog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--sky), var(--sky2));
+      border-radius: 999px;
+      transition: width .6s ease
+    }
+
+    .topic-prog-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--sky);
+      font-weight: 500;
+      white-space: nowrap
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: clamp(6px, 1vw, 10px)
+    }
+
+    .lvl-btn {
+      aspect-ratio: 1;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(13px, 1.8vw, 16px);
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--ease);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .lvl-btn.done {
+      background: rgba(56, 189, 248, .15);
+      border: 1.5px solid rgba(56, 189, 248, .35);
+      color: var(--sky);
+      box-shadow: 0 0 12px rgba(56, 189, 248, .2)
+    }
+
+    .lvl-btn.done:hover {
+      background: rgba(56, 189, 248, .25);
+      transform: translateY(-3px);
+      box-shadow: 0 0 22px rgba(56, 189, 248, .4)
+    }
+
+    .lvl-btn.unlocked {
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      color: var(--text)
+    }
+
+    .lvl-btn.unlocked:hover {
+      transform: translateY(-3px);
+      border-color: var(--sky);
+      box-shadow: 0 0 20px rgba(56, 189, 248, .3)
+    }
+
+    .lvl-btn.locked {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text3);
+      cursor: not-allowed;
+      opacity: .4
+    }
+
+    .lvl-btn.done::before {
+      content: '✓';
+      position: absolute;
+      top: 3px;
+      right: 5px;
+      font-size: 9px;
+      color: var(--sky);
+      opacity: .7
+    }
+
+    .quiz-card {
+      background: var(--bg3);
+      border: 1px solid rgba(56, 189, 248, .15);
+      border-radius: var(--r);
+      padding: clamp(22px, 4vw, 38px);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg)
+    }
+
+    .quiz-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 90% -10%, rgba(56, 189, 248, .08), transparent 55%);
+      pointer-events: none
+    }
+
+    .q-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+      position: relative;
+      z-index: 1
+    }
+
+    .q-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, .12);
+      color: var(--sky);
+      border: 1px solid rgba(56, 189, 248, .2)
+    }
+
+    .q-score {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text2)
+    }
+
+    .q-score span {
+      color: var(--sky)
+    }
+
+    .q-lang-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 999px
+    }
+
+    .q-prog-track {
+      height: 6px;
+      background: rgba(255, 255, 255, .04);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1
+    }
+
+    .q-prog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--sky), var(--sky2));
+      border-radius: 999px;
+      transition: width .5s ease
+    }
+
+    .question-text {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(18px, 3vw, 26px);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.4;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 0 20px rgba(255, 255, 255, .1)
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      position: relative;
+      z-index: 1
+    }
+
+    .opt-btn {
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--ease);
+      text-align: left;
+      line-height: 1.4;
+      position: relative;
+      overflow: hidden
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      background: var(--surface3);
+      border-color: var(--sky);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(56, 189, 248, .2)
+    }
+
+    .opt-btn.selected {
+      border-color: var(--sky);
+      background: rgba(56, 189, 248, .1);
+      box-shadow: 0 0 20px rgba(56, 189, 248, .2)
+    }
+
+    .opt-btn.correct {
+      background: rgba(56, 189, 248, .2) !important;
+      border-color: var(--sky) !important;
+      color: #fff !important;
+      box-shadow: 0 0 24px rgba(56, 189, 248, .4) !important
+    }
+
+    .opt-btn.wrong {
+      background: rgba(244, 63, 94, .18) !important;
+      border-color: var(--rose) !important;
+      color: #fff !important
+    }
+
+    .opt-btn:disabled {
+      cursor: not-allowed
+    }
+
+    .quiz-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      position: relative;
+      z-index: 1
+    }
+
+    .result-box {
+      margin-top: 16px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.5;
+      position: relative;
+      z-index: 1
+    }
+
+    .result-box.correct {
+      background: rgba(56, 189, 248, .12);
+      border: 1px solid rgba(56, 189, 248, .25);
+      color: var(--sky)
+    }
+
+    .result-box.wrong {
+      background: rgba(244, 63, 94, .12);
+      border: 1px solid rgba(244, 63, 94, .25);
+      color: var(--rose)
+    }
+
+    .result-box.hint {
+      background: rgba(245, 158, 11, .1);
+      border: 1px solid rgba(245, 158, 11, .2);
+      color: var(--amber2)
+    }
+
+    .result-box.neutral {
+      background: rgba(56, 189, 248, .1);
+      border: 1px solid rgba(56, 189, 248, .2);
+      color: var(--sky)
+    }
+
+    .finish-card {
+      background: var(--bg3);
+      border: 1px solid rgba(56, 189, 248, .18);
+      border-radius: var(--r);
+      padding: clamp(30px, 5vw, 52px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg)
+    }
+
+    .finish-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 70% at 50% 0%, rgba(56, 189, 248, .15), transparent 55%);
+      pointer-events: none
+    }
+
+    .finish-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+      animation: bounce-in .5s ease
+    }
+
+    @keyframes bounce-in {
+      0% {
+        transform: scale(0) rotate(-10deg)
+      }
+
+      60% {
+        transform: scale(1.2) rotate(5deg)
+      }
+
+      100% {
+        transform: scale(1) rotate(0)
+      }
+    }
+
+    .finish-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -1px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 0 30px rgba(56, 189, 248, .5)
+    }
+
+    .finish-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 16px;
+      color: var(--text2);
+      margin-top: 8px;
+      position: relative;
+      z-index: 1
+    }
+
+    .finish-score span {
+      color: var(--sky);
+      font-weight: 700
+    }
+
+    .finish-xp {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(56, 189, 248, .12);
+      border: 1px solid rgba(56, 189, 248, .25);
+      border-radius: 999px;
+      padding: 10px 24px;
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--sky);
+      margin-top: 16px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 24px rgba(56, 189, 248, .3)
+    }
+
+    .finish-fail {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(244, 63, 94, .1);
+      border: 1px solid rgba(244, 63, 94, .2);
+      border-radius: 999px;
+      padding: 10px 24px;
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--rose);
+      margin-top: 16px;
+      position: relative;
+      z-index: 1
+    }
+
+    .back-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px
+    }
+
+    .breadcrumb {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .breadcrumb span {
+      color: var(--text2)
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 48px 20px
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--sky);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 16px
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: #13172a;
+      border: 1px solid var(--border2);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      transition: all .32s ease;
+      z-index: 9999;
+      box-shadow: var(--shadow-xl);
+      pointer-events: none
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0)
+    }
+
+    body.light {
+      --bg: #f2f4ff;
+      --bg2: #e7eaff;
+      --bg3: #dfe2fc;
+      --bg4: #d5d9f7;
+      --glass: rgba(255, 255, 255, .55);
+      --border: rgba(56, 189, 248, .1);
+      --border2: rgba(56, 189, 248, .18);
+      --text: #1a1730;
+      --text2: #5a5580;
+      --text3: #8884b0
+    }
+
+    body.light .hd {
+      background: rgba(242, 244, 255, .86)
+    }
+
+    body.light #toast {
+      background: #1a1730;
+      color: #fff
+    }
+
+    .hidden {
+      display: none !important
+    }
+
+    @media(max-width:820px) {
+      .class-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .level-grid {
+        grid-template-columns: repeat(4, 1fr)
+      }
+
+      .options-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:480px) {
+      .level-grid {
+        grid-template-columns: repeat(3, 1fr)
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="hd">
+    <a class="logo" href="lobby.html"><span class="logo-f">F</span><span class="logo-dot"></span><span
+        class="logo-mine">MINE</span></a>
+    <div class="hd-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="langRuBtn" onclick="setLang('ru')">RU</button>
+        <button class="lang-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="btn ghost" onclick="toggleTheme()" style="padding:8px 14px;font-size:12px">🌓</button>
+      <button class="btn ghost" onclick="location.href='lobby.html'" style="padding:8px 14px;font-size:12px"
+        id="backLobbyBtn">⬅ Лобби</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="hero" id="heroBlock">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-top">
+        <div>
+          <div class="hero-label" id="heroLabel">// физика</div>
+          <div class="hero-name">⚡ <span id="heroTitle">ФИЗИКА</span></div>
+          <div class="hero-sub" id="heroSub">Теория и задачи с формулами — от простого к сложному</div>
+        </div>
+        <div class="hero-badge" id="heroBadge">🔬 Загрузка...</div>
+      </div>
+      <div class="xp-section">
+        <div class="xp-top">
+          <div class="xp-level-badge">
+            <div class="xp-level-num" id="xpLvlNum">—</div><span id="xpLevelWord">УРОВЕНЬ</span>
+          </div>
+          <div class="xp-info"><span id="xpCur">0</span> / <span id="xpNxt">100</span> XP</div>
+        </div>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="statLevels">0</div>
+          <div class="hero-stat-label" id="statLevelsLabel">Уровней пройдено</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="statTopics">0</div>
+          <div class="hero-stat-label" id="statTopicsLabel">Тем закрыто</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="statStreak">0</div>
+          <div class="hero-stat-label" id="statStreakLabel">Дней подряд</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="screenClass">
+      <div class="sec-head">
+        <div class="sec-title" id="secClassTitle">📚 Выбери класс</div>
+        <div class="sec-line"></div>
+        <div class="sec-badge">4 <span id="classWord">класса</span></div>
+      </div>
+      <div class="class-grid" id="classGrid"></div>
+    </div>
+
+    <div class="section hidden" id="screenTopic">
+      <div class="back-row">
+        <button class="btn ghost" onclick="goToClass()" style="padding:7px 14px;font-size:12px" id="backToClassBtn">⬅
+          Классы</button>
+        <div class="breadcrumb"><span id="bcPhysics">Физика</span> <span class="sep">›</span> <span id="breadClass">7
+            класс</span></div>
+      </div>
+      <div class="sec-head">
+        <div class="sec-title" id="secTopicTitle">⚡ Темы</div>
+        <div class="sec-line"></div>
+        <div class="sec-badge" id="topicBadge">4 темы</div>
+      </div>
+      <div class="topic-grid" id="topicGrid"></div>
+    </div>
+
+    <div class="section hidden" id="screenLevel">
+      <div class="back-row">
+        <button class="btn ghost" onclick="goToTopics()" style="padding:7px 14px;font-size:12px" id="backToTopicsBtn">⬅
+          Темы</button>
+        <div class="breadcrumb"><span id="bcPhysics2">Физика</span> <span class="sep">›</span> <span
+            id="breadClass2"></span> <span class="sep">›</span> <span id="breadTopic"></span></div>
+      </div>
+      <div class="sec-head">
+        <div class="sec-title" id="levelSecTitle">📈 Уровни</div>
+        <div class="sec-line"></div>
+        <div class="sec-badge" id="levelBadge">0/16</div>
+      </div>
+      <div class="level-grid" id="levelGrid"></div>
+    </div>
+
+    <div class="section hidden" id="screenQuiz">
+      <div class="back-row">
+        <button class="btn ghost" onclick="goToLevels()" style="padding:7px 14px;font-size:12px" id="backToLevelsBtn">⬅
+          К уровням</button>
+        <div class="breadcrumb"><span id="breadQuiz"></span></div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-bg"></div>
+        <div class="q-header">
+          <div class="q-badge" id="qBadge">Вопрос 1/10</div>
+          <div class="q-lang-label" id="qLangLabel">🇷🇺 Русский</div>
+          <div class="q-score"><span id="qScoreWord">Правильно</span>: <span id="qScore">0</span></div>
+        </div>
+        <div class="q-prog-track">
+          <div class="q-prog-fill" id="qProgFill" style="width:10%"></div>
+        </div>
+        <div class="question-text" id="questionText">Загрузка...</div>
+        <div class="options-grid" id="optionsGrid"></div>
+        <div class="quiz-actions">
+          <button class="btn sky" id="checkBtn" onclick="checkAnswer()">✓ <span
+              id="checkBtnText">Проверить</span></button>
+          <button class="btn ghost" onclick="showHint()" style="font-size:12px">💡 <span
+              id="hintBtnText">Подсказка</span></button>
+          <button class="btn primary hidden" id="nextBtn" onclick="nextQuestion()"><span id="nextBtnText">Далее</span>
+            →</button>
+        </div>
+        <div id="resultBox" class="hidden"></div>
+      </div>
+    </div>
+
+    <div class="section hidden" id="screenFinish">
+      <div class="finish-card">
+        <div class="finish-bg"></div>
+        <div class="finish-icon" id="finishIcon">🎉</div>
+        <div class="finish-title" id="finishTitle">Уровень пройден!</div>
+        <div class="finish-score"><span id="finishScore">10/10</span> <span id="finishScoreWord">правильных
+            ответов</span></div>
+        <div id="finishXPBadge"></div>
+        <div class="finish-actions">
+          <button class="btn sky" onclick="goToLevels()" id="finishBackBtn">⬅ <span id="finishBackText">К
+              уровням</span></button>
+          <button class="btn primary" onclick="retryLevel()" id="finishRetryBtn">🔄 <span id="finishRetryText">Ещё
+              раз</span></button>
+          <button class="btn ghost" onclick="goToTopics()" id="finishTopicsBtn">📚 <span
+              id="finishTopicsText">Темы</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const app = initializeApp({ apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc", authDomain: "fmine-auth.firebaseapp.com", projectId: "fmine-auth", storageBucket: "fmine-auth.firebasestorage.app", messagingSenderId: "219769927531", appId: "1:219769927531:web:fbd45a0876f32927d23e2e" });
+    const db = getFirestore(app);
+    const currentUser = localStorage.getItem("currentUser") || "guest";
+    if (!currentUser) location.href = "index.html";
+    const userRef = doc(db, "users", currentUser);
+
+    let LANG = localStorage.getItem("fmine_lang") || "ru";
+
+    const T = {
+      ru: {
+        heroLabel: "// физика", heroTitle: "ФИЗИКА", heroSub: "Теория и задачи с формулами — от простого к сложному",
+        xpLevel: "УРОВЕНЬ", statLevels: "Уровней пройдено", statTopics: "Тем закрыто", statStreak: "Дней подряд",
+        secClass: "📚 Выбери класс", classWord: "класса", secTopic: "⚡ Темы", secLevels: "📈 Уровни",
+        backClasses: "⬅ Классы", backTopics: "⬅ Темы", backLevels: "⬅ К уровням", backLobby: "⬅ Лобби",
+        physics: "Физика", grade: "класс", checkBtn: "Проверить", hintBtn: "Подсказка", nextBtn: "Далее",
+        qWord: "Вопрос", correctWord: "Правильно", finishPassed: "Уровень пройден!", finishFailed: "Попробуй ещё раз",
+        finishScoreWord: "правильных ответов", finishBack: "К уровням", finishRetry: "Ещё раз", finishTopics: "Темы",
+        xpEarned: "XP заработано", needMore: "Нужно минимум", forCredit: "для зачёта", langLabel: "🇷🇺 Русский",
+        loadingQ: "⏳ Загрузка вопросов...", selectAnswer: "👆 Выбери вариант", correct: "✅ Правильно!", wrong: "❌ Неверно. ", hint: "💡 ", topicsLabel: "темы"
+      },
+      en: {
+        heroLabel: "// physics", heroTitle: "PHYSICS", heroSub: "Theory and problems with formulas — from easy to hard",
+        xpLevel: "LEVEL", statLevels: "Levels done", statTopics: "Topics done", statStreak: "Day streak",
+        secClass: "📚 Choose a grade", classWord: "grades", secTopic: "⚡ Topics", secLevels: "📈 Levels",
+        backClasses: "⬅ Grades", backTopics: "⬅ Topics", backLevels: "⬅ Levels", backLobby: "⬅ Lobby",
+        physics: "Physics", grade: "grade", checkBtn: "Check", hintBtn: "Hint", nextBtn: "Next",
+        qWord: "Question", correctWord: "Correct", finishPassed: "Level passed!", finishFailed: "Try again",
+        finishScoreWord: "correct answers", finishBack: "Back to levels", finishRetry: "Retry", finishTopics: "Topics",
+        xpEarned: "XP earned", needMore: "Need at least", forCredit: "to pass", langLabel: "🇬🇧 English",
+        loadingQ: "⏳ Loading questions...", selectAnswer: "👆 Select an answer", correct: "✅ Correct!", wrong: "❌ Wrong. ", hint: "💡 ", topicsLabel: "topics"
+      }
+    };
+
+    function t(key) { return T[LANG]?.[key] || T.ru[key] || key; }
+    window.setLang = function (lang) {
+      LANG = lang;
+      localStorage.setItem("fmine_lang", lang);
+      document.getElementById("langRuBtn").classList.toggle("active", lang === "ru");
+      document.getElementById("langEnBtn").classList.toggle("active", lang === "en");
+      applyTranslations();
+      if (!document.getElementById("screenClass").classList.contains("hidden")) renderClasses();
+      if (!document.getElementById("screenTopic").classList.contains("hidden")) renderTopics();
+      if (!document.getElementById("screenLevel").classList.contains("hidden")) renderLevels();
+      showToast(lang === "ru" ? "🇷🇺 Русский язык" : "🇬🇧 English language");
+    };
+
+    function applyTranslations() {
+      const ids = {
+        heroLabel: "heroLabel", heroTitle: "heroTitle", heroSub: "heroSub",
+        xpLevelWord: "xpLevel", statLevelsLabel: "statLevels", statTopicsLabel: "statTopics",
+        statStreakLabel: "statStreak", secClassTitle: "secClass", classWord: "classWord",
+        secTopicTitle: "secTopic", backToClassBtn: "backClasses", backToTopicsBtn: "backTopics",
+        backToLevelsBtn: "backLevels", backLobbyBtn: "backLobby",
+        bcPhysics: "physics", bcPhysics2: "physics",
+        checkBtnText: "checkBtn", hintBtnText: "hintBtn", nextBtnText: "nextBtn",
+        qScoreWord: "correctWord", finishScoreWord: "finishScoreWord",
+        finishBackText: "finishBack", finishRetryText: "finishRetry", finishTopicsText: "finishTopics",
+        qLangLabel: "langLabel"
+      };
+      for (const [id, key] of Object.entries(ids)) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = t(key);
+      }
+    }
+
+    const SUBJECT = "physics";
+    const LEVELS_PER_TOPIC = 16;
+    const QUESTIONS_PER_LEVEL = 10;
+    const PASS_THRESHOLD = 6;
+
+
+    // ─── PHYSICS CURRICULUM ───────────────────────────────────────
+    const SPEC = {
+      "7": {
+        id: "7", topics: {
+          mechanics: { title: { ru: "Механика", en: "Mechanics" }, icon: "🏃", desc: { ru: "Скорость, путь, время. Первые законы движения.", en: "Speed, distance, time. First motion laws." } },
+          matter: { title: { ru: "Строение вещества", en: "Matter" }, icon: "⚛️", desc: { ru: "Молекулы, атомы, плотность.", en: "Molecules, atoms, density." } },
+          forces: { title: { ru: "Силы", en: "Forces" }, icon: "💪", desc: { ru: "Тяжесть, упругость, трение, архимедова сила.", en: "Gravity, elasticity, friction, buoyancy." } },
+          mixed7: { title: { ru: "Смешанные", en: "Mixed" }, icon: "🧪", desc: { ru: "Все темы 7 класса", en: "All grade 7 topics" } }
+        }
+      },
+      "8": {
+        id: "8", topics: {
+          pressure: { title: { ru: "Давление", en: "Pressure" }, icon: "🗜️", desc: { ru: "Давление твёрдых тел, жидкостей и газов.", en: "Pressure of solids, liquids and gases." } },
+          energy: { title: { ru: "Работа и энергия", en: "Work & Energy" }, icon: "🔧", desc: { ru: "Механическая работа, мощность, КПД.", en: "Work, power, efficiency." } },
+          heat: { title: { ru: "Тепловые явления", en: "Thermal" }, icon: "🌡️", desc: { ru: "Температура, теплоёмкость, агрегатные состояния.", en: "Temperature, heat capacity, states of matter." } },
+          mixed8: { title: { ru: "Смешанные", en: "Mixed" }, icon: "🧪", desc: { ru: "Все темы 8 класса", en: "All grade 8 topics" } }
+        }
+      },
+      "9": {
+        id: "9", topics: {
+          electricity: { title: { ru: "Электричество", en: "Electricity" }, icon: "⚡", desc: { ru: "Ток, напряжение, сопротивление. Закон Ома.", en: "Current, voltage, resistance. Ohm's law." } },
+          circuits: { title: { ru: "Электрические цепи", en: "Circuits" }, icon: "🔌", desc: { ru: "Последовательное и параллельное соединения.", en: "Series and parallel circuits." } },
+          magnetism: { title: { ru: "Магнетизм", en: "Magnetism" }, icon: "🧲", desc: { ru: "Магнитное поле, индукция, электромагнит.", en: "Magnetic field, induction, electromagnets." } },
+          mixed9: { title: { ru: "Смешанные", en: "Mixed" }, icon: "🧪", desc: { ru: "Все темы 9 класса", en: "All grade 9 topics" } }
+        }
+      },
+      "10": {
+        id: "10", topics: {
+          kinematics: { title: { ru: "Кинематика", en: "Kinematics" }, icon: "⚙️", desc: { ru: "Равноускоренное движение, законы Ньютона.", en: "Uniform acceleration, Newton's laws." } },
+          dynamics: { title: { ru: "Динамика и импульс", en: "Dynamics" }, icon: "🚀", desc: { ru: "Импульс, закон сохранения, энергия.", en: "Momentum, conservation laws, energy." } },
+          waves: { title: { ru: "Волны и оптика", en: "Waves & Optics" }, icon: "🌊", desc: { ru: "Звук, свет, линзы, дифракция.", en: "Sound, light, lenses, diffraction." } },
+          mixed10: { title: { ru: "Смешанные", en: "Mixed" }, icon: "🧪", desc: { ru: "Все темы 10 класса", en: "All grade 10 topics" } }
+        }
+      }
+    };
+
+    const FORMULAS = {
+      speed: { ru: "v = s / t", en: "v = d / t" },
+      density: { ru: "ρ = m / V", en: "ρ = m / V" },
+      pressure: { ru: "p = F / S", en: "p = F / A" },
+      work: { ru: "A = F · s", en: "W = F · d" },
+      power: { ru: "N = A / t", en: "P = W / t" },
+      current: { ru: "I = q / t", en: "I = Q / t" },
+      ohm: { ru: "I = U / R", en: "I = V / R" },
+      electricPower: { ru: "P = U · I", en: "P = V · I" },
+      archimedes: { ru: "Fа = ρ·g·V", en: "Fb = ρ·g·V" },
+      accel: { ru: "a = (v - v₀) / t", en: "a = (v - v₀) / t" },
+      newton2: { ru: "F = m · a", en: "F = m · a" },
+      momentum: { ru: "p = m · v", en: "p = m · v" },
+      resistance: { ru: "R = ρ·l / S", en: "R = ρ·l / A" },
+      heat: { ru: "Q = c·m·ΔT", en: "Q = c·m·ΔT" },
+      lens: { ru: "1/F = 1/d + 1/f", en: "1/F = 1/d + 1/f" }
+    };
+
+    // ─── GRADE-SPECIFIC THEORY BANKS ─────────────────────────────
+    const BANKS = {
+      "7": {
+        ru: [
+          { q: "Формула скорости равномерного движения?", c: "v = s / t", w: ["v = t / s", "v = s + t", "v = s · t"], h: "Путь делить на время.", s: "v = s / t — основная формула кинематики." },
+          { q: "Что такое инерция?", c: "Свойство тела сохранять состояние покоя или движения", w: ["Сила тяжести", "Трение", "Давление"], h: "Первый закон Ньютона.", s: "Инерция — стремление тела сохранять скорость." },
+          { q: "Единица силы в СИ?", c: "Ньютон (Н)", w: ["Джоуль", "Паскаль", "Килограмм"], h: "Н = кг·м/с².", s: "Сила измеряется в ньютонах." },
+          { q: "Плотность — это?", c: "Масса единицы объёма", w: ["Объём единицы массы", "Сила на площадь", "Работа за время"], h: "ρ = m / V.", s: "Плотность: масса делённая на объём." },
+          { q: "Масса 10 кг, объём 2 м³. Плотность?", c: "5 кг/м³", w: ["20 кг/м³", "8 кг/м³", "12 кг/м³"], h: "ρ = m / V.", s: "ρ = 10 / 2 = 5 кг/м³." },
+          { q: "Что изменяет форму и размер тела?", c: "Деформация", w: ["Инерция", "Масса", "Скорость"], h: "Упругая или пластическая.", s: "Деформация — изменение формы тела под действием сил." },
+          { q: "Сила трения скольжения зависит от?", c: "Нормальной реакции опоры и шероховатости", w: ["Только массы", "Только скорости", "Площади поверхности"], h: "F = μ·N.", s: "Трение зависит от силы давления и μ." },
+          { q: "Физическая величина давления?", c: "Паскаль (Па)", w: ["Ньютон", "Джоуль", "Ватт"], h: "Па = Н/м².", s: "Давление измеряется в паскалях." },
+          { q: "Архимедова сила действует на?", c: "Тела, погружённые в жидкость или газ", w: ["Только твёрдые тела", "Только в воде", "Только металлы"], h: "Fа = ρ·g·V.", s: "Архимедова сила выталкивает тело из жидкости." },
+          { q: "Гравитационное ускорение на Земле примерно?", c: "10 м/с²", w: ["1 м/с²", "100 м/с²", "0.1 м/с²"], h: "g ≈ 9.8 ≈ 10 м/с².", s: "g ≈ 10 м/с² — стандартное значение." },
+          { q: "Тело прошло 60 м за 12 с. Скорость?", c: "5 м/с", w: ["72 м/с", "0.5 м/с", "720 м/с"], h: "v = s/t.", s: "v = 60/12 = 5 м/с." },
+          { q: "Равномерное движение: что постоянно?", c: "Скорость", w: ["Ускорение", "Путь", "Сила"], h: "Постоянная скорость — равномерное движение.", s: "При равномерном движении v = const." },
+          { q: "Единица массы в СИ?", c: "Килограмм (кг)", w: ["Ньютон", "Грамм", "Тонна"], h: "Кг — основная единица.", s: "Масса измеряется в килограммах." },
+          { q: "Что такое путь?", c: "Длина пройденной траектории", w: ["Изменение координаты", "Скорость×время", "Направление движения"], h: "Скалярная величина.", s: "Путь — длина траектории, скалярная величина." },
+          { q: "Перемещение — это?", c: "Вектор из начальной в конечную точку", w: ["Длина пути", "Скорость", "Ускорение"], h: "Вектор!", s: "Перемещение — вектор, в отличие от пути." },
+          { q: "Что такое траектория?", c: "Линия движения тела", w: ["Скорость", "Путь", "Перемещение"], h: "Может быть прямой или кривой.", s: "Траектория — линия, описываемая телом." },
+          { q: "Из чего состоит вещество?", c: "Из молекул и атомов", w: ["Из силы", "Из энергии", "Из скорости"], h: "Молекулярная теория.", s: "Любое вещество состоит из молекул и атомов." }
+        ],
+        en: [
+          { q: "Speed formula for uniform motion?", c: "v = d / t", w: ["v = t / d", "v = d + t", "v = d · t"], h: "Distance over time.", s: "v = d / t — basic kinematics." },
+          { q: "What is inertia?", c: "Tendency of a body to maintain its state", w: ["Gravity", "Friction", "Pressure"], h: "Newton's first law.", s: "Inertia — tendency to preserve velocity." },
+          { q: "SI unit of force?", c: "Newton (N)", w: ["Joule", "Pascal", "Kilogram"], h: "N = kg·m/s².", s: "Force is measured in Newtons." },
+          { q: "Density is?", c: "Mass per unit volume", w: ["Volume per unit mass", "Force per area", "Work per time"], h: "ρ = m / V.", s: "Density: mass divided by volume." },
+          { q: "Mass 10 kg, volume 2 m³. Density?", c: "5 kg/m³", w: ["20 kg/m³", "8 kg/m³", "12 kg/m³"], h: "ρ = m / V.", s: "ρ = 10 / 2 = 5 kg/m³." },
+          { q: "What changes shape and size of a body?", c: "Deformation", w: ["Inertia", "Mass", "Speed"], h: "Elastic or plastic.", s: "Deformation — change of shape under force." },
+          { q: "Sliding friction depends on?", c: "Normal reaction force and roughness", w: ["Only mass", "Only speed", "Surface area"], h: "F = μ·N.", s: "Friction depends on normal force and μ." },
+          { q: "Gravitational acceleration on Earth?", c: "10 m/s²", w: ["1 m/s²", "100 m/s²", "0.1 m/s²"], h: "g ≈ 9.8 ≈ 10 m/s².", s: "g ≈ 10 m/s² — standard value." },
+          { q: "A body travels 60 m in 12 s. Speed?", c: "5 m/s", w: ["72 m/s", "0.5 m/s", "720 m/s"], h: "v = d/t.", s: "v = 60/12 = 5 m/s." },
+          { q: "Uniform motion: what is constant?", c: "Speed", w: ["Acceleration", "Distance", "Force"], h: "Constant speed = uniform motion.", s: "Uniform motion: v = const." },
+          { q: "What is Archimedes' force?", c: "Buoyant force on bodies in a fluid", w: ["Only for solids", "Only in water", "Only for metals"], h: "Fb = ρ·g·V.", s: "Archimedes' force pushes bodies upward in a fluid." }
+        ]
+      },
+      "8": {
+        ru: [
+          { q: "Давление — это?", c: "Сила, делённая на площадь", w: ["Масса на объём", "Работа за время", "Сила × расстояние"], h: "p = F / S.", s: "Давление = сила / площадь, измеряется в Па." },
+          { q: "Паскаль (Па) = ?", c: "Н/м²", w: ["Н·м", "Дж/с", "кг/м³"], h: "Единица давления.", s: "1 Па = 1 Н/м²." },
+          { q: "Механическая работа (A) = ?", c: "F · s", w: ["F / s", "m · v", "F + s"], h: "A = F · s.", s: "Работа = сила × перемещение." },
+          { q: "Мощность = ?", c: "A / t", w: ["A · t", "F / t", "A / s"], h: "N = A/t.", s: "Мощность — работа в единицу времени." },
+          { q: "Единица работы в СИ?", c: "Джоуль (Дж)", w: ["Ватт", "Паскаль", "Ньютон"], h: "Дж = Н·м.", s: "Работа измеряется в джоулях." },
+          { q: "КПД = ?", c: "(Aполезная / Aзатраченная) × 100%", w: ["Aзатр / Aпол", "Mощность × время", "Сила × площадь"], h: "Полезная / затраченная.", s: "КПД — отношение полезной работы к затраченной." },
+          { q: "Агрегатные состояния вещества?", c: "Твёрдое, жидкое, газообразное", w: ["Горячее, холодное, тёплое", "Тяжёлое, лёгкое, среднее", "Быстрое, медленное, среднее"], h: "Три основных состояния.", s: "Все вещества могут быть твёрдыми, жидкими или газообразными." },
+          { q: "При плавлении температура?", c: "Остаётся постоянной", w: ["Растёт", "Падает", "Сначала растёт, потом падает"], h: "Изотермический процесс.", s: "При плавлении температура не меняется." },
+          { q: "Теплоёмкость — это?", c: "Количество теплоты для нагрева 1 кг на 1°С", w: ["Температура кипения", "Скрытая теплота", "Плотность вещества"], h: "c в Дж/(кг·К).", s: "Теплоёмкость c — единица Дж/(кг·К)." },
+          { q: "Формула количества теплоты?", c: "Q = c · m · ΔT", w: ["Q = m / ΔT", "Q = c + m", "Q = c · ΔT"], h: "Теплоёмкость × масса × температура.", s: "Q = c·m·ΔT." },
+          { q: "Давление жидкости на дно сосуда зависит от?", c: "Высоты столба жидкости и плотности", w: ["Только массы жидкости", "Только объёма сосуда", "Формы сосуда"], h: "p = ρ·g·h.", s: "p = ρ·g·h — давление жидкости." },
+          { q: "Сообщающиеся сосуды: уровень жидкости?", c: "Одинаковый, если жидкость однородная", w: ["Всегда разный", "Зависит от формы", "Зависит от объёма"], h: "Закон сообщающихся сосудов.", s: "Однородная жидкость стоит на одном уровне." },
+          { q: "Скрытая теплота плавления измеряется в?", c: "Дж/кг", w: ["Дж", "°С", "Вт"], h: "λ = Дж/кг.", s: "Скрытая теплота плавления λ — Дж/кг." },
+          { q: "Золотое правило механики: выигрывая в силе...", c: "Проигрываем в расстоянии", w: ["Выигрываем в расстоянии", "Выигрываем во времени", "Проигрываем в работе"], h: "Работа неизменна.", s: "Выигрывая в силе, проигрываем в расстоянии." },
+          { q: "При испарении температура?", c: "Понижается", w: ["Повышается", "Остаётся неизменной", "Сначала повышается"], h: "Испарение охлаждает.", s: "Испарение — процесс охлаждения поверхности." }
+        ],
+        en: [
+          { q: "Pressure formula?", c: "p = F / A", w: ["p = m / V", "p = W / t", "p = F × d"], h: "p = F / A.", s: "Pressure = force / area, unit: Pa." },
+          { q: "Pascal (Pa) = ?", c: "N/m²", w: ["N·m", "J/s", "kg/m³"], h: "Unit of pressure.", s: "1 Pa = 1 N/m²." },
+          { q: "Mechanical work W = ?", c: "F · d", w: ["F / d", "m · v", "F + d"], h: "W = F · d.", s: "Work = force × displacement." },
+          { q: "Power = ?", c: "W / t", w: ["W · t", "F / t", "W / d"], h: "P = W/t.", s: "Power — work per unit time." },
+          { q: "SI unit of work?", c: "Joule (J)", w: ["Watt", "Pascal", "Newton"], h: "J = N·m.", s: "Work is measured in Joules." },
+          { q: "Formula for heat energy?", c: "Q = c · m · ΔT", w: ["Q = m / ΔT", "Q = c + m", "Q = c · ΔT"], h: "Specific heat × mass × temperature change.", s: "Q = c·m·ΔT." },
+          { q: "States of matter?", c: "Solid, liquid, gas", w: ["Hot, cold, warm", "Heavy, light, medium", "Fast, slow, medium"], h: "Three main states.", s: "All matter can be solid, liquid, or gas." },
+          { q: "Temperature during melting?", c: "Stays constant", w: ["Rises", "Falls", "Rises then falls"], h: "Isothermal process.", s: "Temperature is constant during melting." }
+        ]
+      },
+      "9": {
+        ru: [
+          { q: "Закон Ома для участка цепи?", c: "I = U / R", w: ["U = I / R", "R = U · I", "I = R · U"], h: "Ток = напряжение / сопротивление.", s: "I = U / R — закон Ома." },
+          { q: "Напряжение измеряется в?", c: "Вольтах (В)", w: ["Амперах", "Омах", "Ваттах"], h: "U в вольтах.", s: "Напряжение — в вольтах." },
+          { q: "Сопротивление измеряется в?", c: "Омах (Ом)", w: ["Вольтах", "Амперах", "Ваттах"], h: "R в Ом.", s: "Сопротивление — в омах." },
+          { q: "При последовательном соединении токи?", c: "Одинаковые во всех элементах", w: ["Складываются", "Делятся", "Умножаются"], h: "I = I₁ = I₂.", s: "В последовательной цепи ток одинаков." },
+          { q: "При параллельном соединении напряжения?", c: "Одинаковые на всех элементах", w: ["Складываются", "Делятся на 2", "Умножаются"], h: "U = U₁ = U₂.", s: "В параллельной цепи напряжение одно." },
+          { q: "Мощность электрического тока?", c: "P = U · I", w: ["P = U + I", "P = U / I", "P = I²"], h: "P = U·I.", s: "Электрическая мощность P = U·I." },
+          { q: "Работа электрического тока?", c: "A = P · t", w: ["A = U / I", "A = I / t", "A = R · t"], h: "A = P·t = U·I·t.", s: "Работа тока: A = U·I·t." },
+          { q: "Магнитное поле создаётся?", c: "Движущимися зарядами и токами", w: ["Только постоянными магнитами", "Только электрическим полем", "Только нейтральными телами"], h: "Ток — движение зарядов.", s: "Магнитное поле создаётся токами и магнитами." },
+          { q: "Единица индукции магнитного поля?", c: "Тесла (Тл)", w: ["Вольт", "Ампер", "Генри"], h: "Тл = Вб/м².", s: "Индукция B измеряется в теслах." },
+          { q: "Правило правой руки применяется для?", c: "Направления магнитного поля прямого тока", w: ["Нахождения силы Архимеда", "Расчёта сопротивления", "Определения КПД"], h: "Большой палец — ток.", s: "Правая рука: большой = ток, пальцы = поле." },
+          { q: "Опыт Эрстеда показал связь?", c: "Электрического тока и магнитного поля", w: ["Силы и давления", "Тепла и работы", "Оптики и акустики"], h: "Ток создаёт поле.", s: "Эрстед обнаружил, что ток отклоняет магнитную стрелку." },
+          { q: "Оптика — наука о?", c: "Свете и его свойствах", w: ["Звуке", "Тепле", "Электричестве"], h: "Свет — электромагнитная волна.", s: "Оптика изучает природу и распространение света." },
+          { q: "Закон отражения света?", c: "Угол падения = угол отражения", w: ["Угол ≠ углу", "Угол = 0", "Угол = 90°"], h: "α = β.", s: "Угол падения равен углу отражения." },
+          { q: "Линза, собирающая лучи — это?", c: "Выпуклая (собирающая)", w: ["Вогнутая", "Плоская", "Рассеивающая"], h: "Собирает лучи в фокусе.", s: "Выпуклая линза собирает лучи." },
+          { q: "Показатель преломления зависит от?", c: "Среды и длины волны", w: ["Только от среды", "Только от длины волны", "Ни от чего"], h: "n = c/v.", s: "n зависит от среды и λ." }
+        ],
+        en: [
+          { q: "Ohm's law for a circuit section?", c: "I = V / R", w: ["V = I / R", "R = V · I", "I = R · V"], h: "Current = voltage / resistance.", s: "I = V / R — Ohm's law." },
+          { q: "Voltage is measured in?", c: "Volts (V)", w: ["Amperes", "Ohms", "Watts"], h: "U in volts.", s: "Voltage — volts." },
+          { q: "Resistance is measured in?", c: "Ohms (Ω)", w: ["Volts", "Amperes", "Watts"], h: "R in Ω.", s: "Resistance — ohms." },
+          { q: "Series circuit: currents?", c: "Equal in all elements", w: ["Add up", "Divide", "Multiply"], h: "I = I₁ = I₂.", s: "Series circuit: current is the same." },
+          { q: "Parallel circuit: voltages?", c: "Equal across all elements", w: ["Add up", "Halve", "Multiply"], h: "U = U₁ = U₂.", s: "Parallel circuit: voltage is the same." },
+          { q: "Electric power?", c: "P = V · I", w: ["P = V + I", "P = V / I", "P = I²"], h: "P = V·I.", s: "Electric power P = V·I." },
+          { q: "Law of reflection of light?", c: "Angle of incidence = angle of reflection", w: ["Angles are different", "Angle = 0", "Angle = 90°"], h: "α = β.", s: "Angle of incidence equals angle of reflection." },
+          { q: "Converging lens is?", c: "Convex (converging)", w: ["Concave", "Flat", "Diverging"], h: "Focuses rays.", s: "Convex lens converges rays to a focus." }
+        ]
+      },
+      "10": {
+        ru: [
+          { q: "Равноускоренное движение: v(t) = ?", c: "v₀ + a·t", w: ["v₀ · a · t", "v₀ / t", "a · t²"], h: "v = v₀ + a·t.", s: "Скорость при равноускоренном движении v = v₀ + at." },
+          { q: "Второй закон Ньютона?", c: "F = m · a", w: ["F = m / a", "F = m + a", "F = a / m"], h: "Сила = масса × ускорение.", s: "F = ma — второй закон Ньютона." },
+          { q: "Импульс тела?", c: "p = m · v", w: ["p = m / v", "p = m + v", "p = F · t"], h: "Кг·м/с.", s: "Импульс p = mv." },
+          { q: "Закон сохранения импульса: в замкнутой системе...", c: "Суммарный импульс не изменяется", w: ["Импульс grows", "Каждое тело теряет импульс", "Ускорение одинаково"], h: "Без внешних сил = const.", s: "В замкнутой системе суммарный импульс сохраняется." },
+          { q: "Кинетическая энергия?", c: "Ek = m·v² / 2", w: ["Ek = m·v", "Ek = m/v", "Ek = 2·m·v"], h: "½mv².", s: "Кинетическая энергия Ek = mv²/2." },
+          { q: "Потенциальная энергия у поверхности Земли?", c: "Ep = m·g·h", w: ["Ep = m·g", "Ep = g·h", "Ep = m/h"], h: "mgh.", s: "Потенциальная энергия Ep = mgh." },
+          { q: "Закон сохранения энергии?", c: "Полная механическая энергия замкнутой системы постоянна", w: ["Энергия исчезает", "Энергия всегда растёт", "Энергия зависит от времени"], h: "E = Ek + Ep = const.", s: "E = Ek + Ep = const." },
+          { q: "Частота колебаний и период связаны?", c: "f = 1 / T", w: ["f = T", "f = T²", "f = 2T"], h: "Обратная зависимость.", s: "f = 1/T — частота обратна периоду." },
+          { q: "Скорость звука в воздухе при 0°С ~?", c: "340 м/с", w: ["30 м/с", "3000 м/с", "34 м/с"], h: "Примерно 340 м/с.", s: "Звук в воздухе: ~340 м/с." },
+          { q: "Скорость света в вакууме ~?", c: "3·10⁸ м/с", w: ["3·10⁵ м/с", "3·10¹⁰ м/с", "3000 м/с"], h: "c ≈ 300 000 км/с.", s: "c = 3×10⁸ м/с." },
+          { q: "Принцип суперпозиции для волн?", c: "Волны складываются независимо", w: ["Одна гасит другую", "Они поглощают друг друга", "Удваиваются"], h: "Каждая волна распространяется независимо.", s: "Принцип суперпозиции: волны складываются." },
+          { q: "Дисперсия света — это?", c: "Разложение белого света на спектр", w: ["Отражение света", "Поглощение света", "Поляризация"], h: "Призма разлагает свет.", s: "Дисперсия — разложение света призмой." },
+          { q: "Ускорение тела на горизонтальном пути при F=20H, m=4кг?", c: "5 м/с²", w: ["80 м/с²", "0.2 м/с²", "2 м/с²"], h: "a = F/m.", s: "a = 20/4 = 5 м/с²." },
+          { q: "Первый закон Ньютона (закон инерции)?", c: "Тело в покое или равномерном движении, если нет внешних сил", w: ["F = ma", "p = mv", "E = mc²"], h: "Без сил — без изменения движения.", s: "1 закон: без сил скорость не меняется." },
+          { q: "Длина волны = ?", c: "λ = v / f", w: ["λ = v · f", "λ = f / v", "λ = v + f"], h: "Скорость делить на частоту.", s: "λ = v/f." }
+        ],
+        en: [
+          { q: "Uniform acceleration: v(t) = ?", c: "v₀ + a·t", w: ["v₀ · a · t", "v₀ / t", "a · t²"], h: "v = v₀ + a·t.", s: "v = v₀ + at — uniform acceleration." },
+          { q: "Newton's second law?", c: "F = m · a", w: ["F = m / a", "F = m + a", "F = a / m"], h: "Force = mass × acceleration.", s: "F = ma — Newton's 2nd law." },
+          { q: "Momentum of a body?", c: "p = m · v", w: ["p = m / v", "p = m + v", "p = F · t"], h: "kg·m/s.", s: "Momentum p = mv." },
+          { q: "Conservation of momentum: in a closed system...", c: "Total momentum is constant", w: ["Momentum grows", "Each body loses momentum", "Acceleration is equal"], h: "No external forces = const.", s: "Total momentum is conserved in a closed system." },
+          { q: "Kinetic energy?", c: "Ek = m·v² / 2", w: ["Ek = m·v", "Ek = m/v", "Ek = 2·m·v"], h: "½mv².", s: "Kinetic energy Ek = mv²/2." },
+          { q: "Speed of light in vacuum?", c: "3·10⁸ m/s", w: ["3·10⁵ m/s", "3·10¹⁰ m/s", "3000 m/s"], h: "c ≈ 300 000 km/s.", s: "c = 3×10⁸ m/s." },
+          { q: "Frequency and period relation?", c: "f = 1 / T", w: ["f = T", "f = T²", "f = 2T"], h: "They are reciprocals.", s: "f = 1/T." },
+          { q: "Newton's third law?", c: "Every action has an equal and opposite reaction", w: ["F = ma", "p = mv", "E = mc²"], h: "Action-reaction pair.", s: "For every action there is an equal and opposite reaction." }
+        ]
+      }
+    };
+
+    // ─── PROBLEM GENERATORS ──────────────────────────────────────
+    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+    function round(val, dec = 1) { return +val.toFixed(dec); }
+    function makeProblem(q, correct, wrongs, hint, sol) {
+      const opts = shuffle([correct, ...wrongs.slice(0, 3)]);
+      return { q, opts, answer: opts.indexOf(correct), hint, sol };
+    }
+    function _(ru, en) { return LANG === "ru" ? ru : en; }
+
+    const GENERATORS = {
+      "7": [
+        (lvl) => {
+          const s = rand(20, 500), t = rand(2, 20), v = round(s / t);
+          return makeProblem(
+            _(`Тело прошло ${s} м за ${t} с. Скорость (м/с)?`, `A body travels ${s} m in ${t} s. Speed (m/s)?`),
+            `${v} ${_("м/с", "m/s")}`,
+            [round(v + rand(2, 8)), round(v * 2), round(v * 0.5)].map(x => `${x} ${_("м/с", "m/s")}`),
+            FORMULAS.speed[LANG], `v = ${s}/${t} = ${v} ${_("м/с", "m/s")}`
+          );
+        },
+        (lvl) => {
+          const m = rand(20, 200), V = rand(2, 20), ρ = round(m / V);
+          return makeProblem(
+            _(`Масса ${m} кг, объём ${V} м³. Плотность (кг/м³)?`, `Mass ${m} kg, volume ${V} m³. Density (kg/m³)?`),
+            `${ρ} ${_("кг/м³", "kg/m³")}`,
+            [round(ρ + rand(2, 6)), round(ρ * 2), round(ρ * 0.5)].map(x => `${x} ${_("кг/м³", "kg/m³")}`),
+            FORMULAS.density[LANG], `ρ = ${m}/${V} = ${ρ} ${_("кг/м³", "kg/m³")}`
+          );
+        },
+        (lvl) => {
+          const m = rand(1, 20), g = 10, F = m * g;
+          return makeProblem(
+            _(`Масса тела ${m} кг. Сила тяжести (Н)?`, `Mass ${m} kg. Weight force (N)?`),
+            `${F} ${_("Н", "N")}`,
+            [`${F + rand(5, 15)} Н`, `${F * 2} Н`, `${Math.max(1, F - rand(5, 10))} Н`],
+            _("F = m·g", "F = m·g"), `F = ${m}×10 = ${F} ${_("Н", "N")}`
+          );
+        },
+        (lvl) => {
+          const ρ = rand(500, 8000) / 100 * 100, V = rand(1, 10) / 10, m = round(ρ * V, 0);
+          return makeProblem(
+            _(`Плотность ${ρ} кг/м³, объём ${V} м³. Масса (кг)?`, `Density ${ρ} kg/m³, volume ${V} m³. Mass (kg)?`),
+            `${m} ${_("кг", "kg")}`,
+            [`${m + rand(10, 50)} кг`, `${m * 2} кг`, `${Math.max(1, m - rand(5, 20))} кг`],
+            FORMULAS.density[LANG], `m = ρ·V = ${ρ}×${V} = ${m} ${_("кг", "kg")}`
+          );
+        }
+      ],
+      "8": [
+        (lvl) => {
+          const F = rand(10, 50), S = rand(1, 10), p = round(F / S);
+          return makeProblem(
+            _(`Сила ${F} Н, площадь ${S} м². Давление (Па)?`, `Force ${F} N, area ${S} m². Pressure (Pa)?`),
+            `${p} ${_("Па", "Pa")}`,
+            [round(p + rand(2, 8)), round(p * 2), round(p * 0.5)].map(x => `${x} ${_("Па", "Pa")}`),
+            FORMULAS.pressure[LANG], `p = ${F}/${S} = ${p} ${_("Па", "Pa")}`
+          );
+        },
+        (lvl) => {
+          const F = rand(5, 30), s = rand(2, 15), A = F * s;
+          return makeProblem(
+            _(`Сила ${F} Н, перемещение ${s} м. Работа (Дж)?`, `Force ${F} N, displacement ${s} m. Work (J)?`),
+            `${A} ${_("Дж", "J")}`,
+            [`${A + rand(5, 20)} Дж`, `${A * 2} Дж`, `${Math.max(1, A - rand(5, 15))} Дж`],
+            FORMULAS.work[LANG], `A = ${F}×${s} = ${A} ${_("Дж", "J")}`
+          );
+        },
+        (lvl) => {
+          const A = rand(20, 200), t = rand(2, 10), N = round(A / t);
+          return makeProblem(
+            _(`Работа ${A} Дж за ${t} с. Мощность (Вт)?`, `Work ${A} J in ${t} s. Power (W)?`),
+            `${N} ${_("Вт", "W")}`,
+            [round(N + rand(2, 8)), round(N * 2), round(N * 0.5)].map(x => `${x} ${_("Вт", "W")}`),
+            FORMULAS.power[LANG], `N = ${A}/${t} = ${N} ${_("Вт", "W")}`
+          );
+        },
+        (lvl) => {
+          const c = 4200, m = rand(1, 10), dt = rand(5, 50), Q = c * m * dt;
+          return makeProblem(
+            _(`Воду (c=4200 Дж/кг·К) массой ${m} кг нагрели на ${dt}°С. Теплота (Дж)?`,
+              `Water (c=4200 J/kg·K), mass ${m} kg, heated by ${dt}°C. Heat (J)?`),
+            `${Q} ${_("Дж", "J")}`,
+            [`${Q + 4200 * rand(1, 3)} Дж`, `${Q * 2} Дж`, `${Q / 2} Дж`],
+            FORMULAS.heat[LANG], `Q = 4200×${m}×${dt} = ${Q} ${_("Дж", "J")}`
+          );
+        }
+      ],
+      "9": [
+        (lvl) => {
+          const U = rand(4, 24), R = rand(2, 12), I = round(U / R);
+          return makeProblem(
+            _(`Напряжение ${U} В, сопротивление ${R} Ом. Ток (А)?`, `Voltage ${U} V, resistance ${R} Ω. Current (A)?`),
+            `${I} ${_("А", "A")}`,
+            [round(I + rand(1, 3)), round(I * 2), round(I * 0.5)].map(x => `${x} ${_("А", "A")}`),
+            FORMULAS.ohm[LANG], `I = ${U}/${R} = ${I} ${_("А", "A")}`
+          );
+        },
+        (lvl) => {
+          const U = rand(6, 24), I = rand(1, 5), P = U * I;
+          return makeProblem(
+            _(`Напряжение ${U} В, ток ${I} А. Мощность (Вт)?`, `Voltage ${U} V, current ${I} A. Power (W)?`),
+            `${P} ${_("Вт", "W")}`,
+            [`${P + rand(5, 15)} Вт`, `${P * 2} Вт`, `${Math.max(1, P - rand(3, 10))} Вт`],
+            FORMULAS.electricPower[LANG], `P = ${U}×${I} = ${P} ${_("Вт", "W")}`
+          );
+        },
+        (lvl) => {
+          const R1 = rand(2, 10), R2 = rand(2, 10), Rs = R1 + R2;
+          return makeProblem(
+            _(`R₁=${R1} Ом, R₂=${R2} Ом последовательно. Общее R (Ом)?`,
+              `R₁=${R1} Ω, R₂=${R2} Ω in series. Total R (Ω)?`),
+            `${Rs} ${_("Ом", "Ω")}`,
+            [`${Rs + rand(2, 6)} Ом`, `${R1 * R2} Ом`, `${round(R1 * R2 / (R1 + R2))} Ом`],
+            _("Rобщ = R₁ + R₂", "Rtotal = R₁ + R₂"), `R = ${R1}+${R2} = ${Rs} ${_("Ом", "Ω")}`
+          );
+        },
+        (lvl) => {
+          const P = rand(100, 1000), t = rand(1, 5), A = P * t * 3600;
+          return makeProblem(
+            _(`Прибор мощностью ${P} Вт работал ${t} ч. Работа (Дж)?`,
+              `Device with power ${P} W worked ${t} h. Work (J)?`),
+            `${A} ${_("Дж", "J")}`,
+            [`${A + P * 3600} Дж`, `${A * 2} Дж`, `${P * t} Дж`],
+            _("A = P·t", "W = P·t"), `A = ${P}×${t}×3600 = ${A} ${_("Дж", "J")}`
+          );
+        }
+      ],
+      "10": [
+        (lvl) => {
+          const v0 = rand(0, 20), a = rand(1, 8), t = rand(2, 10), v = v0 + a * t;
+          return makeProblem(
+            _(`Начальная скорость ${v0} м/с, ускорение ${a} м/с², время ${t} с. Конечная скорость (м/с)?`,
+              `Initial speed ${v0} m/s, acceleration ${a} m/s², time ${t} s. Final speed (m/s)?`),
+            `${v} ${_("м/с", "m/s")}`,
+            [`${v + rand(3, 10)} м/с`, `${v * 2} м/с`, `${Math.max(0, v - rand(3, 10))} м/с`],
+            FORMULAS.accel[LANG], `v = ${v0} + ${a}×${t} = ${v} ${_("м/с", "m/s")}`
+          );
+        },
+        (lvl) => {
+          const m = rand(1, 15), a = rand(2, 12), F = m * a;
+          return makeProblem(
+            _(`Масса ${m} кг, ускорение ${a} м/с². Сила (Н)?`, `Mass ${m} kg, acceleration ${a} m/s². Force (N)?`),
+            `${F} ${_("Н", "N")}`,
+            [`${F + rand(5, 20)} Н`, `${F * 2} Н`, `${Math.max(1, F - rand(3, 12))} Н`],
+            FORMULAS.newton2[LANG], `F = ${m}×${a} = ${F} ${_("Н", "N")}`
+          );
+        },
+        (lvl) => {
+          const m = rand(2, 20), v = rand(2, 15), p = m * v;
+          return makeProblem(
+            _(`Масса ${m} кг, скорость ${v} м/с. Импульс (кг·м/с)?`,
+              `Mass ${m} kg, speed ${v} m/s. Momentum (kg·m/s)?`),
+            `${p} ${_("кг·м/с", "kg·m/s")}`,
+            [`${p + rand(5, 20)} кг·м/с`, `${p * 2} кг·м/с`, `${Math.max(1, p - rand(3, 15))} кг·м/с`],
+            FORMULAS.momentum[LANG], `p = ${m}×${v} = ${p} ${_("кг·м/с", "kg·m/s")}`
+          );
+        },
+        (lvl) => {
+          const m = rand(1, 10), v = rand(2, 20), Ek = round(m * v * v / 2);
+          return makeProblem(
+            _(`Масса ${m} кг, скорость ${v} м/с. Кинетическая энергия (Дж)?`,
+              `Mass ${m} kg, speed ${v} m/s. Kinetic energy (J)?`),
+            `${Ek} ${_("Дж", "J")}`,
+            [`${Ek + rand(5, 30)} Дж`, `${m * v} Дж`, `${Ek * 2} Дж`],
+            _("Ek = m·v²/2", "Ek = m·v²/2"), `Ek = ${m}×${v}²/2 = ${Ek} ${_("Дж", "J")}`
+          );
+        }
+      ]
+    };
+
+    // ─── BUILD QUIZ BY GRADE AND LEVEL ───────────────────────────
+    function buildQuestions(cls, topicId, level) {
+      const theoryBank = BANKS[cls]?.[LANG] || BANKS[cls]?.ru || [];
+      const allGenerators = GENERATORS[cls] || GENERATORS["7"];
+      const shuffledTheory = shuffle([...theoryBank]);
+
+      // Early levels = more theory, later = more problems
+      const numProblems = Math.min(allGenerators.length, Math.floor(level / 2));
+      const numTheory = QUESTIONS_PER_LEVEL - numProblems;
+      const mix = [];
+
+      for (let i = 0; i < numTheory; i++) {
+        const raw = shuffledTheory[i % shuffledTheory.length];
+        const opts = shuffle([raw.c, ...raw.w.slice(0, 3)]);
+        mix.push({ q: raw.q, opts, answer: opts.indexOf(raw.c), hint: raw.h, sol: raw.s });
+      }
+      for (let i = 0; i < numProblems; i++) {
+        const gen = allGenerators[i % allGenerators.length];
+        mix.push(gen(level));
+      }
+      return shuffle(mix);
+    }
+
+    // ─── Other necessary functions ───────────────────────────────
+    let fd = null;
+    let currentClass = null, currentTopic = null, currentLevel = null;
+    let quiz = { tasks: [], index: 0, correct: 0, selected: null, checked: false };
+
+    async function loadUser() {
+      try {
+        const snap = await getDoc(userRef);
+        if (!snap.exists()) {
+          await setDoc(userRef, { profile: { nickname: currentUser }, studyMeta: { streak: 0, studyDays: {}, totalXP: 0 }, progress: { math: {}, biology: {}, physics: {}, history: {} }, lastResults: {} });
+          fd = (await getDoc(userRef)).data();
+        } else { fd = snap.data(); }
+        fd.progress = fd.progress || {};
+        fd.progress.physics = fd.progress.physics || {};
+        fd.studyMeta = fd.studyMeta || { streak: 0, studyDays: {}, totalXP: 0 };
+      } catch (e) { fd = { progress: { physics: {} }, studyMeta: { streak: 0, studyDays: {}, totalXP: 0 }, profile: {} }; }
+    }
+
+    async function onLevelComplete(cls, topicId, newHighest) {
+      const today = new Date().toISOString().slice(0, 10);
+      const topicData = { highestCompleted: newHighest, lastPassedAt: Date.now() };
+      if (!fd.progress.physics[cls]) fd.progress.physics[cls] = {};
+      fd.progress.physics[cls][topicId] = topicData;
+      let freshFd = fd;
+      try { freshFd = (await getDoc(userRef)).data() || fd; } catch (e) { }
+      const studyDays = freshFd?.studyMeta?.studyDays || {};
+      const todayCount = (studyDays[today] || 0) + 1;
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      const hadYesterday = (studyDays[yesterday] || 0) > 0;
+      const currentStreak = freshFd?.studyMeta?.streak || 0;
+      const alreadyToday = (studyDays[today] || 0) > 0;
+      const newStreak = alreadyToday ? currentStreak : (hadYesterday ? currentStreak + 1 : 1);
+      const allProgress = freshFd?.progress || {};
+      allProgress.physics = allProgress.physics || {};
+      if (!allProgress.physics[cls]) allProgress.physics[cls] = {};
+      allProgress.physics[cls][topicId] = topicData;
+      let levelsTotal = 0, topicsDone = 0;
+      for (const sk of ["math", "biology", "physics", "history"]) {
+        const sp = allProgress[sk] || {};
+        for (const c of Object.keys(sp)) {
+          for (const tt of Object.keys(sp[c])) {
+            const h = sp[c][tt]?.highestCompleted || 0;
+            levelsTotal += Math.min(LEVELS_PER_TOPIC, h);
+            if (h >= LEVELS_PER_TOPIC) topicsDone++;
+          }
+        }
+      }
+      const newTotalXP = levelsTotal * 10 + topicsDone * 50 + newStreak * 5 + (freshFd?.studyMeta?.bonusXP || 0);
+      try {
+        await updateDoc(userRef, {
+          [`progress.physics.${cls}.${topicId}`]: topicData,
+          [`studyMeta.studyDays.${today}`]: todayCount,
+          "studyMeta.streak": newStreak,
+          "studyMeta.totalXP": newTotalXP,
+          [`lastResults.physics`]: { time: Date.now(), class: cls, topic: topicId, level: currentLevel }
+        });
+      } catch (e) { showToast(t("noConnection")); }
+      fd.studyMeta.streak = newStreak;
+      fd.studyMeta.totalXP = newTotalXP;
+      fd.studyMeta.studyDays = fd.studyMeta.studyDays || {};
+      fd.studyMeta.studyDays[today] = todayCount;
+    }
+
+    function calcXP() {
+      let levels = 0, topics = 0;
+      const phys = fd?.progress?.physics || {};
+      for (const cls of Object.keys(SPEC)) {
+        for (const tid of Object.keys(SPEC[cls].topics)) {
+          const h = phys[cls]?.[tid]?.highestCompleted || 0;
+          levels += Math.min(LEVELS_PER_TOPIC, h);
+          if (h >= LEVELS_PER_TOPIC) topics++;
+        }
+      }
+      return levels * 10 + topics * 50 + (fd?.studyMeta?.streak || 0) * 5 + (fd?.studyMeta?.bonusXP || 0);
+    }
+    function xpForLevel(lvl) { return lvl <= 1 ? 0 : Math.floor(100 * Math.pow(lvl - 1, 1.5)); }
+    function calcLevel(xp) { let l = 1; while (xpForLevel(l + 1) <= xp) l++; return l; }
+    function getHighest(cls, tid) { return fd?.progress?.physics?.[cls]?.[tid]?.highestCompleted || 0; }
+    function totalPhysicsLevels() { let s = 0; for (const c of Object.keys(SPEC)) for (const t of Object.keys(SPEC[c].topics)) s += Math.min(16, getHighest(c, t)); return s; }
+    function totalPhysicsTopics() { let s = 0; for (const c of Object.keys(SPEC)) for (const t of Object.keys(SPEC[c].topics)) if (getHighest(c, t) >= 16) s++; return s; }
+
+    function renderHero() {
+      const xp = calcXP(), level = calcLevel(xp);
+      const thisLX = xpForLevel(level), nextLX = xpForLevel(level + 1);
+      const pct = nextLX > thisLX ? Math.round((xp - thisLX) / (nextLX - thisLX) * 100) : 100;
+      document.getElementById("xpLvlNum").textContent = level;
+      document.getElementById("xpCur").textContent = xp - thisLX;
+      document.getElementById("xpNxt").textContent = nextLX - thisLX;
+      document.getElementById("xpBarFill").style.width = pct + "%";
+      document.getElementById("statLevels").textContent = totalPhysicsLevels();
+      document.getElementById("statTopics").textContent = totalPhysicsTopics();
+      document.getElementById("statStreak").textContent = fd?.studyMeta?.streak || 0;
+      document.getElementById("heroBadge").textContent = `🔬 ${totalPhysicsLevels()} ${LANG === "ru" ? "уровней" : "levels"} · ${pct}% XP`;
+    }
+
+    function showScreen(id) {
+      ["screenClass", "screenTopic", "screenLevel", "screenQuiz", "screenFinish"].forEach(s => {
+        document.getElementById(s).classList.toggle("hidden", s !== id);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderClasses() {
+      const grid = document.getElementById("classGrid");
+      grid.innerHTML = "";
+      for (const cls of Object.keys(SPEC)) {
+        const topics = Object.keys(SPEC[cls].topics);
+        const done = topics.reduce((s, tid) => s + Math.min(16, getHighest(cls, tid)), 0);
+        const total = topics.length * 16;
+        const pct = Math.round(done / total * 100);
+        const div = document.createElement("div");
+        div.className = "class-card" + (currentClass === cls ? " active" : "");
+        div.innerHTML = `<div class="class-num">${cls}</div><div class="class-label">${t("grade").toUpperCase()}</div><div class="class-prog">${done}/${total} · ${pct}%</div>`;
+        div.onclick = () => selectClass(cls);
+        grid.appendChild(div);
+      }
+    }
+
+    function selectClass(cls) {
+      currentClass = cls;
+      document.getElementById("breadClass").textContent = cls + " " + t("grade");
+      document.getElementById("breadClass2").textContent = cls + " " + t("grade");
+      renderTopics();
+      showScreen("screenTopic");
+    }
+
+    window.goToClass = () => { showScreen("screenClass"); renderClasses(); };
+
+    function renderTopics() {
+      const grid = document.getElementById("topicGrid");
+      const topicsObj = SPEC[currentClass].topics;
+      const topicIds = Object.keys(topicsObj);
+      document.getElementById("topicBadge").textContent = topicIds.length + " " + t("topicsLabel");
+      grid.innerHTML = "";
+      for (const tid of topicIds) {
+        const meta = topicsObj[tid];
+        const h = getHighest(currentClass, tid);
+        const pct = Math.round(h / 16 * 100);
+        const div = document.createElement("div");
+        div.className = "topic-card";
+        div.innerHTML = `
+      <div class="topic-icon">${meta.icon}</div>
+      <div class="topic-name">${meta.title[LANG]}</div>
+      <div class="topic-desc">${meta.desc[LANG]}</div>
+      <div class="topic-prog-row">
+        <div class="topic-prog-bar"><div class="topic-prog-fill" style="width:${pct}%"></div></div>
+        <div class="topic-prog-text">${h}/16</div>
+      </div>`;
+        div.onclick = () => selectTopic(tid);
+        grid.appendChild(div);
+      }
+    }
+
+    function selectTopic(tid) {
+      currentTopic = tid;
+      document.getElementById("breadTopic").textContent = SPEC[currentClass].topics[tid].title[LANG];
+      renderLevels();
+      showScreen("screenLevel");
+    }
+
+    window.goToTopics = () => { showScreen("screenTopic"); renderTopics(); };
+
+    function renderLevels() {
+      const h = getHighest(currentClass, currentTopic);
+      const unlocked = Math.min(LEVELS_PER_TOPIC, h + 1);
+      const meta = SPEC[currentClass].topics[currentTopic];
+      document.getElementById("levelSecTitle").textContent = meta.icon + " " + meta.title[LANG] + (LANG === "ru" ? " — уровни" : " — levels");
+      document.getElementById("levelBadge").textContent = h + "/" + LEVELS_PER_TOPIC;
+      const grid = document.getElementById("levelGrid");
+      grid.innerHTML = "";
+      for (let lvl = 1; lvl <= LEVELS_PER_TOPIC; lvl++) {
+        const btn = document.createElement("button");
+        btn.className = "lvl-btn " + (lvl <= h ? "done" : lvl <= unlocked ? "unlocked" : "locked");
+        btn.textContent = lvl;
+        btn.disabled = lvl > unlocked;
+        btn.onclick = () => startLevel(lvl);
+        grid.appendChild(btn);
+      }
+    }
+
+    window.goToLevels = () => { showScreen("screenLevel"); renderLevels(); };
+
+    function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+    async function loadQuestionsForLevel(cls, topicId, level) {
+      return buildQuestions(cls, topicId, level);
+    }
+
+    async function startLevel(level) {
+      currentLevel = level;
+      quiz = { tasks: [], index: 0, correct: 0, selected: null, checked: false };
+      const meta = SPEC[currentClass].topics[currentTopic];
+      document.getElementById("breadQuiz").textContent = `${currentClass} ${t("grade")} › ${meta.title[LANG]} › ${LANG === "ru" ? "Уровень" : "Level"} ${level}`;
+      document.getElementById("qLangLabel").textContent = t("langLabel");
+      showScreen("screenQuiz");
+      renderLoadingQuiz();
+      quiz.tasks = await loadQuestionsForLevel(currentClass, currentTopic, level);
+      renderQuestion();
+    }
+
+    window.retryLevel = () => startLevel(currentLevel);
+
+    function renderLoadingQuiz() {
+      document.getElementById("questionText").textContent = t("loadingQ");
+      document.getElementById("optionsGrid").innerHTML = `<div style="grid-column:1/-1"><div class="loading-state"><div class="loading-spinner"></div></div></div>`;
+      document.getElementById("checkBtn").classList.add("hidden");
+      document.getElementById("nextBtn").classList.add("hidden");
+      document.getElementById("resultBox").classList.add("hidden");
+    }
+
+    function renderQuestion() {
+      const task = quiz.tasks[quiz.index];
+      if (!task) return;
+      quiz.selected = null;
+      quiz.checked = false;
+      document.getElementById("qBadge").textContent = `${t("qWord")} ${quiz.index + 1}/${quiz.tasks.length}`;
+      document.getElementById("qScore").textContent = quiz.correct;
+      document.getElementById("qProgFill").style.width = ((quiz.index + 1) / quiz.tasks.length * 100) + "%";
+      document.getElementById("questionText").textContent = task.q;
+      document.getElementById("checkBtn").classList.remove("hidden");
+      document.getElementById("checkBtn").disabled = false;
+      document.getElementById("nextBtn").classList.add("hidden");
+      document.getElementById("resultBox").className = "hidden";
+      const grid = document.getElementById("optionsGrid");
+      grid.innerHTML = "";
+      task.opts.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "opt-btn";
+        btn.textContent = opt;
+        btn.onclick = () => selectOption(i);
+        grid.appendChild(btn);
+      });
+    }
+
+    function selectOption(i) {
+      if (quiz.checked) return;
+      quiz.selected = i;
+      document.querySelectorAll(".opt-btn").forEach((b, idx) => b.classList.toggle("selected", idx === i));
+    }
+
+    window.checkAnswer = () => {
+      if (quiz.checked) return;
+      const task = quiz.tasks[quiz.index];
+      if (quiz.selected === null) { showResult("neutral", t("selectAnswer")); return; }
+      quiz.checked = true;
+      const correct = quiz.selected === task.answer;
+      if (correct) quiz.correct++;
+      document.querySelectorAll(".opt-btn").forEach((b, i) => {
+        b.disabled = true;
+        if (i === task.answer) b.classList.add("correct");
+        if (i === quiz.selected && !correct) b.classList.add("wrong");
+      });
+      document.getElementById("checkBtn").disabled = true;
+      document.getElementById("nextBtn").classList.remove("hidden");
+      showResult(correct ? "correct" : "wrong", correct ? t("correct") : t("wrong") + task.sol);
+    };
+
+    window.showHint = () => {
+      const task = quiz.tasks[quiz.index];
+      if (task) showResult("hint", t("hint") + task.hint);
+    };
+
+    window.nextQuestion = () => {
+      if (quiz.index < quiz.tasks.length - 1) { quiz.index++; renderQuestion(); }
+      else finishLevel();
+    };
+
+    function showResult(type, text) {
+      const box = document.getElementById("resultBox");
+      box.className = "result-box " + type;
+      box.textContent = text;
+    }
+
+    async function finishLevel() {
+      const passed = quiz.correct >= PASS_THRESHOLD;
+      showScreen("screenFinish");
+      if (passed) {
+        const h = getHighest(currentClass, currentTopic);
+        const newHighest = Math.max(h, currentLevel);
+        await onLevelComplete(currentClass, currentTopic, newHighest);
+        renderHero();
+        renderLevels();
+        document.getElementById("finishIcon").textContent = "🎉";
+        document.getElementById("finishTitle").textContent = t("finishPassed");
+        document.getElementById("finishScore").textContent = `${quiz.correct}/${quiz.tasks.length}`;
+        document.getElementById("finishXPBadge").innerHTML = `<div class="finish-xp">⭐ +10 ${t("xpEarned")}</div>`;
+        showToast(`🎉 ${LANG === "ru" ? "Уровень" : "Level"} ${currentLevel} ${LANG === "ru" ? "пройден" : "passed"}! +10 XP`);
+      } else {
+        document.getElementById("finishIcon").textContent = "😔";
+        document.getElementById("finishTitle").textContent = t("finishFailed");
+        document.getElementById("finishScore").textContent = `${quiz.correct}/${quiz.tasks.length}`;
+        document.getElementById("finishXPBadge").innerHTML = `<div class="finish-fail">⚠️ ${t("needMore")} ${PASS_THRESHOLD}/10 ${t("forCredit")}</div>`;
+      }
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 3000);
+    }
+
+    window.toggleTheme = () => {
+      document.body.classList.toggle("light");
+      localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
+    };
+
+    function initAnimations() {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
+      }, { threshold: .08 });
+      document.querySelectorAll(".section, .hero").forEach(el => obs.observe(el));
+    }
+
+    async function init() {
+      if (localStorage.getItem("accountTheme") === "light") document.body.classList.add("light");
+      LANG = localStorage.getItem("fmine_lang") || "ru";
+      document.getElementById("langRuBtn").classList.toggle("active", LANG === "ru");
+      document.getElementById("langEnBtn").classList.toggle("active", LANG === "en");
+      applyTranslations();
+      await loadUser();
+      renderHero();
+      renderClasses();
+      showScreen("screenClass");
+      initAnimations();
+    }
+    init();
+  </script>
+  <script src="pomo-shared.js"></script>
+</body>
+
+</html>

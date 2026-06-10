@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>F‑Mine · Языковой Бот</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070913;
+  --bg2: #0d1022;
+  --bg3: #12162d;
+  --bg4: #191f3b;
+  --glass: rgba(255, 255, 255, .04);
+  --glass2: rgba(255, 255, 255, .08);
+  --glass3: rgba(255, 255, 255, .12);
+  --border: rgba(255, 255, 255, .08);
+  --border2: rgba(255, 255, 255, .15);
+  --text: #f3f6ff;
+  --text2: #abb4d6;
+  --text3: #6d78a8;
+  --v: #a78bfa;
+  --v2: #7c5cf6;
+  --vg: rgba(167, 139, 250, .4);
+  --vg2: rgba(167, 139, 250, .15);
+  --p: #fb7185;
+  --pg: rgba(251, 113, 133, .35);
+  --c: #60c8ff;
+  --cg: rgba(96, 200, 255, .35);
+  --g: #34d399;
+  --gg: rgba(52, 211, 153, .35);
+  --a: #fbbf24;
+  --ag: rgba(251, 191, 36, .35);
+  --r: #fb7185;
+  --sh-xs: 0 1px 3px rgba(0, 0, 0, .4), 0 0 0 1px rgba(255, 255, 255, .03);
+  --sh-sm: 0 2px 8px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .04);
+  --sh-md: 0 4px 16px rgba(0, 0, 0, .6), 0 8px 32px rgba(0, 0, 0, .4), 0 0 0 1px rgba(255, 255, 255, .05);
+  --sh-lg: 0 8px 24px rgba(0, 0, 0, .7), 0 16px 48px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .06), 0 0 60px rgba(167, 139, 250, .1);
+  --sh-gv: 0 0 0 1px rgba(167, 139, 250, .4), 0 0 24px rgba(167, 139, 250, .25), 0 8px 32px rgba(0, 0, 0, .4);
+  --ease: .2s cubic-bezier(.4, 0, .2, 1);
+  --sbw: 280px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 5% 0%, rgba(167, 139, 250, .08) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 95% 95%, rgba(251, 113, 133, .05) 0%, transparent 52%),
+    radial-gradient(ellipse 45% 35% at 50% 50%, rgba(96, 200, 255, .03) 0%, transparent 60%);
+  -webkit-font-smoothing: antialiased
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
+  opacity: .018
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 99px
+}
+
+/* HEADER */
+.hd {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px clamp(12px, 3vw, 24px);
+  background: rgba(7, 9, 19, .88);
+  backdrop-filter: blur(28px);
+  border-bottom: 1px solid rgba(167, 139, 250, .14);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, .55), 0 0 60px rgba(167, 139, 250, .05);
+  gap: 10px
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0
+}
+
+.logo-f {
+  color: var(--amber);
+  text-shadow: 0 0 20px var(--amber-glow)
+}
+
+.logo-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--v);
+  border-radius: 50%;
+  margin: 0 3px;
+  align-self: center;
+  margin-bottom: 4px;
+  animation: pdot 2s ease-in-out infinite
+}
+
+@keyframes pdot {
+  0%, 100% { box-shadow: 0 0 10px var(--vg) }
+  50% { box-shadow: 0 0 24px rgba(167, 139, 250, .8) }
+}
+
+.logo-mine {
+  color: var(--text)
+}
+
+.hd-right {
+  display: flex;
+  gap: 6px;
+  align-items: center
+}
+
+.lang-pill {
+  display: flex;
+  align-items: center;
+  background: var(--glass2);
+  border: 1.5px solid var(--border2);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px
+}
+
+.lp-btn {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 999px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--ease);
+  color: var(--text3);
+  background: transparent
+}
+
+.lp-btn.on {
+  background: linear-gradient(135deg, var(--p), #db2777);
+  color: #fff;
+  box-shadow: 0 2px 14px var(--pg)
+}
+
+.lp-btn:not(.on):hover {
+  color: var(--text);
+  background: var(--glass3)
+}
+
+.hd-btn {
+  padding: 6px 13px;
+  border: 1.5px solid var(--border2);
+  border-radius: 9px;
+  background: var(--glass);
+  color: var(--text2);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--ease)
+}
+
+.hd-btn:hover {
+  background: var(--glass3);
+  border-color: var(--p);
+  color: var(--p)
+}
+
+.hd-btn:active {
+  transform: scale(.92)
+}
+
+.sb-toggle {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--border2);
+  border-radius: 9px;
+  background: var(--glass);
+  color: var(--text2);
+  font-size: 16px;
+  cursor: pointer;
+  transition: var(--ease);
+  align-items: center;
+  justify-content: center
+}
+
+.sb-toggle:hover {
+  border-color: var(--p);
+  color: var(--p)
+}
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: var(--sbw) 1fr;
+  height: calc(100vh - 63px);
+  position: relative;
+  z-index: 1
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 2px 0 40px rgba(0,0,0,.5);
+  width: var(--sbw)
+}
+
+.sidebar-inner {
+  overflow-y: auto;
+  flex: 1;
+  padding-bottom: 16px
+}
+
+.sb-section {
+  padding: 14px 14px 6px
+}
+
+.sb-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--text3);
+  margin-bottom: 8px;
+  padding: 0 3px
+}
+
+.sb-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: all .25s ease;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sb-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 0;
+  background: linear-gradient(180deg, var(--p), var(--v));
+  transition: width .2s ease;
+}
+
+.sb-card:hover {
+  background: rgba(251, 113, 133, .05);
+  border-color: rgba(251, 113, 133, .25);
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.3);
+}
+
+.sb-card:hover::before {
+  width: 3px;
+}
+
+.sb-card:active {
+  transform: scale(.97)
+}
+
+.sb-icon {
+  font-size: 16px;
+  flex-shrink: 0
+}
+
+.sb-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text)
+}
+
+.sb-desc {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 1px
+}
+
+.quick-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 14px
+}
+
+.qex {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: var(--ease);
+  line-height: 1.4
+}
+
+.qex:hover {
+  border-color: var(--p);
+  color: var(--p);
+  background: rgba(251, 113, 133, .06)
+}
+
+.stats-row {
+  display: flex;
+  gap: 5px;
+  padding: 10px 14px 0
+}
+
+.stat-chip {
+  flex: 1;
+  background: var(--glass);
+  border: 1px solid rgba(251, 113, 133, .15);
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  transition: var(--ease);
+}
+
+.stat-chip:hover {
+  border-color: rgba(251, 113, 133, .3);
+  box-shadow: 0 0 12px var(--pg);
+}
+
+.stat-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 12px rgba(251, 113, 133, .3)
+}
+
+.stat-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-top: 2px
+}
+
+/* AI status badge */
+.ai-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  margin: 8px 14px;
+  border-radius: 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  transition: var(--ease)
+}
+
+.ai-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--a);
+  animation: pulse-dot 1s ease-in-out infinite
+}
+
+.ai-dot.ready {
+  background: var(--g);
+  box-shadow: 0 0 8px var(--gg);
+  animation: none
+}
+
+.ai-dot.busy {
+  background: var(--p);
+  animation: pulse-dot 0.6s ease-in-out infinite
+}
+
+.ai-dot.err {
+  background: var(--r);
+  animation: none
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1 }
+  50% { opacity: .3 }
+}
+
+.ai-label {
+  color: var(--text2)
+}
+
+/* CHAT MAIN */
+.chat-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  min-width: 0;
+  position: relative;
+}
+
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px clamp(12px, 3vw, 24px) 100px; /* Big bottom padding for floating bar */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scroll-behavior: smooth
+}
+
+.chat-window::-webkit-scrollbar {
+  width: 5px
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 99px
+}
+
+/* WELCOME */
+.welcome {
+  background: linear-gradient(135deg, rgba(14, 17, 34, 0.95) 0%, rgba(7, 9, 19, 0.9) 100%);
+  border: 1.5px solid rgba(251, 113, 133, .22);
+  border-radius: 18px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp .5s ease both;
+  box-shadow: var(--sh-md)
+}
+
+.welcome::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 113, 133, .12), transparent 70%);
+  pointer-events: none
+}
+
+.welcome::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(96, 200, 255, .07), transparent 70%);
+  pointer-events: none
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+.welcome-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(16px, 3vw, 22px);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 5px;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 20px rgba(251, 113, 133, .3)
+}
+
+.welcome-sub {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.65;
+  position: relative;
+  z-index: 1
+}
+
+.welcome-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  position: relative;
+  z-index: 1
+}
+
+.wchip {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  transition: var(--ease);
+  border: 1px solid;
+  font-weight: 500
+}
+
+.wchip-p { color: var(--p); border-color: rgba(251, 113, 133, .3); background: rgba(251, 113, 133, .07) }
+.wchip-v { color: var(--v); border-color: rgba(167, 139, 250, .3); background: rgba(167, 139, 250, .07) }
+.wchip-c { color: var(--c); border-color: rgba(96, 200, 255, .3); background: rgba(96, 200, 255, .06) }
+.wchip-g { color: var(--g); border-color: rgba(52, 211, 153, .3); background: rgba(52, 211, 153, .06) }
+.wchip-a { color: var(--a); border-color: rgba(251, 191, 36, .3); background: rgba(251, 191, 36, .06) }
+
+.wchip:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.2)
+}
+
+/* MESSAGES */
+.msg-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  animation: msgIn .28s ease both
+}
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+.msg-row.user {
+  flex-direction: row-reverse
+}
+
+.msg-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px
+}
+
+.msg-avatar.bot-av {
+  background: linear-gradient(135deg, var(--p), #db2777);
+  box-shadow: 0 0 12px var(--pg)
+}
+
+.msg-avatar.user-av {
+  background: linear-gradient(135deg, var(--c), #0ea5e9);
+  box-shadow: 0 0 12px var(--cg)
+}
+
+.msg-bubble {
+  max-width: min(82%, 700px);
+  padding: 11px 14px;
+  border-radius: 15px;
+  font-size: 13.5px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word
+}
+
+.msg-row.bot .msg-bubble {
+  background: linear-gradient(145deg, rgba(14, 18, 38, 0.6) 0%, rgba(7, 9, 19, 0.85) 100%);
+  border: 1px solid rgba(251, 113, 133, .22);
+  color: var(--text);
+  border-bottom-left-radius: 3px;
+  box-shadow: var(--sh-md)
+}
+
+.msg-row.user .msg-bubble {
+  background: linear-gradient(135deg, rgba(96, 200, 255, .12), rgba(96, 200, 255, .04));
+  border: 1px solid rgba(96, 200, 255, .25);
+  color: var(--text);
+  border-bottom-right-radius: 3px;
+  box-shadow: var(--sh-sm)
+}
+
+.msg-time {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 3px
+}
+
+.msg-row.bot .msg-time { text-align: left }
+.msg-row.user .msg-time { text-align: right }
+
+/* THINKING */
+.thinking-bubble {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 11px 15px;
+  border-radius: 15px;
+  border-bottom-left-radius: 3px;
+  background: var(--bg3);
+  border: 1px solid rgba(251, 113, 133, .2);
+  box-shadow: var(--sh-sm)
+}
+
+.t-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--p);
+  animation: tdot 1.2s ease-in-out infinite
+}
+
+.t-dot:nth-child(2) { animation-delay: .18s; background: var(--v) }
+.t-dot:nth-child(3) { animation-delay: .36s; background: var(--c) }
+
+@keyframes tdot {
+  0%, 80%, 100% { transform: scale(.35); opacity: .4 }
+  40% { transform: scale(1); opacity: 1 }
+}
+
+/* FLOATING INPUT BAR */
+.input-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92%, 760px);
+  padding: 0;
+  background: transparent;
+  border-top: none;
+  z-index: 10;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  background: rgba(18, 22, 45, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  padding: 6px 8px 6px 14px;
+  transition: var(--ease);
+  box-shadow: var(--sh-md);
+}
+
+.input-wrap:focus-within {
+  border-color: rgba(251, 113, 133, .55);
+  box-shadow: 0 0 0 2px rgba(251, 113, 133, .15), 0 8px 32px rgba(0, 0, 0, 0.6);
+  background: rgba(14, 18, 38, 0.85);
+}
+
+.msg-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+  resize: none;
+  min-height: 22px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 3px 0;
+}
+
+.msg-input::placeholder {
+  color: var(--text3)
+}
+
+.ib-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--ease);
+  flex-shrink: 0;
+  font-size: 15px
+}
+
+.ib-mic {
+  background: var(--glass2);
+  border: 1px solid var(--border2);
+  color: var(--text2)
+}
+
+.ib-mic:hover {
+  border-color: var(--r);
+  color: var(--r);
+  background: rgba(248, 113, 113, .08)
+}
+
+.ib-mic.rec {
+  border-color: var(--r);
+  color: var(--r);
+  animation: precord 1s ease-in-out infinite
+}
+
+@keyframes precord {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, .4) }
+  50% { box-shadow: 0 0 0 7px transparent }
+}
+
+.ib-clear {
+  background: var(--glass2);
+  border: 1px solid var(--border2);
+  color: var(--text3)
+}
+
+.ib-clear:hover {
+  border-color: var(--r);
+  color: var(--r)
+}
+
+.ib-send {
+  background: linear-gradient(135deg, var(--p), #db2777);
+  color: #fff;
+  box-shadow: 0 4px 14px var(--pg);
+}
+
+.ib-send:hover {
+  filter: brightness(1.15);
+  transform: scale(1.04);
+}
+
+.ib-send:active {
+  transform: scale(.92)
+}
+
+.ib-send:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+  transform: none !important
+}
+
+#toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: #0d1022;
+  border: 1.5px solid var(--p);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0;
+  transition: all .3s ease;
+  z-index: 9999;
+  pointer-events: none;
+  box-shadow: 0 12px 36px rgba(0,0,0,.7)
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0)
+}
+
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  z-index: 150;
+  backdrop-filter: blur(4px)
+}
+
+.sb-overlay.show {
+  display: block
+}
+
+@media(max-width:900px){
+  .sb-toggle { display: flex }
+  .layout { grid-template-columns: 1fr !important }
+  .sidebar {
+    position: fixed;
+    left: 0; top: 63px; bottom: 0;
+    z-index: 160;
+    transform: translateX(-100%);
+    transition: transform var(--ease);
+    width: var(--sbw) !important
+  }
+  .sidebar.open { transform: translateX(0) }
+}
+
+@media(max-width:500px){
+  .hd { padding: 10px 12px }
+  .chat-window { padding: 12px 10px 100px }
+  .msg-bubble { font-size: 13px; max-width: 90% }
+  .hd-btn.back-lbl { display: none }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <a class="logo" href="lobby.html">
+    <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+  </a>
+  <div class="hd-right">
+    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()">☰</button>
+    <div class="lang-pill">
+      <button class="lp-btn on" id="lpRU" onclick="setLang('RU')">RU</button>
+      <button class="lp-btn" id="lpEN" onclick="setLang('EN')">EN</button>
+    </div>
+    <button class="hd-btn" onclick="clearChat()">🗑</button>
+    <button class="hd-btn back-lbl" onclick="location.href='lobby.html'" id="backBtn">⬅ Лобби</button>
+  </div>
+</header>
+
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+      <div class="stats-row">
+        <div class="stat-chip"><div class="stat-val" id="statMsg">0</div><div class="stat-lbl" id="statMsgLbl">сообщ.</div></div>
+        <div class="stat-chip"><div class="stat-val" id="statRep">0</div><div class="stat-lbl" id="statRepLbl">докладов</div></div>
+        <div class="stat-chip"><div class="stat-val" id="statChk">0</div><div class="stat-lbl" id="statChkLbl">проверок</div></div>
+      </div>
+
+      <div class="ai-status" id="aiStatus">
+        <div class="ai-dot" id="aiDot"></div>
+        <span class="ai-label" id="aiLabel">Инициализация AI...</span>
+      </div>
+
+      <div class="sb-section" id="featureList">
+        <div class="sb-title" id="sbFeatTitle">Возможности</div>
+      </div>
+
+      <div class="sb-section"><div class="sb-title" id="sbExTitle">Примеры запросов</div></div>
+      <div class="quick-list" id="quickList"></div>
+    </div>
+  </aside>
+
+  <div class="chat-main">
+    <div class="chat-window" id="chatWindow">
+      <div class="welcome" id="welcomeBanner">
+        <div class="welcome-title">💬 <span id="wTitle">Language Bot — F‑Mine</span></div>
+        <div class="welcome-sub" id="wSub">Умный языковой помощник на базе AI. Пишу доклады, проверяю тексты, перевожу, объясняю правила грамматики и отвечаю на любые вопросы о языке.</div>
+        <div class="welcome-chips">
+          <span class="wchip wchip-a" onclick="ex('Доклад пчёлы')">📚 Доклад пчёлы</span>
+          <span class="wchip wchip-g" onclick="ex('Проверь: I goes to school.')">✍️ Проверить текст</span>
+          <span class="wchip wchip-c" onclick="ex('Переведи: Привет мир')">🌐 Перевести</span>
+          <span class="wchip wchip-p" onclick="ex('Напиши сочинение: Осень')">✏️ Сочинение</span>
+          <span class="wchip wchip-v" onclick="ex('Объясни правило: Past Simple')">📖 Правило</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="input-bar">
+      <div class="input-wrap">
+        <button class="ib-btn ib-mic" id="micBtn" title="Голос">🎤</button>
+        <textarea class="msg-input" id="msgInput" placeholder="Напиши запрос или вопрос..." rows="1"></textarea>
+        <button class="ib-btn ib-clear" onclick="clearInput()" title="Очистить">✕</button>
+        <button class="ib-btn ib-send" id="sendBtn" onclick="sendMessage()" title="Отправить">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Firebase & Chat Script -->
+<script type="module">
+let LANG = localStorage.getItem('fmine_lang') || 'RU';
+let isBusy = false;
+let lastReport = '';
+const chatWindow = document.getElementById('chatWindow');
+const msgInput   = document.getElementById('msgInput');
+const sendBtn    = document.getElementById('sendBtn');
+
+// ══════════════════════════════════════════════════════
+// I18N
+// ══════════════════════════════════════════════════════
+const T = {
+  RU: {
+    backBtn:'⬅ Лобби', statMsg:'сообщ.', statRep:'докладов', statChk:'проверок',
+    sbFeat:'Возможности', sbEx:'Примеры',
+    sbReport:'Доклад / Реферат', sbReportDesc:'AI + Wikipedia',
+    sbCheck:'Проверка текста', sbCheckDesc:'Грамматика + стиль',
+    sbTranslate:'Перевод текста', sbRetell:'Пересказ', sbRetellDesc:'Кратко по тексту',
+    sbEssay:'Сочинение / Эссе', sbEssayDesc:'По теме или плану',
+    sbQuestion:'Вопрос-ответ', sbQuestionDesc:'Любая тема',
+    sbImprove:'Улучшить стиль', sbImproveDesc:'Ясность и красота',
+    sbRule:'Правило языка', sbRuleDesc:'Грамматика с примерами',
+    wTitle:'Language Bot — F‑Mine',
+    wSub:'Умный языковой помощник на базе AI. Пишу доклады, проверяю тексты, перевожу, объясняю правила грамматики и отвечаю на любые вопросы о языке.',
+    placeholder:'Напиши запрос или вопрос...',
+    cleared:'🗑 Чат очищен', micStart:'🎤 Говори...', micErr:'❌ Ошибка',
+    levelUp: l => `🎉 Уровень ${l}!`,
+    aiReady:'AI готов', aiThinking:'AI думает...', aiErr:'Ошибка AI',
+    thinking:'Думаю...',
+    noConn: e => `❌ AI временно недоступен. Попробуй снова через 10 секунд.\n(${e})`,
+  },
+  EN: {
+    backBtn:'⬅ Lobby', statMsg:'msgs', statRep:'reports', statChk:'checks',
+    sbFeat:'Features', sbEx:'Examples',
+    sbReport:'Report / Essay', sbReportDesc:'AI + Wikipedia',
+    sbCheck:'Text check', sbCheckDesc:'Grammar + style',
+    sbTranslate:'Translate', sbRetell:'Retell', sbRetellDesc:'Short summary',
+    sbEssay:'Essay', sbEssayDesc:'Topic or outline',
+    sbQuestion:'Q&A', sbQuestionDesc:'Any topic',
+    sbImprove:'Improve text', sbImproveDesc:'Style & clarity',
+    sbRule:'Language rule', sbRuleDesc:'Grammar with examples',
+    wTitle:'Language Bot — F‑Mine',
+    wSub:'Smart AI language assistant. I write reports, check texts, translate, explain grammar rules, and answer language questions.',
+    placeholder:'Type a prompt or question...',
+    cleared:'🗑 Chat cleared', micStart:'🎤 Speak...', micErr:'❌ Error',
+    levelUp: l => `🎉 Level ${l}!`,
+    aiReady:'AI ready', aiThinking:'AI thinking...', aiErr:'AI Error',
+    thinking:'Thinking...',
+    noConn: e => `❌ No answer from AI.\n${e}`,
+  }
+};
+
+function t(key, ...args) {
+  const v = T[LANG][key];
+  return typeof v === 'function' ? v(...args) : v;
+}
+
+// ══════════════════════════════════════════════════════
+// EXAMPLES
+// ══════════════════════════════════════════════════════
+const EXAMPLES = {
+  RU: [
+    'Доклад пчёлы', 'Проверь: я пошол гулять', 'Переведи: I love learning languages', 'Улучши: Я сел за стол и начал писать текст и мне было ок.',
+    'Правило: Present Perfect', 'Диалог: покупка кофе', 'Стихи: про зиму', 'Хокку: весна', 'Синонимы: красивый'
+  ],
+  EN: [
+    "Report bees", "Check: She don't like apples.", "Translate: Привет, как дела?", "Improve: The cat sit on mat and he sleep.",
+    "Explain rule: Past Simple vs Past Perfect", "Dialogue: buying coffee", "Poetry: about winter", "Haiku: spring", "Synonyms: beautiful"
+  ]
+};
+
+window.setLang = l => {
+  LANG = l;
+  localStorage.setItem('fmine_lang', l);
+  document.getElementById('lpRU').classList.toggle('on', l === 'RU');
+  document.getElementById('lpEN').classList.toggle('on', l === 'EN');
+  applyTranslations();
+  showToast(l === 'RU' ? '🇷🇺 Русский' : '🇬🇧 English');
+};
+
+function applyTranslations() {
+  const map = {
+    backBtn:'backBtn', statMsgLbl:'statMsg', statRepLbl:'statRep', statChkLbl:'statChk',
+    sbFeatTitle:'sbFeat', sbExTitle:'sbEx',
+    wTitle:'wTitle', wSub:'wSub'
+  };
+  for (const [id, key] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(key);
+  }
+  msgInput.placeholder = t('placeholder');
+  renderQuickList();
+}
+
+function renderQuickList() {
+  document.getElementById('quickList').innerHTML =
+    EXAMPLES[LANG].map(e => `<div class="qex" onclick="window.ex(${JSON.stringify(e)})">${e}</div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// AI STATUS BADGE
+// ══════════════════════════════════════════════════════
+function setAiStatus(state) {
+  const dot = document.getElementById('aiDot');
+  const label = document.getElementById('aiLabel');
+  if (!dot || !label) return;
+  dot.className = 'ai-dot ' + (state === 'ready' ? 'ready' : state === 'busy' ? 'busy' : state === 'err' ? 'err' : '');
+  label.textContent = t(state === 'ready' ? 'aiReady' : state === 'busy' ? 'aiThinking' : 'aiErr');
+}
+
+// ══════════════════════════════════════════════════════
+// WIKIPEDIA API
+// ══════════════════════════════════════════════════════
+async function fetchWikiFacts(topic) {
+  try {
+    const wikiLang = LANG === 'RU' ? 'ru' : 'en';
+    const searchUrl = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(topic)}&srlimit=3&format=json&origin=*`;
+    const sRes = await fetch(searchUrl);
+    const sData = await sRes.json();
+    const results = sData?.query?.search || [];
+    if (!results.length) return '';
+    const best = results[0];
+    const summUrl = `https://${wikiLang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(best.title)}`;
+    const sumRes = await fetch(summUrl);
+    const sumData = await sumRes.json();
+    return sumData?.extract || '';
+  } catch(e) { return ''; }
+}
+
+// ══════════════════════════════════════════════════════
+// AI HUB (MULTI-FORMAT API ROUTER)
+// ══════════════════════════════════════════════════════
+async function callAI(systemPrompt, userMessage, onChunk) {
+  setAiStatus('busy');
+
+  try {
+    const response = await fetch('/api/chat-stream', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'openrouter/free',
+        stream: !!onChunk,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errMsg = errorData.error?.message || `HTTP ${response.status}`;
+      setAiStatus('err');
+      throw new Error(errMsg);
+    }
+
+    if (onChunk && response.body) {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let aiText = '';
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // keep last incomplete chunk
+        
+        for (const line of lines) {
+          if (line.trim().startsWith('data: ')) {
+            const dataStr = line.trim().substring(6);
+            if (dataStr === '[DONE]') continue;
+            try {
+              const dataObj = JSON.parse(dataStr);
+              const delta = dataObj.choices?.[0]?.delta?.content || '';
+              if (delta) {
+                aiText += delta;
+                onChunk(aiText);
+              }
+            } catch (e) {}
+          }
+        }
+      }
+      setAiStatus('ready');
+      return aiText;
+    }
+
+    const data = await response.json();
+    setAiStatus('ready');
+    return data.choices?.[0]?.message?.content || '';
+  } catch (e) {
+    setAiStatus('err');
+    throw e;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+const LANG_FEATURES = [
+  {
+    cat: 'Образование & Отчёты', icon: '📚', color: '--a',
+    items: [
+      { id: 'report', name: 'Доклад / Реферат', desc: 'AI + Факты Wikipedia', ex: 'Доклад пчёлы', rx: /^(доклад|реферат|напиши\s+доклад|сделай\s+доклад|составь\s+доклад|report\s*on?|essay\s*on?|write\s+report)\s*/i,
+        sysEn: `Write a structured school report using Wikipedia facts. Format:\n📘 Report: [topic]\n🔹 Introduction:\n[2-3 sentences]\n🔹 Main Part:\n[4-6 sentences]\n🔹 Conclusion:\n[2 sentences]\n🔹 Interesting Fact:\n[1 fact]`, sysRu: `Напиши структурированный школьный доклад. Используй факты из Wikipedia если есть. Формат:\n📘 Доклад: [тема]\n🔹 Введение:\n[2-3 предложения]\n🔹 Основная часть:\n[4-6 предложений]\n🔹 Заключение:\n[2 вывода]\n🔹 Интересный факт:\n[1 факт]` },
+      { id: 'essay', icon: '✏️', color: '--p', name: 'Сочинение / Эссе', desc: 'По теме или плану', ex: 'Напиши сочинение: Моя любимая книга', rx: /^(напиши\s+сочинение|составь\s+сочинение|сочинение\s+на\s+тему|сочинение:|write\s+essay|essay:|write\s+composition)\s*/i,
+        sysEn: `Write a short school essay. Format:\n✏️ Essay: [topic]\n\n[Intro]\n[Body]\n[Conclusion]`, sysRu: `Напиши школьное сочинение. Формат:\n✏️ Сочинение: [тема]\n\n[Вступление]\n[Основная часть]\n[Заключение]` },
+      { id: 'outline', icon: '📋', color: '--o', name: 'План сочинения', desc: 'Создай структуру', ex: 'План сочинения: Зима', rx: /^(план\s+сочинения|структура|essay\s+outline|outline)\s*/i,
+        sysEn: `Create an essay outline. Format:\n📋 Outline:\n1. Intro\n2. Main...`, sysRu: `Напиши подробный план для сочинения. Формат:\n📋 План сочинения:\n1. Введение...\n...` },
+      { id: 'retell', icon: '📝', color: '--v', name: 'Пересказ', desc: 'Краткое изложение', ex: 'Перескажи: текст...', rx: /^(перескажи|перескажите|пересказ|retell|summarize|summary|краткое\s+изложение)\s*/i,
+        sysEn: `Create a brief summary. Format:\n📝 Summary\nMain idea: [1 sentence]\nKey points:\n• [point]\nConclusion: [1 sentence]`, sysRu: `Сделай краткий пересказ. Формат:\n📝 Пересказ\nГлавная мысль: [1 предложение]\nКлючевые моменты:\n• [пункт]\nВывод: [1 предложение]` },
+      { id: 'bullet', icon: '📌', color: '--text', name: 'Тезисы', desc: 'Главное по пунктам', ex: 'Тезисы: текст...', rx: /^(тезисы|выдели\s+главное|bullet\s+points|main\s+points)\s*/i,
+        sysEn: `Extract bullet points. Format:\n📌 Bullet Points\n• [Point]`, sysRu: `Выдели главное тезисами. Формат:\n📌 Основные тезисы\n• [Пункт]` },
+      { id: 'expand', icon: '📈', color: '--g', name: 'Развернуть текст', desc: 'Сделать текст больше', ex: 'Разверни: я пошёл гулять.', rx: /^(разверни|дополни\s+текст|expand|elaborate)\s*/i,
+        sysEn: `Expand into a detailed paragraph. Format:\n📈 Expanded:\n[text]`, sysRu: `Сделай текст длинным и детальным. Формат:\n📈 Развёрнутый текст:\n[текст]` }
+    ]
+  },
+  {
+    cat: 'Редактура & Язык', icon: '✍️', color: '--g',
+    items: [
+      { id: 'check', name: 'Проверка текста', desc: 'Грамматика + стиль', ex: 'Проверь: I goes to school.', rx: /^(проверь|проверьте|проверить|check|grammar\s+check|check\s+text|check:)\s*/i,
+        sysEn: `Check text for errors. Format:\n✅ Grammar Check\n❌ Error: [quote]\n✏️ Correction: [fix]\n💡 Rule: [expl]\n📊 Total errors: X\nIf perfect: "✅ No errors found!"`, sysRu: `Проверь текст на ошибки. Формат:\n✅ Проверка текста\n❌ Ошибка: [цитата]\n✏️ Исправление: [фрагмент]\n💡 Правило: [объяснение]\n📊 Всего ошибок: X\nЕсли верно: "✅ Ошибок не найдено!"` },
+      { id: 'improve', icon: '✨', color: '--o', name: 'Улучшить текст', desc: 'Стиль и ясность', ex: 'Улучши: The cat sit.', rx: /^(улучши|улучшить|исправь\s+и\s+улучши|improve|rewrite|make\s+better|улучши:)\s*/i,
+        sysEn: `Improve clarity/style. Format:\n✨ Improved Version:\n[text]\n📝 Changes:\n• [change]\n💡 Tip: [tip]`, sysRu: `Улучши стиль текста. Формат:\n✨ Красивый вариант:\n[текст]\n📝 Что изменено:\n• [изменение]\n💡 Совет: [совет]` },
+      { id: 'translate', icon: '🌐', color: '--c', name: 'Перевод', desc: 'RU ↔ EN + другие', ex: 'Переведи: привет', rx: /^(переведи|перевести|перевод|translate|переведи\s+на|translate\s+to)\s*/i,
+        sysEn: `Translate text. Format:\n🌐 Translation\nOriginal: [text]\nTranslation: [text]`, sysRu: `Переведи текст. Формат:\n🌐 Перевод\nОригинал: [текст]\nПеревод: [текст]` },
+      { id: 'formal', icon: '👔', color: '--text2', name: 'Официальный стиль', desc: 'Деловое письмо', ex: 'Официально: скинь файл', rx: /^(официально|деловой\s+стиль|formal|make\s+formal)\s*/i,
+        sysEn: `Rewrite in a highly formal tone. Format:\n👔 Formal Version:\n[text]`, sysRu: `Перепиши текст в деловом стиле. Формат:\n👔 Деловой стиль:\n[текст]` },
+      { id: 'slang', icon: '😎', color: '--p', name: 'Сленг / Неформально', desc: 'Молодёжно', ex: 'Сленг: я устал', rx: /^(сленг|неформально|slang|informal|make\s+casual)\s*/i,
+        sysEn: `Rewrite in modern internet slang. Format:\n😎 Slang Version:\n[text]`, sysRu: `Перепиши молодёжным сленгом. Формат:\n😎 Сленг-версия:\n[текст]` },
+      { id: 'paraphrase', icon: '🔄', color: '--v', name: 'Перефразировать', desc: 'Другими словами', ex: 'Перефразируй: меня нет дома', rx: /^(перефразируй|скажи\s+иначе|paraphrase|rephrase)\s*/i,
+        sysEn: `Provide 3 different ways to say this. Format:\n🔄 Rephrased:\n1. [v1]\n2. [v2]`, sysRu: `Напиши 3 разных способа сказать это. Формат:\n🔄 Перефразирование:\n1. [в1]\n2. [в2]` },
+      { id: 'punct', icon: ',,', color: '--r', name: 'Запятые', desc: 'Пунктуация', ex: 'Запятые: казнить нельзя помиловать', rx: /^(расставь\s+запятые|запятые|пунктуация|punctuation|fix\s+commas)\s*/i,
+        sysEn: `Fix punctuation. Format:\n📌 Punctuation Fix:\n[text]`, sysRu: `Расставь запятые. Формат:\n📌 Пунктуация:\n[текст]` }
+    ]
+  },
+  {
+    cat: 'Правила & Значения', icon: '📖', color: '--c',
+    items: [
+      { id: 'rule', name: 'Правило', desc: 'Грамматика', ex: 'Правило: a / an', rx: /^(объясни\s+правило|объясни|расскажи\s+о\s+правиле|explain\s+rule|explain|grammar\s+rule|правило:)\s*/i,
+        sysEn: `Explain grammar rule simply. Format:\n📖 Rule: [name]\n📌 What it is:\n[expl]\n✅ When to use:\n[cond]\n📝 Examples:\n1. [ex]`, sysRu: `Объясни правило. Формат:\n📖 Правило: [название]\n📌 Что это:\n[объяснение]\n✅ Применение:\n[условия]\n📝 Примеры:\n1. [пример]` },
+      { id: 'eli5', icon: '👶', color: '--a', name: 'Объясни просто', desc: 'Как для ребёнка', ex: 'Просто: ДНК', rx: /^(объясни\s+просто|для\s+чайников|eli5|explain\s+like\s+im\s+5)\s*/i,
+        sysEn: `Explain like I'm 5 years old. Format:\n👶 ELI5:\n[text]`, sysRu: `Объясни просто, как 5-летнему. Формат:\n👶 Простое объяснение:\n[текст]` },
+      { id: 'idiom', icon: '🎭', color: '--v', name: 'Фразеологизмы', desc: 'Смысл идиомы', ex: 'Идиома: бить баклуши', rx: /^(идиома|фразеологизм|пословица|idiom|proverb)\s*/i,
+        sysEn: `Explain literal meaning/origin of idiom. Format:\n🎭 Idiom: [text]\n📖 Meaning:\n[text]\n🌍 Origin:\n[text]`, sysRu: `Объясни смысл фразеологизма/пословицы. Формат:\n🎭 Фразеологизм: [текст]\n📖 Смысл:\n[текст]\n🌍 Происхождение:\n[текст]` },
+      { id: 'syntax', icon: '🌳', color: '--g', name: 'Синтаксис', desc: 'Разбор предложения', ex: 'Синтаксис: мама мыла', rx: /^(синтаксический\s+разбор|разбор\s+предложения|разбери\s+предложение|syntax\s+parsing|parse\s+sentence)\s*/i,
+        sysEn: `Perform syntactical parse. Format:\n🌳 Syntax Analysis:\n• Subject: [text]\n• Verb: [text]`, sysRu: `Сделай синтаксический разбор. Формат:\n🌳 Синтаксический разбор:\n• Подлежащее: [текст]\n...` },
+      { id: 'phonetic', icon: '🗣️', color: '--text', name: 'Транскрипция', desc: 'Как читается', ex: 'Транскрипция: queue', rx: /^(транскрипция|как\s+читается|произношение|phonetics|pronunciation|how\s+to\s+say)\s*/i,
+        sysEn: `Provide IPA phonetics. Format:\n🗣️ Pronunciation:\n[IPA]\n💡 Tip:\n[tip]`, sysRu: `Напиши как читается (транскрипция/буквами). Формат:\n🗣️ Произношение:\n[текст]` },
+      { id: 'etymology', icon: '🏺', color: '--o', name: 'Этимология', desc: 'Происхождение', ex: 'Этимология: медведь', rx: /^(этимология|происхождение\s+слова|etymology|word\s+origin)\s*/i,
+        sysEn: `Explain the etymology of the word. Format:\n🏺 Etymology:\n[text]`, sysRu: `Расскажи происхождение слова. Формат:\n🏺 Этимология:\n[текст]` }
+    ]
+  },
+  {
+    cat: 'Словарный запас', icon: '🔤', color: '--p',
+    items: [
+      { id: 'synonym', name: 'Синонимы', desc: 'Подбор синонимов', ex: 'Синонимы: красивый', rx: /^(синонимы|synonyms)\s*/i,
+        sysEn: `Provide synonyms. Format:\n🔤 Synonyms:\n1. [word] - [nuance]`, sysRu: `Напиши синонимы с их оттенками. Формат:\n🔤 Синонимы:\n1. [слово] - [оттенок]` },
+      { id: 'antonym', icon: '🔀', color: '--v', name: 'Антонимы', desc: 'Противоположности', ex: 'Антонимы: быстрый', rx: /^(антонимы|противоположности|antonyms|opposites)\s*/i,
+        sysEn: `Provide antonyms. Format:\n🔀 Antonyms:\n• [word]`, sysRu: `Напиши антонимы. Формат:\n🔀 Antonyms:\n• [слово]` },
+      { id: 'keywords', icon: '🔑', color: '--a', name: 'Ключевые слова', desc: 'Хештеги', ex: 'Теги: нейросети меняют мир', rx: /^(ключевые\s+слова|теги|хэштеги|keywords|tags|hashtags)\s*/i,
+        sysEn: `Extract keywords/hashtags. Format:\n🔑 Keywords:\n• [word]\n#Hashtags: [tags]`, sysRu: `Выдели хештеги и теги. Формат:\n🔑 Ключевые слова:\n• [слово]\n#Хештеги: [теги]` },
+      { id: 'examples', icon: '🧩', color: '--g', name: 'Примеры', desc: 'Как использовать', ex: 'Примеры: nevertheless', rx: /^(примеры\s+использования|примеры|сделай\s+предложения|examples|usage)\s*/i,
+        sysEn: `Provide 3-5 usage example sentences. Format:\n🧩 Usage Examples:\n1. [sentence]`, sysRu: `Придумай предложения с данным словом. Формат:\n🧩 Примеры в речи:\n1. [предложение]` }
+    ]
+  },
+  {
+    cat: 'Творчество & Поэзия', icon: '🎭', color: '--o',
+    items: [
+      { id: 'story', name: 'Рассказ', desc: 'Короткая история', ex: 'Рассказ: кот на луне', rx: /^(рассказ|напиши\s+рассказ|история|story|short\s+story)\s*/i,
+        sysEn: `Write a short story. Format:\n📚 Story:\n[text]`, sysRu: `Напиши короткий рассказ. Формат:\n📚 Рассказ:\n[текст]` },
+      { id: 'dialogue', icon: '💬', color: '--c', name: 'Диалог', desc: 'Сценарий разговора', ex: 'Диалог: в кафе', rx: /^(диалог|составь\s+диалог|разговор|dialogue|conversation)\s*/i,
+        sysEn: `Write a dialogue. Format:\n🎭 Dialogue:\n**A:** [text]\n**B:** [text]`, sysRu: `Напиши живой диалог. Формат:\n🎭 Диалог:\n**А:** [текст]\n**Б:** [текст]` },
+      { id: 'poetry', icon: '📜', color: '--p', name: 'Стихи', desc: 'Стихотворение', ex: 'Стих: про осень', rx: /^(стихи|стих|стихотворение|поэма|poetry|poem|write\s+a\s+poem)\s*/i,
+        sysEn: `Write a ryming poem. Format:\n📜 Poem:\n[text]`, sysRu: `Напиши стихотворение. Формат:\n📜 Стих:\n[текст]` },
+      { id: 'haiku', icon: '🌸', color: '--text', name: 'Хокку', desc: '5-7-5', ex: 'Хокку: зима', rx: /^(хокку|хайку|haiku)\s*/i,
+        sysEn: `Write a Haiku (5-7-5). Format:\n🌸 Haiku:\n[text]`, sysRu: `Напиши хокку (5-7-5). Формат:\n🌸 Хокку:\n[текст]` },
+      { id: 'title', icon: '💡', color: '--a', name: 'Названия', desc: 'Для статей', ex: 'Название: статья', rx: /^(название|заголовок|придумай\s+название|title|generate\s+title|headline)\s*/i,
+        sysEn: `Generate 5 catchy titles. Format:\n💡 Titles:\n1. [title]`, sysRu: `Придумай 5 цепляющих названий. Формат:\n💡 Названия:\n1. [заголовок]` },
+      { id: 'rhyme', icon: '🎶', color: '--c', name: 'Рифмы', desc: 'Генератор рифм', ex: 'Рифма: любовь', rx: /^(рифма|рифмы|rhyme|rhymes\s+for)\s*/i,
+        sysEn: `Provide words that rhyme. Format:\n🎶 Rhymes:\n• [word]`, sysRu: `Подбери рифмы. Формат:\n🎶 Рифмы:\n• [слово]` },
+      { id: 'song', icon: '🎵', color: '--g', name: 'Адаптация песни', desc: 'Перевод', ex: 'Песня: Let it be', rx: /^(песня|перевод\s+песни|переведи\s+песню|song|translate\s+song)\s*/i,
+        sysEn: `Provide poetic translation of lyrics. Format:\n🎵 Song:\n[text]`, sysRu: `Поэтический перевод песни. Формат:\n🎵 Песня:\n[текст]` },
+      { id: 'twister', icon: '🌪️', color: '--v', name: 'Скороговорка', desc: 'Речь', ex: 'Скороговорка: Ш', rx: /^(скороговорка|tongue\s+twister)\s*/i,
+        sysEn: `Create a tongue twister. Format:\n🌪️ Tongue Twister:\n[text]`, sysRu: `Придумай сложную скороговорку. Формат:\n🌪️ Скороговорка:\n[текст]` }
+    ]
+  }
+];
+
+// Injections for sidebar features
+function buildSidebarFeatures() {
+  const container = document.getElementById('featureList');
+  if(!container) return;
+  container.innerHTML = `<div class="sb-title" id="sbFeatTitle">${t('sbFeat')}</div>`;
+  
+  LANG_FEATURES.forEach(cat => {
+    const details = document.createElement('details');
+    details.style.marginBottom = '6px';
+    details.style.outline = 'none';
+    
+    const summary = document.createElement('summary');
+    summary.style.display = 'flex';
+    summary.style.alignItems = 'center';
+    summary.style.gap = '8px';
+    summary.style.padding = '8px 10px';
+    summary.style.borderRadius = '9px';
+    summary.style.background = 'var(--glass)';
+    summary.style.border = '1px solid var(--border)';
+    summary.style.cursor = 'pointer';
+    summary.style.fontSize = '12px';
+    summary.style.fontWeight = '700';
+    summary.style.outline = 'none';
+    summary.style.color = '#fff';
+    summary.innerHTML = `<span style="font-size:14px">${cat.icon}</span> ${cat.cat}`;
+    
+    const div = document.createElement('div');
+    div.style.display = 'flex';
+    div.style.flexDirection = 'column';
+    div.style.gap = '4px';
+    div.style.marginTop = '4px';
+    div.style.paddingLeft = '10px';
+    
+    cat.items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'sb-card';
+      card.onclick = () => window.ex(item.ex);
+      card.innerHTML = `
+        <div class="sb-icon">${item.icon || cat.icon}</div>
+        <div>
+          <div class="sb-name">${item.name}</div>
+          <div class="sb-desc">${item.desc}</div>
+        </div>
+      `;
+      div.appendChild(card);
+    });
+    
+    details.appendChild(summary);
+    details.appendChild(div);
+    container.appendChild(details);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// CORE CHAT ACTIONS
+// ══════════════════════════════════════════════════════
+window.ex = s => {
+  msgInput.value = s;
+  msgInput.dispatchEvent(new Event('input'));
+  msgInput.focus();
+  if (window.innerWidth <= 900) closeSidebar();
+};
+
+window.clearInput = () => {
+  msgInput.value = '';
+  msgInput.style.height = 'auto';
+  msgInput.focus();
+};
+
+window.clearChat = () => {
+  chatWindow.innerHTML = '';
+  const wb = document.createElement('div');
+  wb.className = 'welcome';
+  wb.innerHTML = `
+    <div class="welcome-title">💬 ${t('wTitle')}</div>
+    <div class="welcome-sub">${t('wSub')}</div>
+    <div class="welcome-chips">
+      <span class="wchip wchip-a" onclick="ex('${LANG==='RU'?'Доклад пчёлы':'Report bees'}')">${LANG==='RU'?'📚 Доклад пчёлы':'📚 Report bees'}</span>
+      <span class="wchip wchip-g" onclick="ex('${LANG==='RU'?'Проверь: I goes to school.':'Check: I goes to school.'}')">${LANG==='RU'?'✍️ Проверить':'✍️ Check text'}</span>
+      <span class="wchip wchip-c" onclick="ex('${LANG==='RU'?'Переведи: Привет мир':'Translate: Привет мир'}')">${LANG==='RU'?'🌐 Перевести':'🌐 Translate'}</span>
+      <span class="wchip wchip-p" onclick="ex('${LANG==='RU'?'Напиши сочинение: Осень':'Write essay: Autumn'}')">${LANG==='RU'?'✏️ Сочинение':'✏️ Essay'}</span>
+      <span class="wchip wchip-v" onclick="ex('${LANG==='RU'?'Объясни правило: Past Simple':'Explain rule: Past Simple'}')">${LANG==='RU'?'📖 Правило':'📖 Rule'}</span>
+    </div>`;
+  chatWindow.appendChild(wb);
+  showToast(t('cleared'));
+};
+
+let msgsCount = 0;
+let reportsCount = 0;
+let checksCount = 0;
+
+function addMessage(sender, text) {
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + sender;
+  
+  const av = document.createElement('div');
+  av.className = 'msg-avatar ' + (sender === 'bot' ? 'bot-av' : 'user-av');
+  av.textContent = sender === 'bot' ? '🤖' : '👤';
+  
+  const contentWrap = document.createElement('div');
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  
+  // Custom format text
+  let html = text
+    .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+    .replace(/✅ ([^\n]+)/g, '<span class="section-head">✅ $1</span>')
+    .replace(/❌ ([^\n]+)/g, '<div class="error-item">❌ $1</div>')
+    .replace(/✏️ ([^\n]+)/g, '<div class="fix-item">✏️ $1</div>')
+    .replace(/💡 ([^\n]+)/g, '<div class="tip-box">💡 $1</div>');
+  
+  bubble.innerHTML = html;
+  
+  const time = document.createElement('div');
+  time.className = 'msg-time';
+  time.textContent = new Date().toLocaleTimeString('ru', {hour: '2-digit', minute:'2-digit'});
+  
+  contentWrap.appendChild(bubble);
+  contentWrap.appendChild(time);
+  row.appendChild(av);
+  row.appendChild(contentWrap);
+  
+  chatWindow.appendChild(row);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  
+  if (sender === 'user') {
+    msgsCount++;
+    document.getElementById('statMsg').textContent = msgsCount;
+  }
+}
+
+function showThinking() {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.id = 'thinkingRow';
+  
+  const av = document.createElement('div');
+  av.className = 'msg-avatar bot-av';
+  av.textContent = '🤖';
+  
+  const contentWrap = document.createElement('div');
+  const bubble = document.createElement('div');
+  bubble.className = 'thinking-bubble';
+  bubble.innerHTML = '<div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>';
+  
+  contentWrap.appendChild(bubble);
+  row.appendChild(av);
+  row.appendChild(contentWrap);
+  
+  chatWindow.appendChild(row);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+function hideThinking() {
+  const el = document.getElementById('thinkingRow');
+  if (el) el.remove();
+}
+
+window.sendMessage = async () => {
+  const input = msgInput.value.trim();
+  if (!input || isBusy) return;
+  
+  isBusy = true;
+  sendBtn.disabled = true;
+  msgInput.value = '';
+  msgInput.style.height = 'auto';
+  
+  addMessage('user', input);
+  showThinking();
+  
+  // Decide which features prompt to use
+  let matchedItem = null;
+  let textToSolve = input;
+  
+  for (const cat of LANG_FEATURES) {
+    for (const item of cat.items) {
+      if (item.rx.test(input)) {
+        matchedItem = item;
+        textToSolve = input.replace(item.rx, '').trim();
+        break;
+      }
+    }
+    if (matchedItem) break;
+  }
+  
+  let systemPrompt = `You are a helpful language teacher. Answer in ${LANG === 'RU' ? 'Russian' : 'English'}. Keep responses formatted nicely.`;
+  if (matchedItem) {
+    systemPrompt = LANG === 'RU' ? matchedItem.sysRu : matchedItem.sysEn;
+    if (matchedItem.id === 'report') {
+      reportsCount++;
+      document.getElementById('statRep').textContent = reportsCount;
+      // Fetch Wiki facts
+      const facts = await fetchWikiFacts(textToSolve);
+      if (facts) {
+        textToSolve += `\n\nWikipedia context: ${facts}`;
+      }
+    } else if (matchedItem.id === 'check') {
+      checksCount++;
+      document.getElementById('statChk').textContent = checksCount;
+    }
+  }
+  
+  try {
+    const aiResponse = await callAI(systemPrompt, textToSolve);
+    hideThinking();
+    addMessage('bot', aiResponse);
+  } catch (err) {
+    hideThinking();
+    addMessage('bot', t('noConn', err.message));
+  }
+  
+  isBusy = false;
+  sendBtn.disabled = false;
+};
+
+// ══════════════════════════════════════════════════════
+// MOBILE SIDEBAR TOGGLES
+// ══════════════════════════════════════════════════════
+window.toggleSidebar = () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOverlay').classList.toggle('show');
+};
+window.closeSidebar = () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('show');
+};
+
+msgInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+msgInput.addEventListener('input', () => {
+  msgInput.style.height = 'auto';
+  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+});
+
+// ══════════════════════════════════════════════════════
+// VOICE recognition
+// ══════════════════════════════════════════════════════
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const micBtn = document.getElementById('micBtn');
+if (SR) {
+  const rec = new SR();
+  rec.interimResults = false;
+  let isRec = false;
+  micBtn.addEventListener('click', () => {
+    if (isRec) { rec.stop(); return; }
+    rec.lang = LANG === 'RU' ? 'ru-RU' : 'en-US';
+    try {
+      rec.start();
+      isRec = true;
+      micBtn.classList.add('rec');
+      micBtn.textContent = '⏹';
+      showToast(t('micStart'));
+    } catch { showToast(t('micErr')); }
+  });
+  rec.addEventListener('result', e => {
+    msgInput.value = e.results[0][0].transcript;
+    msgInput.dispatchEvent(new Event('input'));
+  });
+  rec.addEventListener('end', () => { isRec = false; micBtn.classList.remove('rec'); micBtn.textContent = '🎤'; });
+  rec.addEventListener('error', () => { isRec = false; micBtn.classList.remove('rec'); micBtn.textContent = '🎤'; showToast(t('micErr')); });
+} else {
+  micBtn.style.display = 'none';
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+LANG = localStorage.getItem('fmine_lang') || 'RU';
+document.getElementById('lpRU').classList.toggle('on', LANG === 'RU');
+document.getElementById('lpEN').classList.toggle('on', LANG === 'EN');
+applyTranslations();
+buildSidebarFeatures();
+setAiStatus('ready');
+
+setTimeout(() => {
+  addMessage('bot', LANG === 'RU'
+    ? 'Привет! 👋 Я языковой бот F‑Mine на базе AI.\n\nЯ умею:\n📚 Писать доклады и рефераты\n✍️ Проверять грамматику и стиль\n🌐 Переводить тексты\n✏️ Писать сочинения\n📝 Делать пересказы\n✨ Улучшать тексты\n📖 Объяснять правила языка\n\nПопробуй написать: "Доклад пчёлы" или "Проверь: I goes to school"'
+    : "Hello! 👋 I'm the F‑Mine Language Bot powered by AI.\n\nI can:\n📚 Write reports and essays\n✍️ Check grammar and style\n🌐 Translate texts\n✏️ Write compositions\n📝 Create summaries\n✨ Improve your texts\n📖 Explain grammar rules\n\nTry: \"Report bees\" or \"Check: I goes to school\"");
+}, 300);
+</script>
+</body>
+</html>

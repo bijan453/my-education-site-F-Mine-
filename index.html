@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F-Mine | Auth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@300;400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  background: #06070a;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   SPLIT LAYOUT
+   ═══════════════════════════════════════════ */
+.split-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════
+   LEFT PANEL — FORM
+   ═══════════════════════════════════════════ */
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px clamp(24px, 5vw, 60px);
+  background: #090a0f;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Premium ambient purple glow on the left panel edge */
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: -25%;
+  width: 50%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 380px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 34px;
+  letter-spacing: -1.5px;
+  margin-bottom: 12px;
+}
+.logo-f {
+  background: linear-gradient(135deg, #a78bfa, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.logo-rest {
+  color: #fff;
+}
+
+/* Title */
+h2 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  color: #fff;
+  margin: 8px 0 24px;
+  letter-spacing: -0.5px;
+}
+
+/* Language switcher styled exactly like the screenshot toggle */
+.language-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px;
+  border-radius: 30px;
+  margin-bottom: 32px;
+  width: 116px;
+  height: 34px;
+}
+.lang-slider {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  width: 52px;
+  height: calc(100% - 6px);
+  border-radius: 20px;
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+.language-select button {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+  cursor: pointer;
+  height: 100%;
+  text-align: center;
+}
+.language-select button.active {
+  color: #fff;
+}
+
+/* Input fields */
+.input-group {
+  position: relative;
+  margin-bottom: 16px;
+}
+.input-group .input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  z-index: 3;
+}
+
+input {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  outline: none;
+  display: block;
+  transition: all 0.2s ease;
+}
+input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+input:focus {
+  border-color: rgba(6, 182, 212, 0.4);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Eye/Action Icon styling inside input if needed */
+.input-group::after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Primary Button with the gorgeous Purple-to-Turquoise gradient */
+.btn-primary {
+  width: 100%;
+  padding: 15px 20px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(to right, #b5179e 0%, #7209b7 35%, #06b6d4 100%);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(114, 9, 183, 0.2);
+}
+.btn-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3);
+}
+
+/* Secondary Button matching the outline design */
+.btn-secondary {
+  width: 100%;
+  padding: 14px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: transparent;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Separator */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hidden { display: none !important; }
+
+.small-link {
+  margin-top: 16px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  text-decoration: underline;
+  display: inline-block;
+  transition: color 0.2s;
+}
+.small-link:hover {
+  color: #06b6d4;
+}
+
+.step-title {
+  margin: 16px 0 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.code-box {
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: #06b6d4;
+}
+
+.small-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 16px;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════
+   RIGHT PANEL — CLEAN IMAGE VIEW
+   ═══════════════════════════════════════════ */
+.right-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: #010103;
+  overflow: hidden;
+  padding: 60px;
+}
+
+/* Clean cinematic image filling the entire background frame perfectly */
+.bh-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Dynamic Text Content Overlay */
+.right-content {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+  text-align: left;
+}
+
+/* Exact gradient distribution from the mockup image */
+.right-tagline {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  background: linear-gradient(to right, #ffffff 0%, #c084fc 35%, #06b6d4 70%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.right-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 24px;
+}
+.right-desc strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Horizontal pill row matching your exact footer styling */
+.features-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.feature-pill {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ═══════════════════════════════════════════
+   TOASTS
+   ═══════════════════════════════════════════ */
+#toastBox {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+.toast {
+  padding: 12px 18px;
+  border-radius: 12px;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.toast.success { background: rgba(16, 185, 129, 0.9); }
+.toast.error { background: rgba(239, 68, 68, 0.9); }
+.toast.info { background: rgba(124, 58, 237, 0.9); }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .split-container { grid-template-columns: 1fr; }
+  .right-panel { min-height: 45vh; padding: 30px 20px; }
+  .right-tagline { font-size: 24px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="split-container">
+
+  <!-- ═══════════ LEFT PANEL — FORM ═══════════ -->
+  <div class="left-panel">
+    <div class="form-wrapper">
+
+      <div class="logo">
+        <span class="logo-f">F</span><span class="logo-rest">-Mine</span>
+      </div>
+
+      <h2 id="title">Регистрация</h2>
+
+      <div class="language-select">
+        <div id="langSlider" class="lang-slider"></div>
+        <button id="btnRU" onclick="setLang('RU')">RU</button>
+        <button id="btnEN" onclick="setLang('EN')">EN</button>
+      </div>
+
+      <!-- REGISTER STEP -->
+      <div id="register">
+        <div class="input-group">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          <input id="nick" placeholder="Ник" autocomplete="off">
+        </div>
+        <div class="input-group">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <input id="email" placeholder="Email" autocomplete="off">
+        </div>
+        <div class="input-group">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <input id="passReg" type="password" placeholder="Пароль" autocomplete="new-password">
+        </div>
+
+        <button class="btn-primary" onclick="sendCode()" id="registerBtn">📩 Получить код</button>
+        
+        <div class="divider"><span>или</span></div>
+        
+        <button class="btn-secondary" onclick="showLogin()" id="goLoginBtn">Уже есть аккаунт? Войти</button>
+
+        <div id="codeBox" class="hidden">
+          <div class="step-title" id="regStepTitle">Введите код из письма</div>
+          <div class="input-group">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <input id="code" type="password" placeholder="Код" autocomplete="one-time-code">
+          </div>
+        </div>
+
+        <button id="finishBtn" class="btn-primary hidden" onclick="finishRegister()">Создать аккаунт</button>
+      </div>
+
+      <!-- LOGIN STEP -->
+      <div id="login" class="hidden">
+        <div class="input-group">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          <input id="loginNick" placeholder="Ник" autocomplete="off">
+        </div>
+        <div class="input-group">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <input id="loginPass" type="password" placeholder="Пароль" autocomplete="current-password">
+        </div>
+
+        <button class="btn-primary" onclick="login()" id="loginBtn">Войти</button>
+        
+        <div class="divider"><span>или</span></div>
+        
+        <button class="btn-secondary" onclick="back()" id="backBtn">Назад</button>
+
+        <div class="small-link" onclick="showForgot()" id="forgotLink">Забыли пароль?</div>
+      </div>
+
+      <!-- FORGOT PASSWORD STEP -->
+      <div id="forgot" class="hidden">
+        <div class="step-title" id="fp1">Шаг 1 — введите никнейм</div>
+        <div class="input-group">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          <input id="forgotNick" placeholder="Ник" autocomplete="off">
+        </div>
+
+        <div class="step-title" id="fp2">Шаг 2 — введите Gmail</div>
+        <div class="input-group">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <input id="forgotEmail" placeholder="Email" autocomplete="off">
+        </div>
+
+        <button class="btn-primary" onclick="sendResetCode()" id="sendResetBtn">📩 Получить код</button>
+
+        <div id="resetCodeBox" class="hidden">
+          <div class="step-title" id="fp3">Шаг 3 — введите код из письма</div>
+          <div class="input-group">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <input id="resetCode" type="password" placeholder="Код из email" autocomplete="one-time-code">
+          </div>
+          <div id="resetCodeHint" class="code-box hidden"></div>
+          <button class="btn-primary" onclick="verifyResetCode()" id="verifyResetBtn">✅ Подтвердить код</button>
+        </div>
+
+        <div id="newPasswordBox" class="hidden">
+          <div class="step-title" id="fp4">Шаг 4 — введите новый пароль</div>
+          <div class="input-group">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <input id="newPassword" type="password" placeholder="Новый пароль" autocomplete="new-password">
+          </div>
+          <button class="btn-primary" onclick="saveNewPassword()" id="savePassBtn">🔐 Сохранить новый пароль</button>
+        </div>
+
+        <button class="btn-secondary" onclick="backFromForgot()" id="backForgotBtn" style="margin-top:14px;">Назад</button>
+
+        <div class="small-text" id="hintText">
+          Код проверяется в Firebase, а одинаковый nickname создать второй раз нельзя.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ RIGHT PANEL — BLACK HOLE ═══════════ -->
+  <div class="right-panel">
+    <!-- Clean, un-scaled source image background layer -->
+    <img src="image.png" alt="Black Hole Backgound" class="bh-bg-image">
+
+    <!-- Overlaid footer text exactly matching image_338561.jpg -->
+    <div class="right-content">
+      <div class="right-tagline" id="rightTagline">Образовательная платформа нового поколения</div>
+      <div class="right-desc" id="rightDesc">
+        <strong>F-Mine</strong> — это интерактивная учебная среда, которая объединяет ИИ-ассистентов, умные калькуляторы, шахматы и целый мир научных инструментов в одном месте. Учись, играй, создавай — всё бесплатно.
+      </div>
+      
+      <div class="features-row" id="featuresRow">
+        <div class="feature-pill"><span>🤖</span><span id="pill1">ИИ Помощник</span></div>
+        <div class="feature-pill"><span>🧮</span><span id="pill2">Калькуляторы</span></div>
+        <div class="feature-pill"><span>♟️</span><span id="pill3">Шахматы</span></div>
+        <div class="feature-pill"><span>🔬</span><span id="pill4">Наука</span></div>
+        <div class="feature-pill"><span>🎓</span><span id="pill5">Обучение</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toastBox"></div>
+
+<!-- FIREBASE AND APP LOGIC CONTROL STRUCTURE — 100% UNTOUCHED -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  runTransaction
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+  authDomain: "fmine-auth.firebaseapp.com",
+  projectId: "fmine-auth",
+  storageBucket: "fmine-auth.firebasestorage.app",
+  messagingSenderId: "219769927531",
+  appId: "1:219769927531:web:fbd45a0876f32927d23e2e",
+  measurementId: "G-ETT9HCQRQD"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let lang = localStorage.getItem("fmine_lang") || "EN";
+
+let regState = { code: "", nick: "", email: "", password: "" };
+let resetState = { code: "", nick: "", email: "", verified: false };
+
+const UI = {
+  RU: {
+    titleReg: "Регистрация",
+    titleLogin: "Вход",
+    titleForgot: "Восстановление пароля",
+    nick: "Ник",
+    email: "Email",
+    pass: "Пароль",
+    passNew: "Новый пароль",
+    getCode: "📩 Получить код",
+    create: "Создать аккаунт",
+    login: "Войти",
+    back: "Назад",
+    forgot: "Забыли пароль?",
+    regCodeLabel: "Введите код из письма",
+    fp1: "Шаг 1 — введите никнейм",
+    fp2: "Шаг 2 — введите Gmail",
+    fp3: "Шаг 3 — введите код из письма",
+    fp4: "Шаг 4 — введите новый пароль",
+    hint: "Код проверяется в Firebase, а одинаковый nickname создать второй раз нельзя.",
+    regOk: "Код отправлен. Введи его ниже.",
+    regCreated: "Аккаунт создан!",
+    loginOk: "Вход выполнен!",
+    resetOk: "Код отправлен на email.",
+    resetVerified: "Код подтверждён",
+    passOk: "Пароль обновлён!",
+    mismatchEmail: "Email не совпадает с этим ником",
+    error: "Ошибка",
+    fillAll: "Заполни все поля",
+    fillNickEmail: "Заполни ник и email",
+    shortPass: "Пароль слишком короткий",
+    notFound: "Аккаунт не найден",
+    wrongPass: "Неверный пароль",
+    badCode: "Неверный или просроченный код",
+    nickEmailBusy: "Ник или email уже заняты",
+    codeHint: "Код",
+    goLogin: "Уже есть аккаунт? Войти",
+    orText: "или",
+    tagline: "Образовательная платформа нового поколения",
+    desc: "<strong>F-Mine</strong> — это интерактивная учебная среда, которая объединяет ИИ-ассистентов, умные калькуляторы, шахматы и целый мир научных инструментов в одном месте. Учись, играй, создавай — всё бесплатно.",
+    pill1: "ИИ Помощник",
+    pill2: "Калькуляторы",
+    pill3: "Шахматы",
+    pill4: "Наука",
+    pill5: "Обучение"
+  },
+  EN: {
+    titleReg: "Registration",
+    titleLogin: "Login",
+    titleForgot: "Password recovery",
+    nick: "Nickname",
+    email: "Email",
+    pass: "Password",
+    passNew: "New password",
+    getCode: "📩 Get code",
+    create: "Create account",
+    login: "Login",
+    back: "Back",
+    forgot: "Forgot password?",
+    regCodeLabel: "Enter the code from the email",
+    fp1: "Step 1 — enter nickname",
+    fp2: "Step 2 — enter Gmail",
+    fp3: "Step 3 — enter the code from the email",
+    fp4: "Step 4 — enter new password",
+    hint: "The code is checked in Firebase, and the same nickname cannot be created twice.",
+    regOk: "Code sent. Enter it below.",
+    regCreated: "Account created!",
+    loginOk: "Login successful!",
+    resetOk: "Code sent to email.",
+    resetVerified: "Code verified",
+    passOk: "Password updated!",
+    mismatchEmail: "Email does not match this nickname",
+    error: "Error",
+    fillAll: "Fill all fields",
+    fillNickEmail: "Fill nick and email",
+    shortPass: "Password is too short",
+    notFound: "Account not found",
+    wrongPass: "Wrong password",
+    badCode: "Invalid or expired code",
+    nickEmailBusy: "Nickname or email already exists",
+    codeHint: "Code",
+    goLogin: "Already have an account? Login",
+    orText: "or",
+    tagline: "Next-generation educational platform",
+    desc: "<strong>F-Mine</strong> is an interactive learning environment combining AI assistants, smart calculators, chess, and a whole universe of science tools in one place. Learn, play, create — all for free.",
+    pill1: "AI Assistant",
+    pill2: "Calculators",
+    pill3: "Chess",
+    pill4: "Science",
+    pill5: "Learning"
+  }
+};
+
+function t(key){ return UI[lang][key]; }
+
+function normalizeNick(nick){ return String(nick || "").trim().toLowerCase(); }
+function normalizeEmail(email){ return String(email || "").trim().toLowerCase(); }
+function userDocRef(nick){ return doc(db, "users", normalizeNick(nick)); }
+function emailDocRef(email){ return doc(db, "emailIndex", normalizeEmail(email)); }
+function pendingRegRef(nick){ return doc(db, "pendingRegistrations", normalizeNick(nick)); }
+function pendingResetRef(nick){ return doc(db, "pendingResets", normalizeNick(nick)); }
+
+async function hashPassword(text){
+  const bytes = new TextEncoder().encode(String(text));
+  const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function randomDigits(len){
+  let s = "";
+  for(let i = 0; i < len; i++) s += Math.floor(Math.random() * 10);
+  return s;
+}
+
+function showToast(msg, type="info"){
+  let box = document.getElementById("toastBox");
+  let toast = document.createElement("div");
+  toast.className = "toast " + type;
+  toast.innerText = msg;
+  box.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function showSection(section){
+  document.getElementById("register").classList.add("hidden");
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("forgot").classList.add("hidden");
+  document.getElementById(section).classList.remove("hidden");
+}
+
+function applyLangText(){
+  document.documentElement.lang = lang === "RU" ? "ru" : "en";
+  document.getElementById("btnRU").classList.toggle("active", lang === "RU");
+  document.getElementById("btnEN").classList.toggle("active", lang === "EN");
+  var slider = document.getElementById("langSlider");
+  if (slider) {
+    slider.style.transform = lang === "RU" ? "translateX(0)" : "translateX(56px)";
+  }
+
+  document.getElementById("nick").placeholder = t("nick");
+  document.getElementById("email").placeholder = t("email");
+  document.getElementById("passReg").placeholder = t("pass");
+  document.getElementById("registerBtn").textContent = t("getCode");
+  document.getElementById("goLoginBtn").textContent = t("goLogin");
+  document.getElementById("regStepTitle").textContent = t("regCodeLabel");
+  document.getElementById("code").placeholder = lang === "RU" ? "Код" : "Code";
+  document.getElementById("finishBtn").textContent = t("create");
+
+  const dividers = document.querySelectorAll(".divider span");
+  dividers.forEach(d => d.textContent = t("orText"));
+
+  document.getElementById("loginNick").placeholder = t("nick");
+  document.getElementById("loginPass").placeholder = t("pass");
+  document.getElementById("loginBtn").textContent = t("login");
+  document.getElementById("backBtn").textContent = t("back");
+  document.getElementById("forgotLink").textContent = t("forgot");
+
+  document.getElementById("fp1").textContent = t("fp1");
+  document.getElementById("fp2").textContent = t("fp2");
+  document.getElementById("fp3").textContent = t("fp3");
+  document.getElementById("fp4").textContent = t("fp4");
+  document.getElementById("forgotNick").placeholder = t("nick");
+  document.getElementById("forgotEmail").placeholder = t("email");
+  document.getElementById("resetCode").placeholder = lang === "RU" ? "Код из email" : "Code from email";
+  document.getElementById("newPassword").placeholder = t("passNew");
+  document.getElementById("sendResetBtn").textContent = t("getCode");
+  document.getElementById("verifyResetBtn").textContent = lang === "RU" ? "✅ Подтвердить код" : "✅ Verify code";
+  document.getElementById("savePassBtn").textContent = lang === "RU" ? "🔐 Сохранить новый пароль" : "🔐 Save new password";
+  document.getElementById("backForgotBtn").textContent = t("back");
+  document.getElementById("hintText").textContent = t("hint");
+
+  document.getElementById("rightTagline").textContent = t("tagline");
+  document.getElementById("rightDesc").innerHTML = t("desc");
+  document.getElementById("pill1").textContent = t("pill1");
+  document.getElementById("pill2").textContent = t("pill2");
+  document.getElementById("pill3").textContent = t("pill3");
+  document.getElementById("pill4").textContent = t("pill4");
+  document.getElementById("pill5").textContent = t("pill5");
+
+  document.getElementById("title").textContent =
+    document.getElementById("forgot").classList.contains("hidden")
+      ? (document.getElementById("login").classList.contains("hidden") ? t("titleReg") : t("titleLogin"))
+      : t("titleForgot");
+}
+
+async function postJSON(url, body){
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(() => ({}));
+  if(!res.ok || data.ok === false){
+    throw new Error(data.error || t("error"));
+  }
+  return data;
+}
+
+function showLogin(){
+  showSection("login");
+  document.getElementById("title").textContent = t("titleLogin");
+}
+
+function back(){
+  showSection("register");
+  document.getElementById("title").textContent = t("titleReg");
+}
+
+function showForgot(){
+  showSection("forgot");
+  document.getElementById("title").textContent = t("titleForgot");
+  document.getElementById("resetCodeBox").classList.add("hidden");
+  document.getElementById("newPasswordBox").classList.add("hidden");
+  resetState = { code: "", nick: "", email: "", verified: false };
+}
+
+function backFromForgot(){
+  showSection("login");
+  document.getElementById("title").textContent = t("titleLogin");
+}
+
+async function sendCode(){
+  const nick = document.getElementById("nick").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("passReg").value.trim();
+
+  if(!nick || !email || !password){
+    showToast(t("fillAll"), "error");
+    return;
+  }
+
+  const nickNorm = normalizeNick(nick);
+  const emailNorm = normalizeEmail(email);
+  const passwordHash = await hashPassword(password);
+  const code = randomDigits(6);
+
+  try{
+    await runTransaction(db, async (tx) => {
+      const [userSnap, emailSnap, pendingNickSnap] = await Promise.all([
+        tx.get(userDocRef(nickNorm)),
+        tx.get(emailDocRef(emailNorm)),
+        tx.get(pendingRegRef(nickNorm))
+      ]);
+
+      if(userSnap.exists() || emailSnap.exists() || pendingNickSnap.exists()){
+        throw new Error(t("nickEmailBusy"));
+      }
+
+      tx.set(pendingRegRef(nickNorm), {
+        nick, nickNorm, email, emailNorm, passwordHash, code,
+        expiresAtMs: Date.now() + 10 * 60 * 1000
+      });
+    });
+
+    try{
+      await postJSON("/api/send-code", { email: emailNorm, nick, code, type: "register", lang });
+    }catch(emailErr){
+      await deleteDoc(pendingRegRef(nickNorm));
+      throw emailErr;
+    }
+
+    regState = { code, nick: nickNorm, email: emailNorm, password };
+    document.getElementById("codeBox").classList.remove("hidden");
+    document.getElementById("finishBtn").classList.remove("hidden");
+    showToast(t("regOk"), "success");
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function finishRegister(){
+  const inputCode = document.getElementById("code").value.trim();
+  const nickNorm = regState.nick;
+  const regRef = pendingRegRef(nickNorm);
+  const userRef = userDocRef(nickNorm);
+  const emailRef = emailDocRef(regState.email);
+
+  if(!inputCode){
+    showToast(lang === "RU" ? "Введите код" : "Enter code", "error");
+    return;
+  }
+
+  try{
+    const snap = await getDoc(regRef);
+    if(!snap.exists()) throw new Error(t("badCode"));
+
+    const data = snap.data();
+    if(data.code !== inputCode || data.expiresAtMs < Date.now()) throw new Error(t("badCode"));
+
+    await runTransaction(db, async (tx) => {
+      const [userSnap, emailSnap] = await Promise.all([tx.get(userRef), tx.get(emailRef)]);
+      if(userSnap.exists() || emailSnap.exists()) throw new Error(t("nickEmailBusy"));
+
+      tx.set(userRef, {
+        nick: data.nick, nickNorm: data.nickNorm, email: data.email,
+        emailNorm: data.emailNorm, passwordHash: data.passwordHash, createdAtMs: Date.now()
+      });
+      tx.set(emailRef, { nick: data.nick, nickNorm: data.nickNorm });
+      tx.delete(regRef);
+    });
+
+    localStorage.setItem("currentUser", data.nickNorm);
+    showToast(t("regCreated"), "success");
+    showLogin();
+    document.getElementById("loginNick").value = data.nick;
+    document.getElementById("loginPass").value = regState.password;
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function login(){
+  const nick = document.getElementById("loginNick").value.trim();
+  const password = document.getElementById("loginPass").value.trim();
+
+  if(!nick || !password){
+    showToast(t("fillAll"), "error");
+    return;
+  }
+
+  try{
+    const nickNorm = normalizeNick(nick);
+    const snap = await getDoc(userDocRef(nickNorm));
+    if(!snap.exists()) throw new Error(t("notFound"));
+
+    const data = snap.data();
+    const passwordHash = await hashPassword(password);
+    if(data.passwordHash !== passwordHash) throw new Error(t("wrongPass"));
+
+    localStorage.setItem("currentUser", data.nickNorm);
+    showToast(t("loginOk"), "success");
+    window.location.href = "lobby.html";
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function sendResetCode(){
+  const nick = document.getElementById("forgotNick").value.trim();
+  const email = document.getElementById("forgotEmail").value.trim();
+
+  if(!nick || !email){
+    showToast(t("fillNickEmail"), "error");
+    return;
+  }
+
+  const nickNorm = normalizeNick(nick);
+  const emailNorm = normalizeEmail(email);
+  const resetRef = pendingResetRef(nickNorm);
+
+  try{
+    const userSnap = await getDoc(userDocRef(nickNorm));
+    if(!userSnap.exists()) throw new Error(t("notFound"));
+
+    const user = userSnap.data();
+    if(user.emailNorm !== emailNorm) throw new Error(t("mismatchEmail"));
+
+    const code = randomDigits(6);
+    await runTransaction(db, async (tx) => {
+      tx.set(resetRef, { nickNorm, emailNorm, code, expiresAtMs: Date.now() + 10 * 60 * 1000 });
+    });
+
+    try{
+      await postJSON("/api/send-code", { email: emailNorm, nick, code, type: "reset", lang });
+    }catch(emailErr){
+      await deleteDoc(resetRef);
+      throw emailErr;
+    }
+
+    resetState = { code, nick: nickNorm, email: emailNorm, verified: false };
+    document.getElementById("resetCodeBox").classList.remove("hidden");
+    document.getElementById("newPasswordBox").classList.add("hidden");
+    document.getElementById("resetCodeHint").classList.remove("hidden");
+    document.getElementById("resetCodeHint").textContent = `${t("codeHint")}: ${code}`;
+    showToast(t("resetOk"), "success");
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function verifyResetCode(){
+  const code = document.getElementById("resetCode").value.trim();
+  const resetRef = pendingResetRef(resetState.nick);
+
+  if(!code){
+    showToast(lang === "RU" ? "Введите код" : "Enter code", "error");
+    return;
+  }
+
+  try{
+    const snap = await getDoc(resetRef);
+    if(!snap.exists()) throw new Error(t("badCode"));
+
+    const data = snap.data();
+    if(data.code !== code || data.expiresAtMs < Date.now()) throw new Error(t("badCode"));
+
+    resetState.verified = true;
+    resetState.code = code;
+    document.getElementById("newPasswordBox").classList.remove("hidden");
+    showToast(t("resetVerified"), "success");
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+async function saveNewPassword(){
+  const newPassword = document.getElementById("newPassword").value.trim();
+
+  if(!resetState.verified){
+    showToast(lang === "RU" ? "Сначала подтвердите код" : "Verify the code first", "error");
+    return;
+  }
+
+  if(!newPassword || newPassword.length < 4){
+    showToast(t("shortPass"), "error");
+    return;
+  }
+
+  try{
+    const userRef = userDocRef(resetState.nick);
+    const resetRef = pendingResetRef(resetState.nick);
+    const newHash = await hashPassword(newPassword);
+
+    const snap = await getDoc(userRef);
+    if(!snap.exists()) throw new Error(t("notFound"));
+
+    await setDoc(userRef, { passwordHash: newHash }, { merge: true });
+    await deleteDoc(resetRef);
+
+    showToast(t("passOk"), "success");
+    showLogin();
+    document.getElementById("loginNick").value = snap.data().nick || resetState.nick;
+    document.getElementById("loginPass").value = newPassword;
+  }catch(e){
+    showToast(e.message || t("error"), "error");
+  }
+}
+
+window.setLang = (l) => {
+  lang = l;
+  localStorage.setItem("fmine_lang", lang);
+  applyLangText();
+  showToast(lang === "RU" ? "Язык изменён" : "Language changed", "info");
+};
+
+window.sendCode = sendCode;
+window.finishRegister = finishRegister;
+window.login = login;
+window.showLogin = showLogin;
+window.back = back;
+window.showForgot = showForgot;
+window.backFromForgot = backFromForgot;
+window.sendResetCode = sendResetCode;
+window.verifyResetCode = verifyResetCode;
+window.saveNewPassword = saveNewPassword;
+
+applyLangText();
+showSection("register");
+document.getElementById("title").textContent = t("titleReg");
+</script>
+</body>
+</html>

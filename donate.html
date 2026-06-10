@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F‑Mine · Донат</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #06080f;
+            --bg2: #0b0e1a;
+            --bg3: #101524;
+            --surface: rgba(255,255,255,0.03);
+            --surface2: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.07);
+            --border2: rgba(255,255,255,0.13);
+            --text: #e8ecf8;
+            --text2: #7e87b0;
+            --text3: #4a5070;
+            --violet: #8b5cf6;
+            --violet2: #6d3fec;
+            --violet-glow: rgba(139,92,246,0.4);
+            --amber: #f59e0b;
+            --amber2: #fbbf24;
+            --amber-glow: rgba(245,158,11,0.35);
+            --teal: #40E0D0;
+            --teal-glow: rgba(64,224,208,0.4);
+            --emerald: #10b981;
+            --emerald-glow: rgba(16,185,129,0.3);
+            --rose: #f43f5e;
+            --rose-glow: rgba(244,63,94,0.3);
+            --sans: 'Outfit', sans-serif;
+            --display: 'Syne', sans-serif;
+            --mono: 'DM Mono', monospace;
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-xs: 10px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+            --shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06);
+            --ease: 0.25s cubic-bezier(0.4,0,0.2,1);
+            --fire1: #ff4500;
+            --fire2: #ff8c00;
+            --fire3: #ffd700;
+        }
+        body.light {
+            --bg: #f2f4ff;
+            --bg2: #e7eaff;
+            --bg3: #dfe2fc;
+            --surface: rgba(255,255,255,0.65);
+            --surface2: rgba(255,255,255,0.8);
+            --border: rgba(139,92,246,0.1);
+            --border2: rgba(139,92,246,0.18);
+            --text: #1a1730;
+            --text2: #5a5580;
+            --text3: #8884b0;
+            --shadow-sm: 0 2px 8px rgba(108,99,255,0.1);
+            --shadow: 0 4px 16px rgba(108,99,255,0.12);
+            --shadow-lg: 0 8px 28px rgba(108,99,255,0.15);
+        }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            background-image:
+                radial-gradient(ellipse 60% 50% at 30% 20%, rgba(139,92,246,0.1), transparent 55%),
+                radial-gradient(ellipse 40% 40% at 70% 80%, rgba(245,158,11,0.06), transparent 55%);
+            transition: background 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
+        }
+        .wrapper {
+            width: 100%;
+            max-width: 780px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo {
+            font-family: var(--display);
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            text-shadow: 0 0 20px var(--amber-glow);
+        }
+        .logo-f {
+            color: var(--amber);
+            text-shadow: 0 0 30px var(--amber-glow), 0 0 60px rgba(245,158,11,0.3);
+        }
+        .logo-dot {
+            width: 5px;
+            height: 5px;
+            background: var(--violet);
+            border-radius: 50%;
+            margin: 0 3px;
+            box-shadow: 0 0 15px var(--violet-glow);
+        }
+        .logo-mine {
+            color: var(--text);
+            text-shadow: 0 0 15px rgba(255,255,255,0.1);
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-xs);
+            font-family: var(--sans);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter 0.15s, transform 0.15s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            letter-spacing: 0.02em;
+            box-shadow: 0 4px 18px var(--violet-glow);
+            background: linear-gradient(135deg, var(--violet), var(--violet2));
+            color: #fff;
+            white-space: nowrap;
+        }
+        .btn:hover {
+            filter: brightness(1.08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px var(--violet-glow);
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn.ghost {
+            background: transparent;
+            border: 1.5px solid var(--border2);
+            color: var(--text2);
+            box-shadow: none;
+        }
+        .btn.ghost:hover {
+            background: var(--surface2);
+            border-color: var(--violet);
+            color: var(--violet);
+            box-shadow: 0 0 18px rgba(139,92,246,0.2);
+        }
+        .page-title {
+            font-family: var(--display);
+            font-size: clamp(28px, 5vw, 38px);
+            font-weight: 800;
+            color: var(--amber);
+            text-align: center;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 20px var(--amber-glow);
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .donate-card {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--ease);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .donate-card:hover {
+            border-color: var(--border2);
+            box-shadow: var(--shadow);
+            transform: translateY(-4px);
+        }
+        .donate-card.fire-card {
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            z-index: 1;
+        }
+        .donate-card.fire-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--fire1), var(--fire2), var(--fire3), var(--fire1));
+            background-size: 400% 400%;
+            border-radius: 22px;
+            z-index: -1;
+            animation: fireBorder 3s ease infinite;
+            filter: blur(2px);
+            opacity: 0.9;
+        }
+        @keyframes fireBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .donate-card.fire-card::after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            border-radius: 21px;
+            z-index: -1;
+            background: linear-gradient(45deg, rgba(255,140,0,0.8), rgba(255,69,0,0.8), rgba(255,215,0,0.8));
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            animation: firePulse 2s ease-in-out infinite;
+        }
+        @keyframes firePulse {
+            0%,100% { box-shadow: 0 0 15px var(--fire1), 0 0 30px var(--fire2), 0 0 45px var(--fire3); }
+            50% { box-shadow: 0 0 25px var(--fire2), 0 0 50px var(--fire1), 0 0 70px var(--fire3); }
+        }
+        .donate-icon {
+            font-size: 40px;
+        }
+        .donate-name {
+            font-family: var(--display);
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+        .donate-amount {
+            font-family: var(--display);
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--amber);
+            text-shadow: 0 0 12px var(--amber-glow);
+        }
+        .donate-desc {
+            font-size: 14px;
+            color: var(--text2);
+            line-height: 1.6;
+        }
+        .donate-btn {
+            margin-top: auto;
+            padding: 14px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--sans);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--ease);
+            background: linear-gradient(135deg, var(--violet), var(--violet2));
+            color: #fff;
+            box-shadow: 0 4px 18px var(--violet-glow);
+        }
+        .donate-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px var(--violet-glow);
+        }
+        .fire-btn {
+            background: linear-gradient(135deg, var(--fire1), var(--fire2));
+            box-shadow: 0 4px 20px rgba(255,69,0,0.4);
+        }
+        .fire-btn:hover {
+            box-shadow: 0 8px 32px rgba(255,140,0,0.5);
+        }
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(10,12,28,0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border2);
+            border-radius: 99px;
+            padding: 12px 26px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #fff;
+            opacity: 0;
+            transition: all 0.35s ease;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: var(--shadow-lg);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        @media (max-width: 600px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+            </div>
+            <button class="btn ghost" onclick="toggleTheme()">🌓 Тема</button>
+        </div>
+
+        <div class="page-title">💎 Поддержи проект</div>
+
+        <div class="card-grid">
+            <!-- Tier 1: $5 -->
+            <div class="donate-card">
+                <div class="donate-icon">⭐</div>
+                <div class="donate-name">F‑Mine Supporter</div>
+                <div class="donate-amount">$5</div>
+                <div class="donate-desc">
+                    Поддержи платформу и получи ранний доступ к новым функциям, а также приоритетную поддержку.
+                </div>
+                <button class="donate-btn" onclick="handleDonate('supporter','5')">💳 Поддержать</button>
+            </div>
+
+            <!-- Tier 2: $15 with fire effect -->
+            <div class="donate-card fire-card">
+                <div class="donate-icon">🔥</div>
+                <div class="donate-name">F‑Mine Fire</div>
+                <div class="donate-amount">$15</div>
+                <div class="donate-desc">
+                    Всё из Supporter плюс эксклюзивный огненный бейдж, скидки на будущий Premium и благодарность в титрах.
+                </div>
+                <button class="donate-btn fire-btn" onclick="handleDonate('fire','15')">🔥 Стать легендой</button>
+            </div>
+        </div>
+
+        <div style="text-align:center;margin-top:8px;">
+            <button class="btn ghost" onclick="location.href='lobby.html'">← Назад в лобби</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+            authDomain: "fmine-auth.firebaseapp.com",
+            projectId: "fmine-auth",
+            storageBucket: "fmine-auth.firebasestorage.app",
+            messagingSenderId: "219769927531",
+            appId: "1:219769927531:web:fbd45a0876f32927d23e2e"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.handleDonate = async function(tier, amount) {
+            try {
+                await addDoc(collection(db, "donations"), {
+                    tier,
+                    amount: parseInt(amount),
+                    user: localStorage.getItem("currentUser") || "anonymous",
+                    timestamp: serverTimestamp()
+                });
+                showToast(`✅ Спасибо за выбор уровня "${tier}"! Мы свяжемся с вами.`);
+            } catch (e) {
+                console.error(e);
+                showToast("❌ Ошибка. Попробуйте позже.");
+            }
+        };
+
+        function showToast(msg, success = true) {
+            const toast = document.getElementById("toast");
+            toast.textContent = msg;
+            toast.classList.add("show");
+            toast.style.borderColor = success ? "var(--emerald)" : "var(--rose)";
+            setTimeout(() => toast.classList.remove("show"), 3000);
+        }
+
+        window.toggleTheme = function() {
+            document.body.classList.toggle('light');
+            localStorage.setItem('accountTheme', document.body.classList.contains('light') ? 'light' : 'dark');
+        };
+        if (localStorage.getItem('accountTheme') === 'light') document.body.classList.add('light');
+    </script>
+    <script src="pomo-shared.js"></script>
+</body>
+</html>

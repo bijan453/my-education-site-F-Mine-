@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>F‑Mine | Биология</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06080f;--bg2:#0b0e1a;--bg3:#101524;--bg4:#161b2e;
+  --surface:rgba(255,255,255,.025);--surface2:rgba(255,255,255,.045);--surface3:rgba(255,255,255,.075);
+  --glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.12);--border3:rgba(255,255,255,.18);
+  --text:#e8ecf8;--text2:#7e87b0;--text3:#4a5070;
+  --violet:#8b5cf6;--violet2:#6d3fec;--violet-glow:rgba(139,92,246,.4);
+  --amber:#f59e0b;--amber2:#fbbf24;--amber-glow:rgba(245,158,11,.35);
+  --emerald:#10b981;--emerald-glow:rgba(16,185,129,.3);
+  --rose:#f43f5e;--rose-glow:rgba(244,63,94,.3);
+  --sky:#38bdf8;--sky-glow:rgba(56,189,248,.3);
+  --teal:#40E0D0;--teal-glow:rgba(64,224,208,.45);
+  --shadow-xs:0 1px 3px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.02);
+  --shadow-sm:0 2px 8px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.03);
+  --shadow:0 4px 16px rgba(0,0,0,.7),0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.8),0 16px 48px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05),0 0 40px rgba(139,92,246,.08);
+  --shadow-xl:0 12px 32px rgba(0,0,0,.9),0 24px 64px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);
+  --shadow-glow-violet:0 0 0 1px rgba(139,92,246,.4),0 0 30px rgba(139,92,246,.3),0 8px 32px rgba(0,0,0,.5);
+  --shadow-glow-emerald:0 0 0 1px rgba(16,185,129,.4),0 0 30px rgba(16,185,129,.3),0 8px 32px rgba(0,0,0,.5);
+  --r:18px;--r-sm:13px;--ease:.25s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-top:70px;padding-bottom:80px;overflow-x:hidden;background-image:radial-gradient(ellipse 65% 45% at 85% -5%,rgba(16,185,129,.07),transparent 58%),radial-gradient(ellipse 50% 35% at 5% 92%,rgba(64,224,208,.04),transparent 52%),radial-gradient(ellipse 35% 30% at 50% 45%,rgba(139,92,246,.025),transparent 58%);-webkit-font-smoothing:antialiased}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-size:200px 200px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border3);border-radius:99px}
+
+/* HEADER */
+.hd{position:fixed;top:0;left:0;right:0;z-index:200;height:68px;background:rgba(6,8,15,.85);backdrop-filter:blur(28px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,3vw,30px);gap:12px;box-shadow:0 1px 0 rgba(255,255,255,.02),0 6px 28px rgba(0,0,0,.7)}
+.logo{font-family:'Syne',sans-serif;font-size:clamp(20px,3vw,26px);font-weight:800;letter-spacing:-.5px;cursor:pointer;display:flex;align-items:center;gap:0;text-decoration:none}
+.logo-f{color:var(--amber);text-shadow:0 0 30px var(--amber-glow),0 0 60px rgba(245,158,11,.3)}
+.logo-dot{width:5px;height:5px;background:var(--violet);border-radius:50%;margin:0 3px;align-self:center;margin-bottom:5px;box-shadow:0 0 15px var(--violet-glow);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 10px var(--violet-glow)}50%{box-shadow:0 0 25px rgba(139,92,246,.7)}}
+.logo-mine{color:var(--text);letter-spacing:-1px;text-shadow:0 0 15px rgba(255,255,255,.15)}
+.hd-right{display:flex;align-items:center;gap:10px}
+
+/* LANGUAGE TOGGLE */
+.lang-toggle{display:flex;align-items:center;background:var(--surface2);border:1.5px solid var(--border2);border-radius:999px;padding:3px;gap:2px;box-shadow:var(--shadow-xs)}
+.lang-btn{padding:5px 14px;border:none;border-radius:999px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;transition:var(--ease);color:var(--text3);background:transparent;letter-spacing:.04em}
+.lang-btn.active{background:linear-gradient(135deg,var(--emerald),#059669);color:#fff;box-shadow:0 2px 10px var(--emerald-glow)}
+.lang-btn:not(.active):hover{color:var(--text);background:var(--surface3)}
+
+/* BTN SYSTEM */
+.btn{padding:10px 20px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:var(--ease);text-align:center;letter-spacing:.02em;white-space:nowrap;position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:linear-gradient(135deg,var(--violet),var(--violet2));color:#fff;box-shadow:0 4px 20px var(--violet-glow)}
+.btn.primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 8px 30px var(--violet-glow)}
+.btn.ghost{background:transparent;border:1.5px solid var(--border2);color:var(--text2)}
+.btn.ghost:hover{background:var(--surface3);border-color:var(--violet);color:var(--violet);box-shadow:0 0 22px rgba(139,92,246,.2)}
+.btn.emerald{background:linear-gradient(135deg,var(--emerald),#059669);color:#fff;box-shadow:0 4px 20px var(--emerald-glow)}
+.btn.emerald:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 8px 28px var(--emerald-glow)}
+.btn.rose{background:linear-gradient(135deg,var(--rose),#e11d48);color:#fff;box-shadow:0 4px 20px var(--rose-glow)}
+.btn:active{transform:scale(.93)!important;transition:.08s ease!important}
+
+/* WRAP */
+.wrap{max-width:1040px;margin:0 auto;padding:clamp(16px,3vw,28px) clamp(14px,3vw,22px) 50px}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+.section{margin-bottom:clamp(14px,2.2vw,20px);opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.section.visible{opacity:1;transform:translateY(0)}
+
+/* HERO */
+.hero{background:var(--bg3);border:1px solid rgba(16,185,129,.18);border-radius:var(--r);padding:clamp(22px,4vw,38px) clamp(20px,4vw,38px);margin-bottom:clamp(16px,2.5vw,20px);position:relative;overflow:hidden;box-shadow:var(--shadow-lg);opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+.hero.visible{opacity:1;transform:translateY(0)}
+.hero:hover{box-shadow:var(--shadow-xl),0 0 50px rgba(16,185,129,.1)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 55% 80% at 85% -10%,rgba(16,185,129,.13),transparent 55%),radial-gradient(ellipse 40% 40% at 10% 100%,rgba(64,224,208,.06),transparent 50%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(16,185,129,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;position:relative;z-index:1}
+.hero-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--emerald);text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px;opacity:.85}
+.hero-name{font-family:'Syne',sans-serif;font-size:clamp(28px,5.5vw,48px);font-weight:800;color:#fff;line-height:1;letter-spacing:-1px;text-shadow:0 0 25px rgba(255,255,255,.3),0 0 50px rgba(16,185,129,.3)}
+.hero-sub{font-size:14px;color:var(--text2);margin-top:8px}
+.hero-badge{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.22);border-radius:999px;padding:8px 18px;font-size:12px;font-weight:700;color:var(--emerald);white-space:nowrap;letter-spacing:.02em;box-shadow:0 0 22px rgba(16,185,129,.2)}
+.hero-stats{display:flex;gap:clamp(20px,4vw,48px);margin-top:18px;flex-wrap:wrap;position:relative;z-index:1}
+.hero-stat{transition:var(--ease);cursor:default;padding:4px 0}
+.hero-stat:hover{transform:translateY(-3px)}
+.hero-stat-val{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,42px);font-weight:800;color:white;line-height:1;letter-spacing:-1px;text-shadow:0 0 30px rgba(255,255,255,.4),0 0 60px rgba(16,185,129,.3)}
+.hero-stat-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:.1em}
+
+/* XP BAR */
+.xp-section{position:relative;z-index:1;margin-top:20px;background:rgba(0,0,0,.22);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow-sm)}
+.xp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:12px}
+.xp-level-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--emerald),#059669);border-radius:999px;padding:5px 14px 5px 6px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:white;box-shadow:0 4px 20px var(--emerald-glow),inset 0 1px 0 rgba(255,255,255,.2)}
+.xp-level-num{background:rgba(255,255,255,.2);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.xp-info{font-size:12px;color:var(--text2)}
+.xp-info span{color:var(--emerald);font-weight:700}
+.xp-bar-track{height:8px;background:rgba(255,255,255,.04);border-radius:999px;overflow:visible;position:relative}
+.xp-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#059669,var(--emerald),#6ee7b7);background-size:200% auto;animation:shimmer 2.5s linear infinite;transition:width .8s ease;position:relative;box-shadow:0 0 15px rgba(16,185,129,.5)}
+.xp-bar-fill::after{content:'';position:absolute;right:-5px;top:-4px;width:16px;height:16px;background:var(--emerald);border-radius:50%;border:3px solid var(--bg3);box-shadow:0 0 20px var(--emerald-glow);animation:pulse-ring 2s ease-in-out infinite}
+@keyframes pulse-ring{0%,100%{box-shadow:0 0 0 0 var(--emerald-glow)}50%{box-shadow:0 0 0 10px transparent}}
+
+/* SECTION HEADERS */
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sec-title{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.14em;white-space:nowrap}
+.sec-line{flex:1;height:1px;background:var(--border);border-radius:99px}
+.sec-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--emerald);background:rgba(16,185,129,.1);padding:3px 10px;border-radius:99px;font-weight:500;letter-spacing:.05em;border:1px solid rgba(16,185,129,.15)}
+
+/* CLASS GRID */
+.class-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1.5vw,14px)}
+.class-card{background:var(--glass);border:1.5px solid var(--border);border-radius:16px;padding:clamp(16px,2.5vw,24px);cursor:pointer;transition:var(--ease);text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.class-card:hover{transform:translateY(-5px);border-color:var(--emerald);box-shadow:0 0 30px rgba(16,185,129,.3),0 16px 40px rgba(0,0,0,.6)}
+.class-card.active{border-color:rgba(16,185,129,.6);background:rgba(16,185,129,.07);box-shadow:0 0 25px rgba(16,185,129,.25)}
+.class-card:active{transform:scale(.94)!important;transition:.08s ease!important}
+.class-num{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,44px);font-weight:800;color:#fff;line-height:1;text-shadow:0 0 20px rgba(16,185,129,.4)}
+.class-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.12em}
+.class-prog{font-size:12px;font-weight:700;color:var(--emerald)}
+
+/* TOPIC GRID */
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(160px,20vw,220px),1fr));gap:clamp(8px,1.5vw,14px)}
+.topic-card{background:var(--glass);border:1.5px solid var(--border);border-radius:16px;padding:clamp(16px,2.5vw,22px);cursor:pointer;transition:var(--ease);position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.topic-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--emerald),var(--teal));transform:scaleX(0);transition:var(--ease);transform-origin:left}
+.topic-card:hover{transform:translateY(-4px);border-color:var(--border2);box-shadow:var(--shadow-lg)}
+.topic-card:hover::after{transform:scaleX(1)}
+.topic-card:active{transform:scale(.94)!important;transition:.08s ease!important}
+.topic-icon{font-size:clamp(24px,4vw,32px);margin-bottom:8px;line-height:1}
+.topic-name{font-family:'Syne',sans-serif;font-size:clamp(14px,2vw,17px);font-weight:800;color:var(--text);letter-spacing:-.3px;margin-bottom:4px}
+.topic-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px}
+.topic-prog-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.topic-prog-bar{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:999px;overflow:hidden}
+.topic-prog-fill{height:100%;background:linear-gradient(90deg,var(--emerald),var(--teal));border-radius:999px;transition:width .6s ease}
+.topic-prog-text{font-family:'DM Mono',monospace;font-size:10px;color:var(--emerald);font-weight:500;white-space:nowrap}
+
+/* LEVEL GRID */
+.level-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:clamp(6px,1vw,10px)}
+.lvl-btn{aspect-ratio:1;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:clamp(13px,1.8vw,16px);font-weight:800;cursor:pointer;transition:var(--ease);position:relative;display:flex;align-items:center;justify-content:center}
+.lvl-btn.done{background:rgba(16,185,129,.15);border:1.5px solid rgba(16,185,129,.35);color:var(--emerald);box-shadow:0 0 12px rgba(16,185,129,.2)}
+.lvl-btn.done:hover{background:rgba(16,185,129,.25);transform:translateY(-3px);box-shadow:0 0 22px rgba(16,185,129,.4)}
+.lvl-btn.unlocked{background:var(--surface2);border:1.5px solid var(--border2);color:var(--text)}
+.lvl-btn.unlocked:hover{transform:translateY(-3px);border-color:var(--emerald);box-shadow:0 0 20px rgba(16,185,129,.3)}
+.lvl-btn.locked{background:var(--surface);border:1.5px solid var(--border);color:var(--text3);cursor:not-allowed;opacity:.4}
+.lvl-btn:active:not(.locked){transform:scale(.9)!important;transition:.08s ease!important}
+.lvl-btn.done::before{content:'✓';position:absolute;top:3px;right:5px;font-size:9px;color:var(--emerald);opacity:.7}
+
+/* QUIZ SCREEN */
+.quiz-card{background:var(--bg3);border:1px solid rgba(16,185,129,.15);border-radius:var(--r);padding:clamp(22px,4vw,38px);position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.quiz-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 90% -10%,rgba(16,185,129,.08),transparent 55%);pointer-events:none}
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
+.q-badge{font-family:'DM Mono',monospace;font-size:10px;padding:4px 12px;border-radius:999px;background:rgba(16,185,129,.12);color:var(--emerald);border:1px solid rgba(16,185,129,.2)}
+.q-score{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--text2)}
+.q-score span{color:var(--emerald)}
+.q-lang-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:3px 10px;border-radius:999px}
+.q-prog-track{height:6px;background:rgba(255,255,255,.04);border-radius:999px;overflow:hidden;margin-bottom:24px;position:relative;z-index:1}
+.q-prog-fill{height:100%;background:linear-gradient(90deg,var(--emerald),var(--teal));border-radius:999px;transition:width .5s ease}
+.question-text{font-family:'Syne',sans-serif;font-size:clamp(18px,3vw,26px);font-weight:700;color:#fff;line-height:1.4;margin-bottom:24px;position:relative;z-index:1;text-shadow:0 0 20px rgba(255,255,255,.1)}
+.options-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;position:relative;z-index:1}
+.opt-btn{background:var(--surface2);border:1.5px solid var(--border2);border-radius:12px;padding:14px 18px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--ease);text-align:left;line-height:1.4;position:relative;overflow:hidden}
+.opt-btn:hover:not(:disabled){background:var(--surface3);border-color:var(--emerald);transform:translateY(-2px);box-shadow:0 4px 16px rgba(16,185,129,.2)}
+.opt-btn.selected{border-color:var(--emerald);background:rgba(16,185,129,.1);box-shadow:0 0 20px rgba(16,185,129,.2)}
+.opt-btn.correct{background:rgba(16,185,129,.2)!important;border-color:var(--emerald)!important;color:#fff!important;box-shadow:0 0 24px rgba(16,185,129,.4)!important}
+.opt-btn.wrong{background:rgba(244,63,94,.18)!important;border-color:var(--rose)!important;color:#fff!important}
+.opt-btn:disabled{cursor:not-allowed}
+.opt-btn:active:not(:disabled){transform:scale(.96)!important;transition:.08s ease!important}
+.quiz-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;position:relative;z-index:1}
+.result-box{margin-top:16px;padding:14px 18px;border-radius:12px;font-size:14px;font-weight:700;line-height:1.5;position:relative;z-index:1}
+.result-box.correct{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:var(--emerald)}
+.result-box.wrong{background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.25);color:var(--rose)}
+.result-box.hint{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--amber2)}
+.result-box.neutral{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);color:var(--sky)}
+
+/* FINISH SCREEN */
+.finish-card{background:var(--bg3);border:1px solid rgba(16,185,129,.18);border-radius:var(--r);padding:clamp(30px,5vw,52px);text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.finish-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 0%,rgba(16,185,129,.15),transparent 55%);pointer-events:none}
+.finish-icon{font-size:64px;margin-bottom:16px;position:relative;z-index:1;animation:bounce-in .5s ease}
+@keyframes bounce-in{0%{transform:scale(0) rotate(-10deg)}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+.finish-title{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,42px);font-weight:800;color:#fff;letter-spacing:-1px;position:relative;z-index:1;text-shadow:0 0 30px rgba(16,185,129,.5)}
+.finish-score{font-family:'DM Mono',monospace;font-size:16px;color:var(--text2);margin-top:8px;position:relative;z-index:1}
+.finish-score span{color:var(--emerald);font-weight:700}
+.finish-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:999px;padding:10px 24px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--emerald);margin-top:16px;position:relative;z-index:1;box-shadow:0 0 24px rgba(16,185,129,.3)}
+.finish-fail{display:inline-flex;align-items:center;gap:8px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);border-radius:999px;padding:10px 24px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--rose);margin-top:16px;position:relative;z-index:1}
+.finish-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px;position:relative;z-index:1}
+
+/* BACK NAV */
+.back-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.breadcrumb{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.breadcrumb span{color:var(--text2)}
+.breadcrumb .sep{color:var(--text3);opacity:.5}
+
+/* LOADING */
+.loading-state{text-align:center;padding:48px 20px}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--emerald);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)}
+
+/* TOAST */
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(16px);background:#13172a;border:1px solid var(--border2);color:var(--text);border-radius:999px;padding:10px 24px;font-size:13px;font-weight:700;opacity:0;transition:all .32s ease;z-index:9999;white-space:nowrap;box-shadow:var(--shadow-xl);pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* LIGHT MODE */
+body.light{--bg:#f2f4ff;--bg2:#e7eaff;--bg3:#dfe2fc;--bg4:#d5d9f7;--glass:rgba(255,255,255,.55);--border:rgba(16,185,129,.1);--border2:rgba(16,185,129,.18);--text:#1a1730;--text2:#5a5580;--text3:#8884b0}
+body.light .hd{background:rgba(242,244,255,.86)}
+body.light #toast{background:#1a1730;color:#fff}
+.hidden{display:none!important}
+
+@media(max-width:820px){.class-grid{grid-template-columns:repeat(2,1fr)}.level-grid{grid-template-columns:repeat(4,1fr)}.options-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.level-grid{grid-template-columns:repeat(3,1fr)}.class-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <a class="logo" href="lobby.html">
+    <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+  </a>
+  <div class="hd-right">
+    <!-- LANGUAGE TOGGLE -->
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="langRuBtn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="btn ghost" onclick="toggleTheme()" style="padding:8px 14px;font-size:12px">🌓</button>
+    <button class="btn ghost" onclick="location.href='lobby.html'" style="padding:8px 14px;font-size:12px" id="backLobbyBtn">⬅ Лобби</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero" id="heroBlock">
+    <div class="hero-bg"></div><div class="hero-grid"></div>
+    <div class="hero-top">
+      <div>
+        <div class="hero-label" id="heroLabel">// биология</div>
+        <div class="hero-name">🌿 <span id="heroTitle">БИОЛОГИЯ</span></div>
+        <div class="hero-sub" id="heroSub">Выбери класс, тему и уровень — прогресс сохраняется в Firebase</div>
+      </div>
+      <div class="hero-badge" id="heroBadge">🧬 Загрузка...</div>
+    </div>
+    <div class="xp-section">
+      <div class="xp-top">
+        <div class="xp-level-badge"><div class="xp-level-num" id="xpLvlNum">—</div><span id="xpLevelWord">УРОВЕНЬ</span></div>
+        <div class="xp-info"><span id="xpCur">0</span> / <span id="xpNxt">100</span> XP</div>
+      </div>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val" id="statLevels">0</div><div class="hero-stat-label" id="statLevelsLabel">Уровней пройдено</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" id="statTopics">0</div><div class="hero-stat-label" id="statTopicsLabel">Тем закрыто</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" id="statStreak">0</div><div class="hero-stat-label" id="statStreakLabel">Дней подряд</div></div>
+    </div>
+  </div>
+
+  <!-- CLASS SCREEN -->
+  <div class="section" id="screenClass">
+    <div class="sec-head"><div class="sec-title" id="secClassTitle">📚 Выбери класс</div><div class="sec-line"></div><div class="sec-badge">4 <span id="classWord">класса</span></div></div>
+    <div class="class-grid" id="classGrid"></div>
+  </div>
+
+  <!-- TOPIC SCREEN -->
+  <div class="section hidden" id="screenTopic">
+    <div class="back-row">
+      <button class="btn ghost" onclick="goToClass()" style="padding:7px 14px;font-size:12px" id="backToClassBtn">⬅ Классы</button>
+      <div class="breadcrumb"><span id="bcBiology">Биология</span> <span class="sep">›</span> <span id="breadClass">7 класс</span></div>
+    </div>
+    <div class="sec-head"><div class="sec-title" id="secTopicTitle">🔬 Темы</div><div class="sec-line"></div><div class="sec-badge" id="topicBadge">4 темы</div></div>
+    <div class="topic-grid" id="topicGrid"></div>
+  </div>
+
+  <!-- LEVEL SCREEN -->
+  <div class="section hidden" id="screenLevel">
+    <div class="back-row">
+      <button class="btn ghost" onclick="goToTopics()" style="padding:7px 14px;font-size:12px" id="backToTopicsBtn">⬅ Темы</button>
+      <div class="breadcrumb"><span id="bcBiology2">Биология</span> <span class="sep">›</span> <span id="breadClass2"></span> <span class="sep">›</span> <span id="breadTopic"></span></div>
+    </div>
+    <div class="sec-head"><div class="sec-title" id="levelSecTitle">📈 Уровни</div><div class="sec-line"></div><div class="sec-badge" id="levelBadge">0/16</div></div>
+    <div class="level-grid" id="levelGrid"></div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="section hidden" id="screenQuiz">
+    <div class="back-row">
+      <button class="btn ghost" onclick="goToLevels()" style="padding:7px 14px;font-size:12px" id="backToLevelsBtn">⬅ К уровням</button>
+      <div class="breadcrumb"><span id="breadQuiz"></span></div>
+    </div>
+    <div class="quiz-card">
+      <div class="quiz-bg"></div>
+      <div class="q-header">
+        <div class="q-badge" id="qBadge">Вопрос 1/10</div>
+        <div class="q-lang-label" id="qLangLabel">🇷🇺 Русский</div>
+        <div class="q-score"><span id="qScoreWord">Правильно</span>: <span id="qScore">0</span></div>
+      </div>
+      <div class="q-prog-track"><div class="q-prog-fill" id="qProgFill" style="width:10%"></div></div>
+      <div class="question-text" id="questionText">Загрузка вопроса...</div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="quiz-actions">
+        <button class="btn emerald" id="checkBtn" onclick="checkAnswer()" id="checkBtnEl">✓ <span id="checkBtnText">Проверить</span></button>
+        <button class="btn ghost" onclick="showHint()" style="font-size:12px">💡 <span id="hintBtnText">Подсказка</span></button>
+        <button class="btn primary hidden" id="nextBtn" onclick="nextQuestion()"><span id="nextBtnText">Далее</span> →</button>
+      </div>
+      <div id="resultBox" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- FINISH SCREEN -->
+  <div class="section hidden" id="screenFinish">
+    <div class="finish-card">
+      <div class="finish-bg"></div>
+      <div class="finish-icon" id="finishIcon">🎉</div>
+      <div class="finish-title" id="finishTitle">Уровень пройден!</div>
+      <div class="finish-score"><span id="finishScore">10/10</span> <span id="finishScoreWord">правильных ответов</span></div>
+      <div id="finishXPBadge"></div>
+      <div class="finish-actions">
+        <button class="btn emerald" onclick="goToLevels()" id="finishBackBtn">⬅ <span id="finishBackText">К уровням</span></button>
+        <button class="btn primary" onclick="retryLevel()" id="finishRetryBtn">🔄 <span id="finishRetryText">Ещё раз</span></button>
+        <button class="btn ghost" onclick="goToTopics()" id="finishTopicsBtn">📚 <span id="finishTopicsText">Темы</span></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc",
+  authDomain:"fmine-auth.firebaseapp.com",
+  projectId:"fmine-auth",
+  storageBucket:"fmine-auth.firebasestorage.app",
+  messagingSenderId:"219769927531",
+  appId:"1:219769927531:web:fbd45a0876f32927d23e2e"
+});
+const db = getFirestore(app);
+const currentUser = localStorage.getItem("currentUser");
+if (!currentUser) location.href = "index.html";
+const userRef = doc(db, "users", currentUser);
+
+// ─── LANGUAGE SYSTEM ─────────────────────────────────────────
+let LANG = (localStorage.getItem("fmine_lang") || "ru").toLowerCase();
+
+const T = {
+  ru: {
+    heroLabel: "// биология",
+    heroTitle: "БИОЛОГИЯ",
+    heroSub: "Выбери класс, тему и уровень — прогресс сохраняется в Firebase",
+    xpLevel: "УРОВЕНЬ",
+    statLevels: "Уровней пройдено",
+    statTopics: "Тем закрыто",
+    statStreak: "Дней подряд",
+    secClass: "📚 Выбери класс",
+    classWord: "класса",
+    secTopic: "🔬 Темы",
+    secLevels: "📈 Уровни",
+    backClasses: "⬅ Классы",
+    backTopics: "⬅ Темы",
+    backLevels: "⬅ К уровням",
+    backLobby: "⬅ Лобби",
+    biology: "Биология",
+    grade: "класс",
+    checkBtn: "Проверить",
+    hintBtn: "Подсказка",
+    nextBtn: "Далее",
+    qWord: "Вопрос",
+    correctWord: "Правильно",
+    finishPassed: "Уровень пройден!",
+    finishFailed: "Попробуй ещё раз",
+    finishScoreWord: "правильных ответов",
+    finishBack: "К уровням",
+    finishRetry: "Ещё раз",
+    finishTopics: "Темы",
+    xpEarned: "XP заработано",
+    needMore: "Нужно минимум",
+    forCredit: "для зачёта",
+    langLabel: "🇷🇺 Русский",
+    loadingQ: "⏳ Загрузка вопросов...",
+    loadingText: "Получаем вопросы из базы данных",
+    noConnection: "⚠️ Нет соединения — прогресс не сохранён",
+    levelPassed: "пройден",
+    selectAnswer: "👆 Выбери вариант ответа",
+    correct: "✅ Правильно!",
+    wrong: "❌ Неверно. ",
+    hint: "💡 ",
+    topicsLabel: "темы",
+  },
+  en: {
+    heroLabel: "// biology",
+    heroTitle: "BIOLOGY",
+    heroSub: "Choose a grade, topic and level — progress is saved to Firebase",
+    xpLevel: "LEVEL",
+    statLevels: "Levels done",
+    statTopics: "Topics done",
+    statStreak: "Day streak",
+    secClass: "📚 Choose a grade",
+    classWord: "grades",
+    secTopic: "🔬 Topics",
+    secLevels: "📈 Levels",
+    backClasses: "⬅ Grades",
+    backTopics: "⬅ Topics",
+    backLevels: "⬅ Levels",
+    backLobby: "⬅ Lobby",
+    biology: "Biology",
+    grade: "grade",
+    checkBtn: "Check",
+    hintBtn: "Hint",
+    nextBtn: "Next",
+    qWord: "Question",
+    correctWord: "Correct",
+    finishPassed: "Level passed!",
+    finishFailed: "Try again",
+    finishScoreWord: "correct answers",
+    finishBack: "Back to levels",
+    finishRetry: "Retry",
+    finishTopics: "Topics",
+    xpEarned: "XP earned",
+    needMore: "Need at least",
+    forCredit: "to pass",
+    langLabel: "🇬🇧 English",
+    loadingQ: "⏳ Loading questions...",
+    loadingText: "Fetching questions from the database",
+    noConnection: "⚠️ No connection — progress not saved",
+    levelPassed: "passed",
+    selectAnswer: "👆 Select an answer",
+    correct: "✅ Correct!",
+    wrong: "❌ Wrong. ",
+    hint: "💡 ",
+    topicsLabel: "topics",
+  }
+};
+
+function t(key) { return T[LANG][key] || T.ru[key] || key; }
+
+window.setLang = function(lang) {
+  LANG = lang;
+  localStorage.setItem("fmine_lang", lang);
+  document.getElementById("langRuBtn").classList.toggle("active", lang === "ru");
+  document.getElementById("langEnBtn").classList.toggle("active", lang === "en");
+  applyTranslations();
+  // Re-render current screen with new language
+  if (!document.getElementById("screenClass").classList.contains("hidden")) renderClasses();
+  if (!document.getElementById("screenTopic").classList.contains("hidden")) renderTopics();
+  if (!document.getElementById("screenLevel").classList.contains("hidden")) renderLevels();
+  showToast(lang === "ru" ? "🇷🇺 Русский язык" : "🇬🇧 English language");
+};
+
+function applyTranslations() {
+  const ids = {
+    heroLabel:"heroLabel", heroTitle:"heroTitle", heroSub:"heroSub",
+    xpLevelWord:"xpLevel", statLevelsLabel:"statLevels", statTopicsLabel:"statTopics",
+    statStreakLabel:"statStreak", secClassTitle:"secClass", classWord:"classWord",
+    secTopicTitle:"secTopic", backToClassBtn:"backClasses", backToTopicsBtn:"backTopics",
+    backToLevelsBtn:"backLevels", backLobbyBtn:"backLobby",
+    bcBiology:"biology", bcBiology2:"biology",
+    checkBtnText:"checkBtn", hintBtnText:"hintBtn", nextBtnText:"nextBtn",
+    qScoreWord:"correctWord", finishScoreWord:"finishScoreWord",
+    finishBackText:"finishBack", finishRetryText:"finishRetry", finishTopicsText:"finishTopics",
+    qLangLabel:"langLabel"
+  };
+  for (const [id, key] of Object.entries(ids)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(key);
+  }
+}
+
+// ─── CONSTANTS ───────────────────────────────────────────────
+const SUBJECT = "biology";
+const LEVELS_PER_TOPIC = 16;
+const QUESTIONS_PER_LEVEL = 10;
+const PASS_THRESHOLD = 6;
+
+// ─── SPEC (bilingual) ────────────────────────────────────────
+const SPEC = {
+  "7": { id:"7", topics:{
+    cell:     { title:{ru:"Клетка",        en:"Cell"},        icon:"🔬", desc:{ru:"Органоиды и строение клетки",       en:"Organelles and cell structure"} },
+    plants:   { title:{ru:"Растения",      en:"Plants"},      icon:"🌱", desc:{ru:"Части растения, фотосинтез",        en:"Plant parts, photosynthesis"} },
+    animals:  { title:{ru:"Животные",      en:"Animals"},     icon:"🐾", desc:{ru:"Группы животных и признаки",        en:"Animal groups and features"} },
+    mixed7:   { title:{ru:"Смешанные",     en:"Mixed"},       icon:"🧪", desc:{ru:"Разнообразные вопросы 7 кл.",       en:"Various questions — grade 7"} }
+  }},
+  "8": { id:"8", topics:{
+    humanBody:{ title:{ru:"Человек",       en:"Human body"},  icon:"🧍", desc:{ru:"Органы и системы органов",          en:"Organs and organ systems"} },
+    digestion:{ title:{ru:"Пищеварение",   en:"Digestion"},   icon:"🫁", desc:{ru:"Питание и обмен веществ",           en:"Nutrition and metabolism"} },
+    breathing:{ title:{ru:"Дыхание",       en:"Breathing"},   icon:"💨", desc:{ru:"Лёгкие и газообмен",                en:"Lungs and gas exchange"} },
+    mixed8:   { title:{ru:"Смешанные",     en:"Mixed"},       icon:"🧪", desc:{ru:"Разнообразные вопросы 8 кл.",       en:"Various questions — grade 8"} }
+  }},
+  "9": { id:"9", topics:{
+    genetics: { title:{ru:"Генетика",      en:"Genetics"},    icon:"🧬", desc:{ru:"Наследственность и признаки",       en:"Heredity and traits"} },
+    ecology:  { title:{ru:"Экология",      en:"Ecology"},     icon:"🌍", desc:{ru:"Экосистемы и цепи питания",         en:"Ecosystems and food chains"} },
+    evolution:{ title:{ru:"Эволюция",      en:"Evolution"},   icon:"🦕", desc:{ru:"Развитие живого мира",              en:"Development of life"} },
+    mixed9:   { title:{ru:"Смешанные",     en:"Mixed"},       icon:"🧪", desc:{ru:"Разнообразные вопросы 9 кл.",       en:"Various questions — grade 9"} }
+  }},
+  "10": { id:"10", topics:{
+    microbiology: { title:{ru:"Микробиология",  en:"Microbiology"},     icon:"🦠", desc:{ru:"Бактерии, грибы, вирусы",          en:"Bacteria, fungi, viruses"} },
+    cellProcesses:{ title:{ru:"Процессы клетки",en:"Cell processes"},   icon:"⚗️", desc:{ru:"Деление, обмен веществ",            en:"Division, metabolism"} },
+    biosphere:    { title:{ru:"Биосфера",        en:"Biosphere"},        icon:"🌿", desc:{ru:"Природные связи и круговорот",      en:"Natural cycles and connections"} },
+    mixed10:      { title:{ru:"Смешанные",       en:"Mixed"},            icon:"🧪", desc:{ru:"Разнообразные вопросы 10 кл.",      en:"Various questions — grade 10"} }
+  }}
+};
+
+// ─── QUESTION BANKS ──────────────────────────────────────────
+const BANK_RU = [
+  {q:"Что изучает биология?",c:"Живые организмы",w:["Только камни","Только звёзды","Только машины"],h:"Наука о жизни.",s:"Биология изучает живые организмы."},
+  {q:"Основная единица живого?",c:"Клетка",w:["Атом","Камень","Планета"],h:"Очень маленькая живая структура.",s:"Основная единица живого — клетка."},
+  {q:"Какой органоид даёт энергию клетке?",c:"Митохондрия",w:["Хлоропласт","Ядро","Рибосома"],h:"Энергетическая станция клетки.",s:"Митохондрии синтезируют АТФ."},
+  {q:"Зелёный пигмент растений?",c:"Хлорофилл",w:["Меланин","Гемоглобин","Кератин"],h:"Помогает ловить свет.",s:"Хлорофилл нужен для фотосинтеза."},
+  {q:"Какая часть растения закрепляет его в почве?",c:"Корень",w:["Лист","Цветок","Плод"],h:"Обычно под землёй.",s:"Корень удерживает растение и всасывает воду."},
+  {q:"Какой орган перекачивает кровь?",c:"Сердце",w:["Лёгкие","Печень","Желудок"],h:"Работает как насос.",s:"Сердце перекачивает кровь."},
+  {q:"Где начинается пищеварение?",c:"Рот",w:["Желудок","Кишечник","Печень"],h:"Там работают зубы и слюна.",s:"Пищеварение начинается в ротовой полости."},
+  {q:"Обмен кислорода и углекислого газа?",c:"Газообмен",w:["Плавление","Кипение","Фотосинтез"],h:"Происходит в лёгких.",s:"Газообмен — обмен газов между организмом и средой."},
+  {q:"Участок ДНК, отвечающий за признак?",c:"Ген",w:["Хромосома","Орган","Ткань"],h:"Единица наследственности.",s:"Ген несёт информацию о признаке."},
+  {q:"Оболочка Земли, где есть жизнь?",c:"Биосфера",w:["Атмосфера","Литосфера","Мантия"],h:"Область жизни.",s:"Биосфера — часть Земли, где существует жизнь."},
+  {q:"Как называется процесс деления клетки?",c:"Митоз",w:["Мейоз","Фотосинтез","Гликолиз"],h:"Обычное деление клетки.",s:"Митоз — деление клетки с сохранением хромосомного набора."},
+  {q:"Что такое фотосинтез?",c:"Синтез органики из СО₂ и Н₂О",w:["Распад белков","Обмен газов","Деление клетки"],h:"Процесс в хлоропластах.",s:"Фотосинтез — создание органики при свете."},
+  {q:"Где хранится наследственная информация?",c:"В ядре клетки",w:["В митохондрии","В рибосоме","В клеточной стенке"],h:"В центре клетки.",s:"ДНК хранится в ядре."},
+  {q:"Что такое экосистема?",c:"Сообщество организмов и среда их обитания",w:["Только растения","Только животные","Только микробы"],h:"Биота плюс среда.",s:"Экосистема — организмы и неживая природа."},
+  {q:"Организмы, производящие органику из неорганики?",c:"Продуценты",w:["Консументы","Редуценты","Паразиты"],h:"Первые в цепи питания.",s:"Продуценты создают органику через фотосинтез."},
+  {q:"Белок, переносящий кислород в крови?",c:"Гемоглобин",w:["Инсулин","Коллаген","Меланин"],h:"Содержит железо.",s:"Гемоглобин в эритроцитах переносит О₂."},
+  {q:"Сколько хромосом у человека?",c:"46",w:["23","48","44"],h:"Это диплоидный набор.",s:"У человека 46 хромосом (23 пары)."},
+  {q:"Что такое мутация?",c:"Изменение в ДНК",w:["Деление клетки","Синтез белка","Дыхание"],h:"Ошибка в генетическом коде.",s:"Мутация — изменение нуклеотидной последовательности ДНК."},
+  {q:"Симбиоз, при котором оба организма получают пользу?",c:"Мутуализм",w:["Паразитизм","Хищничество","Комменсализм"],h:"Оба выигрывают.",s:"Мутуализм — симбиоз с взаимной пользой."},
+  {q:"Основной продукт фотосинтеза?",c:"Глюкоза",w:["Крахмал","Белок","Жир"],h:"Это простой сахар.",s:"При фотосинтезе образуется глюкоза и кислород."},
+  {q:"Что такое хромосома?",c:"Нить ДНК с белками",w:["Органоид клетки","Вид бактерии","Тип гриба"],h:"Носитель генов.",s:"Хромосома — структура, содержащая ДНК."},
+  {q:"Процесс поглощения кислорода клеткой?",c:"Клеточное дыхание",w:["Фотосинтез","Транспирация","Осмос"],h:"Противоположен фотосинтезу.",s:"Клеточное дыхание — расщепление органики с выделением энергии."},
+  {q:"Какая группа организмов разлагает мёртвое вещество?",c:"Редуценты",w:["Продуценты","Консументы","Хищники"],h:"Разлагают органику.",s:"Редуценты (грибы и бактерии) разлагают органические остатки."},
+  {q:"Первый уровень пищевой цепи занимают?",c:"Растения (продуценты)",w:["Хищники","Паразиты","Грибы"],h:"Они производят пищу.",s:"Растения — основа любой пищевой цепи."},
+  {q:"Что такое ДНК?",c:"Носитель генетической информации",w:["Тип белка","Вид клетки","Форма рибосомы"],h:"Двойная спираль.",s:"ДНК — дезоксирибонуклеиновая кислота, хранящая гены."},
+  {q:"Где происходит фотосинтез?",c:"В хлоропластах",w:["В митохондриях","В рибосомах","В лизосомах"],h:"Зелёные органоиды.",s:"Хлоропласты содержат хлорофилл для фотосинтеза."},
+  {q:"Что такое популяция?",c:"Группа особей одного вида в одном месте",w:["Все виды в лесу","Только хищники","Все организмы планеты"],h:"Одно место — один вид.",s:"Популяция — группа особей одного вида, живущих вместе."},
+  {q:"Наука о наследственности?",c:"Генетика",w:["Экология","Морфология","Физиология"],h:"Изучает передачу признаков.",s:"Генетика — раздел биологии о наследственности."},
+  {q:"Что происходит при митозе?",c:"Клетка делится с сохранением набора хромосом",w:["Хромосомы уменьшаются вдвое","Клетка гибнет","Клетка объединяется с другой"],h:"Результат — две одинаковые клетки.",s:"Митоз сохраняет диплоидный набор хромосом."},
+  {q:"Как называют взаимовыгодное сожительство разных видов?",c:"Симбиоз",w:["Паразитизм","Хищничество","Конкуренция"],h:"Обоим хорошо.",s:"Симбиоз — тесное сожительство разных видов."}
+];
+
+const BANK_EN = [
+  {q:"What does biology study?",c:"Living organisms",w:["Only rocks","Only stars","Only machines"],h:"The science of life.",s:"Biology studies living organisms."},
+  {q:"The basic unit of life?",c:"Cell",w:["Atom","Rock","Planet"],h:"A tiny living structure.",s:"The basic unit of life is the cell."},
+  {q:"Which organelle provides energy to the cell?",c:"Mitochondria",w:["Chloroplast","Nucleus","Ribosome"],h:"The powerhouse of the cell.",s:"Mitochondria synthesize ATP."},
+  {q:"The green pigment in plants?",c:"Chlorophyll",w:["Melanin","Hemoglobin","Keratin"],h:"It captures sunlight.",s:"Chlorophyll is needed for photosynthesis."},
+  {q:"Which plant part anchors it in the soil?",c:"Root",w:["Leaf","Flower","Fruit"],h:"Usually underground.",s:"Roots hold the plant and absorb water."},
+  {q:"Which organ pumps blood?",c:"Heart",w:["Lungs","Liver","Stomach"],h:"Acts like a pump.",s:"The heart pumps blood."},
+  {q:"Where does digestion begin?",c:"Mouth",w:["Stomach","Intestine","Liver"],h:"Teeth and saliva work here.",s:"Digestion begins in the oral cavity."},
+  {q:"Exchange of oxygen and carbon dioxide?",c:"Gas exchange",w:["Melting","Boiling","Photosynthesis"],h:"Happens in the lungs.",s:"Gas exchange occurs between the body and environment."},
+  {q:"A segment of DNA responsible for a trait?",c:"Gene",w:["Chromosome","Organ","Tissue"],h:"The unit of heredity.",s:"A gene carries information about a trait."},
+  {q:"The layer of Earth where life exists?",c:"Biosphere",w:["Atmosphere","Lithosphere","Mantle"],h:"The zone of life.",s:"The biosphere is the part of Earth where life exists."},
+  {q:"The process of cell division?",c:"Mitosis",w:["Meiosis","Photosynthesis","Glycolysis"],h:"Normal cell division.",s:"Mitosis preserves the chromosome number."},
+  {q:"What is photosynthesis?",c:"Synthesis of organics from CO₂ and H₂O",w:["Protein breakdown","Gas exchange","Cell division"],h:"Process in chloroplasts.",s:"Photosynthesis creates organic matter from inorganic sources using light."},
+  {q:"Where is genetic information stored?",c:"In the cell nucleus",w:["In mitochondria","In ribosomes","In cell wall"],h:"In the centre of the cell.",s:"DNA is stored in the nucleus."},
+  {q:"What is an ecosystem?",c:"Community of organisms and their environment",w:["Only plants","Only animals","Only microbes"],h:"Biota plus environment.",s:"An ecosystem is organisms plus the non-living environment."},
+  {q:"Organisms that produce organic matter from inorganic?",c:"Producers",w:["Consumers","Decomposers","Parasites"],h:"First in the food chain.",s:"Producers (plants) create organic matter via photosynthesis."},
+  {q:"Protein that carries oxygen in blood?",c:"Hemoglobin",w:["Insulin","Collagen","Melanin"],h:"Contains iron.",s:"Hemoglobin in red blood cells carries O₂."},
+  {q:"How many chromosomes does a human have?",c:"46",w:["23","48","44"],h:"The diploid set.",s:"Humans have 46 chromosomes (23 pairs)."},
+  {q:"What is a mutation?",c:"A change in DNA",w:["Cell division","Protein synthesis","Breathing"],h:"An error in the genetic code.",s:"A mutation is a change in the DNA nucleotide sequence."},
+  {q:"Symbiosis where both organisms benefit?",c:"Mutualism",w:["Parasitism","Predation","Commensalism"],h:"Both win.",s:"Mutualism is symbiosis with mutual benefit."},
+  {q:"Main product of photosynthesis?",c:"Glucose",w:["Starch","Protein","Fat"],h:"A simple sugar.",s:"Photosynthesis produces glucose and oxygen."},
+  {q:"What is a chromosome?",c:"A DNA strand with proteins",w:["A cell organelle","A type of bacterium","A type of fungus"],h:"Carries genes.",s:"A chromosome is a structure containing DNA."},
+  {q:"Process of cells absorbing oxygen?",c:"Cellular respiration",w:["Photosynthesis","Transpiration","Osmosis"],h:"Opposite of photosynthesis.",s:"Cellular respiration breaks down organic matter to release energy."},
+  {q:"Which organisms decompose dead matter?",c:"Decomposers",w:["Producers","Consumers","Predators"],h:"They break down organic matter.",s:"Decomposers (fungi and bacteria) break down organic remains."},
+  {q:"The first level of a food chain?",c:"Plants (producers)",w:["Predators","Parasites","Fungi"],h:"They produce food.",s:"Plants are the base of every food chain."},
+  {q:"What is DNA?",c:"Carrier of genetic information",w:["A type of protein","A type of cell","A ribosome shape"],h:"A double helix.",s:"DNA (deoxyribonucleic acid) stores genes."},
+  {q:"Where does photosynthesis occur?",c:"In chloroplasts",w:["In mitochondria","In ribosomes","In lysosomes"],h:"Green organelles.",s:"Chloroplasts contain chlorophyll for photosynthesis."},
+  {q:"What is a population?",c:"A group of individuals of one species in one place",w:["All species in a forest","Only predators","All organisms on Earth"],h:"One place — one species.",s:"A population is a group of individuals of one species living together."},
+  {q:"The science of heredity?",c:"Genetics",w:["Ecology","Morphology","Physiology"],h:"Studies trait transmission.",s:"Genetics is the branch of biology about heredity."},
+  {q:"What happens during mitosis?",c:"Cell divides preserving chromosome number",w:["Chromosomes halve","Cell dies","Cell merges with another"],h:"Result: two identical cells.",s:"Mitosis preserves the diploid chromosome set."},
+  {q:"Mutually beneficial coexistence of different species?",c:"Symbiosis",w:["Parasitism","Predation","Competition"],h:"Both benefit.",s:"Symbiosis is close coexistence of different species."}
+];
+
+// ─── STATE ───────────────────────────────────────────────────
+let fd = null;
+let currentClass = null, currentTopic = null, currentLevel = null;
+let quiz = { tasks:[], index:0, correct:0, selected:null, checked:false };
+
+// ─── FIREBASE ────────────────────────────────────────────────
+async function loadUser() {
+  try {
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      await setDoc(userRef, { profile:{nickname:currentUser,avatar:""}, studyMeta:{streak:0,lastDate:"",studyDays:{},totalXP:0,bonusXP:0,weeklyGoal:20}, progress:{math:{},biology:{},physics:{},history:{}}, lastResults:{}, achievements:[], dailyCompleted:{} });
+      fd = (await getDoc(userRef)).data();
+    } else { fd = snap.data(); }
+    fd.progress = fd.progress || {};
+    fd.progress.biology = fd.progress.biology || {};
+    fd.studyMeta = fd.studyMeta || { streak:0, studyDays:{}, totalXP:0, bonusXP:0 };
+  } catch(e) {
+    fd = { progress:{ biology:{} }, studyMeta:{ streak:0, studyDays:{}, totalXP:0, bonusXP:0 }, profile:{} };
+  }
+}
+
+async function onLevelComplete(cls, topicId, newHighest) {
+  const today = new Date().toISOString().slice(0, 10);
+  const topicData = { highestCompleted: newHighest, lastPassedAt: Date.now() };
+  if (!fd.progress.biology[cls]) fd.progress.biology[cls] = {};
+  fd.progress.biology[cls][topicId] = topicData;
+  let freshFd = fd;
+  try { const snap = await getDoc(userRef); freshFd = snap.data() || fd; } catch(e) {}
+  const studyDays = freshFd?.studyMeta?.studyDays || {};
+  const todayCount = (studyDays[today] || 0) + 1;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const hadYesterday = (studyDays[yesterday] || 0) > 0;
+  const currentStreak = freshFd?.studyMeta?.streak || 0;
+  const alreadyToday = (studyDays[today] || 0) > 0;
+  const newStreak = alreadyToday ? currentStreak : (hadYesterday ? currentStreak + 1 : 1);
+  const allProgress = freshFd?.progress || {};
+  allProgress.biology = allProgress.biology || {};
+  if (!allProgress.biology[cls]) allProgress.biology[cls] = {};
+  allProgress.biology[cls][topicId] = topicData;
+  let levelsTotal = 0, topicsDone = 0;
+  for (const sk of ["math","biology","physics","history"]) {
+    const sp = allProgress[sk] || {};
+    for (const c of Object.keys(sp)) {
+      for (const tt of Object.keys(sp[c])) {
+        const h = sp[c][tt]?.highestCompleted || 0;
+        levelsTotal += Math.min(LEVELS_PER_TOPIC, h);
+        if (h >= LEVELS_PER_TOPIC) topicsDone++;
+      }
+    }
+  }
+  const bonusXP = freshFd?.studyMeta?.bonusXP || 0;
+  const newTotalXP = levelsTotal * 10 + topicsDone * 50 + newStreak * 5 + bonusXP;
+  try {
+    await updateDoc(userRef, {
+      [`progress.biology.${cls}.${topicId}`]: topicData,
+      [`studyMeta.studyDays.${today}`]: todayCount,
+      "studyMeta.streak": newStreak,
+      "studyMeta.totalXP": newTotalXP,
+      [`lastResults.biology`]: { time: Date.now(), class: cls, topic: topicId, level: currentLevel }
+    });
+  } catch(e) { showToast(t("noConnection")); }
+  fd.studyMeta.streak = newStreak;
+  fd.studyMeta.totalXP = newTotalXP;
+  fd.studyMeta.studyDays = fd.studyMeta.studyDays || {};
+  fd.studyMeta.studyDays[today] = todayCount;
+}
+
+// ─── XP CALC ─────────────────────────────────────────────────
+function calcXP() {
+  let levels = 0, topics = 0;
+  const bio = fd?.progress?.biology || {};
+  for (const cls of Object.keys(SPEC)) {
+    for (const tid of Object.keys(SPEC[cls].topics)) {
+      const h = bio[cls]?.[tid]?.highestCompleted || 0;
+      levels += Math.min(LEVELS_PER_TOPIC, h);
+      if (h >= LEVELS_PER_TOPIC) topics++;
+    }
+  }
+  return levels * 10 + topics * 50 + (fd?.studyMeta?.streak || 0) * 5 + (fd?.studyMeta?.bonusXP || 0);
+}
+function xpForLevel(lvl) { return lvl <= 1 ? 0 : Math.floor(100 * Math.pow(lvl - 1, 1.5)); }
+function calcLevel(xp) { let l = 1; while (xpForLevel(l + 1) <= xp) l++; return l; }
+function getHighest(cls, tid) { return fd?.progress?.biology?.[cls]?.[tid]?.highestCompleted || 0; }
+function totalBioLevels() { let s=0; for(const c of Object.keys(SPEC)) for(const t of Object.keys(SPEC[c].topics)) s+=Math.min(16,getHighest(c,t)); return s; }
+function totalBioTopics() { let s=0; for(const c of Object.keys(SPEC)) for(const t of Object.keys(SPEC[c].topics)) if(getHighest(c,t)>=16) s++; return s; }
+
+function renderHero() {
+  const xp = calcXP(), level = calcLevel(xp);
+  const thisLX = xpForLevel(level), nextLX = xpForLevel(level + 1);
+  const pct = nextLX > thisLX ? Math.round((xp - thisLX) / (nextLX - thisLX) * 100) : 100;
+  document.getElementById("xpLvlNum").textContent = level;
+  document.getElementById("xpCur").textContent = xp - thisLX;
+  document.getElementById("xpNxt").textContent = nextLX - thisLX;
+  document.getElementById("xpBarFill").style.width = pct + "%";
+  document.getElementById("statLevels").textContent = totalBioLevels();
+  document.getElementById("statTopics").textContent = totalBioTopics();
+  document.getElementById("statStreak").textContent = fd?.studyMeta?.streak || 0;
+  document.getElementById("heroBadge").textContent = `🧬 ${totalBioLevels()} ${LANG==="ru"?"уровней":"levels"} · ${pct}% XP`;
+}
+
+// ─── SCREENS ─────────────────────────────────────────────────
+function showScreen(id) {
+  ["screenClass","screenTopic","screenLevel","screenQuiz","screenFinish"].forEach(s => {
+    document.getElementById(s).classList.toggle("hidden", s !== id);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ─── CLASS SCREEN ────────────────────────────────────────────
+function renderClasses() {
+  const grid = document.getElementById("classGrid");
+  grid.innerHTML = "";
+  for (const cls of Object.keys(SPEC)) {
+    const topics = Object.keys(SPEC[cls].topics);
+    const done = topics.reduce((s,tid)=>s+Math.min(16,getHighest(cls,tid)),0);
+    const total = topics.length * 16;
+    const pct = Math.round(done/total*100);
+    const div = document.createElement("div");
+    div.className = "class-card" + (currentClass === cls ? " active" : "");
+    div.innerHTML = `<div class="class-num">${cls}</div><div class="class-label">${t("grade").toUpperCase()}</div><div class="class-prog">${done}/${total} · ${pct}%</div>`;
+    div.onclick = () => selectClass(cls);
+    grid.appendChild(div);
+  }
+}
+
+function selectClass(cls) {
+  currentClass = cls;
+  const gradeText = cls + " " + t("grade");
+  document.getElementById("breadClass").textContent = gradeText;
+  document.getElementById("breadClass2").textContent = gradeText;
+  renderTopics();
+  showScreen("screenTopic");
+}
+
+window.goToClass = () => { showScreen("screenClass"); renderClasses(); };
+
+// ─── TOPIC SCREEN ────────────────────────────────────────────
+function renderTopics() {
+  const grid = document.getElementById("topicGrid");
+  const topicsObj = SPEC[currentClass].topics;
+  const topicIds = Object.keys(topicsObj);
+  document.getElementById("topicBadge").textContent = topicIds.length + " " + t("topicsLabel");
+  grid.innerHTML = "";
+  for (const tid of topicIds) {
+    const meta = topicsObj[tid];
+    const h = getHighest(currentClass, tid);
+    const pct = Math.round(h / 16 * 100);
+    const div = document.createElement("div");
+    div.className = "topic-card";
+    div.innerHTML = `
+      <div class="topic-icon">${meta.icon}</div>
+      <div class="topic-name">${meta.title[LANG]}</div>
+      <div class="topic-desc">${meta.desc[LANG]}</div>
+      <div class="topic-prog-row">
+        <div class="topic-prog-bar"><div class="topic-prog-fill" style="width:${pct}%"></div></div>
+        <div class="topic-prog-text">${h}/16</div>
+      </div>`;
+    div.onclick = () => selectTopic(tid);
+    grid.appendChild(div);
+  }
+}
+
+function selectTopic(tid) {
+  currentTopic = tid;
+  document.getElementById("breadTopic").textContent = SPEC[currentClass].topics[tid].title[LANG];
+  renderLevels();
+  showScreen("screenLevel");
+}
+
+window.goToTopics = () => { showScreen("screenTopic"); renderTopics(); };
+
+// ─── LEVEL SCREEN ────────────────────────────────────────────
+function renderLevels() {
+  const h = getHighest(currentClass, currentTopic);
+  const unlocked = Math.min(LEVELS_PER_TOPIC, h + 1);
+  const meta = SPEC[currentClass].topics[currentTopic];
+  document.getElementById("levelSecTitle").textContent = meta.icon + " " + meta.title[LANG] + (LANG==="ru"?" — уровни":" — levels");
+  document.getElementById("levelBadge").textContent = h + "/" + LEVELS_PER_TOPIC;
+  const grid = document.getElementById("levelGrid");
+  grid.innerHTML = "";
+  for (let lvl = 1; lvl <= LEVELS_PER_TOPIC; lvl++) {
+    const btn = document.createElement("button");
+    btn.className = "lvl-btn " + (lvl <= h ? "done" : lvl <= unlocked ? "unlocked" : "locked");
+    btn.textContent = lvl;
+    btn.disabled = lvl > unlocked;
+    btn.onclick = () => startLevel(lvl);
+    grid.appendChild(btn);
+  }
+}
+
+window.goToLevels = () => { showScreen("screenLevel"); renderLevels(); };
+
+// ─── QUESTIONS ───────────────────────────────────────────────
+function shuffle(arr) { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function decodeHtml(str) { const ta=document.createElement("textarea"); ta.innerHTML=str; return ta.value; }
+function makeMCQ(q, correct, wrongs, hint, sol) {
+  const opts = shuffle([correct, ...wrongs.slice(0,3)]);
+  return { q, opts, answer: opts.indexOf(correct), hint, sol };
+}
+
+async function fetchWithTimeout(url, ms) {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), ms);
+  try { const r = await fetch(url, { signal: ctrl.signal }); return await r.json(); }
+  finally { clearTimeout(id); }
+}
+
+async function fetchApiQuestions(count) {
+  // Only fetch English API questions if language is EN
+  if (LANG === "ru") return [];
+  const results = [];
+  for (let i = 0; i < count; i++) {
+    try {
+      const data = await fetchWithTimeout("https://opentdb.com/api.php?amount=1&type=multiple&category=17", 5000);
+      if (!data?.results?.length) continue;
+      const r = data.results[0];
+      const q = decodeHtml(r.question);
+      const correct = decodeHtml(r.correct_answer);
+      const wrongs = r.incorrect_answers.map(decodeHtml);
+      results.push(makeMCQ(q, correct, wrongs, "Think carefully.", "Correct answer: " + correct + "."));
+    } catch(e) {}
+  }
+  return results;
+}
+
+function buildLocalQuestions() {
+  const bank = LANG === "ru" ? BANK_RU : BANK_EN;
+  return shuffle([...bank]).slice(0, QUESTIONS_PER_LEVEL).map(row =>
+    makeMCQ(row.q, row.c, row.w, row.h, row.s)
+  );
+}
+
+async function loadQuestions() {
+  if (LANG === "en") {
+    const apiQ = await fetchApiQuestions(QUESTIONS_PER_LEVEL);
+    if (apiQ.length >= QUESTIONS_PER_LEVEL) return apiQ.slice(0, QUESTIONS_PER_LEVEL);
+    const local = buildLocalQuestions();
+    return [...apiQ, ...local].slice(0, QUESTIONS_PER_LEVEL);
+  }
+  // Russian: always use local bank (no translation API needed)
+  return buildLocalQuestions();
+}
+
+// ─── QUIZ ────────────────────────────────────────────────────
+async function startLevel(level) {
+  currentLevel = level;
+  quiz = { tasks:[], index:0, correct:0, selected:null, checked:false };
+  const meta = SPEC[currentClass].topics[currentTopic];
+  document.getElementById("breadQuiz").textContent = `${currentClass} ${t("grade")} › ${meta.title[LANG]} › ${LANG==="ru"?"Уровень":"Level"} ${level}`;
+  document.getElementById("qLangLabel").textContent = t("langLabel");
+  showScreen("screenQuiz");
+  renderLoadingQuiz();
+  quiz.tasks = await loadQuestions();
+  if (!quiz.tasks.length) quiz.tasks = buildLocalQuestions();
+  renderQuestion();
+}
+
+window.retryLevel = () => startLevel(currentLevel);
+
+function renderLoadingQuiz() {
+  document.getElementById("questionText").textContent = t("loadingQ");
+  document.getElementById("optionsGrid").innerHTML = `<div style="grid-column:1/-1"><div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">${t("loadingText")}</div></div></div>`;
+  document.getElementById("checkBtn").classList.add("hidden");
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("resultBox").classList.add("hidden");
+}
+
+function renderQuestion() {
+  const task = quiz.tasks[quiz.index];
+  if (!task) return;
+  quiz.selected = null;
+  quiz.checked = false;
+  document.getElementById("qBadge").textContent = `${t("qWord")} ${quiz.index+1}/${quiz.tasks.length}`;
+  document.getElementById("qScore").textContent = quiz.correct;
+  document.getElementById("qProgFill").style.width = ((quiz.index+1)/quiz.tasks.length*100)+"%";
+  document.getElementById("questionText").textContent = task.q;
+  document.getElementById("checkBtn").classList.remove("hidden");
+  document.getElementById("checkBtn").disabled = false;
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("resultBox").className = "hidden";
+  const grid = document.getElementById("optionsGrid");
+  grid.innerHTML = "";
+  task.opts.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = opt;
+    btn.onclick = () => selectOption(i);
+    grid.appendChild(btn);
+  });
+}
+
+function selectOption(i) {
+  if (quiz.checked) return;
+  quiz.selected = i;
+  document.querySelectorAll(".opt-btn").forEach((b, idx) => b.classList.toggle("selected", idx === i));
+}
+
+window.checkAnswer = () => {
+  if (quiz.checked) return;
+  const task = quiz.tasks[quiz.index];
+  if (quiz.selected === null) { showResult("neutral", t("selectAnswer")); return; }
+  quiz.checked = true;
+  const correct = quiz.selected === task.answer;
+  if (correct) quiz.correct++;
+  document.querySelectorAll(".opt-btn").forEach((b, i) => {
+    b.disabled = true;
+    if (i === task.answer) b.classList.add("correct");
+    if (i === quiz.selected && !correct) b.classList.add("wrong");
+  });
+  document.getElementById("checkBtn").disabled = true;
+  document.getElementById("nextBtn").classList.remove("hidden");
+  showResult(correct ? "correct" : "wrong", correct ? t("correct") : t("wrong") + task.sol);
+};
+
+window.showHint = () => {
+  const task = quiz.tasks[quiz.index];
+  if (task) showResult("hint", t("hint") + task.hint);
+};
+
+window.nextQuestion = () => {
+  if (quiz.index < quiz.tasks.length - 1) { quiz.index++; renderQuestion(); }
+  else finishLevel();
+};
+
+function showResult(type, text) {
+  const box = document.getElementById("resultBox");
+  box.className = "result-box " + type;
+  box.textContent = text;
+}
+
+async function finishLevel() {
+  const passed = quiz.correct >= PASS_THRESHOLD;
+  showScreen("screenFinish");
+  if (passed) {
+    const h = getHighest(currentClass, currentTopic);
+    const newHighest = Math.max(h, currentLevel);
+    await onLevelComplete(currentClass, currentTopic, newHighest);
+    renderHero();
+    renderLevels();
+    document.getElementById("finishIcon").textContent = "🎉";
+    document.getElementById("finishTitle").textContent = t("finishPassed");
+    document.getElementById("finishScore").textContent = `${quiz.correct}/${quiz.tasks.length}`;
+    document.getElementById("finishScoreWord").textContent = t("finishScoreWord");
+    document.getElementById("finishXPBadge").innerHTML = `<div class="finish-xp">⭐ +10 ${t("xpEarned")}</div>`;
+    showToast(`🎉 ${LANG==="ru"?"Уровень":"Level"} ${currentLevel} ${t("levelPassed")}! +10 XP`);
+  } else {
+    document.getElementById("finishIcon").textContent = "😔";
+    document.getElementById("finishTitle").textContent = t("finishFailed");
+    document.getElementById("finishScore").textContent = `${quiz.correct}/${quiz.tasks.length}`;
+    document.getElementById("finishScoreWord").textContent = t("finishScoreWord");
+    document.getElementById("finishXPBadge").innerHTML = `<div class="finish-fail">⚠️ ${t("needMore")} ${PASS_THRESHOLD}/10 ${t("forCredit")}</div>`;
+    showToast(`⚠️ ${quiz.correct}/${quiz.tasks.length} — ${LANG==="ru"?"уровень не засчитан":"level not passed"}`);
+  }
+}
+
+// ─── UTILS ───────────────────────────────────────────────────
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 3000);
+}
+
+window.toggleTheme = () => {
+  document.body.classList.toggle("light");
+  localStorage.setItem("accountTheme", document.body.classList.contains("light") ? "light" : "dark");
+};
+
+function initAnimations() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
+  }, { threshold: .08 });
+  document.querySelectorAll(".section, .hero").forEach(el => obs.observe(el));
+}
+
+async function init() {
+  if (localStorage.getItem("accountTheme") === "light") document.body.classList.add("light");
+  // Restore language preference
+  LANG = (localStorage.getItem("fmine_lang") || "ru").toLowerCase();
+  document.getElementById("langRuBtn").classList.toggle("active", LANG === "ru");
+  document.getElementById("langEnBtn").classList.toggle("active", LANG === "en");
+  applyTranslations();
+  await loadUser();
+  renderHero();
+  renderClasses();
+  showScreen("screenClass");
+  initAnimations();
+}
+
+init();
+</script>
+<script src="pomo-shared.js"></script>
+</body>
+</html>

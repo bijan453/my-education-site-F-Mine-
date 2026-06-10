@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F-Mine | Шахматная Арена</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070913;
+      --bg2: #0d1022;
+      --bg3: #12162d;
+      --surface: rgba(255, 255, 255, .04);
+      --surface2: rgba(255, 255, 255, .075);
+      --surface3: rgba(255, 255, 255, .12);
+      --border: rgba(255, 255, 255, .09);
+      --border2: rgba(255, 255, 255, .16);
+      
+      --text: #f3f6ff;
+      --text2: #abb4d6;
+      --text3: #6d78a8;
+      
+      --violet: #a78bfa;
+      --violet2: #7c5cf6;
+      --violet-glow: rgba(167, 139, 250, .4);
+      --cyan: #00f3ff;
+      --cyan-glow: rgba(0, 243, 255, .3);
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --rose-glow: rgba(251, 113, 133, .35);
+      
+      --r: 16px;
+      --r-sm: 12px;
+      --ease: .25s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    body.light {
+      --bg: #eceffd;
+      --bg2: #dde1f8;
+      --bg3: #d1d6f2;
+      --surface: rgba(255, 255, 255, .45);
+      --surface2: rgba(255, 255, 255, .65);
+      --surface3: rgba(255, 255, 255, .8);
+      --border: rgba(124, 92, 246, .12);
+      --border2: rgba(124, 92, 246, .2);
+      --text: #171329;
+      --text2: #4a4670;
+      --text3: #827ea8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-top: 80px;
+      padding-bottom: 40px;
+      background-image:
+        radial-gradient(ellipse 70% 50% at 85% -5%, rgba(167, 139, 250, .08), transparent 58%),
+        radial-gradient(ellipse 50% 40% at 5% 92%, rgba(0, 243, 255, .05), transparent 52%);
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+    }
+
+    /* Scanline overlay */
+    .scanline {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px);
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* HEADER */
+    .hd {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      height: 68px;
+      background: rgba(7, 9, 19, .88);
+      backdrop-filter: blur(28px);
+      border-bottom: 1px solid rgba(167, 139, 250, .14);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(14px, 3vw, 30px);
+      box-shadow: 0 6px 28px rgba(0, 0, 0, .5);
+    }
+    body.light .hd {
+      background: rgba(236, 239, 253, .9);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+    }
+    .logo-f {
+      color: var(--cyan);
+      text-shadow: 0 0 15px var(--cyan-glow);
+    }
+    .logo-mine {
+      letter-spacing: -1px;
+    }
+    .logo-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--violet);
+      border-radius: 50%;
+      margin: 0 3px 5px 3px;
+      box-shadow: 0 0 10px var(--violet-glow);
+    }
+
+    .hd-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--ease);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .btn:active {
+      transform: scale(.95);
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--violet), var(--violet2));
+      color: #fff;
+      box-shadow: 0 4px 14px var(--violet-glow);
+    }
+    .btn.primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px var(--violet-glow);
+    }
+    .btn.ghost {
+      background: transparent;
+      border: 1.5px solid var(--border2);
+      color: var(--text2);
+    }
+    .btn.ghost:hover {
+      background: var(--surface3);
+      border-color: var(--violet);
+      color: var(--violet);
+    }
+    .btn.rose {
+      background: linear-gradient(135deg, var(--rose), #e11d48);
+      color: #fff;
+    }
+    .btn.rose:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    .btn.cyan {
+      background: linear-gradient(135deg, var(--cyan), #00bcd4);
+      color: #070913;
+      box-shadow: 0 4px 14px var(--cyan-glow);
+    }
+    .btn.cyan:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .lang-toggle {
+      display: flex;
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      border-radius: 999px;
+      padding: 2px;
+    }
+    .lang-btn {
+      padding: 4px 10px;
+      border: none;
+      border-radius: 999px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text3);
+      transition: var(--ease);
+    }
+    .lang-btn.active {
+      background: linear-gradient(135deg, var(--violet), var(--violet2));
+      color: #fff;
+    }
+
+    /* GAME SETUP SCREEN */
+    .setup-card {
+      background: linear-gradient(135deg, rgba(22, 19, 43, 0.65) 0%, rgba(10, 8, 22, 0.75) 100%);
+      border: 1px solid rgba(167, 139, 250, .2);
+      border-radius: var(--r);
+      padding: clamp(20px, 4vw, 40px);
+      max-width: 600px;
+      margin: 40px auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 40px rgba(167, 139, 250, .05);
+      backdrop-filter: blur(20px);
+      text-align: center;
+      animation: fadeUp .4s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .setup-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 50%, var(--rose) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .setup-sub {
+      font-size: 14px;
+      color: var(--text2);
+      margin-bottom: 24px;
+    }
+
+    .mode-switch {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 16px;
+      border: 1.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      background: var(--surface);
+      cursor: pointer;
+      transition: var(--ease);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .mode-btn:hover {
+      border-color: var(--violet);
+      background: var(--surface2);
+    }
+    .mode-btn.active {
+      border-color: var(--cyan);
+      background: rgba(0, 243, 255, 0.05);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+    }
+    .mode-icon {
+      font-size: 28px;
+    }
+    .mode-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .mode-desc {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .setup-panel {
+      display: none;
+      text-align: left;
+      animation: fadeIn .25s ease;
+    }
+    .setup-panel.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .field-group {
+      margin-bottom: 20px;
+    }
+    .field-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .option-btn {
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: var(--ease);
+    }
+    .option-btn:hover {
+      border-color: var(--violet);
+      color: var(--text);
+    }
+    .option-btn.active {
+      background: linear-gradient(135deg, var(--violet), var(--violet2));
+      border-color: var(--violet);
+      color: #fff;
+      box-shadow: 0 4px 10px var(--violet-glow);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .text-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: rgba(0,0,0,.2);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: var(--ease);
+    }
+    .text-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* PLAY AREA LAYOUT */
+    .arena {
+      display: none;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      margin-top: 10px;
+      align-items: start;
+    }
+    .arena.active {
+      display: grid;
+    }
+
+    /* CHESSBOARD CONTAINER */
+    .board-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Player Info bar */
+    .player-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      box-shadow: 0 4px 15px rgba(0,0,0,.3);
+    }
+    .player-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .player-color-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid var(--text3);
+    }
+    .player-color-dot.white { background: #fff; }
+    .player-color-dot.black { background: #000; }
+    .player-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .player-score-record {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text3);
+    }
+    .player-captured {
+      display: flex;
+      gap: 4px;
+      font-size: 16px;
+      color: var(--text2);
+    }
+
+    /* The grid itself */
+    .chessboard-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      background: #090b16;
+      border: 3px solid rgba(167, 139, 250, 0.25);
+      border-radius: 12px;
+      box-shadow: 0 15px 45px rgba(0,0,0,.8), 0 0 30px rgba(167, 139, 250, .05);
+      overflow: hidden;
+      padding: 12px;
+    }
+    body.light .chessboard-wrapper {
+      background: #e2e8f0;
+      border-color: rgba(124, 92, 246, .2);
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      width: 100%;
+      height: 100%;
+    }
+
+    .square {
+      aspect-ratio: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Modern Board Colors (Default Skin / Fallbacks) */
+    .square.light-square {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .square.dark-square {
+      background: rgba(22, 19, 43, 0.55);
+    }
+    body.light .square.light-square {
+      background: #f1f5f9;
+    }
+    body.light .square.dark-square {
+      background: #cbd5e1;
+    }
+
+    /* Move highlights (Default Skin / Fallbacks) */
+    .square.selected {
+      box-shadow: inset 0 0 0 3px var(--violet);
+    }
+    .square.last-move {
+      background: rgba(167, 139, 250, 0.2) !important;
+    }
+    .square.in-check {
+      background: rgba(251, 113, 133, 0.35) !important;
+      box-shadow: inset 0 0 12px #fb7185;
+    }
+
+    /* --- CHESSBOARD SKIN STYLINGS --- */
+
+    /* 1. Neon Cyber Skin */
+    .chessboard-wrapper.skin-neon {
+      background: #060814;
+      border: 3px solid #7c5cf6;
+      box-shadow: 0 0 20px rgba(124, 92, 246, 0.4), inset 0 0 15px rgba(124, 92, 246, 0.2);
+    }
+    .chessboard-wrapper.skin-neon .square.light-square {
+      background: rgba(124, 92, 246, 0.08);
+      border: 1px solid rgba(124, 92, 246, 0.03);
+    }
+    .chessboard-wrapper.skin-neon .square.dark-square {
+      background: rgba(9, 6, 26, 0.85);
+      border: 1px solid rgba(124, 92, 246, 0.05);
+    }
+    .chessboard-wrapper.skin-neon .square.selected {
+      box-shadow: inset 0 0 0 3px var(--cyan);
+    }
+    .chessboard-wrapper.skin-neon .square.last-move {
+      background: rgba(0, 243, 255, 0.15) !important;
+      box-shadow: inset 0 0 8px rgba(0, 243, 255, 0.2);
+    }
+    .chessboard-wrapper.skin-neon .square.in-check {
+      background: rgba(251, 113, 133, 0.25) !important;
+      box-shadow: inset 0 0 15px #fb7185;
+    }
+
+    /* 2. Glassmorphism Skin */
+    .chessboard-wrapper.skin-glass {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.08));
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+    }
+    .chessboard-wrapper.skin-glass .square.light-square {
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .chessboard-wrapper.skin-glass .square.dark-square {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .chessboard-wrapper.skin-glass .square.selected {
+      box-shadow: inset 0 0 0 3px rgba(251, 191, 36, 0.8);
+    }
+    .chessboard-wrapper.skin-glass .square.last-move {
+      background: rgba(251, 191, 36, 0.2) !important;
+    }
+    .chessboard-wrapper.skin-glass .square.in-check {
+      background: rgba(239, 68, 68, 0.3) !important;
+      box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.5);
+    }
+
+    /* 3. Classic Premium */
+    .chessboard-wrapper.skin-classic {
+      background: #472b15;
+      border: 8px solid #331d0b;
+      border-radius: 8px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      padding: 6px;
+    }
+    .chessboard-wrapper.skin-classic .square.light-square {
+      background: #f0d9b5;
+      color: #b58863;
+    }
+    .chessboard-wrapper.skin-classic .square.dark-square {
+      background: #b58863;
+      color: #f0d9b5;
+    }
+    .chessboard-wrapper.skin-classic .square.selected {
+      box-shadow: inset 0 0 0 4px rgba(20, 150, 20, 0.7);
+    }
+    .chessboard-wrapper.skin-classic .square.last-move {
+      background: rgba(245, 245, 120, 0.55) !important;
+    }
+    .chessboard-wrapper.skin-classic .square.in-check {
+      background: rgba(210, 40, 40, 0.6) !important;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+    .chessboard-wrapper.skin-classic .coords-rank,
+    .chessboard-wrapper.skin-classic .coords-file {
+      color: currentColor;
+      font-weight: 700;
+      opacity: 0.8;
+    }
+
+    /* 4. Retro Arcade Skin */
+    .chessboard-wrapper.skin-arcade {
+      background: #000;
+      border: 4px solid #fff;
+      border-radius: 0;
+      box-shadow: 0 0 0 4px #000, 0 15px 30px rgba(0,0,0,0.7);
+    }
+    .chessboard-wrapper.skin-arcade .square.light-square {
+      background: #86a070;
+    }
+    .chessboard-wrapper.skin-arcade .square.dark-square {
+      background: #4b683a;
+    }
+    .chessboard-wrapper.skin-arcade .square.selected {
+      box-shadow: inset 0 0 0 4px #fff;
+      animation: flashBorder 0.6s steps(2, start) infinite;
+    }
+    @keyframes flashBorder {
+      to { box-shadow: none; }
+    }
+    .chessboard-wrapper.skin-arcade .square.last-move {
+      background: #abb4d6 !important;
+      opacity: 0.8;
+    }
+    .chessboard-wrapper.skin-arcade .square.in-check {
+      background: #ff0000 !important;
+      animation: flashRed 0.4s steps(2, start) infinite;
+    }
+    @keyframes flashRed {
+      to { background: #4b683a !important; }
+    }
+    .chessboard-wrapper.skin-arcade .coords-rank,
+    .chessboard-wrapper.skin-arcade .coords-file {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: #fff !important;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    /* --- MULTIPLAYER BANNERS & MODALS --- */
+    .draw-offer-banner {
+      background: rgba(13, 16, 34, 0.95);
+      border: 2.5px solid var(--violet);
+      border-radius: var(--r-sm);
+      padding: 14px 18px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-lg), 0 0 20px rgba(167, 139, 250, 0.15);
+      backdrop-filter: blur(10px);
+      animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .draw-offer-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .draw-offer-btns {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .reconnect-card {
+      background: linear-gradient(135deg, rgba(22, 19, 43, 0.85) 0%, rgba(10, 8, 22, 0.95) 100%);
+      border: 1.5px solid var(--cyan);
+      border-radius: var(--r);
+      padding: 20px 24px;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0, 243, 255, 0.15);
+      margin-bottom: 20px;
+      animation: fadeIn .3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Voice comment playback animations */
+    .tts-btn.playing {
+      box-shadow: 0 0 12px var(--violet-glow);
+      animation: voicePulse 1.2s ease-in-out infinite;
+    }
+    @keyframes voicePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .msg-tts-btn {
+      background: transparent;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 2px 6px;
+      margin-left: 6px;
+      border-radius: 4px;
+      transition: var(--ease);
+    }
+    .msg-tts-btn:hover {
+      background: var(--surface2);
+      color: var(--violet);
+    }
+    .msg-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+    
+    .dot-hint {
+      width: 22%;
+      height: 22%;
+      border-radius: 50%;
+      background: var(--cyan);
+      opacity: 0.7;
+      pointer-events: none;
+      box-shadow: 0 0 8px var(--cyan);
+    }
+    .ring-hint {
+      width: 80%;
+      height: 80%;
+      border-radius: 50%;
+      border: 3.5px solid var(--cyan);
+      opacity: 0.8;
+      pointer-events: none;
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    /* Pieces */
+    .piece {
+      width: 85%;
+      height: 85%;
+      z-index: 10;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .piece svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,.45));
+    }
+    .piece.dragging {
+      opacity: 0.5;
+      transform: scale(1.1);
+    }
+
+    /* Coordinates labels */
+    .coords-rank {
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--text3);
+      pointer-events: none;
+    }
+    .coords-file {
+      position: absolute;
+      right: 3px;
+      bottom: 3px;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--text3);
+      pointer-events: none;
+    }
+
+    /* SIDEBAR CONTROL & CHAT */
+    .sidebar {
+      background: linear-gradient(145deg, rgba(14, 17, 34, 0.8) 0%, rgba(7, 9, 19, 0.9) 100%);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r);
+      box-shadow: 0 12px 32px rgba(0,0,0,.6);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 160px);
+      min-height: 520px;
+    }
+    body.light .sidebar {
+      background: #fff;
+    }
+
+    .side-header {
+      padding: 16px;
+      border-bottom: 1.5px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .room-code-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 243, 255, 0.08);
+      border: 1px solid rgba(0, 243, 255, 0.25);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--cyan);
+      cursor: pointer;
+    }
+    .room-code-badge:hover {
+      background: rgba(0, 243, 255, 0.15);
+    }
+
+    /* Tabs inside sidebar (Moves vs Chat) */
+    .side-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,.15);
+    }
+    .side-tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text3);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--ease);
+    }
+    .side-tab-btn.active {
+      color: var(--violet);
+      border-bottom-color: var(--violet);
+      background: rgba(167, 139, 250, 0.03);
+    }
+
+    .side-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      position: relative;
+    }
+
+    .panel-content {
+      display: none;
+      height: 100%;
+    }
+    .panel-content.active {
+      display: block;
+    }
+
+    /* Moves Log List */
+    .moves-list {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr;
+      gap: 6px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text2);
+    }
+    .move-num {
+      color: var(--text3);
+      text-align: right;
+    }
+    .move-cell {
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .move-cell:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .move-cell.current {
+      background: rgba(167, 139, 250, 0.15);
+      color: var(--violet);
+      font-weight: 700;
+    }
+
+    /* Chat Panel */
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-bottom: 10px;
+      scrollbar-width: thin;
+    }
+    .msg {
+      font-size: 13px;
+      line-height: 1.4;
+      padding: 6px 10px;
+      border-radius: 8px;
+      max-width: 85%;
+      word-break: break-word;
+    }
+    .msg.system {
+      background: var(--surface);
+      color: var(--text3);
+      font-style: italic;
+      align-self: center;
+      max-width: 100%;
+      font-size: 11px;
+    }
+    .msg.bot {
+      background: rgba(167, 139, 250, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.15);
+      color: #dfd6ff;
+      align-self: flex-start;
+      border-bottom-left-radius: 1px;
+    }
+    body.light .msg.bot {
+      background: #f3f0ff;
+      color: #5b21b6;
+    }
+    .msg.opponent {
+      background: var(--surface2);
+      color: var(--text2);
+      align-self: flex-start;
+      border-bottom-left-radius: 1px;
+    }
+    .msg.me {
+      background: rgba(0, 243, 255, 0.1);
+      border: 1px solid rgba(0, 243, 255, 0.15);
+      color: #d6faff;
+      align-self: flex-end;
+      border-bottom-right-radius: 1px;
+    }
+    body.light .msg.me {
+      background: #ecfeff;
+      color: #0891b2;
+    }
+    .msg-sender {
+      font-weight: 700;
+      font-size: 11px;
+      margin-bottom: 2px;
+      color: var(--text3);
+    }
+    .msg.me .msg-sender {
+      color: var(--cyan);
+    }
+    .msg.bot .msg-sender {
+      color: var(--violet);
+    }
+
+    .chat-input-wrap {
+      display: flex;
+      gap: 6px;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+
+    /* Side actions */
+    .side-footer {
+      padding: 12px;
+      border-top: 1.5px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+    .side-footer button {
+      flex: 1;
+    }
+
+    /* Modal dialogs */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .85);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-card {
+      background: linear-gradient(145deg, #0e1122, #070913);
+      border: 1.5px solid rgba(167, 139, 250, .25);
+      border-radius: var(--r);
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 15px 45px rgba(0,0,0,.8);
+      text-align: center;
+      animation: zoomIn .2s ease;
+    }
+    @keyframes zoomIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .modal-desc {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 20px;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    @media (max-width: 920px) {
+      .arena {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        height: auto;
+        min-height: 400px;
+      }
+    }
+    @media (max-width: 480px) {
+      .option-grid {
+        grid-template-columns: 1fr;
+      }
+      .side-footer {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- SVG Neon Glow Filters -->
+  <svg style="position: absolute; width: 0; height: 0;" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="neon-glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="1.5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <filter id="neon-glow-magenta" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="1.5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      
+      <!-- Premium Piece Gradients -->
+      <linearGradient id="classic-white-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff" />
+        <stop offset="65%" stop-color="#f8fafc" />
+        <stop offset="100%" stop-color="#cbd5e1" />
+      </linearGradient>
+      <linearGradient id="classic-black-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#475569" />
+        <stop offset="50%" stop-color="#1e293b" />
+        <stop offset="100%" stop-color="#0f172a" />
+      </linearGradient>
+      <linearGradient id="glass-white-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="rgba(255, 255, 255, 0.4)" />
+        <stop offset="100%" stop-color="rgba(255, 255, 255, 0.08)" />
+      </linearGradient>
+      <linearGradient id="glass-black-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="rgba(30, 41, 59, 0.8)" />
+        <stop offset="100%" stop-color="rgba(15, 23, 42, 0.35)" />
+      </linearGradient>
+    </defs>
+  </svg>
+  
+  <div class="scanline"></div>
+
+  <!-- HEADER -->
+  <header class="hd">
+    <a class="logo" href="lobby.html">
+      <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+    </a>
+    <div class="hd-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="langRuBtn" onclick="setLang('ru')">RU</button>
+        <button class="lang-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="btn ghost" onclick="toggleTheme()" style="padding:6px 12px">🌓</button>
+      <button class="btn ghost" onclick="location.href='lobby.html'" id="backLobbyBtn">⬅ Лобби</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    
+    <!-- SETUP VIEW -->
+    <div class="setup-card" id="setupView">
+      <h2 class="setup-title" id="setupTitle">Шахматная Арена</h2>
+      <p class="setup-sub" id="setupSub">Испытай свои силы против искусственного интеллекта или сразись с другом в реальном времени</p>
+      
+      <div class="mode-switch">
+        <button class="mode-btn active" id="btnModeBot" onclick="selectMode('bot')">
+          <span class="mode-icon">🤖</span>
+          <span class="mode-name" id="modeNameBot">Битва с ботом</span>
+          <span class="mode-desc" id="modeDescBot">Одиночная игра</span>
+        </button>
+        <button class="mode-btn" id="btnModeMulti" onclick="selectMode('multiplayer')">
+          <span class="mode-icon">⚔️</span>
+          <span class="mode-name" id="modeNameMulti">Сетевая дуэль</span>
+          <span class="mode-desc" id="modeDescMulti">Игра с друзьями</span>
+        </button>
+      </div>
+
+      <div class="field-group" style="margin-bottom: 28px;">
+        <span class="field-label" id="lblBoardSkin">Оформление (Скин)</span>
+        <div class="option-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <button class="option-btn active" id="optSkinNeon" onclick="selectSkin('neon')">Neon</button>
+          <button class="option-btn" id="optSkinGlass" onclick="selectSkin('glass')">Glass</button>
+          <button class="option-btn" id="optSkinClassic" onclick="selectSkin('classic')">Classic</button>
+          <button class="option-btn" id="optSkinArcade" onclick="selectSkin('arcade')">Arcade</button>
+        </div>
+      </div>
+
+      <!-- BOT SETUP PANEL -->
+      <div class="setup-panel active" id="panelBot">
+        <div class="field-group">
+          <span class="field-label" id="lblDifficulty">Сложность бота</span>
+          <div class="option-grid">
+            <button class="option-btn" id="optDiffEasy" onclick="selectDiff('easy')">Новичок</button>
+            <button class="option-btn active" id="optDiffMed" onclick="selectDiff('medium')">Мастер</button>
+            <button class="option-btn" id="optDiffHard" onclick="selectDiff('hard')">Гроссмейстер</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <span class="field-label" id="lblColor">Ваш цвет</span>
+          <div class="option-grid">
+            <button class="option-btn active" id="optColWhite" onclick="selectColor('white')">Белые</button>
+            <button class="option-btn" id="optColRand" onclick="selectColor('random')">Случайный</button>
+            <button class="option-btn" id="optColBlack" onclick="selectColor('black')">Черные</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <span class="field-label" id="lblBotPersonality">Личность бота (ИИ комментатор)</span>
+          <div class="option-grid" style="grid-template-columns: 1fr 1fr;">
+            <button class="option-btn active" id="optPersOn" onclick="togglePersonality(true)">Включен</button>
+            <button class="option-btn" id="optPersOff" onclick="togglePersonality(false)">Выключен</button>
+          </div>
+        </div>
+
+        <button class="btn action-btn primary" onclick="startGame()" id="btnStartBot">▶ Начать бой</button>
+      </div>
+
+      <!-- MULTIPLAYER SETUP PANEL -->
+      <div class="setup-panel" id="panelMulti">
+        <div class="field-group">
+          <span class="field-label" id="lblMultiColor">Ваш цвет в дуэли</span>
+          <div class="option-grid">
+            <button class="option-btn active" id="optColMultiWhite" onclick="selectColor('white')">Белые</button>
+            <button class="option-btn" id="optColMultiRand" onclick="selectColor('random')">Случайный</button>
+            <button class="option-btn" id="optColMultiBlack" onclick="selectColor('black')">Черные</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <span class="field-label" id="lblCreateRoom">Создать новую комнату</span>
+          <button class="btn action-btn primary" onclick="createRoom()" id="btnCreateRoom">🔑 Создать приватный бой</button>
+        </div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="field-group">
+          <span class="field-label" id="lblJoinRoom">Войти по коду комнаты</span>
+          <div class="input-row">
+            <input type="text" class="text-input" id="roomCodeInput" placeholder="Код комнаты, напр: CH-5683" maxlength="7" style="text-transform: uppercase;">
+            <button class="btn cyan" onclick="joinRoom()" id="btnJoinRoom">⚔️ Войти</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARENA PLAY VIEW -->
+    <div class="arena" id="arenaView">
+      
+      <!-- BOARD PANEL -->
+      <div class="board-container">
+        <!-- Reconnection & Game Banners Container -->
+        <div id="gameNotificationContainer"></div>
+
+        <!-- Opponent Player Card -->
+        <div class="player-bar">
+          <div class="player-name-wrap">
+            <div class="player-color-dot" id="opponentColorDot"></div>
+            <span class="player-name" id="opponentName">Оппонент</span>
+          </div>
+          <div class="player-captured" id="opponentCaptured"></div>
+        </div>
+
+        <!-- The board wrapper -->
+        <div class="chessboard-wrapper">
+          <div class="board-grid" id="board">
+            <!-- Squares generated dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Local Player Card -->
+        <div class="player-bar">
+          <div class="player-name-wrap">
+            <div class="player-color-dot" id="playerColorDot"></div>
+            <span class="player-name" id="playerName">Игрок</span>
+            <span class="player-score-record" id="playerRecord"></span>
+          </div>
+          <div class="player-captured" id="playerCaptured"></div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR CONTROLS & CHAT -->
+      <div class="sidebar">
+        <div class="side-header">
+          <div id="turnIndicator" style="font-weight: 800; font-size: 14px;">Ход: Белые</div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <select id="gameSkinSelect" onchange="selectSkin(this.value)" class="text-input" style="padding: 4px 8px; font-size: 11px; border-radius: 6px; width: auto; background: var(--bg3); border: 1px solid var(--border); color: var(--text);">
+              <option value="neon">Neon Cyber</option>
+              <option value="glass">Glassmorphic</option>
+              <option value="classic">Classic Premium</option>
+              <option value="arcade">Retro Arcade</option>
+            </select>
+            <div class="room-code-badge hidden" id="roomCodeBadge" onclick="copyRoomCode()">Код: -</div>
+          </div>
+        </div>
+
+        <div class="side-tabs">
+          <button class="side-tab-btn active" id="tabMovesBtn" onclick="switchSideTab('moves')">📝 Ходы</button>
+          <button class="side-tab-btn" id="tabChatBtn" onclick="switchSideTab('chat')">💬 Чат</button>
+        </div>
+
+        <div class="side-content">
+          <!-- MOVES LIST PANEL -->
+          <div class="panel-content active" id="panelMoves">
+            <div class="moves-list" id="movesList">
+              <!-- Log generated dynamically -->
+            </div>
+          </div>
+
+          <!-- CHAT PANEL -->
+          <div class="panel-content" id="panelChat">
+            <div class="chat-panel">
+              <div class="chat-messages" id="chatMsgs">
+                <!-- Messages -->
+              </div>
+              <div class="chat-input-wrap">
+                <button class="btn ghost" onclick="toggleVoiceMute()" style="padding: 10px;" id="btnVoiceToggle" title="Включить/выключить звук">🔊</button>
+                <input type="text" class="text-input" id="chatInput" placeholder="Введите сообщение..." onkeydown="if(event.key==='Enter') sendChat()">
+                <button class="btn primary" onclick="sendChat()" style="padding: 10px;" id="btnSendChat">▶</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar buttons -->
+        <div class="side-footer">
+          <button class="btn ghost" onclick="offerDraw()" id="btnOfferDraw">🤝 Предложить ничью</button>
+          <button class="btn rose" onclick="resignGame()" id="btnResign">🏳 Сдаться</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- PROMOTION MODAL -->
+  <div class="modal-overlay" id="promotionModal">
+    <div class="modal-card">
+      <h3 class="modal-title" id="promoTitle">Выбор превращения</h3>
+      <p class="modal-desc" id="promoDesc">Выберите фигуру, в которую превратится ваша пешка:</p>
+      <div class="modal-buttons" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+        <button class="btn primary" onclick="promoteTo('q')" style="font-size: 24px;">♛</button>
+        <button class="btn primary" onclick="promoteTo('r')" style="font-size: 24px;">♜</button>
+        <button class="btn primary" onclick="promoteTo('b')" style="font-size: 24px;">♝</button>
+        <button class="btn primary" onclick="promoteTo('n')" style="font-size: 24px;">♞</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME OVER MODAL -->
+  <div class="modal-overlay" id="gameOverModal">
+    <div class="modal-card">
+      <h3 class="modal-title" id="gameOverTitle">Матч завершен!</h3>
+      <p class="modal-desc" id="gameOverDesc">Белые победили матом.</p>
+      <div class="modal-buttons">
+        <button class="btn primary" onclick="closeGameOverAndExit()" id="btnGameOverExit">Выйти</button>
+        <button class="btn cyan hidden" onclick="restartBotGame()" id="btnGameOverRematch">Сыграть ещё</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Third-party Chess rules logic library from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="chess.js"></script>
+</body>
+</html>

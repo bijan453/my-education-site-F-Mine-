@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F‑Mine · Профиль</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #06080f;
+      --bg2: #0b0e1a;
+      --bg3: #101524;
+      --bg4: #161b2e;
+      --surface: rgba(255,255,255,0.025);
+      --surface2: rgba(255,255,255,0.045);
+      --surface3: rgba(255,255,255,0.075);
+      --glass: rgba(255,255,255,0.035);
+      --border: rgba(255,255,255,0.06);
+      --border2: rgba(255,255,255,0.12);
+      --border3: rgba(255,255,255,0.18);
+      --text: #e8ecf8;
+      --text2: #7e87b0;
+      --text3: #4a5070;
+      --violet: #8b5cf6;
+      --violet2: #6d3fec;
+      --violet-glow: rgba(139,92,246,0.4);
+      --amber: #f59e0b;
+      --amber2: #fbbf24;
+      --amber-glow: rgba(245,158,11,0.35);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16,185,129,0.3);
+      --rose: #f43f5e;
+      --rose-glow: rgba(244,63,94,0.3);
+      --teal: #40E0D0;
+      --teal-glow: rgba(64,224,208,0.45);
+      --radius: 18px;
+      --radius-sm: 13px;
+      --radius-xs: 9px;
+      --shadow-xs: 0 1px 3px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.02);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.03);
+      --shadow: 0 4px 16px rgba(0,0,0,0.7),0 8px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.04);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.8),0 16px 48px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.05),0 0 40px rgba(139,92,246,0.08);
+      --shadow-glow-violet: 0 0 0 1px rgba(139,92,246,0.4),0 0 30px rgba(139,92,246,0.3),0 8px 32px rgba(0,0,0,0.5);
+      --shadow-glow-amber: 0 0 0 1px rgba(245,158,11,0.35),0 0 28px rgba(245,158,11,0.22),0 8px 32px rgba(0,0,0,0.5);
+      --shadow-glow-emerald: 0 0 0 1px rgba(16,185,129,0.3),0 0 22px rgba(16,185,129,0.18),0 8px 28px rgba(0,0,0,0.5);
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --font-body: 'Outfit', sans-serif;
+      --ease: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    body.light {
+      --bg: #f2f4ff;
+      --bg2: #e7eaff;
+      --bg3: #dfe2fc;
+      --bg4: #d5d9f7;
+      --surface: rgba(255,255,255,0.55);
+      --surface2: rgba(255,255,255,0.7);
+      --surface3: rgba(139,92,246,0.08);
+      --glass: rgba(255,255,255,0.35);
+      --border: rgba(139,92,246,0.1);
+      --border2: rgba(139,92,246,0.18);
+      --border3: rgba(139,92,246,0.25);
+      --text: #1a1730;
+      --text2: #5a5580;
+      --text3: #8884b0;
+      --shadow-xs: 0 1px 3px rgba(108,99,255,0.08);
+      --shadow-sm: 0 2px 8px rgba(108,99,255,0.1);
+      --shadow: 0 4px 16px rgba(108,99,255,0.12);
+      --shadow-lg: 0 8px 28px rgba(108,99,255,0.15);
+    }
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+    body {
+      font-family: var(--font-body);
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      background-image: radial-gradient(ellipse 65% 45% at 85% -5%, rgba(139,92,246,.07),transparent 58%),
+                        radial-gradient(ellipse 45% 35% at 5% 92%, rgba(245,158,11,.04),transparent 52%);
+      transition: background 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* container */
+    .app-wrap { max-width: 1100px; margin: 0 auto; }
+
+    /* --- header bar --- */
+    .top-bar {
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      flex-wrap: wrap; margin-bottom: 20px;
+      padding: 10px 18px;
+      background: var(--glass); backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+    .brand {
+      font-family: var(--font-display); font-size: 24px; font-weight: 800;
+      letter-spacing: -0.5px; color: var(--text);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .brand-dot { width: 6px; height: 6px; background: var(--violet); border-radius: 50%;
+                 box-shadow: 0 0 12px var(--violet-glow); }
+    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* --- grid layout --- */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    /* --- panel / card --- */
+    .panel {
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 14px;
+      transition: border-color var(--ease), box-shadow var(--ease);
+      position: relative;
+    }
+    .panel:hover {
+      border-color: var(--border2);
+      box-shadow: var(--shadow);
+    }
+    .panel-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 18px; cursor: pointer; user-select: none;
+      gap: 12px; border-radius: var(--radius) var(--radius) 0 0;
+      transition: background var(--ease);
+    }
+    .panel-head:hover { background: var(--surface2); }
+    .panel-title {
+      font-family: var(--font-display); font-size: 15px; font-weight: 700;
+      letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px;
+    }
+    .panel-note { font-family: var(--font-mono); font-size: 10px; color: var(--text3); white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+    .chevron { font-size: 12px; color: var(--text3); transition: transform 0.25s ease; }
+    .panel.open .chevron { transform: rotate(180deg); }
+    .panel-body { padding: 0 18px 18px; display: none; }
+    .panel.open .panel-body { display: block; }
+
+    /* --- buttons --- */
+    button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: none; border-radius: var(--radius-xs); padding: 9px 16px;
+      background: linear-gradient(135deg, var(--violet), var(--violet2));
+      color: #fff; font-family: var(--font-body); font-weight: 700; font-size: 13px;
+      cursor: pointer; transition: filter 0.15s, transform 0.12s, box-shadow 0.15s;
+      box-shadow: 0 4px 16px var(--violet-glow); white-space: nowrap;
+    }
+    button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    button:active { transform: translateY(0) scale(0.98); }
+    button.ghost {
+      background: transparent; border: 1.5px solid var(--border2); color: var(--text2);
+      box-shadow: none;
+    }
+    button.ghost:hover { background: var(--surface3); border-color: var(--violet); color: var(--violet); box-shadow: 0 0 18px rgba(139,92,246,0.2); }
+    button.amber { background: linear-gradient(135deg, var(--amber), #d97706); box-shadow: 0 4px 16px var(--amber-glow); }
+    button.rose  { background: linear-gradient(135deg, var(--rose), #e11d48); box-shadow: 0 4px 16px var(--rose-glow); }
+    button.emerald { background: linear-gradient(135deg, var(--emerald), #059669); box-shadow: 0 4px 16px var(--emerald-glow); }
+
+    /* --- form elements --- */
+    textarea, input[type="text"], input[type="number"], select {
+      width: 100%; margin-top: 10px; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      outline: none; background: rgba(0,0,0,0.2); color: var(--text);
+      font-family: var(--font-body); font-size: 14px; transition: border-color 0.2s;
+    }
+    body.light textarea, body.light input, body.light select {
+      background: rgba(255,255,255,0.85); color: #111;
+    }
+    textarea:focus, input:focus, select:focus { border-color: var(--violet); }
+
+    /* --- profile card --- */
+    .profile-row { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; flex-wrap: wrap; }
+    .avatar-wrap { position: relative; flex-shrink: 0; }
+    .avatar {
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+      border: 3px solid var(--amber); cursor: pointer;
+      box-shadow: 0 0 24px rgba(245,158,11,0.4); transition: transform 0.2s;
+    }
+    .avatar:hover { transform: scale(1.04); }
+    .avatar-menu {
+      position: absolute; top: 90%; left: 0; margin-top: 8px;
+      background: rgba(10,11,22,0.95); backdrop-filter: blur(24px);
+      border: 1px solid var(--border2); border-radius: var(--radius-sm);
+      padding: 6px; min-width: 180px; z-index: 20;
+      display: none; flex-direction: column; gap: 4px;
+      box-shadow: var(--shadow-lg);
+    }
+    .avatar-menu.open { display: flex; }
+    .username { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: #fff; }
+    .meta-text { font-size: 13px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
+
+    /* --- progress bars --- */
+    .bar-wrap { margin-top: 10px; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text3); margin-bottom: 6px; }
+    .bar-track {
+      height: 10px; background: rgba(0,0,0,0.25); border-radius: 99px;
+      overflow: hidden; border: 1px solid var(--border);
+    }
+    .bar-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--violet), var(--teal));
+      background-size: 200% auto; animation: shimmer 2s linear infinite;
+      box-shadow: 0 0 10px rgba(139,92,246,0.4);
+      transition: width 0.8s ease;
+    }
+    @keyframes shimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
+
+    /* --- subject cards --- */
+    .subject-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .subject-card {
+      background: rgba(0,0,0,0.15); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .subject-card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
+    .subject-card .s-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+
+    /* --- badges --- */
+    .badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .badge {
+      padding: 14px 10px; border-radius: var(--radius-sm); text-align: center;
+      background: rgba(0,0,0,0.12); border: 1px solid transparent;
+      font-family: var(--font-display); font-size: 13px; font-weight: 600;
+      opacity: 0.5; transition: opacity 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .badge.earned {
+      opacity: 1; border-color: rgba(245,158,11,0.4);
+      background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(245,158,11,0.08));
+      box-shadow: var(--shadow-glow-amber);
+    }
+    .badge span { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+    /* detail tree */
+    .class-block { margin-bottom: 18px; }
+    .class-head { font-family: var(--font-mono); font-size: 11px; color: var(--text3); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 8px; }
+    .topic-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding: 8px 10px; border-radius: 8px; background: rgba(0,0,0,0.1);
+      margin-bottom: 4px; font-size: 13px;
+    }
+    .topic-row .t-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mini-bar { width: 70px; height: 6px; background: rgba(0,0,0,0.3); border-radius: 99px; overflow: hidden; }
+    .mini-fill { height: 100%; background: linear-gradient(90deg, var(--violet), var(--teal)); border-radius: 99px; }
+
+    /* activity */
+    .activity-item {
+      padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.12);
+      font-size: 13px; margin-bottom: 6px; border: 1px solid var(--border);
+    }
+    .activity-time { font-size: 11px; color: var(--text3); display: block; margin-top: 4px; }
+
+    /* loading */
+    .loading-overlay { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 24px; color: var(--text3); }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--violet); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* responsive */
+    @media (max-width: 900px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .badge-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .subject-grid { grid-template-columns: 1fr; }
+      .badge-grid { grid-template-columns: repeat(2, 1fr); }
+      .top-actions button { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-wrap">
+  <!-- top bar -->
+  <div class="top-bar">
+    <div class="brand">
+      <span style="color:var(--amber)">F</span>
+      <div class="brand-dot"></div>
+      <span>MINE</span>
+    </div>
+    <div class="top-actions">
+      <button class="ghost" onclick="toggleTheme()">🌓 Тема</button>
+      <button class="ghost" onclick="copyNick()">📋 Ник</button>
+      <button onclick="goLobby()">🏠 Лобби</button>
+    </div>
+  </div>
+
+  <!-- dashboard grid -->
+  <div class="dashboard">
+    <!-- LEFT COLUMN -->
+    <div>
+      <!-- Профиль -->
+      <div class="panel open" id="panelProfile">
+        <div class="panel-head" onclick="togglePanel('panelProfile')">
+          <span class="panel-title">👤 Профиль</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="panel-note" id="pnoteProfile">Загрузка...</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="profile-row">
+            <div class="avatar-wrap">
+              <img id="avatar" class="avatar" src="https://via.placeholder.com/80" alt="avatar" onclick="toggleAvatarMenu()">
+              <div class="avatar-menu" id="avatarMenu">
+                <button onclick="pickAvatar()">🖼️ Сменить аватар</button>
+                <button class="ghost" onclick="resetAvatar()">♻️ Сбросить</button>
+              </div>
+              <input id="avatarFile" type="file" accept="image/*" hidden>
+            </div>
+            <div>
+              <div class="username" id="username">Гость</div>
+              <div class="meta-text" id="metaHint">Заполните профиль</div>
+            </div>
+          </div>
+          <textarea id="bio" placeholder="Напиши о себе..."></textarea>
+          <div class="bar-wrap" style="display:flex;gap:8px; margin-top:12px;">
+            <button style="flex:1;" onclick="saveBio()">💾 Сохранить био</button>
+            <button class="ghost" style="flex:1;" onclick="goLobby()">🚪 Выйти</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Любимая тема -->
+      <div class="panel" id="panelFav">
+        <div class="panel-head" onclick="togglePanel('panelFav')">
+          <span class="panel-title">⭐ Любимая тема</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="panel-note" id="pnoteFav">Не выбрана</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <select id="favSelect"></select>
+          <div class="bar-wrap"><button onclick="saveFav()">Сохранить</button></div>
+        </div>
+      </div>
+
+      <!-- Streak & Goal -->
+      <div class="panel" id="panelStreak">
+        <div class="panel-head" onclick="togglePanel('panelStreak')">
+          <span class="panel-title">🔥 Серия и цель</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="panel-note" id="pnoteStreak">—</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div style="font-size:14px; color:var(--text2);" id="streakText">Стрик: 0 дней</div>
+          <div style="font-size:14px; color:var(--text2); margin-top:8px;" id="goalText">Цель недели: 0 / 0</div>
+          <div class="bar-wrap">
+            <div class="bar-track"><div class="bar-fill" id="goalFill" style="width:0%"></div></div>
+          </div>
+          <input type="number" id="goalInput" min="1" max="100" placeholder="Цель на неделю (дней)">
+          <div class="bar-wrap" style="display:flex;gap:8px;">
+            <button class="emerald" onclick="markToday()">✅ Сегодня учился</button>
+            <button class="ghost" onclick="saveGoal()">🎯 Сохранить цель</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Заметка -->
+      <div class="panel" id="panelNote">
+        <div class="panel-head" onclick="togglePanel('panelNote')">
+          <span class="panel-title">📝 Заметка</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="panel-note" id="pnoteNote">Личная заметка</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <textarea id="note" placeholder="Личная заметка..."></textarea>
+          <div class="bar-wrap" style="display:flex;gap:8px;">
+            <button onclick="saveNote()">Сохранить</button>
+            <button class="ghost" onclick="clearNote()">Очистить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <!-- Overall progress -->
+      <div class="panel open" id="panelOverall">
+        <div class="panel-head" onclick="togglePanel('panelOverall')">
+          <span class="panel-title">📈 Общий прогресс</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="panel-note" id="pnoteOverall">—</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="loadingOverall" class="loading-overlay"><div class="spinner"></div> Загрузка...</div>
+          <div id="overallContent" style="display:none;">
+            <div class="bar-wrap">
+              <div class="bar-label"><span id="overallLabel">0 / 0 уровней</span><span id="overallPct">0%</span></div>
+              <div class="bar-track"><div class="bar-fill" id="overallFill" style="width:0%"></div></div>
+            </div>
+            <div style="font-size:13px;color:var(--text3);margin-top:12px;" id="lastResultText"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subjects -->
+      <div class="panel open" id="panelSubjects">
+        <div class="panel-head" onclick="togglePanel('panelSubjects')">
+          <span class="panel-title">📚 По предметам</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="panel-note" id="pnoteSubjects">—</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="subject-grid" id="subjectGrid"></div>
+        </div>
+      </div>
+
+      <!-- Детальный прогресс -->
+      <div class="panel" id="panelDetails">
+        <div class="panel-head" onclick="togglePanel('panelDetails')">
+          <span class="panel-title">🧩 Детальный прогресс</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="panel-note" id="pnoteDetails">—</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body" id="detailsBody"></div>
+      </div>
+
+      <!-- Badges -->
+      <div class="panel open" id="panelBadges">
+        <div class="panel-head" onclick="togglePanel('panelBadges')">
+          <span class="panel-title">🏆 Достижения</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="panel-note" id="pnoteBadges">—</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="badge-grid" id="badgeGrid"></div>
+        </div>
+      </div>
+
+      <!-- Activity history -->
+      <div class="panel open" id="panelHistory">
+        <div class="panel-head" onclick="togglePanel('panelHistory')">
+          <span class="panel-title">🕒 История</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="panel-note" id="pnoteHistory">Нет записей</span>
+            <span class="chevron">▾</span>
+          </div>
+        </div>
+        <div class="panel-body" id="historyList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const app = initializeApp({apiKey:"AIzaSyB3mpP7UjMrqbq-X_bmDfBQkZGbwTy6aVc", authDomain:"fmine-auth.firebaseapp.com", projectId:"fmine-auth", storageBucket:"fmine-auth.firebasestorage.app", messagingSenderId:"219769927531", appId:"1:219769927531:web:fbd45a0876f32927d23e2e"});
+const db = getFirestore(app);
+const currentUser = localStorage.getItem("currentUser") || "guest";
+const userRef = doc(db, "users", currentUser);
+
+const LEVELS_PER_TOPIC = 16;
+const SUBJECTS = {
+  math:    { label:"Математика", emoji:"📐", classes:{7:{integers:"Числа",linear:"Линейные",fractions:"Дроби",powers:"Степени",roots:"Корни",mixed:"Смеш."},8:{linear2:"Линейные",brackets:"Скобки",fractions2:"Дроби",powers2:"Степени",roots2:"Корни",mixed2:"Смеш."},9:{quadratic:"Квадратные",factor:"Разложение",functions:"Функции",powers3:"Степени",roots3:"Корни",mixed3:"Смеш."},10:{inequalities:"Неравенства",quadratic2:"Квадратные",trig:"Тригонометрия",logs:"Логарифмы",exponents:"Показательные",mixed4:"Смеш."}} },
+  biology: { label:"Биология", emoji:"🌿", classes:{7:{cell:"Клетка",plants:"Растения",animals:"Животные",mixed7:"Смеш."},8:{humanBody:"Человек",digestion:"Пищеварение",breathing:"Дыхание",mixed8:"Смеш."},9:{genetics:"Генетика",ecology:"Экология",evolution:"Эволюция",mixed9:"Смеш."},10:{microbiology:"Микробиология",cellProcesses:"Процессы",biosphere:"Биосфера",mixed10:"Смеш."}} },
+  physics: { label:"Физика",   emoji:"⚡", classes:{7:{motion:"Движение",density:"Плотность",force:"Сила",mixed7:"Смеш."},8:{pressure:"Давление",work:"Работа",heat:"Теплота",mixed8:"Смеш."},9:{electricity:"Электричество",circuits:"Цепи",optics:"Оптика",mixed9:"Смеш."},10:{mechanics:"Механика",electricAdv:"Электричество",waves:"Волны",mixed10:"Смеш."}} },
+  history: { label:"История",  emoji:"📜", classes:{7:{ancientWorld:"Древний мир",ancientGreece:"Греция",ancientRome:"Рим",mixed7:"Смеш."},8:{middleAges:"Средние века",oldRus:"Древняя Русь",discoveries:"Открытия",mixed8:"Смеш."},9:{renaissance:"Возрождение",empire:"Империи",industrial:"Новое время",mixed9:"Смеш."},10:{ww1:"Первая мировая",ww2:"Вторая мировая",coldWar:"Холодная война",mixed10:"Смеш."}} }
+};
+const SUBJ_KEYS = Object.keys(SUBJECTS);
+const CLASS_KEYS = ["7","8","9","10"];
+
+const defaultDoc = () => ({
+  profile:   { nickname: currentUser, avatar: "https://via.placeholder.com/80", bio: "", note: "", fav: "", goal: 7 },
+  studyMeta: { streak:0, lastDate:"", weeklyCount:0, weekKey:"" },
+  progress:  { math:{}, biology:{}, physics:{}, history:{} },
+  activities: [],
+  lastResults: {}
+});
+
+let fd = null;
+async function load() {
+  try {
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) { const d = defaultDoc(); await setDoc(userRef, d); fd = d; }
+    else { const data = snap.data(); fd = {...defaultDoc(), ...data, profile:{...defaultDoc().profile, ...(data.profile||{})}, studyMeta:{...defaultDoc().studyMeta, ...(data.studyMeta||{})}, progress:{math:data.progress?.math||{}, biology:data.progress?.biology||{}, physics:data.progress?.physics||{}, history:data.progress?.history||{}}, activities:data.activities||[], lastResults:data.lastResults||{} }; }
+  } catch { fd = defaultDoc(); }
+}
+async function patch(payload) { try { await updateDoc(userRef, payload); const snap = await getDoc(userRef); if (snap.exists()) fd = {...fd, ...snap.data()}; } catch {} }
+
+function topicHighest(sk, cls, tid) { return fd?.progress?.[sk]?.[cls]?.[tid]?.highestCompleted ?? 0; }
+function topicPct(sk, cls, tid) { return Math.min(100, Math.round(topicHighest(sk, cls, tid)/LEVELS_PER_TOPIC*100)); }
+function classLevels(sk, cls) { return Object.keys(SUBJECTS[sk].classes[cls]||{}).reduce((s,t)=>s+Math.min(LEVELS_PER_TOPIC,topicHighest(sk,cls,t)),0); }
+function classTopicsDone(sk, cls) { return Object.keys(SUBJECTS[sk].classes[cls]||{}).filter(t=>topicHighest(sk,cls,t)>=LEVELS_PER_TOPIC).length; }
+function subjectLevels(sk) { return CLASS_KEYS.reduce((s,c)=>s+classLevels(sk,c),0); }
+function subjectTopicsDone(sk) { return CLASS_KEYS.reduce((s,c)=>s+classTopicsDone(sk,c),0); }
+function subjectTotalTopics(sk) { return CLASS_KEYS.reduce((s,c)=>s+Object.keys(SUBJECTS[sk].classes[c]||{}).length,0); }
+function totalLevelsDone() { return SUBJ_KEYS.reduce((s,sk)=>s+subjectLevels(sk),0); }
+function totalTopicsDone() { return SUBJ_KEYS.reduce((s,sk)=>s+subjectTopicsDone(sk),0); }
+const TOTAL_LEVELS = SUBJ_KEYS.reduce((sum,sk)=>sum+CLASS_KEYS.reduce((s,c)=>s+Object.keys(SUBJECTS[sk].classes[c]||{}).length*LEVELS_PER_TOPIC,0),0);
+
+const getProfile = ()=> fd?.profile || defaultDoc().profile;
+const getMeta    = ()=> fd?.studyMeta || defaultDoc().studyMeta;
+async function setProfile(part) { const next = {...getProfile(), ...part}; fd.profile = next; localStorage.setItem("userData", JSON.stringify({nickname:next.nickname, avatar:next.avatar})); await patch({profile:next}); }
+const todayKey = ()=> new Date().toISOString().slice(0,10);
+const weekKey  = ()=>{ const d=new Date(),day=d.getDay()||7,m=new Date(d); m.setDate(d.getDate()-day+1); return m.toISOString().slice(0,10); };
+
+async function logActivity(text) { const arr = [...(fd.activities||[]), {text, time: new Date().toLocaleString("ru-RU")}].slice(-10); fd.activities=arr; await patch({activities:arr}); renderHistory(); }
+
+window.togglePanel = (id)=> document.getElementById(id).classList.toggle("open");
+window.toggleTheme = ()=>{ document.body.classList.toggle("light"); localStorage.setItem("accountTheme", document.body.classList.contains("light")?"light":"dark"); };
+window.toggleAvatarMenu = ()=> document.getElementById("avatarMenu").classList.toggle("open");
+window.pickAvatar = ()=>{ document.getElementById("avatarFile").click(); document.getElementById("avatarMenu").classList.remove("open"); };
+window.resetAvatar = async ()=>{ document.getElementById("avatar").src="https://via.placeholder.com/80"; await setProfile({avatar:"https://via.placeholder.com/80"}); await logActivity("Аватар сброшен"); renderProfile(); };
+document.getElementById("avatarFile").onchange = function() {
+  const file = this.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async e=>{ document.getElementById("avatar").src=e.target.result; await setProfile({avatar:e.target.result}); await logActivity("Аватар обновлён"); renderProfile(); };
+  reader.readAsDataURL(file);
+};
+document.addEventListener("click", e=>{ const menu=document.getElementById("avatarMenu"), av=document.getElementById("avatar"); if(menu && !menu.contains(e.target) && e.target!==av) menu.classList.remove("open"); });
+
+window.saveBio   = async ()=>{ await setProfile({bio:document.getElementById("bio").value}); await logActivity("Био сохранено"); renderProfile(); };
+window.saveNote  = async ()=>{ await setProfile({note:document.getElementById("note").value}); await logActivity("Заметка сохранена"); renderProfile(); };
+window.clearNote = async ()=>{ document.getElementById("note").value=""; await setProfile({note:""}); await logActivity("Заметка очищена"); renderProfile(); };
+window.saveFav   = async ()=>{ const v=document.getElementById("favSelect").value; await setProfile({fav:v}); await logActivity("Любимая тема сохранена"); renderProfile(); };
+window.saveGoal  = async ()=>{ const g=parseInt(document.getElementById("goalInput").value,10); if(!g||g<1) return; await setProfile({goal:g}); renderStats(); };
+window.markToday = async ()=>{
+  const today=todayKey(), wk=weekKey(); const m={...getMeta()};
+  if(m.lastDate===today) return alert("Сегодня уже отмечено");
+  if(m.weekKey!==wk){ m.weekKey=wk; m.weeklyCount=0; }
+  m.streak = m.lastDate && (new Date(today)-new Date(m.lastDate)===86400000) ? (m.streak||0)+1 : 1;
+  m.weeklyCount = (m.weeklyCount||0)+1; m.lastDate=today;
+  fd.studyMeta=m; await patch({studyMeta:m}); await logActivity("Отмечено занятие"); renderStats();
+};
+window.copyNick = ()=>{ navigator.clipboard.writeText(currentUser).then(()=>{ alert("Ник скопирован!"); logActivity("Ник скопирован"); }).catch(()=>alert("Ошибка")); };
+window.goLobby = ()=> location.href="lobby.html";
+
+function buildFavSelect() {
+  const sel=document.getElementById("favSelect"); if(sel.options.length) return;
+  let html=""; SUBJ_KEYS.forEach(sk=>{ CLASS_KEYS.forEach(c=>{ Object.entries(SUBJECTS[sk].classes[c]||{}).forEach(([id,name])=>{ html+=`<option value="${sk}:${c}:${id}">${SUBJECTS[sk].label} · ${c} кл. — ${name}</option>`; }); }); });
+  sel.innerHTML=html;
+}
+function getLastResult() {
+  const items = Object.entries(fd?.lastResults||{}).filter(([,v])=>v&&v.time).map(([subject,v])=>({subject,...v}));
+  return items.length ? items.sort((a,b)=>b.time-a.time)[0] : null;
+}
+
+function renderProfile() {
+  const p=getProfile();
+  document.getElementById("username").textContent=p.nickname||currentUser;
+  document.getElementById("avatar").src=p.avatar||"https://via.placeholder.com/80";
+  document.getElementById("bio").value=p.bio||"";
+  document.getElementById("note").value=p.note||"";
+  document.getElementById("goalInput").value=p.goal||7;
+  document.getElementById("pnoteProfile").textContent=p.bio?"Био заполнено":"Заполни профиль";
+  const meta=document.getElementById("metaHint");
+  if(p.bio) meta.textContent = p.bio.slice(0,80)+(p.bio.length>80?"…":"");
+  buildFavSelect();
+  if(p.fav) document.getElementById("favSelect").value=p.fav;
+  document.getElementById("pnoteFav").textContent = p.fav ? p.fav.split(":").pop() : "Не выбрана";
+  const lr=getLastResult();
+  if(lr) meta.textContent = `Последний: ${SUBJECTS[lr.subject]?.label||lr.subject} · ${lr.classNum} кл. · ${lr.topic} · ур. ${lr.level}/${LEVELS_PER_TOPIC}`;
+}
+
+function renderStats() {
+  const m=getMeta(); const g=getProfile().goal||7; const wc=m.weeklyCount||0; const gp=Math.min(100,Math.round(wc/g*100));
+  document.getElementById("streakText").textContent=`Стрик: ${m.streak||0} дней`;
+  document.getElementById("goalText").textContent=`Цель недели: ${wc} / ${g} дней`;
+  document.getElementById("goalFill").style.width=`${gp}%`;
+  document.getElementById("pnoteStreak").textContent = m.streak>0?`${m.streak} дн. подряд`:"Нет серии";
+}
+
+function renderOverall() {
+  const done=totalLevelsDone(), pct=TOTAL_LEVELS?Math.round(done/TOTAL_LEVELS*100):0;
+  document.getElementById("overallLabel").textContent=`${done} / ${TOTAL_LEVELS} уровней`;
+  document.getElementById("overallPct").textContent=`${pct}%`;
+  document.getElementById("overallFill").style.width=`${pct}%`;
+  document.getElementById("pnoteOverall").textContent=`${done} / ${TOTAL_LEVELS} · ${pct}%`;
+  const lr=getLastResult();
+  document.getElementById("lastResultText").textContent = lr
+    ? `Последний: ${SUBJECTS[lr.subject]?.label||lr.subject} — ${lr.topic} (${lr.classNum} кл.), ур. ${lr.level}/${LEVELS_PER_TOPIC}`
+    : "Последний результат не найден.";
+  document.getElementById("loadingOverall").style.display="none";
+  document.getElementById("overallContent").style.display="block";
+}
+
+function renderSubjects() {
+  const grid=document.getElementById("subjectGrid"); grid.innerHTML="";
+  SUBJ_KEYS.forEach(sk=>{
+    const subj=SUBJECTS[sk], done=subjectTopicsDone(sk), total=subjectTotalTopics(sk), lvls=subjectLevels(sk);
+    const maxLvls=total*LEVELS_PER_TOPIC, pct=maxLvls?Math.round(lvls/maxLvls*100):0;
+    grid.innerHTML+=`<div class="subject-card"><div class="s-title">${subj.emoji} ${subj.label}</div><div class="bar-wrap"><div class="bar-label"><span>${done}/${total} тем</span><span style="color:var(--amber);font-weight:800">${pct}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div></div></div>`;
+  });
+  document.getElementById("pnoteSubjects").textContent = totalTopicsDone()>0?`${totalTopicsDone()} тем · ${totalLevelsDone()} ур.`:"Начни первый уровень";
+}
+
+function renderDetails() {
+  const body=document.getElementById("detailsBody"); body.innerHTML="";
+  SUBJ_KEYS.forEach(sk=>{
+    const subj=SUBJECTS[sk];
+    let html=`<div class="class-block"><div style="font-family:var(--font-display);font-size:16px;font-weight:800;margin-bottom:10px;">${subj.emoji} ${subj.label}</div>`;
+    CLASS_KEYS.forEach(c=>{
+      const topics=Object.entries(subj.classes[c]||{}), lvls=classLevels(sk,c), done=classTopicsDone(sk,c);
+      html+=`<div class="class-head"><span>${c} класс</span><span>${done}/${topics.length} тем · ${lvls} ур.</span></div>`;
+      topics.forEach(([id,name])=>{
+        const high=topicHighest(sk,c,id), pct=topicPct(sk,c,id);
+        html+=`<div class="topic-row"><span class="t-name">${name}</span><div class="mini-bar"><div class="mini-fill" style="width:${pct}%"></div></div><span style="font-weight:700;color:var(--amber)">${high}/${LEVELS_PER_TOPIC}</span></div>`;
+      });
+    });
+    body.innerHTML+=html+"</div>";
+  });
+  document.getElementById("pnoteDetails").textContent = totalLevelsDone()>0?"Есть данные":"Нет данных";
+}
+
+function renderBadges() {
+  const m=getMeta(), p=getProfile(), lvls=totalLevelsDone(), topics=totalTopicsDone();
+  const defs = [
+    {icon:"🚀",title:"Старт",hint:"1 уровень", earned:lvls>=1},
+    {icon:"🔟",title:"Первые 10",hint:"10 уровней", earned:lvls>=10},
+    {icon:"📖",title:"Темы открыты",hint:"3 темы", earned:topics>=3},
+    {icon:"🎓",title:"Хорошист",hint:"50+ уровней", earned:lvls>=50},
+    {icon:"🏆",title:"Мастер",hint:"100+ уровней", earned:lvls>=100},
+    {icon:"🔥",title:"Серия",hint:"3 дня подряд", earned:(m.streak||0)>=3},
+    {icon:"🎯",title:"Цель недели",hint:"выполнена", earned:(m.weeklyCount||0)>=(p.goal||7)},
+    {icon:"⭐",title:"Любимая тема",hint:"выбрана", earned:!!p.fav}
+  ];
+  const earned=defs.filter(d=>d.earned).length;
+  document.getElementById("badgeGrid").innerHTML = defs.map(d=>`<div class="badge ${d.earned?'earned':''}">${d.icon} ${d.title}<span>${d.hint}</span></div>`).join("");
+  document.getElementById("pnoteBadges").textContent = earned>0?`${earned} из ${defs.length}`:"Пройди первый уровень";
+}
+
+function renderHistory() {
+  const list=document.getElementById("historyList"), acts=fd?.activities||[];
+  list.innerHTML = acts.length ? [...acts].reverse().map(a=>`<div class="activity-item">${a.text}<span class="activity-time">${a.time}</span></div>`).join("") : `<div class="activity-item" style="color:var(--text3)">Активности пока нет.</div>`;
+  document.getElementById("pnoteHistory").textContent = acts.length?`${acts.length} записей`:"Нет записей";
+}
+
+function renderAll() { renderProfile(); renderStats(); renderOverall(); renderSubjects(); renderDetails(); renderBadges(); renderHistory(); }
+
+async function init() {
+  if (localStorage.getItem("accountTheme")==="light") document.body.classList.add("light");
+  await load();
+  renderAll();
+}
+
+window.togglePanel = togglePanel;
+window.toggleTheme = toggleTheme;
+window.toggleAvatarMenu = toggleAvatarMenu;
+window.pickAvatar = pickAvatar;
+window.resetAvatar = resetAvatar;
+window.saveBio = saveBio;
+window.saveNote = saveNote;
+window.clearNote = clearNote;
+window.saveFav = saveFav;
+window.markToday = markToday;
+window.saveGoal = saveGoal;
+window.copyNick = copyNick;
+window.goLobby = goLobby;
+
+init();
+</script>
+<script src="pomo-shared.js"></script>
+</body>
+</html>
