@@ -467,10 +467,47 @@ async function apiCall(endpoint, body = {}) {
 
 // --- NOTIFICATION TOASTS ---
 function showToast(msg) {
-  const tDiv = document.getElementById("toast");
+  let tDiv = document.getElementById("toast");
+  if (!tDiv) {
+    tDiv = document.createElement("div");
+    tDiv.id = "toast";
+    // Apply default/fallback CSS styles to the dynamically created toast
+    tDiv.style.position = "fixed";
+    tDiv.style.bottom = "24px";
+    tDiv.style.left = "50%";
+    tDiv.style.transform = "translateX(-50%) translateY(20px)";
+    tDiv.style.background = "rgba(7, 9, 19, .95)";
+    tDiv.style.border = "1px solid rgba(167, 139, 250, .25)";
+    tDiv.style.padding = "12px 24px";
+    tDiv.style.borderRadius = "99px";
+    tDiv.style.fontSize = "13px";
+    tDiv.style.fontWeight = "700";
+    tDiv.style.color = "#f3f6ff";
+    tDiv.style.boxShadow = "0 10px 30px rgba(0,0,0,.5)";
+    tDiv.style.opacity = "0";
+    tDiv.style.pointerEvents = "none";
+    tDiv.style.transition = "transform .25s ease, opacity .25s ease";
+    tDiv.style.zIndex = "10000";
+    document.body.appendChild(tDiv);
+  }
+  
+  // Force a reflow to make sure transition plays nicely
+  tDiv.offsetHeight;
+  
   tDiv.textContent = msg;
-  tDiv.className = "show";
-  setTimeout(() => { tDiv.className = ""; }, 3000);
+  tDiv.classList.add("show");
+  tDiv.style.opacity = "1";
+  tDiv.style.transform = "translateX(-50%) translateY(0)";
+  
+  if (window.toastTimeout) {
+    clearTimeout(window.toastTimeout);
+  }
+  
+  window.toastTimeout = setTimeout(() => {
+    tDiv.classList.remove("show");
+    tDiv.style.opacity = "0";
+    tDiv.style.transform = "translateX(-50%) translateY(20px)";
+  }, 3000);
 }
 
 // --- GAME INITIATIONS ---

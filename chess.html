@@ -1133,6 +1133,35 @@
       margin-top: 10px;
       flex-wrap: wrap;
     }
+
+    /* Toast Notifications */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(7, 9, 19, .95);
+      border: 1px solid rgba(167, 139, 250, .25);
+      padding: 12px 24px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #f3f6ff;
+      box-shadow: 0 10px 30px rgba(0,0,0,.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--ease);
+      z-index: 10000;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    body.light #toast {
+      background: #eceffd;
+      border-color: rgba(124, 92, 246, .2);
+      color: #171329;
+    }
   </style>
 </head>
 <body>
@@ -1523,8 +1552,11 @@
     </div>
   </div>
 
+  <!-- Toast notification element -->
+  <div id="toast"></div>
+
   <!-- Third-party Chess rules logic library from CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-  <script src="chess.js?v=4"></script>
+  <script src="chess.js?v=5"></script>
 </body>
 </html>
