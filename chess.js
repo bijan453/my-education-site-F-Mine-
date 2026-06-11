@@ -1806,7 +1806,7 @@ async function checkActiveGameReconnection() {
   
   if (savedGameId && savedColor) {
     try {
-      const res = await fetch(`/api/chess/status/${savedGameId}`);
+      const res = await fetch(`${SERVER_URL}/api/chess/status/${savedGameId}`);
       const data = await res.json();
       
       if (data.ok && data.status === "playing") {
@@ -1886,7 +1886,7 @@ async function speakText(text) {
     const voice = LANG === 'ru' ? 'ru-RU-DmitryNeural' : 'en-US-BrianNeural';
     const rate = '+0%';
     
-    const res = await fetch('/api/tts', {
+    const res = await fetch(`${SERVER_URL}/api/tts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, voice, rate })
