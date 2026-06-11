@@ -2160,11 +2160,9 @@ window.startGameAnalysis = function() {
     } else if (isBookCandidate) {
       // Within the first 4 full moves, if not a blunder, mistake, or inaccuracy, it is theory/book
       classification = 'book';
-    } else if (evalLoss <= -1.5) {
-      classification = 'brilliant';
     } else if (bestMoveObj && move.from === bestMoveObj.from && move.to === bestMoveObj.to) {
       classification = 'best';
-    } else if (evalLoss <= 0.1) {
+    } else if (evalLoss <= 0.15) {
       classification = 'excellent';
     } else {
       classification = 'good';
