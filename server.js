@@ -364,8 +364,8 @@ setInterval(() => {
   }
 }, 15 * 60 * 1000);
 
-app.post("/api/chess/create", (req, res) => {
-  const { creator, mode, botDifficulty, botColor, creatorColor } = req.body;
+app.get("/api/chess/create", (req, res) => {
+  const { creator, mode, botDifficulty, botColor, creatorColor } = req.query;
   if (!creator) {
     return res.status(400).json({ ok: false, error: "Creator nickname is required" });
   }
@@ -391,7 +391,6 @@ app.post("/api/chess/create", (req, res) => {
       assignedColor = "white";
     }
   } else {
-    // Multiplayer
     let chosenColor = creatorColor || "white";
     if (chosenColor === "random") {
       chosenColor = Math.random() < 0.5 ? "white" : "black";
@@ -428,8 +427,8 @@ app.get("/api/chess/ping", (req, res) => {
   res.json({ ok: true, status: "awake" });
 });
 
-app.post("/api/chess/join", (req, res) => {
-  const { gameId, player } = req.body;
+app.get("/api/chess/join", (req, res) => {
+  const { gameId, player } = req.query;
   if (!gameId || !player) {
     return res.status(400).json({ ok: false, error: "Game ID and player nickname are required" });
   }

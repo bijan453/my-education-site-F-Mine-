@@ -437,12 +437,20 @@ function withTimeout(promise, ms) {
 }
 
 async function apiCall(endpoint, body = {}) {
+  // Use GET for create/join to avoid CORS preflight; POST for everything else
+  const useGet = endpoint === 'create' || endpoint === 'join';
   try {
-    const fetchPromise = fetch(`${SERVER_URL}/api/chess/${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
+    let fetchPromise;
+    if (useGet) {
+      const params = new URLSearchParams(body).toString();
+      fetchPromise = fetch(`${SERVER_URL}/api/chess/${endpoint}?${params}`);
+    } else {
+      fetchPromise = fetch(`${SERVER_URL}/api/chess/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    }
     const res = await withTimeout(fetchPromise, 20000);
     const data = await res.json();
     if (!res.ok || data.ok === false) {
@@ -454,6 +462,7 @@ async function apiCall(endpoint, body = {}) {
     throw err;
   }
 }
+
 
 
 // --- NOTIFICATION TOASTS ---
