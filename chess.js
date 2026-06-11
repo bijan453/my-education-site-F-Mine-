@@ -501,37 +501,53 @@ window.restartBotGame = function() {
 };
 
 window.createRoom = async function() {
-  try {
-    const data = await apiCall("create", { creator: userNick, mode: "multiplayer", creatorColor: selectedPlayerColor });
-    if (data.ok) {
-      activeGameId = data.gameId;
-      playerColor = data.color;
-      
-      // Save game state in localStorage for reconnection
-      localStorage.setItem("fmine_active_chess_game", activeGameId);
-      localStorage.setItem("fmine_active_chess_color", playerColor);
+  const btn = document.getElementById('btnCreateRoom');
+  const origText = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '⏳ Подключение...' : '⏳ Connecting...'; }
 
-      // Update details
-      document.getElementById("playerName").textContent = userNick;
-      document.getElementById("opponentName").textContent = t("waitingOpponent");
-      
-      const playerDot = document.getElementById("playerColorDot");
-      const opponentDot = document.getElementById("opponentColorDot");
-      playerDot.className = `player-color-dot ${playerColor}`;
-      opponentDot.className = `player-color-dot ${playerColor === 'white' ? 'black' : 'white'}`;
-      
-      document.getElementById("btnGameOverRematch").classList.add("hidden"); // Rematch only in bot arena
-      document.getElementById("roomCodeBadge").classList.remove("hidden");
-      document.getElementById("roomCodeBadge").textContent = `${t("roomCode")}${activeGameId}`;
-      
-      // Go to playing view
-      document.getElementById("setupView").style.display = "none";
-      document.getElementById("arenaView").classList.add("active");
-      
-      setupSSE(activeGameId);
-    }
+  try {
+    // Wake up server first
+    await fetch(`${SERVER_URL}/api/chess/ping`).catch(() => {});
+
+    const data = await apiCall("create", { creator: userNick, mode: "multiplayer", creatorColor: selectedPlayerColor });
+    activeGameId = data.gameId;
+    playerColor = data.color;
+    
+    // Save game state in localStorage for reconnection
+    localStorage.setItem("fmine_active_chess_game", activeGameId);
+    localStorage.setItem("fmine_active_chess_color", playerColor);
+
+    // Update details
+    document.getElementById("playerName").textContent = userNick;
+    document.getElementById("opponentName").textContent = t("waitingOpponent");
+    
+    const playerDot = document.getElementById("playerColorDot");
+    const opponentDot = document.getElementById("opponentColorDot");
+    playerDot.className = `player-color-dot ${playerColor}`;
+    opponentDot.className = `player-color-dot ${playerColor === 'white' ? 'black' : 'white'}`;
+    
+    document.getElementById("btnGameOverRematch").classList.add("hidden");
+    document.getElementById("roomCodeBadge").classList.remove("hidden");
+    document.getElementById("roomCodeBadge").textContent = `${t("roomCode")}${activeGameId}`;
+    
+    // Auto-copy invite link so host can immediately share it
+    const inviteLink = `${window.location.origin}${window.location.pathname}?room=${activeGameId}`;
+    try { await navigator.clipboard.writeText(inviteLink); } catch {}
+    showToast(LANG === 'ru'
+      ? `✅ Комната создана! Ссылка скопирована — отправь другу!`
+      : `✅ Room created! Invite link copied — share with friend!`);
+    
+    // Go to playing view
+    document.getElementById("setupView").style.display = "none";
+    document.getElementById("arenaView").classList.add("active");
+    
+    setupSSE(activeGameId);
   } catch (err) {
     console.error(err);
+    showToast(LANG === 'ru'
+      ? '❌ Не удалось создать комнату. Попробуй ещё раз.'
+      : '❌ Could not create room. Try again.');
+    if (btn) { btn.disabled = false; btn.textContent = origText; }
   }
 };
 
@@ -541,35 +557,46 @@ window.joinRoom = async function() {
     showToast(LANG === 'ru' ? "Введите код комнаты" : "Enter room code");
     return;
   }
+
+  const btn = document.getElementById('btnJoinRoom');
+  const origText = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '⏳...' : '⏳...'; }
   
   try {
     const data = await apiCall("join", { gameId: code, player: userNick });
-    if (data.ok) {
-      activeGameId = data.gameId;
-      playerColor = data.color;
-      
-      // Save game state in localStorage for reconnection
-      localStorage.setItem("fmine_active_chess_game", activeGameId);
-      localStorage.setItem("fmine_active_chess_color", playerColor);
+    activeGameId = data.gameId;
+    playerColor = data.color;
+    
+    localStorage.setItem("fmine_active_chess_game", activeGameId);
+    localStorage.setItem("fmine_active_chess_color", playerColor);
 
-      document.getElementById("playerName").textContent = userNick;
-      
-      const playerDot = document.getElementById("playerColorDot");
-      const opponentDot = document.getElementById("opponentColorDot");
-      playerDot.className = `player-color-dot ${playerColor}`;
-      opponentDot.className = `player-color-dot ${playerColor === 'white' ? 'black' : 'white'}`;
-      
-      document.getElementById("btnGameOverRematch").classList.add("hidden");
-      document.getElementById("roomCodeBadge").classList.remove("hidden");
-      document.getElementById("roomCodeBadge").textContent = `${t("roomCode")}${activeGameId}`;
-      
-      document.getElementById("setupView").style.display = "none";
-      document.getElementById("arenaView").classList.add("active");
-      
-      setupSSE(activeGameId);
-    }
+    document.getElementById("playerName").textContent = userNick;
+    
+    const playerDot = document.getElementById("playerColorDot");
+    const opponentDot = document.getElementById("opponentColorDot");
+    playerDot.className = `player-color-dot ${playerColor}`;
+    opponentDot.className = `player-color-dot ${playerColor === 'white' ? 'black' : 'white'}`;
+    
+    document.getElementById("btnGameOverRematch").classList.add("hidden");
+    document.getElementById("roomCodeBadge").classList.remove("hidden");
+    document.getElementById("roomCodeBadge").textContent = `${t("roomCode")}${activeGameId}`;
+    
+    document.getElementById("setupView").style.display = "none";
+    document.getElementById("arenaView").classList.add("active");
+    
+    setupSSE(activeGameId);
   } catch (err) {
     console.error(err);
+    if (btn) { btn.disabled = false; btn.textContent = origText; }
+    // err.message already shown by apiCall via showToast
+    // Extra hint if game not found
+    if (err.message && (err.message.includes('not found') || err.message.includes('не найд'))) {
+      setTimeout(() => showToast(
+        LANG === 'ru'
+          ? '💡 Подсказка: Попроси друга создать комнату заново и скинуть новую ссылку'
+          : '💡 Tip: Ask your friend to create a new room and share the fresh link'
+      ), 2500);
+    }
   }
 };
 
@@ -1795,7 +1822,12 @@ function checkUrlInvite() {
     if (input) {
       input.value = room;
     }
-    showToast(LANG === 'ru' ? "Код приглашения загружен!" : "Invite code loaded!");
+    showToast(LANG === 'ru'
+      ? `🔗 Приглашение в комнату ${room} — нажми «Войти»!`
+      : `🔗 Invite for room ${room} — press Join!`);
+    // Clean URL so it doesn't confuse on reload
+    const cleanUrl = window.location.pathname;
+    window.history.replaceState({}, '', cleanUrl);
   }
 }
 
