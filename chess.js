@@ -2157,12 +2157,15 @@ window.startGameAnalysis = function() {
       classification = 'mistake';
     } else if (evalLoss > 0.4) {
       classification = 'inaccuracy';
+    } else if (isBookCandidate) {
+      // Within the first 4 full moves, if not a blunder, mistake, or inaccuracy, it is theory/book
+      classification = 'book';
     } else if (evalLoss <= -1.5) {
       classification = 'brilliant';
     } else if (bestMoveObj && move.from === bestMoveObj.from && move.to === bestMoveObj.to) {
-      classification = isBookCandidate ? 'book' : 'best';
+      classification = 'best';
     } else if (evalLoss <= 0.1) {
-      classification = isBookCandidate ? 'book' : 'excellent';
+      classification = 'excellent';
     } else {
       classification = 'good';
     }
@@ -2260,9 +2263,16 @@ async function finishAnalysis(stats) {
     Moves: ${movesListStr}.
     Format: Start directly with the analysis. Make sure to write in ${LANG === 'ru' ? 'Russian' : 'English'}. Be encouraging and highlight the turning point.`;
 
+    const storedSettings = JSON.parse(localStorage.getItem('fmine_settings') || '{}');
+    const userApiKey = storedSettings.apiKey || '';
+    const headers = { 'Content-Type': 'application/json' };
+    if (userApiKey) {
+      headers['Authorization'] = `Bearer ${userApiKey}`;
+    }
+
     const res = await fetch(`${SERVER_URL}/api/chat-stream`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [{ role: "user", content: prompt }],
@@ -2459,9 +2469,16 @@ window.explainCurrentMove = async function() {
     PGN context: ${pgnContext}.
     Write a brief explanation (max 50 words) outlining the tactical or positional drawback. Answer in ${LANG === 'ru' ? 'Russian' : 'English'}.`;
 
+    const storedSettings = JSON.parse(localStorage.getItem('fmine_settings') || '{}');
+    const userApiKey = storedSettings.apiKey || '';
+    const headers = { 'Content-Type': 'application/json' };
+    if (userApiKey) {
+      headers['Authorization'] = `Bearer ${userApiKey}`;
+    }
+
     const res = await fetch(`${SERVER_URL}/api/chat-stream`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [{ role: "user", content: prompt }],
