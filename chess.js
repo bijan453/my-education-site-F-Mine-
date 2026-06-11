@@ -425,13 +425,30 @@ const SERVER_URL = 'https://my-education-site-f-mine.onrender.com';
 // (free tier sleeps after 15min inactivity — this prevents 30s delay on first click)
 fetch(`${SERVER_URL}/api/chess/ping`).catch(() => {});
 
+// Fetch with timeout helper
+async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timer);
+    return res;
+  } catch (err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      throw new Error(LANG === 'ru' ? 'Сервер не отвечает (таймаут). Попробуй ещё раз.' : 'Server timeout. Please try again.');
+    }
+    throw err;
+  }
+}
+
 async function apiCall(endpoint, body = {}) {
   try {
-    const res = await fetch(`${SERVER_URL}/api/chess/${endpoint}`, {
+    const res = await fetchWithTimeout(`${SERVER_URL}/api/chess/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
-    });
+    }, 15000);
     const data = await res.json();
     if (!res.ok || data.ok === false) {
       throw new Error(data.error || "Server error");
@@ -503,21 +520,28 @@ window.restartBotGame = function() {
 window.createRoom = async function() {
   const btn = document.getElementById('btnCreateRoom');
   const origText = btn ? btn.textContent : '';
-  if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '⏳ Подключение...' : '⏳ Connecting...'; }
+  if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '⏳ Пробуждение сервера...' : '⏳ Waking server...'; }
 
   try {
-    // Wake up server first
-    await fetch(`${SERVER_URL}/api/chess/ping`).catch(() => {});
+    // Wake up server — wait up to 20s for it to respond
+    let awake = false;
+    for (let i = 0; i < 4; i++) {
+      try {
+        const ping = await fetchWithTimeout(`${SERVER_URL}/api/chess/ping`, {}, 7000);
+        if (ping.ok) { awake = true; break; }
+      } catch {}
+      if (btn) btn.textContent = LANG === 'ru' ? `⏳ Ожидание сервера...` : `⏳ Waiting for server...`;
+    }
+    if (!awake) throw new Error(LANG === 'ru' ? 'Сервер недоступен. Попробуй позже.' : 'Server unavailable. Try later.');
 
+    if (btn) btn.textContent = LANG === 'ru' ? '⏳ Создаём комнату...' : '⏳ Creating room...';
     const data = await apiCall("create", { creator: userNick, mode: "multiplayer", creatorColor: selectedPlayerColor });
     activeGameId = data.gameId;
     playerColor = data.color;
     
-    // Save game state in localStorage for reconnection
     localStorage.setItem("fmine_active_chess_game", activeGameId);
     localStorage.setItem("fmine_active_chess_color", playerColor);
 
-    // Update details
     document.getElementById("playerName").textContent = userNick;
     document.getElementById("opponentName").textContent = t("waitingOpponent");
     
@@ -530,14 +554,12 @@ window.createRoom = async function() {
     document.getElementById("roomCodeBadge").classList.remove("hidden");
     document.getElementById("roomCodeBadge").textContent = `${t("roomCode")}${activeGameId}`;
     
-    // Auto-copy invite link so host can immediately share it
     const inviteLink = `${window.location.origin}${window.location.pathname}?room=${activeGameId}`;
     try { await navigator.clipboard.writeText(inviteLink); } catch {}
     showToast(LANG === 'ru'
       ? `✅ Комната создана! Ссылка скопирована — отправь другу!`
       : `✅ Room created! Invite link copied — share with friend!`);
     
-    // Go to playing view
     document.getElementById("setupView").style.display = "none";
     document.getElementById("arenaView").classList.add("active");
     
