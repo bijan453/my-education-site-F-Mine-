@@ -422,43 +422,39 @@ window.switchSideTab = function(tab) {
 const SERVER_URL = 'https://my-education-site-f-mine.onrender.com';
 
 // Wake up the Render server silently when the page loads
-// (free tier sleeps after 15min inactivity — this prevents 30s delay on first click)
 fetch(`${SERVER_URL}/api/chess/ping`).catch(() => {});
 
-// Fetch with timeout helper
-async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, { ...options, signal: controller.signal });
-    clearTimeout(timer);
-    return res;
-  } catch (err) {
-    clearTimeout(timer);
-    if (err.name === 'AbortError') {
-      throw new Error(LANG === 'ru' ? 'Сервер не отвечает (таймаут). Попробуй ещё раз.' : 'Server timeout. Please try again.');
-    }
-    throw err;
-  }
+// Simple timeout using Promise.race
+function withTimeout(promise, ms) {
+  const timer = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error(
+      typeof LANG !== 'undefined' && LANG === 'ru'
+        ? 'Сервер не отвечает. Попробуй ещё раз.'
+        : 'Server not responding. Try again.'
+    )), ms)
+  );
+  return Promise.race([promise, timer]);
 }
 
 async function apiCall(endpoint, body = {}) {
   try {
-    const res = await fetchWithTimeout(`${SERVER_URL}/api/chess/${endpoint}`, {
+    const fetchPromise = fetch(`${SERVER_URL}/api/chess/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
-    }, 15000);
+    });
+    const res = await withTimeout(fetchPromise, 20000);
     const data = await res.json();
     if (!res.ok || data.ok === false) {
-      throw new Error(data.error || "Server error");
+      throw new Error(data.error || 'Server error');
     }
     return data;
   } catch (err) {
-    showToast(`❌ ${err.message}`);
+    showToast(`\u274c ${err.message}`);
     throw err;
   }
 }
+
 
 // --- NOTIFICATION TOASTS ---
 function showToast(msg) {
@@ -520,55 +516,47 @@ window.restartBotGame = function() {
 window.createRoom = async function() {
   const btn = document.getElementById('btnCreateRoom');
   const origText = btn ? btn.textContent : '';
-  if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '⏳ Пробуждение сервера...' : '⏳ Waking server...'; }
+  if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '\u23f3 \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0435...' : '\u23f3 Connecting...'; }
 
   try {
-    // Wake up server — wait up to 20s for it to respond
-    let awake = false;
-    for (let i = 0; i < 4; i++) {
-      try {
-        const ping = await fetchWithTimeout(`${SERVER_URL}/api/chess/ping`, {}, 7000);
-        if (ping.ok) { awake = true; break; }
-      } catch {}
-      if (btn) btn.textContent = LANG === 'ru' ? `⏳ Ожидание сервера...` : `⏳ Waiting for server...`;
-    }
-    if (!awake) throw new Error(LANG === 'ru' ? 'Сервер недоступен. Попробуй позже.' : 'Server unavailable. Try later.');
+    // Ping server first to wake it up
+    await withTimeout(fetch(`${SERVER_URL}/api/chess/ping`), 25000);
 
-    if (btn) btn.textContent = LANG === 'ru' ? '⏳ Создаём комнату...' : '⏳ Creating room...';
-    const data = await apiCall("create", { creator: userNick, mode: "multiplayer", creatorColor: selectedPlayerColor });
+    if (btn) btn.textContent = LANG === 'ru' ? '\u23f3 \u0421\u043e\u0437\u0434\u0430\u0451\u043c \u043a\u043e\u043c\u043d\u0430\u0442\u0443...' : '\u23f3 Creating room...';
+    const data = await apiCall('create', { creator: userNick, mode: 'multiplayer', creatorColor: selectedPlayerColor });
     activeGameId = data.gameId;
     playerColor = data.color;
-    
-    localStorage.setItem("fmine_active_chess_game", activeGameId);
-    localStorage.setItem("fmine_active_chess_color", playerColor);
 
-    document.getElementById("playerName").textContent = userNick;
-    document.getElementById("opponentName").textContent = t("waitingOpponent");
-    
-    const playerDot = document.getElementById("playerColorDot");
-    const opponentDot = document.getElementById("opponentColorDot");
+    localStorage.setItem('fmine_active_chess_game', activeGameId);
+    localStorage.setItem('fmine_active_chess_color', playerColor);
+
+    document.getElementById('playerName').textContent = userNick;
+    document.getElementById('opponentName').textContent = t('waitingOpponent');
+
+    const playerDot = document.getElementById('playerColorDot');
+    const opponentDot = document.getElementById('opponentColorDot');
     playerDot.className = `player-color-dot ${playerColor}`;
     opponentDot.className = `player-color-dot ${playerColor === 'white' ? 'black' : 'white'}`;
-    
-    document.getElementById("btnGameOverRematch").classList.add("hidden");
-    document.getElementById("roomCodeBadge").classList.remove("hidden");
-    document.getElementById("roomCodeBadge").textContent = `${t("roomCode")}${activeGameId}`;
-    
+
+    document.getElementById('btnGameOverRematch').classList.add('hidden');
+    document.getElementById('roomCodeBadge').classList.remove('hidden');
+    document.getElementById('roomCodeBadge').textContent = `${t('roomCode')}${activeGameId}`;
+
     const inviteLink = `${window.location.origin}${window.location.pathname}?room=${activeGameId}`;
     try { await navigator.clipboard.writeText(inviteLink); } catch {}
     showToast(LANG === 'ru'
-      ? `✅ Комната создана! Ссылка скопирована — отправь другу!`
-      : `✅ Room created! Invite link copied — share with friend!`);
-    
-    document.getElementById("setupView").style.display = "none";
-    document.getElementById("arenaView").classList.add("active");
-    
+      ? '\u2705 \u041a\u043e\u043c\u043d\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0430! \u0421\u0441\u044b\u043b\u043a\u0430 \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u0430 \u2014 \u043e\u0442\u043f\u0440\u0430\u0432\u044c \u0434\u0440\u0443\u0433\u0443!'
+      : '\u2705 Room created! Invite link copied \u2014 share with friend!');
+
+    document.getElementById('setupView').style.display = 'none';
+    document.getElementById('arenaView').classList.add('active');
+
     setupSSE(activeGameId);
   } catch (err) {
     console.error(err);
     showToast(LANG === 'ru'
-      ? '❌ Не удалось создать комнату. Попробуй ещё раз.'
-      : '❌ Could not create room. Try again.');
+      ? '\u274c \u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0441\u043e\u0437\u0434\u0430\u0442\u044c \u043a\u043e\u043c\u043d\u0430\u0442\u0443. \u041f\u043e\u043f\u0440\u043e\u0431\u0443\u0439 \u0435\u0449\u0451 \u0440\u0430\u0437.'
+      : '\u274c Could not create room. Try again.');
     if (btn) { btn.disabled = false; btn.textContent = origText; }
   }
 };
