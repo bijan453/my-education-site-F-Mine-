@@ -365,7 +365,7 @@ setInterval(() => {
 }, 15 * 60 * 1000);
 
 app.get("/api/chess/create", (req, res) => {
-  const { creator, mode, botDifficulty, botColor, creatorColor } = req.query;
+  const { creator, mode, botDifficulty, botColor, creatorColor, timeControl } = req.query;
   if (!creator) {
     return res.status(400).json({ ok: false, error: "Creator nickname is required" });
   }
@@ -415,6 +415,8 @@ app.get("/api/chess/create", (req, res) => {
     moves: [],
     chat: [],
     botDifficulty: botDifficulty || "medium",
+    timeControl: timeControl || "infinite",
+    clocks: null,
     lastActive: Date.now()
   };
 
@@ -538,7 +540,7 @@ app.post("/api/chess/draw-response", (req, res) => {
 });
 
 app.post("/api/chess/move", (req, res) => {
-  const { gameId, fen, move } = req.body;
+  const { gameId, fen, move, clocks } = req.body;
   const game = chessGames.get(gameId);
   if (!game) {
     return res.status(404).json({ ok: false, error: "Game not found" });
@@ -547,6 +549,9 @@ app.post("/api/chess/move", (req, res) => {
   game.fen = fen;
   if (move) {
     game.moves.push(move);
+  }
+  if (clocks) {
+    game.clocks = clocks;
   }
   // Determine turn from FEN
   game.turn = fen.split(" ")[1] === "b" ? "black" : "white";

@@ -20,6 +20,14 @@ let analysisMoves = []; // Array of { fen, move, score, classification, bestMove
 let currentAnalysisIndex = -1; // -1 means start position, 0 means move 1, etc.
 let isAnalyzing = false;
 
+// Time Control & Clocks State
+let timeControl = 'infinite'; // 'infinite', '3', '5', '10', '15+10'
+let selectedTime = 'infinite';
+let whiteTime = 0; // in seconds
+let blackTime = 0; // in seconds
+let timeIncrement = 0; // in seconds
+let timerInterval = null;
+
 let currentSkin = localStorage.getItem("fmine_chess_skin") || "neon";
 let isVoiceMuted = localStorage.getItem("fmine_chess_voice_muted") === "true";
 let currentTtsAudio = null;
@@ -48,6 +56,8 @@ const T = {
     btnJoin: "⚔️ Войти",
     lblDiff: "Сложность бота",
     lblCol: "Ваш цвет",
+    lblTimeControl: "Контроль времени",
+    opening: "Дебют",
     lblPers: "Личность бота (ИИ комментатор)",
     btnOn: "Включен",
     btnOff: "Выключен",
@@ -115,6 +125,8 @@ const T = {
     btnJoin: "⚔️ Join",
     lblDiff: "Bot Difficulty",
     lblCol: "Your Color",
+    lblTimeControl: "Time Control",
+    opening: "Opening",
     lblPers: "Bot Personality (AI Commentator)",
     btnOn: "Enabled",
     btnOff: "Disabled",
@@ -299,6 +311,19 @@ function applyTranslations() {
   if (colRandMulti) colRandMulti.textContent = t("random");
   const colBlackMulti = document.getElementById("optColMultiBlack");
   if (colBlackMulti) colBlackMulti.textContent = t("black");
+
+  const timeControlEl = document.getElementById("lblTimeControl");
+  if (timeControlEl) timeControlEl.textContent = t("lblTimeControl");
+  const timeInfiniteEl = document.getElementById("optTimeInfinite");
+  if (timeInfiniteEl) timeInfiniteEl.textContent = LANG === "ru" ? "Без лимита" : "No Time";
+  const time3El = document.getElementById("optTime3");
+  if (time3El) time3El.textContent = LANG === "ru" ? "3 мин" : "3 Min";
+  const time5El = document.getElementById("optTime5");
+  if (time5El) time5El.textContent = LANG === "ru" ? "5 мин" : "5 Min";
+  const time10El = document.getElementById("optTime10");
+  if (time10El) time10El.textContent = LANG === "ru" ? "10 мин" : "10 Min";
+  const time15El = document.getElementById("optTime15");
+  if (time15El) time15El.textContent = LANG === "ru" ? "15 + 10" : "15 + 10";
   
   document.getElementById("lblBotPersonality").textContent = t("lblPers");
   document.getElementById("optPersOn").textContent = t("btnOn");
@@ -419,7 +444,9 @@ window.switchSideTab = function(tab) {
 };
 
 // --- SERVER HTTP HELPER ---
-const SERVER_URL = 'https://my-education-site-f-mine.onrender.com';
+const SERVER_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? `${window.location.protocol}//${window.location.hostname}:3000`
+  : (window.location.protocol.startsWith('http') ? window.location.origin : 'https://my-education-site-f-mine.onrender.com');
 
 // Wake up the Render server silently when the page loads
 fetch(`${SERVER_URL}/api/chess/ping`).catch(() => {});
@@ -544,6 +571,11 @@ window.startGame = function() {
   
   setupSSE(null); // No SSE for bot mode
   
+  // Initialize Clocks, Eval Bar, and Opening Detector
+  initTimeClocks(selectedTime);
+  updateLiveEvalBar();
+  updateOpeningName();
+  
   renderBoard();
   updateTurnIndicator();
   addChatMessage("system", LANG === 'ru' ? "Игра началась против ИИ." : "Match started against AI.");
@@ -552,6 +584,9 @@ window.startGame = function() {
     // Bot goes first as White
     triggerBotMove();
   }
+  
+  // Start countdown ticking
+  startClockTicking();
 };
 
 window.restartBotGame = function() {
@@ -569,7 +604,7 @@ window.createRoom = async function() {
     await withTimeout(fetch(`${SERVER_URL}/api/chess/ping`), 25000);
 
     if (btn) btn.textContent = LANG === 'ru' ? '\u23f3 \u0421\u043e\u0437\u0434\u0430\u0451\u043c \u043a\u043e\u043c\u043d\u0430\u0442\u0443...' : '\u23f3 Creating room...';
-    const data = await apiCall('create', { creator: userNick, mode: 'multiplayer', creatorColor: selectedPlayerColor });
+    const data = await apiCall('create', { creator: userNick, mode: 'multiplayer', creatorColor: selectedPlayerColor, timeControl: selectedTime });
     activeGameId = data.gameId;
     playerColor = data.color;
 
@@ -769,6 +804,53 @@ function loadGameSnapshot(srvGame) {
   
   // Verify rules outcome
   checkRulesGameStatus();
+
+  // Load clock settings and state from server
+  if (srvGame.timeControl && srvGame.timeControl !== "infinite") {
+    timeControl = srvGame.timeControl;
+    if (timeControl === "15+10") {
+      timeIncrement = 10;
+    } else {
+      timeIncrement = 0;
+    }
+    
+    if (srvGame.clocks) {
+      whiteTime = srvGame.clocks.whiteTime;
+      blackTime = srvGame.clocks.blackTime;
+    } else {
+      initTimeClocks(timeControl);
+    }
+    
+    const myTimer = document.getElementById("playerTimer");
+    const oppTimer = document.getElementById("opponentTimer");
+    if (myTimer) myTimer.classList.remove("hidden");
+    if (oppTimer) oppTimer.classList.remove("hidden");
+    
+    updateClocksUI();
+    
+    if (srvGame.status === "playing") {
+      startClockTicking();
+    } else {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+  } else {
+    timeControl = "infinite";
+    const myTimer = document.getElementById("playerTimer");
+    const oppTimer = document.getElementById("opponentTimer");
+    if (myTimer) myTimer.classList.add("hidden");
+    if (oppTimer) oppTimer.classList.add("hidden");
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+  
+  // Update live evaluation bar and opening detector
+  updateLiveEvalBar();
+  updateOpeningName();
 }
 
 // --- RENDER BOARD & DRAW VECTOR GRAPHICS ---
@@ -1040,6 +1122,23 @@ async function executeBoardMove(from, to, promotion = undefined) {
   
   const isGameOver = checkRulesGameStatus();
   
+  // Clocks, Eval Bar, and Opening Detector updates
+  if (timeControl !== "infinite") {
+    // game.turn() represents the next side to move.
+    // If the next turn is 'b', then 'w' (White) just moved.
+    // If the next turn is 'w', then 'b' (Black) just moved.
+    if (game.turn() === 'b') {
+      whiteTime += timeIncrement;
+    } else {
+      blackTime += timeIncrement;
+    }
+    updateClocksUI();
+  }
+  
+  updateLiveEvalBar();
+  updateOpeningName();
+  startClockTicking();
+  
   if (mode === "bot") {
     if (!isGameOver) {
       triggerBotMove();
@@ -1050,7 +1149,8 @@ async function executeBoardMove(from, to, promotion = undefined) {
       await apiCall("move", {
         gameId: activeGameId,
         fen: game.fen(),
-        move: { from, to, promotion, san: moveObj.san }
+        move: { from, to, promotion, san: moveObj.san },
+        clocks: { whiteTime, blackTime }
       });
     } catch {}
   }
@@ -1271,6 +1371,20 @@ function triggerBotMove() {
       }
       
       checkRulesGameStatus();
+      
+      // Clocks, Eval Bar, and Opening Detector updates for Bot move
+      if (timeControl !== "infinite") {
+        if (game.turn() === 'w') {
+          blackTime += timeIncrement;
+        } else {
+          whiteTime += timeIncrement;
+        }
+        updateClocksUI();
+      }
+      
+      updateLiveEvalBar();
+      updateOpeningName();
+      startClockTicking();
     }
   }, Math.floor(300 + Math.random() * 500));
 }
@@ -2151,7 +2265,30 @@ window.startGameAnalysis = function() {
     let classification = 'good';
     const isBookCandidate = (i < 8); // Book check (first 4 full moves)
     
-    if (evalLoss > 2.0) {
+    // Check for Brilliant move (sacrifice)
+    let isBrilliant = false;
+    if (evalLoss <= 0.15 && i >= 4) { // Only classify as brilliant after the opening
+      const PIECE_VALUES_SIMPLE = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 1000 };
+      const oppMoves = tempGame.moves({ verbose: true });
+      for (const oppMove of oppMoves) {
+        if (oppMove.captured && ['b', 'n', 'r', 'q'].includes(oppMove.captured)) {
+          const captureSquare = oppMove.to;
+          const testGame = new Chess(tempGame.fen());
+          testGame.move(oppMove);
+          const responseMoves = testGame.moves({ verbose: true });
+          const canRecapture = responseMoves.some(rm => rm.to === captureSquare);
+          
+          if (!canRecapture || PIECE_VALUES_SIMPLE[oppMove.piece] < PIECE_VALUES_SIMPLE[oppMove.captured]) {
+            isBrilliant = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (isBrilliant) {
+      classification = 'brilliant';
+    } else if (evalLoss > 2.0) {
       classification = 'blunder';
     } else if (evalLoss > 1.0) {
       classification = 'mistake';
@@ -2355,6 +2492,7 @@ window.jumpToAnalysisMove = function(index) {
   
   updateEvalBar(score);
   renderAnalysisSelectedMoveCard();
+  updateOpeningName();
 };
 
 window.stepAnalysisMove = function(dir) {
@@ -2543,4 +2681,228 @@ window.addEventListener("keydown", (e) => {
     stepAnalysisMove(1);
   }
 });
+
+// --- TIME CONTROL SELECTOR ---
+window.selectTime = function(timeVal) {
+  selectedTime = timeVal;
+  const ids = ["Infinite", "3", "5", "10", "15"];
+  const valMap = { Infinite: "infinite", "3": "3", "5": "5", "10": "10", "15": "15+10" };
+  
+  ids.forEach(id => {
+    const val = valMap[id];
+    const btn = document.getElementById(`optTime${id}`);
+    if (btn) btn.classList.toggle("active", val === timeVal);
+  });
+};
+
+// --- CHESS CLOCKS LOGIC ---
+function initTimeClocks(selectedTime) {
+  timeControl = selectedTime;
+  
+  const myTimer = document.getElementById("playerTimer");
+  const oppTimer = document.getElementById("opponentTimer");
+  
+  if (timeControl === "infinite") {
+    if (myTimer) myTimer.classList.add("hidden");
+    if (oppTimer) oppTimer.classList.add("hidden");
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    return;
+  }
+  
+  if (myTimer) myTimer.classList.remove("hidden");
+  if (oppTimer) oppTimer.classList.remove("hidden");
+  
+  let baseMinutes = 10;
+  timeIncrement = 0;
+  
+  if (selectedTime === "3") {
+    baseMinutes = 3;
+  } else if (selectedTime === "5") {
+    baseMinutes = 5;
+  } else if (selectedTime === "10") {
+    baseMinutes = 10;
+  } else if (selectedTime === "15+10") {
+    baseMinutes = 15;
+    timeIncrement = 10;
+  }
+  
+  whiteTime = baseMinutes * 60;
+  blackTime = baseMinutes * 60;
+  
+  updateClocksUI();
+}
+
+function formatTime(secs) {
+  if (secs < 0) secs = 0;
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+function updateClocksUI() {
+  const myTimer = document.getElementById("playerTimer");
+  const oppTimer = document.getElementById("opponentTimer");
+  if (!myTimer || !oppTimer) return;
+  
+  const myTime = (playerColor === 'white') ? whiteTime : blackTime;
+  const oppTime = (playerColor === 'white') ? blackTime : whiteTime;
+  
+  myTimer.textContent = formatTime(myTime);
+  oppTimer.textContent = formatTime(oppTime);
+  
+  const turn = game.turn();
+  const isMyTurn = (turn === pc());
+  myTimer.classList.toggle("active", isMyTurn);
+  oppTimer.classList.toggle("active", !isMyTurn);
+  
+  myTimer.classList.toggle("low-time", myTime <= 15);
+  oppTimer.classList.toggle("low-time", oppTime <= 15);
+}
+
+function playTickSound(lowTime = false) {
+  if (isVoiceMuted) return;
+  if (lowTime) {
+    synthTone(800, 'sine', 0.05); // alarm beep
+  } else {
+    synthTone(250, 'sine', 0.02); // soft tick
+  }
+}
+
+function startClockTicking() {
+  if (timerInterval) clearInterval(timerInterval);
+  if (timeControl === "infinite" || game.game_over()) return;
+  
+  timerInterval = setInterval(() => {
+    const turn = game.turn();
+    const isMyTurn = (turn === pc());
+    
+    let activeTime = 0;
+    if (turn === 'w') {
+      whiteTime--;
+      activeTime = whiteTime;
+      if (whiteTime <= 0) {
+        whiteTime = 0;
+        handleTimeout('w');
+      }
+    } else {
+      blackTime--;
+      activeTime = blackTime;
+      if (blackTime <= 0) {
+        blackTime = 0;
+        handleTimeout('b');
+      }
+    }
+    
+    updateClocksUI();
+    
+    if (activeTime > 0) {
+      playTickSound(activeTime <= 15);
+    }
+  }, 1000);
+}
+
+function handleTimeout(losingColor) {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  
+  playGameOverSound();
+  
+  const isMe = (losingColor === pc());
+  document.getElementById("gameOverTitle").textContent = LANG === 'ru' ? "Время вышло!" : "Time Out!";
+  document.getElementById("gameOverDesc").textContent = isMe
+    ? (LANG === 'ru' ? "У вас закончилось время. Вы проиграли!" : "You ran out of time. You lost!")
+    : (LANG === 'ru' ? "У соперника закончилось время. Вы победили!" : "Opponent ran out of time. You win!");
+  
+  document.getElementById("gameOverModal").classList.add("active");
+  clearActiveGameStorage();
+  
+  if (mode === "multiplayer") {
+    // Notify server of timeout loss
+    const opponent = playerColor === 'white' ? (document.getElementById("opponentName").textContent) : userNick;
+    apiCall("resign", { gameId: activeGameId, winner: isMe ? opponent : userNick });
+  }
+}
+
+// --- REAL-TIME EVALUATION BAR ---
+function updateLiveEvalBar() {
+  if (isAnalysisMode) return;
+  const container = document.getElementById("evalBarContainer");
+  if (!container) return;
+  
+  container.style.display = "block";
+  
+  setTimeout(() => {
+    const scoreVal = getPositionEval(game);
+    updateEvalBar(scoreVal);
+  }, 50);
+}
+
+// --- CHESS OPENING DETECTOR ---
+const CHESS_OPENINGS = [
+  { name: { ru: "Испанская партия", en: "Ruy Lopez" }, moves: "e4 e5 Nf3 Nc6 Bb5" },
+  { name: { ru: "Сицилианская защита", en: "Sicilian Defense" }, moves: "e4 c5" },
+  { name: { ru: "Французская защита", en: "French Defense" }, moves: "e4 e6" },
+  { name: { ru: "Защита Каро-Канн", en: "Caro-Kann Defense" }, moves: "e4 c6" },
+  { name: { ru: "Скандинавская защита", en: "Scandinavian Defense" }, moves: "e4 d5" },
+  { name: { ru: "Итальянская партия", en: "Italian Game" }, moves: "e4 e5 Nf3 Nc6 Bc4" },
+  { name: { ru: "Ферзевый гамбит", en: "Queen's Gambit" }, moves: "d4 d5 c4" },
+  { name: { ru: "Славянская защита", en: "Slav Defense" }, moves: "d4 d5 c4 c6" },
+  { name: { ru: "Защита Грюнфельда", en: "Gruenfeld Defense" }, moves: "d4 Nf6 c4 g6 Nc3 d5" },
+  { name: { ru: "Староиндийская защита", en: "King's Indian Defense" }, moves: "d4 Nf6 c4 g6" },
+  { name: { ru: "Английское начало", en: "English Opening" }, moves: "c4" },
+  { name: { ru: "Дебют Рети", en: "Reti Opening" }, moves: "Nf3" },
+  { name: { ru: "Защита Алехина", en: "Alekhine's Defense" }, moves: "e4 Nf6" },
+  { name: { ru: "Шотландская партия", en: "Scotch Game" }, moves: "e4 e5 Nf3 Nc6 d4" },
+  { name: { ru: "Русская партия", en: "Petrov's Defense" }, moves: "e4 e5 Nf3 Nf6" }
+];
+
+function updateOpeningName() {
+  const badge = document.getElementById("openingNameBadge");
+  if (!badge) return;
+  
+  let movesStr = "";
+  if (isAnalysisMode) {
+    let subHistory = [];
+    for (let i = 0; i <= currentAnalysisIndex; i++) {
+      if (analysisMoves[i] && analysisMoves[i].move) {
+        subHistory.push(analysisMoves[i].move.san);
+      }
+    }
+    if (subHistory.length === 0) {
+      badge.style.display = "none";
+      return;
+    }
+    movesStr = subHistory.join(" ");
+  } else {
+    const historyMoves = game.history();
+    if (historyMoves.length === 0) {
+      badge.style.display = "none";
+      return;
+    }
+    movesStr = historyMoves.join(" ");
+  }
+  
+  let matchedOpening = null;
+  let maxLen = 0;
+  
+  for (const opening of CHESS_OPENINGS) {
+    if (movesStr.startsWith(opening.moves)) {
+      if (opening.moves.length > maxLen) {
+        maxLen = opening.moves.length;
+        matchedOpening = opening;
+      }
+    }
+  }
+  
+  if (matchedOpening) {
+    badge.style.display = "block";
+    const name = matchedOpening.name[LANG] || matchedOpening.name.en;
+    badge.textContent = `${LANG === 'ru' ? 'Дебют' : 'Opening'}: ${name}`;
+  } else {
+    badge.style.display = "none";
+  }
+}
 

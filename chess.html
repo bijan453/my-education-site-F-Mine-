@@ -431,6 +431,46 @@
       color: var(--text2);
     }
 
+    /* Player Chess Clock / Timers */
+    .player-timer {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      min-width: 64px;
+      text-align: center;
+      transition: all 0.25s ease;
+      letter-spacing: 0.5px;
+    }
+    body.light .player-timer {
+      background: rgba(255, 255, 255, 0.5);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .player-timer.active {
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan-glow);
+      color: var(--cyan);
+      background: rgba(0, 243, 255, 0.05);
+    }
+    .player-timer.low-time {
+      border-color: var(--rose);
+      color: var(--rose);
+      background: rgba(251, 113, 133, 0.08);
+      animation: pulse-red-clock 1s infinite alternate;
+    }
+    .player-timer.hidden {
+      display: none !important;
+    }
+    @keyframes pulse-red-clock {
+      from { box-shadow: 0 0 2px rgba(251, 113, 133, 0.2); }
+      to { box-shadow: 0 0 12px rgba(251, 113, 133, 0.6); }
+    }
+
     /* The grid itself */
     .chessboard-wrapper {
       position: relative;
@@ -1252,6 +1292,17 @@
         </div>
       </div>
 
+      <div class="field-group" style="margin-bottom: 28px;">
+        <span class="field-label" id="lblTimeControl">Контроль времени</span>
+        <div class="option-grid" style="grid-template-columns: repeat(5, 1fr);" id="timeControlGrid">
+          <button class="option-btn active" id="optTimeInfinite" onclick="selectTime('infinite')">Без лимита</button>
+          <button class="option-btn" id="optTime3" onclick="selectTime('3')">3 мин</button>
+          <button class="option-btn" id="optTime5" onclick="selectTime('5')">5 мин</button>
+          <button class="option-btn" id="optTime10" onclick="selectTime('10')">10 мин</button>
+          <button class="option-btn" id="optTime15" onclick="selectTime('15+10')">15 + 10</button>
+        </div>
+      </div>
+
       <!-- BOT SETUP PANEL -->
       <div class="setup-panel active" id="panelBot">
         <div class="field-group">
@@ -1319,13 +1370,21 @@
         <!-- Reconnection & Game Banners Container -->
         <div id="gameNotificationContainer"></div>
 
+        <!-- Chess Opening Name Badge -->
+        <div class="opening-badge" id="openingNameBadge" style="display: none; background: rgba(167, 139, 250, 0.08); border: 1px solid rgba(167, 139, 250, 0.2); border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: var(--violet); margin-bottom: 8px; text-align: center; font-family: 'Outfit', sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+          Дебют: -
+        </div>
+
         <!-- Opponent Player Card -->
         <div class="player-bar">
           <div class="player-name-wrap">
             <div class="player-color-dot" id="opponentColorDot"></div>
             <span class="player-name" id="opponentName">Оппонент</span>
           </div>
-          <div class="player-captured" id="opponentCaptured"></div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="player-captured" id="opponentCaptured"></div>
+            <div class="player-timer hidden" id="opponentTimer">--:--</div>
+          </div>
         </div>
 
         <!-- The board container (holding evaluation bar + chessboard) -->
@@ -1351,7 +1410,10 @@
             <span class="player-name" id="playerName">Игрок</span>
             <span class="player-score-record" id="playerRecord"></span>
           </div>
-          <div class="player-captured" id="playerCaptured"></div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="player-captured" id="playerCaptured"></div>
+            <div class="player-timer hidden" id="playerTimer">--:--</div>
+          </div>
         </div>
 
         <!-- Navigation Controls under the board (visible only in analysis mode) -->
