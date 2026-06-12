@@ -2057,7 +2057,7 @@ function getPositionEval(chessInstance) {
     return 0.0;
   }
   const clone = new Chess(chessInstance.fen());
-  const score = minimax(2, clone, -Infinity, Infinity, clone.turn() === 'w');
+  const score = minimax(3, clone, -Infinity, Infinity, clone.turn() === 'w');
   return score / 100;
 }
 
@@ -2073,7 +2073,7 @@ function selectBestMoveForEval(chessInstance) {
   
   for (const move of moves) {
     clone.move(move);
-    const scoreVal = minimax(2, clone, -Infinity, Infinity, !isWhite);
+    const scoreVal = minimax(3, clone, -Infinity, Infinity, !isWhite);
     clone.undo();
     
     if (isWhite) {
