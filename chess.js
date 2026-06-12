@@ -1230,9 +1230,7 @@ function evaluateBoard(board) {
         const val = PIECE_VALUES[piece.type];
         let pSqScore = 0;
         
-        // Match table based on color
-        // White evaluates standard array index, Black evaluates flipped array index
-        const indexRow = piece.color === 'w' ? (7 - r) : r;
+        const indexRow = piece.color === 'w' ? r : (7 - r);
         const indexCol = piece.color === 'w' ? f : (7 - f);
         
         switch (piece.type) {
