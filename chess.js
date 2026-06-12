@@ -444,9 +444,9 @@ window.switchSideTab = function(tab) {
 };
 
 // --- SERVER HTTP HELPER ---
-const SERVER_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ? `${window.location.protocol}//${window.location.hostname}:3000`
-  : (window.location.protocol.startsWith('http') ? window.location.origin : 'https://my-education-site-f-mine.onrender.com');
+const SERVER_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || !window.location.protocol.startsWith('http'))
+  ? 'http://localhost:3000'
+  : 'https://my-education-site-f-mine.onrender.com';
 
 // Wake up the Render server silently when the page loads
 fetch(`${SERVER_URL}/api/chess/ping`).catch(() => {});
@@ -597,13 +597,13 @@ window.restartBotGame = function() {
 window.createRoom = async function() {
   const btn = document.getElementById('btnCreateRoom');
   const origText = btn ? btn.textContent : '';
-  if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '\u23f3 \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0435...' : '\u23f3 Connecting...'; }
+  if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '⏳ Пробуждение сервера (до 1 мин)...' : '⏳ Waking server (up to 1 min)...'; }
 
   try {
-    // Ping server first to wake it up
-    await withTimeout(fetch(`${SERVER_URL}/api/chess/ping`), 25000);
+    // Ping server first to wake it up (Render Free Tier cold start can take 40-60s)
+    await withTimeout(fetch(`${SERVER_URL}/api/chess/ping`), 75000);
 
-    if (btn) btn.textContent = LANG === 'ru' ? '\u23f3 \u0421\u043e\u0437\u0434\u0430\u0451\u043c \u043a\u043e\u043c\u043d\u0430\u0442\u0443...' : '\u23f3 Creating room...';
+    if (btn) btn.textContent = LANG === 'ru' ? '⏳ Создаём комнату...' : '⏳ Creating room...';
     const data = await apiCall('create', { creator: userNick, mode: 'multiplayer', creatorColor: selectedPlayerColor, timeControl: selectedTime });
     activeGameId = data.gameId;
     playerColor = data.color;
