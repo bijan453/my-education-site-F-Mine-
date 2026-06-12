@@ -483,8 +483,8 @@ function withTimeout(promise, ms) {
 }
 
 async function apiCall(endpoint, body = {}) {
-  // Use GET for create/join to avoid CORS preflight; POST for everything else
-  const useGet = endpoint === 'create' || endpoint === 'join';
+  // Use GET for create/join/matchmake to avoid CORS preflight; POST for everything else
+  const useGet = endpoint === 'create' || endpoint === 'join' || endpoint === 'matchmake';
   try {
     let fetchPromise;
     if (useGet) {
