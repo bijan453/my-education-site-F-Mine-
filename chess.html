@@ -1336,8 +1336,25 @@
 
       <!-- MULTIPLAYER SETUP PANEL -->
       <div class="setup-panel" id="panelMulti">
+        <!-- PLAYER RATING BADGE -->
+        <div class="field-group" id="groupPlayerRating" style="margin-bottom: 20px;">
+          <div class="rating-display-container" style="background: rgba(167, 139, 250, 0.08); border: 1px solid rgba(167, 139, 250, 0.2); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 14px; font-weight: 700; color: var(--fg); font-family: 'Outfit', sans-serif;" id="lblYourRating">Ваш сетевой рейтинг:</span>
+            <span style="font-size: 16px; font-weight: 900; color: #a78bfa; font-family: 'Outfit', sans-serif; background: rgba(167, 139, 250, 0.15); padding: 4px 10px; border-radius: 6px; box-shadow: 0 0 8px rgba(167, 139, 250, 0.3);" id="userRatingBadge">[1200]</span>
+          </div>
+        </div>
+
         <div class="field-group">
-          <span class="field-label" id="lblMultiColor">Ваш цвет в дуэли</span>
+          <span class="field-label" id="lblQuickMatch">Поиск случайного соперника онлайн</span>
+          <button class="btn action-btn violet" onclick="startQuickMatch()" id="btnQuickMatch" style="background: linear-gradient(135deg, #a78bfa, #8b5cf6); border: none; box-shadow: 0 0 12px rgba(139, 92, 246, 0.4); font-weight: 700;">
+            🌍 Найти игру (Быстрый старт)
+          </button>
+        </div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="field-group">
+          <span class="field-label" id="lblMultiColor">Ваш цвет в приватной дуэли</span>
           <div class="option-grid">
             <button class="option-btn active" id="optColMultiWhite" onclick="selectColor('white')">Белые</button>
             <button class="option-btn" id="optColMultiRand" onclick="selectColor('random')">Случайный</button>
@@ -1346,7 +1363,7 @@
         </div>
 
         <div class="field-group">
-          <span class="field-label" id="lblCreateRoom">Создать новую комнату</span>
+          <span class="field-label" id="lblCreateRoom">Создать новую приватную комнату</span>
           <button class="btn action-btn primary" onclick="createRoom()" id="btnCreateRoom">🔑 Создать приватный бой</button>
         </div>
 

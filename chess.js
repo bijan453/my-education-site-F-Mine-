@@ -110,7 +110,10 @@ const T = {
     mistake: "Ошибка",
     blunder: "Зевок",
     noMoveSelected: "Ход не выбран",
-    coachCommentaryText: "Выберите ход для просмотра детального анализа и лучшего продолжения."
+    coachCommentaryText: "Выберите ход для просмотра детального анализа и лучшего продолжения.",
+    lblYourRating: "Ваш сетевой рейтинг:",
+    lblQuickMatch: "Поиск случайного соперника онлайн",
+    btnQuickMatch: "🌍 Найти игру (Быстрый старт)"
   },
   en: {
     title: "Chess Arena",
@@ -179,7 +182,10 @@ const T = {
     mistake: "Mistake",
     blunder: "Blunder",
     noMoveSelected: "No move selected",
-    coachCommentaryText: "Select a move to view detailed analysis and the best continuation."
+    coachCommentaryText: "Select a move to view detailed analysis and the best continuation.",
+    lblYourRating: "Your online rating:",
+    lblQuickMatch: "Find random opponent online",
+    btnQuickMatch: "🌍 Find Match (Quick Start)"
   }
 };
 
@@ -335,6 +341,19 @@ function applyTranslations() {
   document.getElementById("lblJoinRoom").textContent = t("lblJoinRoom");
   document.getElementById("roomCodeInput").placeholder = LANG === "ru" ? "Код комнаты, напр: CH-5683" : "Room code, e.g. CH-5683";
   document.getElementById("btnJoinRoom").textContent = t("btnJoin");
+
+  // Localized Rating & Matchmaking Labels
+  const yourRatingEl = document.getElementById("lblYourRating");
+  if (yourRatingEl) yourRatingEl.textContent = t("lblYourRating");
+  const ratingBadge = document.getElementById("userRatingBadge");
+  if (ratingBadge) {
+    const r = parseInt(localStorage.getItem("fmine_chess_rating") || "1200");
+    ratingBadge.textContent = getTitleAndRatingStr(r);
+  }
+  const quickMatchEl = document.getElementById("lblQuickMatch");
+  if (quickMatchEl) quickMatchEl.textContent = t("lblQuickMatch");
+  const btnQuickMatch = document.getElementById("btnQuickMatch");
+  if (btnQuickMatch) btnQuickMatch.textContent = t("btnQuickMatch");
   
   document.getElementById("backLobbyBtn").textContent = LANG === "ru" ? "⬅ Лобби" : "⬅ Lobby";
   
@@ -552,7 +571,8 @@ window.startGame = function() {
   botColor = playerColor === 'white' ? 'black' : 'white';
   
   // Set names
-  document.getElementById("playerName").textContent = userNick;
+  const rating = parseInt(localStorage.getItem("fmine_chess_rating") || "1200");
+  document.getElementById("playerName").textContent = `${userNick} ${getTitleAndRatingStr(rating)}`;
   document.getElementById("opponentName").textContent = `${t("botName")} (${t(botDifficulty)})`;
   
   // Update colors on layout cards
@@ -603,15 +623,17 @@ window.createRoom = async function() {
     // Ping server first to wake it up (Render Free Tier cold start can take 40-60s)
     await withTimeout(fetch(`${SERVER_URL}/api/chess/ping`), 75000);
 
+    const myRating = localStorage.getItem("fmine_chess_rating") || "1200";
+
     if (btn) btn.textContent = LANG === 'ru' ? '⏳ Создаём комнату...' : '⏳ Creating room...';
-    const data = await apiCall('create', { creator: userNick, mode: 'multiplayer', creatorColor: selectedPlayerColor, timeControl: selectedTime });
+    const data = await apiCall('create', { creator: userNick, mode: 'multiplayer', creatorColor: selectedPlayerColor, timeControl: selectedTime, creatorRating: myRating });
     activeGameId = data.gameId;
     playerColor = data.color;
 
     localStorage.setItem('fmine_active_chess_game', activeGameId);
     localStorage.setItem('fmine_active_chess_color', playerColor);
 
-    document.getElementById('playerName').textContent = userNick;
+    document.getElementById('playerName').textContent = `${userNick} ${getTitleAndRatingStr(parseInt(myRating))}`;
     document.getElementById('opponentName').textContent = t('waitingOpponent');
 
     const playerDot = document.getElementById('playerColorDot');
@@ -654,14 +676,15 @@ window.joinRoom = async function() {
   if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '⏳...' : '⏳...'; }
   
   try {
-    const data = await apiCall("join", { gameId: code, player: userNick });
+    const myRating = localStorage.getItem("fmine_chess_rating") || "1200";
+    const data = await apiCall("join", { gameId: code, player: userNick, playerRating: myRating });
     activeGameId = data.gameId;
     playerColor = data.color;
     
     localStorage.setItem("fmine_active_chess_game", activeGameId);
     localStorage.setItem("fmine_active_chess_color", playerColor);
 
-    document.getElementById("playerName").textContent = userNick;
+    document.getElementById("playerName").textContent = `${userNick} ${getTitleAndRatingStr(parseInt(myRating))}`;
     
     const playerDot = document.getElementById("playerColorDot");
     const opponentDot = document.getElementById("opponentColorDot");
@@ -768,6 +791,7 @@ function setupSSE(gameId) {
       document.getElementById("gameOverDesc").textContent = LANG === 'ru' ? "Ничья по обоюдному согласию." : "Draw by mutual agreement.";
       document.getElementById("gameOverModal").classList.add("active");
       clearActiveGameStorage();
+      updateRatingMultiplayer('draw');
     } else if (data.type === "resigned") {
       playGameOverSound();
       document.getElementById("gameOverTitle").textContent = LANG === 'ru' ? "Игра завершена!" : "Game Over!";
@@ -776,6 +800,7 @@ function setupSSE(gameId) {
         (LANG === 'ru' ? "Вы сдались. Оппонент победил!" : "You resigned. Opponent wins!");
       document.getElementById("gameOverModal").classList.add("active");
       clearActiveGameStorage();
+      updateRatingMultiplayer(data.winner === userNick ? 'win' : 'loss');
     }
   };
   
@@ -785,12 +810,18 @@ function setupSSE(gameId) {
 }
 
 function loadGameSnapshot(srvGame) {
-  // Update player names
-  if (playerColor === 'white') {
-    document.getElementById("opponentName").textContent = srvGame.playerBlack || t("waitingOpponent");
-  } else {
-    document.getElementById("opponentName").textContent = srvGame.playerWhite || t("waitingOpponent");
-  }
+  // Update player names with rating/title
+  const myRating = playerColor === 'white' ? srvGame.playerWhiteRating : srvGame.playerBlackRating;
+  const oppRating = playerColor === 'white' ? srvGame.playerBlackRating : srvGame.playerWhiteRating;
+  const oppName = playerColor === 'white' ? srvGame.playerBlack : srvGame.playerWhite;
+
+  const myRatingStr = getTitleAndRatingStr(myRating || 1200);
+  const oppRatingStr = getTitleAndRatingStr(oppRating || 1200);
+
+  document.getElementById("playerName").textContent = `${userNick} ${myRatingStr}`;
+  document.getElementById("opponentName").textContent = oppName
+    ? `${oppName} ${oppRatingStr}`
+    : t("waitingOpponent");
   
   renderBoard();
   updateTurnIndicator();
@@ -1555,6 +1586,7 @@ function checkRulesGameStatus() {
       updateBotScoreRecord(outcome);
     } else {
       clearActiveGameStorage();
+      updateRatingMultiplayer(outcome);
     }
   }
   
@@ -2901,6 +2933,96 @@ function updateOpeningName() {
     badge.textContent = `${LANG === 'ru' ? 'Дебют' : 'Opening'}: ${name}`;
   } else {
     badge.style.display = "none";
+  }
+}
+
+window.startQuickMatch = async function() {
+  const btn = document.getElementById('btnQuickMatch');
+  const origText = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = LANG === 'ru' ? '⏳ Поиск соперника...' : '⏳ Finding Opponent...'; }
+
+  try {
+    // Ping server first to wake it up (Render Free Tier cold start can take 40-60s)
+    await withTimeout(fetch(`${SERVER_URL}/api/chess/ping`), 75000);
+
+    const myRating = localStorage.getItem("fmine_chess_rating") || "1200";
+
+    if (btn) btn.textContent = LANG === 'ru' ? '⏳ Входим в игру...' : '⏳ Entering game...';
+    const data = await apiCall('matchmake', { player: userNick, timeControl: selectedTime, playerRating: myRating });
+    
+    activeGameId = data.gameId;
+    playerColor = data.color;
+    mode = "multiplayer";
+
+    localStorage.setItem('fmine_active_chess_game', activeGameId);
+    localStorage.setItem('fmine_active_chess_color', playerColor);
+
+    // Update names
+    document.getElementById('playerName').textContent = `${userNick} ${getTitleAndRatingStr(parseInt(myRating))}`;
+    document.getElementById('opponentName').textContent = t('waitingOpponent');
+
+    const playerDot = document.getElementById('playerColorDot');
+    const opponentDot = document.getElementById('opponentColorDot');
+    playerDot.className = `player-color-dot ${playerColor}`;
+    opponentDot.className = `player-color-dot ${playerColor === 'white' ? 'black' : 'white'}`;
+
+    document.getElementById('btnGameOverRematch').classList.add('hidden');
+    
+    document.getElementById('roomCodeBadge').classList.remove('hidden');
+    document.getElementById('roomCodeBadge').textContent = `${t('roomCode')}${activeGameId}`;
+
+    document.getElementById('setupView').style.display = 'none';
+    document.getElementById('arenaView').classList.add('active');
+
+    setupSSE(activeGameId);
+  } catch (err) {
+    console.error(err);
+    if (btn) { btn.disabled = false; btn.textContent = origText; }
+  }
+};
+
+function getTitleAndRatingStr(rating) {
+  let title = "";
+  if (rating >= 2500) title = "GM ";
+  else if (rating >= 2400) title = "M ";
+  else if (rating >= 2200) title = "CM ";
+  return `[${title}${rating}]`;
+}
+
+function updateRatingMultiplayer(outcome) {
+  if (mode !== "multiplayer") return;
+  
+  let currentRating = parseInt(localStorage.getItem("fmine_chess_rating") || "1200");
+  
+  let ratingChange = 0;
+  if (outcome === 'win') {
+    ratingChange = 20;
+  } else if (outcome === 'loss') {
+    ratingChange = -20;
+  }
+  
+  if (ratingChange !== 0) {
+    currentRating += ratingChange;
+    if (currentRating < 0) currentRating = 0;
+    localStorage.setItem("fmine_chess_rating", currentRating.toString());
+    
+    const changeText = ratingChange > 0 ? `+${ratingChange}` : `${ratingChange}`;
+    showToast(LANG === 'ru' 
+      ? `Рейтинг обновлен: ${currentRating} (${changeText})` 
+      : `Rating updated: ${currentRating} (${changeText})`
+    );
+    
+    // Update setup screen rating badge
+    const ratingBadge = document.getElementById("userRatingBadge");
+    if (ratingBadge) {
+      ratingBadge.textContent = getTitleAndRatingStr(currentRating);
+    }
+    
+    // Update header player name
+    const playerNameEl = document.getElementById("playerName");
+    if (playerNameEl) {
+      playerNameEl.textContent = `${userNick} ${getTitleAndRatingStr(currentRating)}`;
+    }
   }
 }
 

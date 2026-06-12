@@ -364,8 +364,10 @@ setInterval(() => {
   }
 }, 15 * 60 * 1000);
 
+let matchmakingQueue = [];
+
 app.get("/api/chess/create", (req, res) => {
-  const { creator, mode, botDifficulty, botColor, creatorColor, timeControl } = req.query;
+  const { creator, mode, botDifficulty, botColor, creatorColor, timeControl, creatorRating } = req.query;
   if (!creator) {
     return res.status(400).json({ ok: false, error: "Creator nickname is required" });
   }
@@ -375,6 +377,9 @@ app.get("/api/chess/create", (req, res) => {
   let playerWhite = null;
   let playerBlack = null;
   let assignedColor = "white";
+  let playerWhiteRating = 1200;
+  let playerBlackRating = 1200;
+  const ratingVal = parseInt(creatorRating || "1200");
 
   if (mode === "bot") {
     let finalBotColor = botColor || "black";
@@ -385,10 +390,12 @@ app.get("/api/chess/create", (req, res) => {
       playerWhite = "Bot";
       playerBlack = creator;
       assignedColor = "black";
+      playerBlackRating = ratingVal;
     } else {
       playerWhite = creator;
       playerBlack = "Bot";
       assignedColor = "white";
+      playerWhiteRating = ratingVal;
     }
   } else {
     let chosenColor = creatorColor || "white";
@@ -398,9 +405,11 @@ app.get("/api/chess/create", (req, res) => {
     if (chosenColor === "black") {
       playerBlack = creator;
       assignedColor = "black";
+      playerBlackRating = ratingVal;
     } else {
       playerWhite = creator;
       assignedColor = "white";
+      playerWhiteRating = ratingVal;
     }
   }
 
@@ -410,6 +419,8 @@ app.get("/api/chess/create", (req, res) => {
     mode: mode || "multiplayer",
     playerWhite,
     playerBlack,
+    playerWhiteRating,
+    playerBlackRating,
     turn: "white",
     fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     moves: [],
@@ -430,7 +441,7 @@ app.get("/api/chess/ping", (req, res) => {
 });
 
 app.get("/api/chess/join", (req, res) => {
-  const { gameId, player } = req.query;
+  const { gameId, player, playerRating } = req.query;
   if (!gameId || !player) {
     return res.status(400).json({ ok: false, error: "Game ID and player nickname are required" });
   }
@@ -448,12 +459,15 @@ app.get("/api/chess/join", (req, res) => {
     return res.status(400).json({ ok: false, error: "Cannot play against yourself" });
   }
 
+  const ratingVal = parseInt(playerRating || "1200");
   let assignedColor = "black";
   if (game.playerWhite === null) {
     game.playerWhite = player;
+    game.playerWhiteRating = ratingVal;
     assignedColor = "white";
   } else {
     game.playerBlack = player;
+    game.playerBlackRating = ratingVal;
     assignedColor = "black";
   }
 
@@ -464,6 +478,76 @@ app.get("/api/chess/join", (req, res) => {
   
   // Broadcast update to the creator
   broadcastToGame(gameId, { type: "update", game });
+});
+
+app.get("/api/chess/matchmake", (req, res) => {
+  const { player, timeControl, playerRating } = req.query;
+  if (!player) {
+    return res.status(400).json({ ok: false, error: "Player name is required" });
+  }
+
+  // Prune stale games in queue
+  matchmakingQueue = matchmakingQueue.filter(item => {
+    const g = chessGames.get(item.gameId);
+    return g && g.status === "waiting" && g.playerWhite !== player && g.playerBlack !== player;
+  });
+
+  const ratingVal = parseInt(playerRating || "1200");
+
+  // Find game with matching time control
+  const matchIndex = matchmakingQueue.findIndex(item => item.timeControl === (timeControl || "infinite"));
+
+  if (matchIndex !== -1) {
+    const match = matchmakingQueue[matchIndex];
+    matchmakingQueue.splice(matchIndex, 1); // Remove from queue
+
+    const game = chessGames.get(match.gameId);
+    
+    // Join as opponent
+    let color;
+    if (game.playerWhite === null) {
+      game.playerWhite = player;
+      game.playerWhiteRating = ratingVal;
+      color = "white";
+    } else {
+      game.playerBlack = player;
+      game.playerBlackRating = ratingVal;
+      color = "black";
+    }
+    game.status = "playing";
+    game.lastActive = Date.now();
+
+    res.json({ ok: true, gameId: match.gameId, color: color });
+    
+    // Broadcast "init" to start game for both
+    broadcastToGame(match.gameId, { type: "init", game });
+  } else {
+    // Create new room and add to queue
+    const gameId = "CH-" + Math.floor(1000 + Math.random() * 9000);
+    const creatorColor = Math.random() < 0.5 ? "white" : "black";
+    
+    const game = {
+      id: gameId,
+      playerWhite: creatorColor === "white" ? player : null,
+      playerBlack: creatorColor === "black" ? player : null,
+      playerWhiteRating: creatorColor === "white" ? ratingVal : 1200,
+      playerBlackRating: creatorColor === "black" ? ratingVal : 1200,
+      fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      moves: [],
+      chat: [],
+      status: "waiting",
+      timeControl: timeControl || "infinite",
+      clocks: null,
+      turn: "white",
+      lastActive: Date.now()
+    };
+    
+    chessGames.set(gameId, game);
+    
+    matchmakingQueue.push({ gameId, timeControl: game.timeControl, creatorColor });
+    
+    res.json({ ok: true, gameId: gameId, color: creatorColor });
+  }
 });
 
 app.get("/api/chess/status/:gameId", (req, res) => {
