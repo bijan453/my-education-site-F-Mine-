@@ -476,8 +476,8 @@ app.get("/api/chess/join", (req, res) => {
 
   res.json({ ok: true, gameId, color: assignedColor });
   
-  // Broadcast update to the creator
-  broadcastToGame(gameId, { type: "update", game });
+  // Broadcast init to the creator so game properly starts
+  broadcastToGame(gameId, { type: "init", game });
 });
 
 app.get("/api/chess/matchmake", (req, res) => {
@@ -670,6 +670,7 @@ app.get("/api/chess/stream/:gameId", (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
 
   if (!chessClients.has(gameId)) {
     chessClients.set(gameId, new Set());
@@ -679,7 +680,17 @@ app.get("/api/chess/stream/:gameId", (req, res) => {
   // Send initial state immediately
   res.write(`data: ${JSON.stringify({ type: "init", game })}\n\n`);
 
+  // Keep-alive heartbeat every 15s to prevent proxy/mobile connection drops
+  const heartbeat = setInterval(() => {
+    try {
+      res.write(`:heartbeat\n\n`);
+    } catch (e) {
+      clearInterval(heartbeat);
+    }
+  }, 15000);
+
   req.on("close", () => {
+    clearInterval(heartbeat);
     const clients = chessClients.get(gameId);
     if (clients) {
       clients.delete(res);

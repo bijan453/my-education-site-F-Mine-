@@ -723,21 +723,38 @@ window.copyRoomCode = function() {
 };
 
 // --- REAL-TIME MULTIPLAYER SYNCER (SSE) ---
-function setupSSE(gameId) {
+let sseReconnectAttempts = 0;
+let sseReconnectTimer = null;
+let waitingPollInterval = null;
+
+function cleanupSSE() {
   if (sseSource) {
     sseSource.close();
     sseSource = null;
   }
+  if (sseReconnectTimer) {
+    clearTimeout(sseReconnectTimer);
+    sseReconnectTimer = null;
+  }
+  if (waitingPollInterval) {
+    clearInterval(waitingPollInterval);
+    waitingPollInterval = null;
+  }
+  sseReconnectAttempts = 0;
+}
+
+function setupSSE(gameId) {
+  cleanupSSE();
   
   if (!gameId) return;
-  
-  sseSource = new EventSource(`${SERVER_URL}/api/chess/stream/${gameId}`);
 
-  
-  sseSource.onmessage = function(event) {
+  function handleSSEMessage(event) {
     const data = JSON.parse(event.data);
     
     if (data.type === "init") {
+      // Successfully connected — reset reconnect counter
+      sseReconnectAttempts = 0;
+      
       game = new Chess();
       if (data.game.moves && data.game.moves.length > 0) {
         for (const m of data.game.moves) {
@@ -747,7 +764,20 @@ function setupSSE(gameId) {
         game = new Chess(data.game.fen);
       }
       loadGameSnapshot(data.game);
+      
+      // If game is now playing and we had a waiting poll, stop it
+      if (data.game.status === "playing" && waitingPollInterval) {
+        clearInterval(waitingPollInterval);
+        waitingPollInterval = null;
+      }
+      
+      // Start polling fallback if we're still waiting for an opponent
+      if (data.game.status === "waiting" && !waitingPollInterval) {
+        startWaitingPoll(gameId);
+      }
     } else if (data.type === "update") {
+      sseReconnectAttempts = 0;
+      
       const oldFen = game.fen();
       game = new Chess();
       if (data.game.moves && data.game.moves.length > 0) {
@@ -759,6 +789,12 @@ function setupSSE(gameId) {
       }
       
       loadGameSnapshot(data.game);
+      
+      // Stop waiting poll if game started
+      if (data.game.status === "playing" && waitingPollInterval) {
+        clearInterval(waitingPollInterval);
+        waitingPollInterval = null;
+      }
       
       if (oldFen !== data.game.fen) {
         // Play sounds based on last move
@@ -802,11 +838,70 @@ function setupSSE(gameId) {
       clearActiveGameStorage();
       updateRatingMultiplayer(data.winner === userNick ? 'win' : 'loss');
     }
-  };
+  }
+
+  function connectSSE() {
+    if (sseSource) {
+      sseSource.close();
+      sseSource = null;
+    }
+    
+    sseSource = new EventSource(`${SERVER_URL}/api/chess/stream/${gameId}`);
+    sseSource.onmessage = handleSSEMessage;
+    
+    sseSource.onopen = function() {
+      console.log("[SSE] Connected to game stream:", gameId);
+      sseReconnectAttempts = 0;
+    };
+    
+    sseSource.onerror = function() {
+      console.error("[SSE] Connection lost. Reconnecting...");
+      if (sseSource) {
+        sseSource.close();
+        sseSource = null;
+      }
+      
+      if (sseReconnectAttempts < 15) {
+        const delay = Math.min(1000 * Math.pow(1.5, sseReconnectAttempts), 30000);
+        sseReconnectAttempts++;
+        console.log(`[SSE] Reconnect attempt ${sseReconnectAttempts} in ${Math.round(delay)}ms`);
+        sseReconnectTimer = setTimeout(connectSSE, delay);
+      } else {
+        console.error("[SSE] Max reconnect attempts reached.");
+        showToast(LANG === 'ru' ? "Соединение потеряно. Обновите страницу." : "Connection lost. Please refresh.");
+      }
+    };
+  }
+
+  connectSSE();
+}
+
+// Polling fallback: checks game status while waiting for opponent
+// This catches the case where SSE misses the opponent-join broadcast
+function startWaitingPoll(gameId) {
+  if (waitingPollInterval) clearInterval(waitingPollInterval);
   
-  sseSource.onerror = function() {
-    console.error("SSE stream connection lost.");
-  };
+  waitingPollInterval = setInterval(async () => {
+    try {
+      const res = await fetch(`${SERVER_URL}/api/chess/status/${gameId}`);
+      const data = await res.json();
+      if (data.ok && data.status === "playing") {
+        // Opponent joined but SSE missed it — reconnect SSE to get fresh state
+        console.log("[Poll] Opponent joined! Reconnecting SSE...");
+        clearInterval(waitingPollInterval);
+        waitingPollInterval = null;
+        // Force SSE reconnect to get full game state with opponent info
+        sseReconnectAttempts = 0;
+        if (sseSource) {
+          sseSource.close();
+          sseSource = null;
+        }
+        setupSSE(gameId);
+      }
+    } catch (e) {
+      // Silently ignore poll errors
+    }
+  }, 5000);
 }
 
 function loadGameSnapshot(srvGame) {
