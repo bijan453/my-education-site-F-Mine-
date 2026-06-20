@@ -425,14 +425,26 @@ function renderBoard() {
   }
 }
 
+// --- CHESS PIECE SVG DRAWINGS ---
+const PIECE_SVGS = {
+  wp: `<svg viewBox="0 0 45 45"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-.83.33-1.41 1.15-1.41 2.12 0 1.24 1.01 2.25 2.25 2.25h6.5c1.24 0 2.25-1.01 2.25-2.25 0-.97-.58-1.79-1.41-2.12C28.06 24.84 29 23.03 29 21c0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+  wn: `<svg viewBox="0 0 45 45"><path d="M 22,10 C 22,10 19,11 16,15 C 13,19 13,23 13,23 C 13,23 14.5,22 15.5,22 C 16.5,22 17,22.5 17,23 C 17,23.5 15.5,25 15,26 C 14.5,27 15,29 17,28 C 19,27 21,26 22,26 C 23,26 25,27 25,29 C 25,31 23,31 22,31 C 21,31 20,30.5 20,30.5 C 20,30.5 18,33 22,33 C 26,33 27.5,31 27.5,29 C 27.5,27 26.5,25 25.5,24 C 24.5,23 25.5,20 26.5,19 C 27.5,18 29.5,18 29.5,18 C 29.5,18 29.5,16 28,14 C 26.5,12 24,10 22,10 z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" transform="matrix(0.861785,0.507278,-0.507278,0.861785,25.6664,-4.177)" fill="#000"/></svg>`,
+  wb: `<svg viewBox="0 0 45 45"><path d="M9 36c3.39 0 7.66-.69 11.77-2.3 4-1.6 7.5-3.85 9.73-6.5a8.72 8.72 0 0 0 1.5-5.2c0-3-1.66-5.83-4.22-7.85-2.55-2.02-6-3.15-9.28-3.15s-6.73 1.13-9.28 3.15C6.66 16.17 5 19 5 22a8.72 8.72 0 0 0 1.5 5.2c2.22 2.65 5.73 4.9 9.73 6.5C20.34 35.31 24.61 36 28 36H9z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/><circle cx="22.5" cy="5" r="2.5" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M17.5 18h10M22.5 13v10" stroke="#000" stroke-width="1.5"/></svg>`,
+  wr: `<svg viewBox="0 0 45 45"><path d="M9 39h27v-3H9v3zm3-3h21v-4H12v4zm2.5-4l1.5-12h14l1.5 12h-17zm-1.5-12h20v-5H11v5zm0-5h4v-3h-4v3zm8 0h4v-3h-4v3zm8 0h4v-3h-4v3z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+  wq: `<svg viewBox="0 0 45 45"><g fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"><path d="M8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm33 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM22.5 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM12 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm21 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M9 37h27v-3H9v3zm3.5-3l3-18 7 9 7-9 3 18h-20z"/></g></svg>`,
+  wk: `<svg viewBox="0 0 45 45"><g fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"><path d="M8.5 36.5h28v-3h-28v3zm4-3l2.5-16.5h20l2.5 16.5h-25z"/><path d="M11.5 17c4 0 7-3 7-7s-3-7-7-7-7 3-7 7 3 7 7 7zm22 0c4 0 7-3 7-7s-3-7-7-7-7 3-7 7 3 7 7 7z"/><path d="M22.5 5v14M15.5 12h14" stroke="#000" stroke-width="1.5"/></g></svg>`,
+  bp: `<svg viewBox="0 0 45 45"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-.83.33-1.41 1.15-1.41 2.12 0 1.24 1.01 2.25 2.25 2.25h6.5c1.24 0 2.25-1.01 2.25-2.25 0-.97-.58-1.79-1.41-2.12C28.06 24.84 29 23.03 29 21c0-2.03-.94-3.84-2.41-5.03.83-.33 1.41-1.15 1.41-2.12 0-1.24-1.01-2.25-2.25-2.25h-6.5z" fill="#000" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+  bn: `<svg viewBox="0 0 45 45"><path d="M 22,10 C 22,10 19,11 16,15 C 13,19 13,23 13,23 C 13,23 14.5,22 15.5,22 C 16.5,22 17,22.5 17,23 C 17,23.5 15.5,25 15,26 C 14.5,27 15,29 17,28 C 19,27 21,26 22,26 C 23,26 25,27 25,29 C 25,31 23,31 22,31 C 21,31 20,30.5 20,30.5 C 20,30.5 18,33 22,33 C 26,33 27.5,31 27.5,29 C 27.5,27 26.5,25 25.5,24 C 24.5,23 25.5,20 26.5,19 C 27.5,18 29.5,18 29.5,18 C 29.5,18 29.5,16 28,14 C 26.5,12 24,10 22,10 z" fill="#000" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" transform="matrix(0.861785,0.507278,-0.507278,0.861785,25.6664,-4.177)" fill="#fff"/></svg>`,
+  bb: `<svg viewBox="0 0 45 45"><path d="M9 36c3.39 0 7.66-.69 11.77-2.3 4-1.6 7.5-3.85 9.73-6.5a8.72 8.72 0 0 0 1.5-5.2c0-3-1.66-5.83-4.22-7.85-2.55-2.02-6-3.15-9.28-3.15s-6.73 1.13-9.28 3.15C6.66 16.17 5 19 5 22a8.72 8.72 0 0 0 1.5 5.2c2.22 2.65 5.73 4.9 9.73 6.5C20.34 35.31 24.61 36 28 36H9z" fill="#000" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><circle cx="22.5" cy="5" r="2.5" fill="#000" stroke="#fff" stroke-width="1.5"/><path d="M17.5 18h10M22.5 13v10" stroke="#fff" stroke-width="1.5"/></svg>`,
+  br: `<svg viewBox="0 0 45 45"><path d="M9 39h27v-3H9v3zm3-3h21v-4H12v4zm2.5-4l1.5-12h14l1.5 12h-17zm-1.5-12h20v-5H11v5zm0-5h4v-3h-4v3zm8 0h4v-3h-4v3zm8 0h4v-3h-4v3z" fill="#000" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+  bq: `<svg viewBox="0 0 45 45"><g fill="#000" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"><path d="M8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm33 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM22.5 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM12 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm21 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M9 37h27v-3H9v3zm3.5-3l3-18 7 9 7-9 3 18h-20z"/></g></svg>`,
+  bk: `<svg viewBox="0 0 45 45"><g fill="#000" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"><path d="M8.5 36.5h28v-3h-28v3zm4-3l2.5-16.5h20l2.5 16.5h-25z"/><path d="M11.5 17c4 0 7-3 7-7s-3-7-7-7-7 3-7 7 3 7 7 7zm22 0c4 0 7-3 7-7s-3-7-7-7-7 3-7 7 3 7 7 7z"/><path d="M22.5 5v14M15.5 12h14" stroke="#fff" stroke-width="1.5"/></g></svg>`
+};
+
 // Convert piece characters to SVG Chess symbols
 function getPieceSymbol(type, color) {
-  const glyphs = {
-    w: { k: '♔', q: '♕', r: '♖', b: '♗', n: '♘', p: '♙' },
-    b: { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' }
-  };
-  const sym = glyphs[color][type];
-  return `<span style="font-size: clamp(30px, 6vw, 48px); font-weight: 400; color: ${color === 'w' ? '#ffffff' : '#1e1e24'}; text-shadow: 0 0 4px rgba(0,0,0,0.5);">${sym}</span>`;
+  const pieceKey = `${color}${type}`;
+  return PIECE_SVGS[pieceKey] || "";
 }
 
 function handleSquareClick(sqName) {
