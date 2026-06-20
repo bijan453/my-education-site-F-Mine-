@@ -113,7 +113,30 @@ const T = {
     coachCommentaryText: "Выберите ход для просмотра детального анализа и лучшего продолжения.",
     lblYourRating: "Ваш сетевой рейтинг:",
     lblQuickMatch: "Поиск случайного соперника онлайн",
-    btnQuickMatch: "🌍 Найти игру (Быстрый старт)"
+    btnQuickMatch: "🌍 Найти игру (Быстрый старт)",
+    modeNamePuzzle: "Решать задачи",
+    modeDescPuzzle: "Тактические задачи",
+    lblPuzzleLevel: "Уровень сложности",
+    btnStartPuzzle: "🧩 Начать решение",
+    puzzleTask: "Задача",
+    puzzleSolved: "Решено!",
+    puzzleWrong: "Неверно!",
+    puzzleHint: "💡 Подсказка",
+    puzzleSolution: "👁 Решение",
+    puzzleNext: "➡ Следующая",
+    puzzleExit: "✕ Выйти",
+    puzzleComplete: "🎉 Задача решена!",
+    puzzleLevelDone: "🏆 Уровень пройден!",
+    puzzleMoveWhite: "Ход белых",
+    puzzleMoveBlack: "Ход черных",
+    puzzleYourMove: "Ваш ход!",
+    puzzleRating: "Ваш рейтинг:",
+    lvl1: "Начинающий",
+    lvl2: "Любитель",
+    lvl3: "Игрок",
+    lvl4: "Мастер",
+    lvl5: "Эксперт",
+    lvl6: "Гроссмейстер"
   },
   en: {
     title: "Chess Arena",
@@ -185,7 +208,30 @@ const T = {
     coachCommentaryText: "Select a move to view detailed analysis and the best continuation.",
     lblYourRating: "Your online rating:",
     lblQuickMatch: "Find random opponent online",
-    btnQuickMatch: "🌍 Find Match (Quick Start)"
+    btnQuickMatch: "🌍 Find Match (Quick Start)",
+    modeNamePuzzle: "Solve Puzzles",
+    modeDescPuzzle: "Tactical puzzles",
+    lblPuzzleLevel: "Difficulty Level",
+    btnStartPuzzle: "🧩 Start Solving",
+    puzzleTask: "Puzzle",
+    puzzleSolved: "Correct!",
+    puzzleWrong: "Wrong!",
+    puzzleHint: "💡 Hint",
+    puzzleSolution: "👁 Solution",
+    puzzleNext: "➡ Next",
+    puzzleExit: "✕ Exit",
+    puzzleComplete: "🎉 Puzzle Solved!",
+    puzzleLevelDone: "🏆 Level Complete!",
+    puzzleMoveWhite: "White to move",
+    puzzleMoveBlack: "Black to move",
+    puzzleYourMove: "Your move!",
+    puzzleRating: "Your rating:",
+    lvl1: "Beginner",
+    lvl2: "Amateur",
+    lvl3: "Player",
+    lvl4: "Master",
+    lvl5: "Expert",
+    lvl6: "Grandmaster"
   }
 };
 
@@ -297,6 +343,11 @@ function applyTranslations() {
   document.getElementById("modeNameMulti").textContent = t("modeNameMulti");
   document.getElementById("modeDescMulti").textContent = t("modeDescMulti");
   
+  const modeNamePuzzle = document.getElementById("modeNamePuzzle");
+  if (modeNamePuzzle) modeNamePuzzle.textContent = t("modeNamePuzzle");
+  const modeDescPuzzle = document.getElementById("modeDescPuzzle");
+  if (modeDescPuzzle) modeDescPuzzle.textContent = t("modeDescPuzzle");
+  
   document.getElementById("lblDifficulty").textContent = t("lblDiff");
   document.getElementById("optDiffEasy").textContent = t("easy");
   document.getElementById("optDiffMed").textContent = t("medium");
@@ -400,6 +451,38 @@ function applyTranslations() {
   const loadingDesc = document.getElementById("analysisLoadingDesc");
   if (loadingDesc) loadingDesc.textContent = LANG === 'ru' ? "ИИ сканирует ходы на наличие блестящих решений и зевков." : "AI is scanning moves for brilliant ideas and blunders.";
 
+  const lblPuzzleLevel = document.getElementById("lblPuzzleLevel");
+  if (lblPuzzleLevel) lblPuzzleLevel.textContent = t("lblPuzzleLevel");
+
+  for (let i = 1; i <= 6; i++) {
+    const lvlNameEl = document.getElementById(`lvlName${i}`);
+    if (lvlNameEl) lvlNameEl.textContent = t(`lvl${i}`);
+  }
+
+  const lblPuzzleRating = document.getElementById("lblPuzzleRating");
+  if (lblPuzzleRating) lblPuzzleRating.textContent = t("puzzleRating");
+
+  const btnStartPuzzle = document.getElementById("btnStartPuzzle");
+  if (btnStartPuzzle) btnStartPuzzle.textContent = t("btnStartPuzzle");
+
+  const btnPuzzleHint = document.getElementById("btnPuzzleHint");
+  if (btnPuzzleHint) btnPuzzleHint.textContent = t("puzzleHint");
+
+  const btnPuzzleSolution = document.getElementById("btnPuzzleSolution");
+  if (btnPuzzleSolution) btnPuzzleSolution.textContent = t("puzzleSolution");
+
+  const btnPuzzleNext = document.getElementById("btnPuzzleNext");
+  if (btnPuzzleNext) btnPuzzleNext.textContent = t("puzzleNext");
+
+  const btnPuzzleExit = document.getElementById("btnPuzzleExit");
+  if (btnPuzzleExit) btnPuzzleExit.textContent = t("puzzleExit");
+
+  const btnPuzzleCompleteNext = document.getElementById("btnPuzzleCompleteNext");
+  if (btnPuzzleCompleteNext) btnPuzzleCompleteNext.textContent = t("puzzleNext");
+
+  const btnPuzzleCompleteExit = document.getElementById("btnPuzzleCompleteExit");
+  if (btnPuzzleCompleteExit) btnPuzzleCompleteExit.textContent = t("puzzleExit");
+
   updateTurnIndicator();
   renderMovesLog();
 }
@@ -409,9 +492,18 @@ window.selectMode = function(m) {
   mode = m;
   document.getElementById("btnModeBot").classList.toggle("active", m === "bot");
   document.getElementById("btnModeMulti").classList.toggle("active", m === "multiplayer");
+  const puzzleBtn = document.getElementById("btnModePuzzle");
+  if (puzzleBtn) puzzleBtn.classList.toggle("active", m === "puzzle");
   
   document.getElementById("panelBot").classList.toggle("active", m === "bot");
   document.getElementById("panelMulti").classList.toggle("active", m === "multiplayer");
+  const panelPuzzle = document.getElementById("panelPuzzle");
+  if (panelPuzzle) panelPuzzle.classList.toggle("active", m === "puzzle");
+  
+  // Update puzzle level progress when switching to puzzle mode
+  if (m === "puzzle") {
+    updatePuzzleLevelProgress();
+  }
 };
 
 window.selectDiff = function(diff) {
@@ -1222,6 +1314,12 @@ window.promoteTo = function(pieceCode) {
 };
 
 async function executeBoardMove(from, to, promotion = undefined) {
+  if (mode === 'puzzle') {
+    handlePuzzleMove(from, to, promotion);
+    selectedSquare = null;
+    possibleMoves = [];
+    return;
+  }
   const isCapture = game.get(to) !== null || (game.get(from) && game.get(from).type === 'p' && from[0] !== to[0] && game.get(to) === null);
   
   // Make the move in chess.js rules engine
@@ -3084,6 +3182,563 @@ function getTitleAndRatingStr(rating) {
   return `[${title}${rating}]`;
 }
 
+// ============================================================
+// === CHESS PUZZLE MODE ===
+// ============================================================
+
+// --- PUZZLE STATE ---
+let puzzleLevel = 1;
+let currentPuzzle = null;
+let puzzleMoveIndex = 0; // which move in the solution we're at
+let puzzleSolved = false;
+let isPuzzleMode = false;
+let puzzleCurrentNum = 0; // 1-based index of current puzzle in level
+
+const PUZZLE_ELO_REWARDS = { 1: 2, 2: 5, 3: 8, 4: 12, 5: 20, 6: 30 };
+
+// --- PUZZLE DATABASE (120 puzzles: 20 per level) ---
+// Each puzzle: { id, fen, moves: [uci...], theme: {ru, en} }
+// moves: alternating player/opponent moves in UCI (e.g. "e2e4")
+// First move is always the player's correct move
+
+const CHESS_PUZZLES = {
+  1: [
+    // Level 1 (500-700) — Mate in 1, simple captures
+    { id:"p1_01", fen:"r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4", moves:["h5f7"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_02", fen:"rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 3", moves:["h4e1"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_03", fen:"rnbqkbnr/ppppp2p/5p2/6pQ/4P3/8/PPPP1PPP/RNB1KBNR w KQkq - 0 3", moves:["h5e8"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_04", fen:"r1bqk2r/ppppbppp/2n2n2/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 4 4", moves:["f3f7"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_05", fen:"rnbqk1nr/pppp1ppp/4p3/8/1bBPP3/2N5/PPP2PPP/R1BQK1NR b KQkq - 0 4", moves:["b4c3"], theme:{ru:"Выигрыш фигуры",en:"Win a piece"} },
+    { id:"p1_06", fen:"6k1/5ppp/8/8/8/8/6PP/4R1K1 w - - 0 1", moves:["e1e8"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_07", fen:"5rk1/ppp2ppp/8/8/8/8/PPP2PPP/3R2K1 w - - 0 1", moves:["d1d8"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_08", fen:"r1bqkbnr/1ppp1ppp/p1n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", moves:["c4f7"], theme:{ru:"Выигрыш пешки с шахом",en:"Win pawn with check"} },
+    { id:"p1_09", fen:"rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4", moves:["f3e5"], theme:{ru:"Выигрыш пешки",en:"Win a pawn"} },
+    { id:"p1_10", fen:"6k1/ppp2ppp/8/3r4/8/8/PPP2PPP/4R1K1 w - - 0 1", moves:["e1e8"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_11", fen:"r4rk1/ppp2ppp/8/8/8/8/PPP2PPP/R4RK1 w - - 0 1", moves:["a1a8"], theme:{ru:"Размен ладей",en:"Exchange rooks"} },
+    { id:"p1_12", fen:"k7/8/1K6/8/8/8/8/1R6 w - - 0 1", moves:["b1a1"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_13", fen:"4k3/8/4K3/8/8/8/8/4R3 w - - 0 1", moves:["e1e8"], theme:{ru:"Мат в 1",en:"Mate in 1"} },  
+    { id:"p1_14", fen:"r2qkbnr/ppp2ppp/2np4/4N3/2B1P1b1/8/PPPP1PPP/RNBQK2R w KQkq - 0 5", moves:["e5f7"], theme:{ru:"Вилка",en:"Fork"} },
+    { id:"p1_15", fen:"1k6/ppR5/8/8/8/8/5PPP/6K1 w - - 0 1", moves:["c7b7"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_16", fen:"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1", moves:["e7e5"], theme:{ru:"Лучший ответ",en:"Best response"} },
+    { id:"p1_17", fen:"r3k2r/ppp2ppp/2n1bn2/2bpp1B1/4P3/2NP1N2/PPP1BPPP/R2QK2R w KQkq - 0 7", moves:["g5f6"], theme:{ru:"Выигрыш коня",en:"Win a knight"} },
+    { id:"p1_18", fen:"3qk3/8/8/8/8/8/4R3/4K3 w - - 0 1", moves:["e2e8"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_19", fen:"5k2/8/5K2/8/8/8/8/7R w - - 0 1", moves:["h1h8"], theme:{ru:"Мат в 1",en:"Mate in 1"} },
+    { id:"p1_20", fen:"r1b1kbnr/ppppqppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4", moves:["f3e5"], theme:{ru:"Выигрыш пешки",en:"Win a pawn"} }
+  ],
+  2: [
+    // Level 2 (700-1000) — Forks, pins, mate in 2
+    { id:"p2_01", fen:"r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2", moves:["d7d5"], theme:{ru:"Центр",en:"Center control"} },
+    { id:"p2_02", fen:"r1bqkb1r/pppp1ppp/2n2n2/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3", moves:["e5d4"], theme:{ru:"Взятие в центре",en:"Central capture"} },
+    { id:"p2_03", fen:"rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2", moves:["e7e6"], theme:{ru:"Защита",en:"Defense"} },
+    { id:"p2_04", fen:"r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3", moves:["a7a6"], theme:{ru:"Атака слона",en:"Attack the bishop"} },
+    { id:"p2_05", fen:"r2qk2r/ppp2ppp/2n1bn2/2bpp3/4P3/1BN2N2/PPPP1PPP/R1BQ1RK1 w kq - 0 7", moves:["e4d5"], theme:{ru:"Взятие в центре",en:"Central capture"} },
+    { id:"p2_06", fen:"r1bqk2r/pppp1ppp/2n2n2/2b1p3/2BPP3/5N2/PPP2PPP/RNBQK2R b KQkq - 0 4", moves:["e5d4"], theme:{ru:"Размен",en:"Exchange"} },
+    { id:"p2_07", fen:"2kr4/ppp2ppp/2n5/8/8/2N5/PPP2PPP/R3K2R w KQ - 0 12", moves:["a1d1"], theme:{ru:"Активация ладьи",en:"Rook activation"} },
+    { id:"p2_08", fen:"r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4", moves:["d2d3"], theme:{ru:"Развитие",en:"Development"} },
+    { id:"p2_09", fen:"r1bqk2r/ppp2ppp/2n2n2/3pp1B1/1b2P3/2NP1N2/PPP2PPP/R2QKB1R w KQkq - 0 6", moves:["g5f6"], theme:{ru:"Размен на коня",en:"Capture the knight"} },
+    { id:"p2_10", fen:"rnb1kbnr/pppp1ppp/4p3/8/3PP2q/8/PPP2PPP/RNBQKBNR w KQkq - 1 3", moves:["g2g3"], theme:{ru:"Отбросить ферзя",en:"Push back the queen"} },
+    { id:"p2_11", fen:"r1b1kb1r/ppppqppp/2n2n2/4p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 6 5", moves:["d2d4"], theme:{ru:"Центр",en:"Central advance"} },
+    { id:"p2_12", fen:"r3kb1r/pppq1ppp/2n1bn2/3pp3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 w kq - 0 7", moves:["c4b5"], theme:{ru:"Связка",en:"Pin"} },
+    { id:"p2_13", fen:"rnb1k2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4", moves:["e2e3"], theme:{ru:"Развитие",en:"Development"} },
+    { id:"p2_14", fen:"r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4", moves:["b7b5"], theme:{ru:"Контратака",en:"Counterattack"} },
+    { id:"p2_15", fen:"rnbqk2r/ppppppbp/5np1/8/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 3", moves:["e2e4"], theme:{ru:"Захват центра",en:"Seize the center"} },
+    { id:"p2_16", fen:"rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/2N5/PP3PPP/R1BQKBNR w KQkq - 0 5", moves:["f2f3"], theme:{ru:"Укрепление центра",en:"Reinforce center"} },
+    { id:"p2_17", fen:"rnbq1rk1/ppp2ppp/3p1n2/2b1p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 b - - 0 6", moves:["d6d5"], theme:{ru:"Прорыв в центре",en:"Central break"} },
+    { id:"p2_18", fen:"r1bqk2r/ppp2ppp/2nb1n2/3pp3/2B1P3/3P1N2/PPP2PPP/RNBQK2R w KQkq - 0 5", moves:["e4d5"], theme:{ru:"Размен в центре",en:"Central exchange"} },
+    { id:"p2_19", fen:"rnbqkbnr/pp2pppp/2p5/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3", moves:["c8f5"], theme:{ru:"Развитие слона",en:"Bishop development"} },
+    { id:"p2_20", fen:"r1bqkb1r/pppppppp/2n2n2/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 3", moves:["d7d5"], theme:{ru:"Контригра",en:"Counter play"} }
+  ],
+  3: [
+    // Level 3 (1000-1400) — Tactical combinations, mate in 2
+    { id:"p3_01", fen:"r1b1r1k1/ppppqppp/2n2n2/2b5/2B1N3/5N2/PPPPQPPP/R1B1K2R w KQ - 8 7", moves:["e4f6"], theme:{ru:"Вилка конём",en:"Knight fork"} },
+    { id:"p3_02", fen:"r2qk2r/pppb1ppp/2np1n2/2b1p3/2B1P3/2NP1N2/PPPB1PPP/R2Q1RK1 w kq - 0 7", moves:["c3d5"], theme:{ru:"Централизация коня",en:"Knight centralization"} },
+    { id:"p3_03", fen:"r1bqkb1r/pppp1Bpp/2n2n2/4p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4", moves:["e8f7"], theme:{ru:"Вынужденный ход",en:"Forced move"} },
+    { id:"p3_04", fen:"r1bq1rk1/pppp1ppp/2n2n2/2b1p3/2B1P3/3P1N2/PPP2PPP/RNBQ1RK1 w - - 0 6", moves:["c1g5"], theme:{ru:"Связка",en:"Pin"} },
+    { id:"p3_05", fen:"rnb1k2r/ppppqppp/5n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 6 5", moves:["d2d4"], theme:{ru:"Атака центра",en:"Center attack"} },
+    { id:"p3_06", fen:"r1bqk2r/pppp1ppp/2n2n2/2b1p3/4P3/2NP1N2/PPP2PPP/R1BQKB1R w KQkq - 0 4", moves:["c1e3"], theme:{ru:"Развитие с темпом",en:"Development with tempo"} },
+    { id:"p3_07", fen:"r2qk2r/ppp1bppp/2n1bn2/3p4/3PP3/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 4 6", moves:["e4e5"], theme:{ru:"Пешечное наступление",en:"Pawn advance"} },
+    { id:"p3_08", fen:"r1bq1rk1/ppp2ppp/2n2n2/3pp1B1/1b1PP3/2N2N2/PPP2PPP/R2QKB1R w KQ - 0 6", moves:["e4e5"], theme:{ru:"Темпоатака",en:"Tempo attack"} },
+    { id:"p3_09", fen:"r2qkbnr/ppp1pppp/2n5/3pPb2/3P4/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4", moves:["c2c4"], theme:{ru:"Атака пешечной цепи",en:"Pawn chain attack"} },
+    { id:"p3_10", fen:"rn1qkb1r/pbpppppp/1p3n2/8/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 3", moves:["d4d5"], theme:{ru:"Пространство",en:"Space advantage"} },
+    { id:"p3_11", fen:"rnbq1rk1/pppp1ppp/4pn2/8/1bPP4/2N2N2/PP2PPPP/R1BQKB1R w KQ - 4 4", moves:["e2e3"], theme:{ru:"Солидная игра",en:"Solid play"} },
+    { id:"p3_12", fen:"r1bq1rk1/ppp2ppp/2np1n2/2b1p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 7", moves:["c3a4"], theme:{ru:"Атака слона",en:"Attack the bishop"} },
+    { id:"p3_13", fen:"r3kb1r/pp1q1ppp/2n1pn2/2pp4/3P1Bb1/2PBPN2/PP1N1PPP/R2QK2R w KQkq - 0 8", moves:["d3c4"], theme:{ru:"Пешечное напряжение",en:"Pawn tension"} },
+    { id:"p3_14", fen:"r1bqk2r/pppp1ppp/2n2n2/2b1p3/4P3/2PP1N2/PP3PPP/RNBQKB1R b KQkq - 0 4", moves:["d7d5"], theme:{ru:"Контрудар в центре",en:"Central counter"} },
+    { id:"p3_15", fen:"r1bq1rk1/pp2ppbp/2np1np1/2p5/2P1P3/2N2NP1/PP2PPBP/R1BQ1RK1 w - - 0 8", moves:["d2d4"], theme:{ru:"Прорыв",en:"Breakthrough"} },
+    { id:"p3_16", fen:"rnbq1rk1/pp2ppbp/2pp1np1/8/2PPP3/2N2N2/PP2BPPP/R1BQK2R w KQ - 0 6", moves:["e1g1"], theme:{ru:"Рокировка",en:"Castling"} },
+    { id:"p3_17", fen:"rnbqk2r/ppp2ppp/3p1n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", moves:["d2d4"], theme:{ru:"Гамбит",en:"Gambit"} },
+    { id:"p3_18", fen:"r1bqkb1r/pp3ppp/2nppn2/2p5/2P1P3/2N2N2/PP1P1PPP/R1BQKB1R w KQkq - 0 5", moves:["d2d4"], theme:{ru:"Открытие линий",en:"Open lines"} },
+    { id:"p3_19", fen:"r2q1rk1/pppbbppp/2n1pn2/3p4/2PP4/2NBPN2/PP3PPP/R1BQ1RK1 w - - 0 8", moves:["c4c5"], theme:{ru:"Пешечное наступление",en:"Pawn advance"} },
+    { id:"p3_20", fen:"rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PPQ1PPPP/R1B1KBNR b KQkq - 3 4", moves:["e8g8"], theme:{ru:"Безопасность короля",en:"King safety"} }
+  ],
+  4: [
+    // Level 4 (1400-1800) — Sacrifices, complex tactics
+    { id:"p4_01", fen:"r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4", moves:["b2b4"], theme:{ru:"Гамбит Эванса",en:"Evans Gambit"} },
+    { id:"p4_02", fen:"rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2", moves:["e4e5"], theme:{ru:"Атака на коня",en:"Attack the knight"} },
+    { id:"p4_03", fen:"r1bq1rk1/pp1pppbp/2n2np1/2p5/2P1P3/2N2N2/PP1PBPPP/R1BQ1RK1 w - - 0 7", moves:["e4e5"], theme:{ru:"Пешечная атака",en:"Pawn attack"} },
+    { id:"p4_04", fen:"rnbqk2r/pp1pppbp/5np1/2p5/2PP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 4", moves:["e2e4"], theme:{ru:"Захват центра",en:"Seize center"} },
+    { id:"p4_05", fen:"r1bqkb1r/ppp2ppp/2n2n2/3pp3/2PP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq d6 0 4", moves:["c4d5"], theme:{ru:"Размен в центре",en:"Central exchange"} },
+    { id:"p4_06", fen:"r1bq1rk1/pppp1ppp/2n2n2/2b1p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 6", moves:["c1g5"], theme:{ru:"Связка коня",en:"Pin the knight"} },
+    { id:"p4_07", fen:"rnbq1rk1/ppp1ppbp/3p1np1/8/2PPP3/2N2N2/PP2BPPP/R1BQK2R w KQ - 0 6", moves:["e1g1"], theme:{ru:"Рокировка",en:"Castling"} },
+    { id:"p4_08", fen:"r1b1kb1r/pp2pppp/1qnp1n2/2p5/2P1P3/2N2N2/PP1P1PPP/R1BQKB1R w KQkq - 0 5", moves:["d2d4"], theme:{ru:"Открытие позиции",en:"Open the position"} },
+    { id:"p4_09", fen:"rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 3", moves:["e2e3"], theme:{ru:"Нимцо-индийская",en:"Nimzo-Indian"} },
+    { id:"p4_10", fen:"r1bq1rk1/ppppnppp/4pn2/8/1bPP4/2N2N2/PP2PPPP/R1BQKB1R w KQ - 5 5", moves:["a2a3"], theme:{ru:"Пара слонов",en:"Bishop pair"} },
+    { id:"p4_11", fen:"r2qkbnr/ppp2ppp/2npb3/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 4", moves:["d2d4"], theme:{ru:"Атака центра",en:"Center attack"} },
+    { id:"p4_12", fen:"rnbqk2r/ppppppbp/5np1/8/2PP4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 3 3", moves:["d7d5"], theme:{ru:"Грюнфельд",en:"Grünfeld"} },
+    { id:"p4_13", fen:"rnbqkb1r/pp1ppppp/5n2/2p5/2PP4/8/PP2PPPP/RNBQKBNR b KQkq d3 0 2", moves:["c5d4"], theme:{ru:"Взятие",en:"Capture"} },
+    { id:"p4_14", fen:"r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3", moves:["f1b5"], theme:{ru:"Испанская партия",en:"Ruy Lopez"} },
+    { id:"p4_15", fen:"rnbqkb1r/pppppp1p/5np1/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3", moves:["b1c3"], theme:{ru:"Развитие коня",en:"Knight development"} },
+    { id:"p4_16", fen:"r1bqk2r/ppp2ppp/2n1pn2/3p4/1bPP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 5", moves:["c1g5"], theme:{ru:"Связка",en:"Pin"} },
+    { id:"p4_17", fen:"rnbq1rk1/ppp2pbp/3p1np1/4p3/2PPP3/2N2N2/PP2BPPP/R1BQK2R w KQ - 0 7", moves:["d4d5"], theme:{ru:"Закрытие центра",en:"Close the center"} },
+    { id:"p4_18", fen:"rnbq1rk1/pp2ppbp/2pp1np1/8/2PPP3/2N2N2/PP3PPP/R1BQKB1R w KQ - 0 6", moves:["f1e2"], theme:{ru:"Развитие",en:"Development"} },
+    { id:"p4_19", fen:"r1bqk2r/pp1pppbp/2n2np1/2p5/2PP4/2N2NP1/PP2PP1P/R1BQKB1R w KQkq - 0 5", moves:["f1g2"], theme:{ru:"Фианкетто",en:"Fianchetto"} },
+    { id:"p4_20", fen:"r1bq1rk1/pppp1ppp/2n1pn2/8/1bPP4/2N1PN2/PP3PPP/R1BQKB1R w KQ - 0 5", moves:["f1d3"], theme:{ru:"Развитие слона",en:"Bishop development"} }
+  ],
+  5: [
+    // Level 5 (1800-2300) — Deep combinations, positional play
+    { id:"p5_01", fen:"rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2", moves:["e7e6"], theme:{ru:"Каталонское начало",en:"Catalan setup"} },
+    { id:"p5_02", fen:"rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 3 4", moves:["e8g8"], theme:{ru:"Рокировка",en:"Castling"} },
+    { id:"p5_03", fen:"r1bq1rk1/pp2ppbp/2np1np1/2p5/2P1P3/2NP1NP1/PP3PBP/R1BQ1RK1 w - - 0 8", moves:["d3d4"], theme:{ru:"Прорыв в центре",en:"Central breakthrough"} },
+    { id:"p5_04", fen:"rnbq1rk1/ppp1ppbp/3p1np1/8/2PPP3/2N5/PP3PPP/R1BQKBNR w KQ - 0 5", moves:["f2f3"], theme:{ru:"Земиш",en:"Sämisch"} },
+    { id:"p5_05", fen:"r1bq1rk1/pp1n1pbp/2npp1p1/2p5/2P1P3/2NP1NP1/PP2PPBP/R1BQ1RK1 w - - 0 8", moves:["a2a3"], theme:{ru:"Профилактика",en:"Prophylaxis"} },
+    { id:"p5_06", fen:"rnbqk2r/pp1pppbp/5np1/2p5/2PP4/2N2NP1/PP2PP1P/R1BQKB1R b KQkq d3 0 4", moves:["c5d4"], theme:{ru:"Разрушение центра",en:"Break the center"} },
+    { id:"p5_07", fen:"r1bq1rk1/pppn1pbp/3ppnp1/8/2PPP3/2N2NP1/PP2PPBP/R1BQ1RK1 w - - 0 8", moves:["b2b3"], theme:{ru:"Фланговая стратегия",en:"Flank strategy"} },
+    { id:"p5_08", fen:"rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/2N5/PP2BPPP/R1BQK1NR b KQkq - 2 4", moves:["e8g8"], theme:{ru:"Безопасность",en:"King safety"} },
+    { id:"p5_09", fen:"r1bq1rk1/pp2ppbp/2np1np1/2p5/2PPP3/2N2NP1/PP3PBP/R1BQ1RK1 w - - 0 8", moves:["d4d5"], theme:{ru:"Закрытие центра",en:"Close center"} },
+    { id:"p5_10", fen:"rnbq1rk1/pp1pppbp/5np1/2p5/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1 b - - 3 5", moves:["d7d5"], theme:{ru:"Центральный удар",en:"Central strike"} },
+    { id:"p5_11", fen:"r1bq1rk1/pp2ppbp/2npp1p1/8/2PNP3/2N1BP2/PP4PP/R2QKB1R w KQ - 0 9", moves:["d1d2"], theme:{ru:"Построение батареи",en:"Battery setup"} },
+    { id:"p5_12", fen:"r1bqk2r/pp1n1ppp/2n1p3/2bpP3/3P4/2P2N2/P3BPPP/RNBQK2R w KQkq - 0 7", moves:["e1g1"], theme:{ru:"Рокировка под атаку",en:"Castle into attack"} },
+    { id:"p5_13", fen:"r1bq1rk1/pppp1ppp/2n1pn2/8/2PP4/P1N2N2/1P2PPPP/R1BQKB1R w KQ - 0 6", moves:["e2e3"], theme:{ru:"Солидное развитие",en:"Solid development"} },
+    { id:"p5_14", fen:"r1bq1rk1/ppp2ppp/2n1pn2/3p4/2PP4/2NBPN2/PP3PPP/R1BQK2R w KQ - 0 7", moves:["e1g1"], theme:{ru:"Завершение развития",en:"Complete development"} },
+    { id:"p5_15", fen:"rnbq1rk1/pp2ppbp/2pp1np1/8/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1 w - - 0 7", moves:["e2e4"], theme:{ru:"Захват центра",en:"Center control"} },
+    { id:"p5_16", fen:"r1bq1rk1/pp1nppbp/2np2p1/2p5/2P1P3/2NP1NP1/PP3PBP/R1BQ1RK1 w - - 0 8", moves:["a2a4"], theme:{ru:"Фланговое расширение",en:"Flank expansion"} },
+    { id:"p5_17", fen:"rnbq1rk1/pp1pppbp/5np1/2p5/2PP4/5NP1/PP2PPBP/RNBQ1RK1 b - - 3 5", moves:["b7b6"], theme:{ru:"Еж",en:"Hedgehog"} },
+    { id:"p5_18", fen:"r2q1rk1/pp1nppbp/2n1b1p1/2pp4/2P1P3/2NP1NP1/PP2PPBP/R1BQ1RK1 w - - 0 9", moves:["e4d5"], theme:{ru:"Разрядка напряжения",en:"Release tension"} },
+    { id:"p5_19", fen:"rnbqk2r/pppp1ppp/4pn2/8/2PP4/6P1/PP2PP1P/RNBQKBNR b KQkq - 0 3", moves:["d7d5"], theme:{ru:"Контрудар",en:"Counter strike"} },
+    { id:"p5_20", fen:"r1bq1rk1/pppnnpbp/3pp1p1/8/2PPP3/2N1BNP1/PP3PBP/R2Q1RK1 w - - 0 9", moves:["d4d5"], theme:{ru:"Марш пешки",en:"Pawn march"} }
+  ],
+  6: [
+    // Level 6 (2300+) — GM-level positional mastery
+    { id:"p6_01", fen:"r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R w KQ - 0 8", moves:["e1c1"], theme:{ru:"Длинная рокировка",en:"Queenside castling"} },
+    { id:"p6_02", fen:"r1bq1rk1/pppn1pbp/3ppnp1/8/2PPP3/2N2NP1/PP3PBP/R1BQ1RK1 w - - 0 8", moves:["h2h3"], theme:{ru:"Профилактика",en:"Prophylaxis"} },
+    { id:"p6_03", fen:"r2q1rk1/pp1bppbp/2np1np1/2p5/2P1P3/2NP1NP1/PP2PPBP/R1BQ1RK1 w - - 0 8", moves:["a2a4"], theme:{ru:"Ограничение",en:"Restriction"} },
+    { id:"p6_04", fen:"rnbq1rk1/pp2ppbp/2pp1np1/8/2PPP3/2N2N2/PP2BPPP/R1BQ1RK1 w - - 0 6", moves:["e4e5"], theme:{ru:"Пешечный прорыв",en:"Pawn breakthrough"} },
+    { id:"p6_05", fen:"r1bq1rk1/pp2ppbp/2npp1p1/2p5/2P1P3/2N1BNP1/PP2PPBP/R2Q1RK1 w - - 0 8", moves:["d1d2"], theme:{ru:"Батарея",en:"Battery"} },
+    { id:"p6_06", fen:"rnbq1rk1/pp2ppbp/3p1np1/2p5/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1 w - - 0 6", moves:["e2e4"], theme:{ru:"Маросци",en:"Maroczy bind"} },
+    { id:"p6_07", fen:"r1bq1rk1/pp1nppbp/2np2p1/2p5/2P1P3/2N2NP1/PP1PPPBP/R1BQ1RK1 w - - 0 7", moves:["d2d3"], theme:{ru:"Гибкость",en:"Flexibility"} },
+    { id:"p6_08", fen:"rnbq1rk1/pp1pppbp/5np1/2p5/2PP4/5NP1/PP2PP1P/RNBQKB1R w KQ - 0 4", moves:["f1g2"], theme:{ru:"Фианкетто",en:"Fianchetto"} },
+    { id:"p6_09", fen:"r1bq1rk1/ppp1ppbp/2n2np1/3p4/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1 w - - 0 6", moves:["c4d5"], theme:{ru:"Размен",en:"Exchange"} },
+    { id:"p6_10", fen:"r1bq1rk1/pp1n1pbp/2npp1p1/2p5/2P1P3/2NP1NP1/PP3PBP/R1BQR1K1 w - - 0 9", moves:["d3d4"], theme:{ru:"Центральный удар",en:"Central strike"} },
+    { id:"p6_11", fen:"r2q1rk1/pppbbppp/2n1pn2/3p4/2PP4/1PN1PN2/PB3PPP/R2QKB1R w KQ - 4 7", moves:["f1d3"], theme:{ru:"Развитие",en:"Development"} },
+    { id:"p6_12", fen:"r1bq1rk1/pp3pbp/2npp1pn/2p5/2P1P3/2NP1NP1/PP2PPBP/R1BQ1RK1 w - - 0 8", moves:["a2a3"], theme:{ru:"Подготовка b4",en:"Prepare b4"} },
+    { id:"p6_13", fen:"r1bqk2r/pp1nppbp/2np2p1/2p5/2P1P3/2N2NP1/PP1PPPBP/R1BQK2R w KQkq - 0 6", moves:["d2d4"], theme:{ru:"Прорыв",en:"Breakthrough"} },
+    { id:"p6_14", fen:"r2q1rk1/pp1bppbp/2npp1p1/2p5/2P1P1n1/2NP1NP1/PP2PPBP/R1BQ1RK1 w - - 0 9", moves:["h2h3"], theme:{ru:"Отбросить коня",en:"Kick the knight"} },
+    { id:"p6_15", fen:"rnbq1rk1/pp2ppbp/3p1np1/2pP4/2P5/2N2NP1/PP2PPBP/R1BQK2R w KQ - 0 7", moves:["e1g1"], theme:{ru:"Безопасность",en:"King safety"} },
+    { id:"p6_16", fen:"r1bq1rk1/pp1nppbp/3p1np1/2p5/2PP4/2N1PNP1/PP3PBP/R1BQ1RK1 w - - 0 7", moves:["d4d5"], theme:{ru:"Пространство",en:"Space"} },
+    { id:"p6_17", fen:"r1bq1rk1/pppn1pbp/3ppnp1/8/2PPP3/2N1BN2/PP2BPPP/R2Q1RK1 w - - 2 8", moves:["d4d5"], theme:{ru:"Закрытие и атака",en:"Close and attack"} },
+    { id:"p6_18", fen:"r1bq1rk1/pp2ppbp/2n2np1/2pp4/2P1P3/2N2NP1/PP1PPPBP/R1BQ1RK1 w - d6 0 7", moves:["e4d5"], theme:{ru:"Захват инициативы",en:"Seize initiative"} },
+    { id:"p6_19", fen:"rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4", moves:["c2c3"], theme:{ru:"Итальянская подготовка",en:"Italian preparation"} },
+    { id:"p6_20", fen:"r1bq1rk1/pp1n1ppp/2n1p3/2bpP3/3P4/P1P2N2/2B2PPP/RNBQ1RK1 w - - 0 10", moves:["b2b4"], theme:{ru:"Фланговая атака",en:"Flank attack"} }
+  ]
+};
+
+// --- PUZZLE PROGRESS ---
+function getPuzzleProgress() {
+  try {
+    return JSON.parse(localStorage.getItem("fmine_chess_puzzles_solved") || "{}");
+  } catch { return {}; }
+}
+
+function savePuzzleProgress(progress) {
+  localStorage.setItem("fmine_chess_puzzles_solved", JSON.stringify(progress));
+}
+
+function getSolvedForLevel(level) {
+  const progress = getPuzzleProgress();
+  return progress[`level${level}`] || [];
+}
+
+function markPuzzleSolved(puzzleId, level) {
+  const progress = getPuzzleProgress();
+  const key = `level${level}`;
+  if (!progress[key]) progress[key] = [];
+  if (!progress[key].includes(puzzleId)) {
+    progress[key].push(puzzleId);
+  }
+  savePuzzleProgress(progress);
+}
+
+function updatePuzzleLevelProgress() {
+  for (let i = 1; i <= 6; i++) {
+    const solved = getSolvedForLevel(i);
+    const el = document.getElementById(`lvlProg${i}`);
+    if (el) {
+      const count = solved.length;
+      el.innerHTML = count >= 20
+        ? `<span class="done">✅ 20/20</span>`
+        : `${count}/20`;
+    }
+  }
+  // Update puzzle rating badge
+  const rating = parseInt(localStorage.getItem("fmine_chess_rating") || "1200");
+  const badge = document.getElementById("puzzleRatingBadge");
+  if (badge) badge.textContent = getTitleAndRatingStr(rating);
+}
+
+// --- PUZZLE LEVEL SELECTION ---
+window.selectPuzzleLevel = function(level) {
+  puzzleLevel = level;
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById(`lvl${i}`);
+    if (el) el.classList.toggle("active", i === level);
+  }
+};
+
+// --- START PUZZLE MODE ---
+window.startPuzzleMode = function() {
+  mode = "puzzle";
+  isPuzzleMode = true;
+  cleanupSSE();
+  clearActiveGameStorage();
+
+  // Hide setup, show arena
+  document.getElementById("setupView").style.display = "none";
+  document.getElementById("arenaView").classList.add("active");
+
+  // Hide multiplayer-specific elements
+  document.getElementById("roomCodeBadge").classList.add("hidden");
+  document.getElementById("btnGameOverRematch").classList.add("hidden");
+
+  // Hide sidebar multiplayer controls
+  const drawBtn = document.getElementById("btnOfferDraw");
+  const resignBtn = document.getElementById("btnResign");
+  if (drawBtn) drawBtn.style.display = "none";
+  if (resignBtn) resignBtn.style.display = "none";
+
+  // Hide timers
+  const pTimer = document.getElementById("playerTimer");
+  const oTimer = document.getElementById("opponentTimer");
+  if (pTimer) pTimer.classList.add("hidden");
+  if (oTimer) oTimer.classList.add("hidden");
+
+  // Show puzzle UI
+  const infoBar = document.getElementById("puzzleInfoBar");
+  if (infoBar) infoBar.classList.add("active");
+  const controls = document.getElementById("puzzleControls");
+  if (controls) controls.classList.add("active");
+
+  // Set player names
+  const rating = parseInt(localStorage.getItem("fmine_chess_rating") || "1200");
+  document.getElementById("playerName").textContent = `${userNick} ${getTitleAndRatingStr(rating)}`;
+  document.getElementById("opponentName").textContent = LANG === 'ru' ? `🧩 Задачи (Ур. ${puzzleLevel})` : `🧩 Puzzles (Lv. ${puzzleLevel})`;
+
+  // Load first unsolved puzzle
+  loadNextPuzzle();
+};
+
+function loadNextPuzzle() {
+  const puzzles = CHESS_PUZZLES[puzzleLevel];
+  if (!puzzles) return;
+
+  const solved = getSolvedForLevel(puzzleLevel);
+  const unsolved = puzzles.filter(p => !solved.includes(p.id));
+
+  if (unsolved.length === 0) {
+    // All puzzles in this level are solved!
+    showPuzzleLevelComplete();
+    return;
+  }
+
+  // Pick a random unsolved puzzle
+  currentPuzzle = unsolved[Math.floor(Math.random() * unsolved.length)];
+  puzzleMoveIndex = 0;
+  puzzleSolved = false;
+  puzzleCurrentNum = solved.length + 1;
+
+  // Load position
+  game = new Chess(currentPuzzle.fen);
+
+  // Determine player color from whose turn it is
+  playerColor = game.turn() === 'w' ? 'white' : 'black';
+  botColor = playerColor === 'white' ? 'black' : 'white';
+
+  // Update dots
+  const playerDot = document.getElementById("playerColorDot");
+  const opponentDot = document.getElementById("opponentColorDot");
+  if (playerDot) playerDot.className = `player-color-dot ${playerColor}`;
+  if (opponentDot) opponentDot.className = `player-color-dot ${botColor}`;
+
+  // Update puzzle info bar
+  const numText = document.getElementById("puzzleNumText");
+  if (numText) numText.textContent = `${t("puzzleTask")} ${puzzleCurrentNum}/20`;
+  const themeText = document.getElementById("puzzleThemeText");
+  if (themeText) themeText.textContent = currentPuzzle.theme[LANG] || currentPuzzle.theme.en;
+  const moveHint = document.getElementById("puzzleMoveHint");
+  if (moveHint) moveHint.textContent = playerColor === 'white' ? t("puzzleMoveWhite") : t("puzzleMoveBlack");
+
+  // Reset status
+  const status = document.getElementById("puzzleStatus");
+  if (status) { status.className = "puzzle-status"; status.textContent = ""; }
+
+  // Show/hide buttons
+  const nextBtn = document.getElementById("btnPuzzleNext");
+  if (nextBtn) nextBtn.style.display = "none";
+  const hintBtn = document.getElementById("btnPuzzleHint");
+  if (hintBtn) hintBtn.style.display = "";
+  const solBtn = document.getElementById("btnPuzzleSolution");
+  if (solBtn) solBtn.style.display = "";
+
+  // Render the board
+  renderBoard();
+  updateTurnIndicator();
+}
+
+// --- PUZZLE MOVE HANDLING ---
+// Called from the main handleSquareClick when in puzzle mode
+function handlePuzzleMove(from, to, promotion) {
+  if (puzzleSolved || !currentPuzzle) return false;
+
+  const expectedMove = currentPuzzle.moves[puzzleMoveIndex];
+  if (!expectedMove) return false;
+
+  const expectedFrom = expectedMove.substring(0, 2);
+  const expectedTo = expectedMove.substring(2, 4);
+  const expectedPromo = expectedMove.length > 4 ? expectedMove[4] : undefined;
+
+  if (from === expectedFrom && to === expectedTo && (!expectedPromo || promotion === expectedPromo)) {
+    // CORRECT MOVE!
+    const moveResult = game.move({ from, to, promotion: promotion || expectedPromo });
+    if (!moveResult) return false;
+
+    puzzleMoveIndex++;
+    renderBoard();
+    updateTurnIndicator();
+    playMoveSound();
+
+    // Check if puzzle is complete
+    if (puzzleMoveIndex >= currentPuzzle.moves.length) {
+      onPuzzleSolved();
+      return true;
+    }
+
+    // Auto-play opponent's response after a short delay
+    setTimeout(() => {
+      if (puzzleMoveIndex < currentPuzzle.moves.length) {
+        const oppMove = currentPuzzle.moves[puzzleMoveIndex];
+        const oppFrom = oppMove.substring(0, 2);
+        const oppTo = oppMove.substring(2, 4);
+        const oppPromo = oppMove.length > 4 ? oppMove[4] : undefined;
+
+        game.move({ from: oppFrom, to: oppTo, promotion: oppPromo });
+        puzzleMoveIndex++;
+        renderBoard();
+        updateTurnIndicator();
+        playCaptureSound();
+
+        // Check if puzzle complete after opponent move
+        if (puzzleMoveIndex >= currentPuzzle.moves.length) {
+          onPuzzleSolved();
+        }
+      }
+    }, 400);
+
+    return true;
+  } else {
+    // WRONG MOVE!
+    const status = document.getElementById("puzzleStatus");
+    if (status) {
+      status.className = "puzzle-status wrong";
+      status.textContent = t("puzzleWrong");
+    }
+    // Shake the board
+    const wrapper = document.querySelector(".chessboard-wrapper");
+    if (wrapper) {
+      wrapper.style.animation = "none";
+      wrapper.offsetHeight; // reflow
+      wrapper.style.animation = "shake 0.4s ease";
+      setTimeout(() => { wrapper.style.animation = ""; }, 500);
+    }
+
+    // Clear wrong status after 1.5s
+    setTimeout(() => {
+      if (status && !puzzleSolved) {
+        status.className = "puzzle-status";
+        status.textContent = "";
+      }
+    }, 1500);
+
+    return false;
+  }
+}
+
+function onPuzzleSolved() {
+  puzzleSolved = true;
+
+  // Show correct status
+  const status = document.getElementById("puzzleStatus");
+  if (status) {
+    status.className = "puzzle-status correct";
+    status.textContent = t("puzzleSolved");
+  }
+
+  // Mark as solved
+  markPuzzleSolved(currentPuzzle.id, puzzleLevel);
+
+  // Award ELO
+  const eloReward = PUZZLE_ELO_REWARDS[puzzleLevel] || 2;
+  let currentRating = parseInt(localStorage.getItem("fmine_chess_rating") || "1200");
+  currentRating += eloReward;
+  localStorage.setItem("fmine_chess_rating", currentRating.toString());
+
+  // Play success sound
+  playGameOverSound();
+
+  // Show puzzle complete modal
+  const title = document.getElementById("puzzleCompleteTitle");
+  const desc = document.getElementById("puzzleCompleteDesc");
+  if (title) title.textContent = t("puzzleComplete");
+  if (desc) desc.textContent = LANG === 'ru'
+    ? `Отлично! +${eloReward} ELO (Рейтинг: ${currentRating})`
+    : `Excellent! +${eloReward} ELO (Rating: ${currentRating})`;
+
+  const modal = document.getElementById("puzzleCompleteModal");
+  if (modal) modal.classList.add("active");
+
+  // Show next button, hide hint/solution
+  const nextBtn = document.getElementById("btnPuzzleNext");
+  if (nextBtn) nextBtn.style.display = "";
+  const hintBtn = document.getElementById("btnPuzzleHint");
+  if (hintBtn) hintBtn.style.display = "none";
+  const solBtn = document.getElementById("btnPuzzleSolution");
+  if (solBtn) solBtn.style.display = "none";
+
+  // Update rating displays
+  const ratingBadge = document.getElementById("userRatingBadge");
+  if (ratingBadge) ratingBadge.textContent = getTitleAndRatingStr(currentRating);
+  const puzzleBadge = document.getElementById("puzzleRatingBadge");
+  if (puzzleBadge) puzzleBadge.textContent = getTitleAndRatingStr(currentRating);
+
+  showToast(LANG === 'ru' ? `+${eloReward} ELO! Рейтинг: ${currentRating}` : `+${eloReward} ELO! Rating: ${currentRating}`);
+}
+
+function showPuzzleLevelComplete() {
+  const title = document.getElementById("puzzleCompleteTitle");
+  const desc = document.getElementById("puzzleCompleteDesc");
+  if (title) title.textContent = t("puzzleLevelDone");
+  if (desc) desc.textContent = LANG === 'ru'
+    ? `Вы решили все 20 задач уровня ${puzzleLevel}! Попробуйте следующий уровень.`
+    : `You solved all 20 puzzles of level ${puzzleLevel}! Try the next level.`;
+
+  const modal = document.getElementById("puzzleCompleteModal");
+  if (modal) modal.classList.add("active");
+}
+
+// --- PUZZLE UI ACTIONS ---
+window.puzzleNext = function() {
+  // Close modal if open
+  const modal = document.getElementById("puzzleCompleteModal");
+  if (modal) modal.classList.remove("active");
+
+  loadNextPuzzle();
+};
+
+window.puzzleExit = function() {
+  // Close modal if open
+  const modal = document.getElementById("puzzleCompleteModal");
+  if (modal) modal.classList.remove("active");
+
+  isPuzzleMode = false;
+  currentPuzzle = null;
+
+  // Hide puzzle UI
+  const infoBar = document.getElementById("puzzleInfoBar");
+  if (infoBar) infoBar.classList.remove("active");
+  const controls = document.getElementById("puzzleControls");
+  if (controls) controls.classList.remove("active");
+
+  // Restore sidebar buttons
+  const drawBtn = document.getElementById("btnOfferDraw");
+  const resignBtn = document.getElementById("btnResign");
+  if (drawBtn) drawBtn.style.display = "";
+  if (resignBtn) resignBtn.style.display = "";
+
+  // Back to setup
+  document.getElementById("arenaView").classList.remove("active");
+  document.getElementById("setupView").style.display = "";
+
+  // Update progress
+  updatePuzzleLevelProgress();
+};
+
+window.puzzleShowHint = function() {
+  if (!currentPuzzle || puzzleSolved) return;
+
+  const move = currentPuzzle.moves[puzzleMoveIndex];
+  if (!move) return;
+
+  const from = move.substring(0, 2);
+
+  // Highlight the source square
+  const squares = document.querySelectorAll(".square");
+  squares.forEach(sq => {
+    if (sq.dataset.square === from) {
+      sq.classList.add("selected");
+      setTimeout(() => sq.classList.remove("selected"), 2000);
+    }
+  });
+
+  showToast(LANG === 'ru' ? `💡 Подсказка: ходите фигурой с ${from.toUpperCase()}` : `💡 Hint: move the piece from ${from.toUpperCase()}`);
+};
+
+window.puzzleShowSolution = function() {
+  if (!currentPuzzle) return;
+
+  // Show the entire solution as a toast
+  const moves = currentPuzzle.moves.join(", ");
+  showToast(LANG === 'ru' ? `Решение: ${moves}` : `Solution: ${moves}`);
+
+  // Auto-play all remaining moves
+  if (!puzzleSolved) {
+    let delay = 0;
+    for (let i = puzzleMoveIndex; i < currentPuzzle.moves.length; i++) {
+      const move = currentPuzzle.moves[i];
+      const from = move.substring(0, 2);
+      const to = move.substring(2, 4);
+      const promo = move.length > 4 ? move[4] : undefined;
+
+      setTimeout(() => {
+        game.move({ from, to, promotion: promo });
+        puzzleMoveIndex = i + 1;
+        renderBoard();
+        updateTurnIndicator();
+        playMoveSound();
+
+        if (i === currentPuzzle.moves.length - 1) {
+          // Don't award ELO for shown solutions
+          puzzleSolved = true;
+          const status = document.getElementById("puzzleStatus");
+          if (status) {
+            status.className = "puzzle-status correct";
+            status.textContent = LANG === 'ru' ? "Показано" : "Shown";
+          }
+          // Show next button
+          const nextBtn = document.getElementById("btnPuzzleNext");
+          if (nextBtn) nextBtn.style.display = "";
+          const hintBtn = document.getElementById("btnPuzzleHint");
+          if (hintBtn) hintBtn.style.display = "none";
+          const solBtn = document.getElementById("btnPuzzleSolution");
+          if (solBtn) solBtn.style.display = "none";
+        }
+      }, delay);
+      delay += 600;
+    }
+  }
+};
+
+// Initialize puzzle progress display on page load
+document.addEventListener("DOMContentLoaded", function() {
+  setTimeout(updatePuzzleLevelProgress, 500);
+});
 function updateRatingMultiplayer(outcome) {
   if (mode !== "multiplayer") return;
   

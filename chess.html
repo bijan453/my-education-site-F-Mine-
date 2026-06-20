@@ -1202,6 +1202,140 @@
       border-color: rgba(124, 92, 246, .2);
       color: #171329;
     }
+    /* PUZZLE MODE STYLES */
+    .puzzle-info-bar {
+      display: none;
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(167, 139, 250, 0.08));
+      border: 1.5px solid rgba(52, 211, 153, 0.25);
+      border-radius: var(--r-sm);
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      animation: fadeIn .3s ease;
+    }
+    .puzzle-info-bar.active {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .puzzle-info-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .puzzle-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--emerald);
+    }
+    .puzzle-theme {
+      font-size: 11px;
+      color: var(--text3);
+    }
+    .puzzle-info-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .puzzle-status {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 6px;
+      display: none;
+    }
+    .puzzle-status.correct {
+      display: block;
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--emerald);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .puzzle-status.wrong {
+      display: block;
+      background: rgba(251, 113, 133, 0.15);
+      color: var(--rose);
+      border: 1px solid rgba(251, 113, 133, 0.3);
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .puzzle-controls {
+      display: none;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .puzzle-controls.active {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .level-card {
+      padding: 14px 10px;
+      border: 1.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      background: var(--surface);
+      cursor: pointer;
+      transition: var(--ease);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-align: center;
+    }
+    .level-card:hover {
+      border-color: var(--emerald);
+      background: var(--surface2);
+    }
+    .level-card.active {
+      border-color: var(--emerald);
+      background: rgba(52, 211, 153, 0.08);
+      box-shadow: 0 0 15px rgba(52, 211, 153, 0.15);
+    }
+    .level-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--emerald);
+    }
+    .level-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .level-elo {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+    }
+    .level-progress {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+    .level-progress .done {
+      color: var(--emerald);
+    }
+    .puzzle-complete-banner {
+      display: none;
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(0, 243, 255, 0.08));
+      border: 2px solid var(--emerald);
+      border-radius: var(--r-sm);
+      padding: 20px;
+      text-align: center;
+      animation: badgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .puzzle-complete-banner.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -1279,6 +1413,11 @@
           <span class="mode-icon">⚔️</span>
           <span class="mode-name" id="modeNameMulti">Сетевая дуэль</span>
           <span class="mode-desc" id="modeDescMulti">Игра с друзьями</span>
+        </button>
+        <button class="mode-btn" id="btnModePuzzle" onclick="selectMode('puzzle')">
+          <span class="mode-icon">🧩</span>
+          <span class="mode-name" id="modeNamePuzzle">Решать задачи</span>
+          <span class="mode-desc" id="modeDescPuzzle">Тактические задачи</span>
         </button>
       </div>
 
@@ -1377,6 +1516,60 @@
           </div>
         </div>
       </div>
+
+      <!-- PUZZLE SETUP PANEL -->
+      <div class="setup-panel" id="panelPuzzle">
+        <div class="field-group">
+          <span class="field-label" id="lblPuzzleLevel">Уровень сложности</span>
+          <div class="level-grid" id="puzzleLevelGrid">
+            <button class="level-card active" id="lvl1" onclick="selectPuzzleLevel(1)">
+              <span class="level-num">1</span>
+              <span class="level-name" id="lvlName1">Начинающий</span>
+              <span class="level-elo">500–700</span>
+              <span class="level-progress" id="lvlProg1">0/20</span>
+            </button>
+            <button class="level-card" id="lvl2" onclick="selectPuzzleLevel(2)">
+              <span class="level-num">2</span>
+              <span class="level-name" id="lvlName2">Любитель</span>
+              <span class="level-elo">700–1000</span>
+              <span class="level-progress" id="lvlProg2">0/20</span>
+            </button>
+            <button class="level-card" id="lvl3" onclick="selectPuzzleLevel(3)">
+              <span class="level-num">3</span>
+              <span class="level-name" id="lvlName3">Игрок</span>
+              <span class="level-elo">1000–1400</span>
+              <span class="level-progress" id="lvlProg3">0/20</span>
+            </button>
+            <button class="level-card" id="lvl4" onclick="selectPuzzleLevel(4)">
+              <span class="level-num">4</span>
+              <span class="level-name" id="lvlName4">Мастер</span>
+              <span class="level-elo">1400–1800</span>
+              <span class="level-progress" id="lvlProg4">0/20</span>
+            </button>
+            <button class="level-card" id="lvl5" onclick="selectPuzzleLevel(5)">
+              <span class="level-num">5</span>
+              <span class="level-name" id="lvlName5">Эксперт</span>
+              <span class="level-elo">1800–2300</span>
+              <span class="level-progress" id="lvlProg5">0/20</span>
+            </button>
+            <button class="level-card" id="lvl6" onclick="selectPuzzleLevel(6)">
+              <span class="level-num">6</span>
+              <span class="level-name" id="lvlName6">Гроссмейстер</span>
+              <span class="level-elo">2300+</span>
+              <span class="level-progress" id="lvlProg6">0/20</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-group" style="margin-top: 16px;">
+          <div style="background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 14px; font-weight: 700; color: var(--text);" id="lblPuzzleRating">Ваш рейтинг:</span>
+            <span style="font-size: 16px; font-weight: 900; color: var(--emerald); font-family: 'Outfit', sans-serif; background: rgba(52, 211, 153, 0.15); padding: 4px 10px; border-radius: 6px; box-shadow: 0 0 8px rgba(52, 211, 153, 0.3);" id="puzzleRatingBadge">[1200]</span>
+          </div>
+        </div>
+
+        <button class="btn action-btn" onclick="startPuzzleMode()" id="btnStartPuzzle" style="background: linear-gradient(135deg, var(--emerald), #059669); color: #fff; box-shadow: 0 4px 14px rgba(52, 211, 153, 0.4); margin-top: 12px;">🧩 Начать решение</button>
+      </div>
     </div>
 
     <!-- ARENA PLAY VIEW -->
@@ -1386,6 +1579,18 @@
       <div class="board-container">
         <!-- Reconnection & Game Banners Container -->
         <div id="gameNotificationContainer"></div>
+
+        <!-- Puzzle Info Bar -->
+        <div class="puzzle-info-bar" id="puzzleInfoBar">
+          <div class="puzzle-info-left">
+            <span class="puzzle-num" id="puzzleNumText">Задача 1/20</span>
+            <span class="puzzle-theme" id="puzzleThemeText">Мат в 1</span>
+          </div>
+          <div class="puzzle-info-right">
+            <span class="puzzle-status" id="puzzleStatus"></span>
+            <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text3);" id="puzzleMoveHint">Ход белых</span>
+          </div>
+        </div>
 
         <!-- Chess Opening Name Badge -->
         <div class="opening-badge" id="openingNameBadge" style="display: none; background: rgba(167, 139, 250, 0.08); border: 1px solid rgba(167, 139, 250, 0.2); border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: var(--violet); margin-bottom: 8px; text-align: center; font-family: 'Outfit', sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
@@ -1441,6 +1646,14 @@
           <button class="btn ghost" onclick="jumpToAnalysisMove(analysisMoves.length - 1)" title="В конец" style="padding: 10px 14px;">⏭</button>
           <button class="btn ghost" onclick="copyGamePgn()" id="btnCopyPgn" style="font-size: 12px; font-weight: 700;">📋 PGN</button>
           <button class="btn primary" onclick="exitAnalysisMode()" id="btnExitAnalysis" style="font-size: 12px; font-weight: 700;">↩️ Выйти</button>
+        </div>
+
+        <!-- Puzzle Controls -->
+        <div class="puzzle-controls" id="puzzleControls">
+          <button class="btn ghost" onclick="puzzleShowHint()" id="btnPuzzleHint" style="font-size: 12px;">💡 Подсказка</button>
+          <button class="btn ghost" onclick="puzzleShowSolution()" id="btnPuzzleSolution" style="font-size: 12px;">👁 Решение</button>
+          <button class="btn primary" onclick="puzzleNext()" id="btnPuzzleNext" style="font-size: 12px; display: none;">➡ Следующая</button>
+          <button class="btn rose" onclick="puzzleExit()" id="btnPuzzleExit" style="font-size: 12px;">✕ Выйти</button>
         </div>
       </div>
 
@@ -1614,6 +1827,18 @@
         <button class="btn primary" onclick="startGameAnalysis()" id="btnGameOverAnalysis">🔍 Анализ</button>
         <button class="btn cyan hidden" onclick="restartBotGame()" id="btnGameOverRematch">Сыграть ещё</button>
         <button class="btn ghost" onclick="closeGameOverAndExit()" id="btnGameOverExit">Выйти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUZZLE COMPLETE MODAL -->
+  <div class="modal-overlay" id="puzzleCompleteModal">
+    <div class="modal-card" style="border-color: rgba(52, 211, 153, .4); box-shadow: 0 0 30px rgba(52, 211, 153, .15);">
+      <h3 class="modal-title" style="color: var(--emerald);" id="puzzleCompleteTitle">🎉 Задача решена!</h3>
+      <p class="modal-desc" id="puzzleCompleteDesc">Отлично! +2 ELO</p>
+      <div class="modal-buttons">
+        <button class="btn" onclick="puzzleNext()" style="background: linear-gradient(135deg, var(--emerald), #059669); color: #fff; box-shadow: 0 4px 14px rgba(52, 211, 153, 0.4);" id="btnPuzzleCompleteNext">➡ Следующая задача</button>
+        <button class="btn ghost" onclick="puzzleExit()" id="btnPuzzleCompleteExit">Выйти</button>
       </div>
     </div>
   </div>
