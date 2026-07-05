@@ -15602,6 +15602,118 @@
     return e && e !== n ? e : null;
   }
 
+  // Custom polynomial solver using rational root theorem
+  function solvePoly(polyStr) {
+    var s = polyStr.replace(/\s+/g, '');
+    var coeffs = {};
+    var re = /([+-]?)([^+-]+)/g;
+    if (s[0] !== '-' && s[0] !== '+') s = '+' + s;
+    var m;
+    while ((m = re.exec(s)) !== null) {
+      var sign = m[1] === '-' ? -1 : 1;
+      var term = m[2];
+      var deg = 0, coeff = 1;
+      if (term.indexOf('x') >= 0) {
+        if (term.indexOf('^') >= 0) deg = parseInt(term.split('^')[1]);
+        else deg = 1;
+        var xIdx = term.indexOf('x');
+        var coeffPart = term.substring(0, xIdx);
+        if (coeffPart.indexOf('*') >= 0) coeff = parseFloat(coeffPart.replace('*', ''));
+        else if (coeffPart.length > 0) coeff = parseFloat(coeffPart) || 1;
+        else coeff = 1;
+      } else {
+        coeff = parseFloat(term);
+      }
+      coeffs[deg] = (coeffs[deg] || 0) + sign * coeff;
+    }
+    var degs = Object.keys(coeffs).map(Number);
+    var maxDeg = Math.max.apply(null, degs);
+    var minDeg = Math.min.apply(null, degs);
+    return solvePolyCoeffs(coeffs, maxDeg);
+  }
+  function solvePolyCoeffs(c, deg) {
+    if (deg <= 0) return [];
+    var roots = [];
+    // Ensure coefficient for degree exists
+    if (!c[deg]) {
+      for (var d = deg - 1; d >= 0; d--) { if (c[d]) { deg = d; break; } }
+      if (deg <= 0) return [];
+    }
+    var leading = c[deg], constTerm = c[0] || 0;
+    // Degree 1: ax + b = 0 => x = -b/a
+    if (deg === 1) {
+      if (Math.abs(leading) > 1e-12) roots.push((-constTerm) / leading);
+      return roots;
+    }
+    // Degree 2: ax^2 + bx + c = 0
+    if (deg === 2) {
+      var a = leading, b = c[1] || 0, cc = constTerm;
+      var disc = b * b - 4 * a * cc;
+      if (disc >= 0) {
+        var sd = Math.sqrt(disc);
+        roots.push((-b + sd) / (2 * a));
+        roots.push((-b - sd) / (2 * a));
+      }
+      return roots;
+    }
+    // Degree 3+: use rational root theorem
+    if (constTerm === 0) {
+      // x is a factor
+      roots.push(0);
+      // Divide by x: reduce degree by 1
+      var newC = {};
+      for (var d2 = deg; d2 >= 1; d2--) if (c[d2]) newC[d2 - 1] = c[d2];
+      var subRoots = solvePolyCoeffs(newC, deg - 1);
+      for (var ri = 0; ri < subRoots.length; ri++) {
+        if (roots.indexOf(subRoots[ri]) < 0) roots.push(subRoots[ri]);
+      }
+      return roots;
+    }
+    // Find rational roots p/q where p|constTerm, q|leading
+    var pFactors = getIntFactors(Math.abs(constTerm));
+    var qFactors = getIntFactors(Math.abs(leading));
+    var foundRoot = null;
+    for (var pi = 0; pi < pFactors.length && foundRoot === null; pi++) {
+      for (var qi = 0; qi < qFactors.length && foundRoot === null; qi++) {
+        var testRoots = [pFactors[pi] / qFactors[qi], -pFactors[pi] / qFactors[qi]];
+        for (var ti = 0; ti < testRoots.length && foundRoot === null; ti++) {
+          var r = testRoots[ti];
+          var val = 0;
+          for (var d3 = deg; d3 >= 0; d3--) {
+            val = val * r + (c[d3] || 0);
+          }
+          if (Math.abs(val) < 1e-9) foundRoot = r;
+        }
+      }
+    }
+    if (foundRoot !== null) {
+      roots.push(foundRoot);
+      // Synthetic division: divide by (x - foundRoot)
+      var newCoeffs = {};
+      var carry = 0;
+      for (var d4 = deg; d4 >= 0; d4--) {
+        carry = (carry || 0) * foundRoot + (c[d4] || 0);
+        if (d4 > 0) newCoeffs[d4 - 1] = carry;
+      }
+      // Remainder should be near 0; carry is the remainder
+      var subRoots2 = solvePolyCoeffs(newCoeffs, deg - 1);
+      for (var ri2 = 0; ri2 < subRoots2.length; ri2++) {
+        if (roots.indexOf(subRoots2[ri2]) < 0) roots.push(subRoots2[ri2]);
+      }
+    }
+    return roots;
+  }
+  function getIntFactors(n) {
+    var f = [];
+    for (var i = 1; i <= Math.sqrt(n); i++) {
+      if (n % i === 0) {
+        f.push(i);
+        if (i * i !== n) f.push(n / i);
+      }
+    }
+    return f;
+  }
+
   // ==== HELPER: Odz display ====
   function odzBlock(odz) {
     if (!odz || !odz.length) return '';
@@ -16472,18 +16584,27 @@
       // Now try to solve the polynomial
       var polyRoots = solveWithNerdamer(fullPoly + '=0') || [];
       if (!polyRoots.length) {
-        // Try factoring then solving each factor
+        // Try factoring then solving each factor (using regex, not split by '*')
         var factPoly = ndFactor(fullPoly);
         if (factPoly && factPoly !== fullPoly) {
           hGen += (E() ? 'Factored form:' : 'Разложение:') + '<br><b style="color:var(--c)">' + factPoly + ' = 0</b><br><br>';
-          var factList = factPoly.split('*');
-          for (var fi = 0; fi < factList.length; fi++) {
-            var fTrim = factList[fi].trim();
+          var factPieces = factPoly.match(/\([^)]+\)/g) || [];
+          for (var fi = 0; fi < factPieces.length; fi++) {
+            var fTrim = factPieces[fi];
             var fRoots = solveWithNerdamer(fTrim + '=0') || [];
             for (var fr = 0; fr < fRoots.length; fr++) {
               if (polyRoots.indexOf(fRoots[fr]) < 0) polyRoots.push(fRoots[fr]);
             }
           }
+        }
+      }
+      // Fallback: try custom polynomial solver (rational root theorem)
+      if (!polyRoots.length) {
+        var customRoots = solvePoly(fullPoly);
+        if (customRoots.length) {
+          hGen += (E() ? 'Using rational root theorem: ' : 'Используем теорему о рациональных корнях: ')
+            + customRoots.length + (E() ? ' roots found' : ' корней найдено') + '<br>';
+          polyRoots = customRoots;
         }
       }
 
