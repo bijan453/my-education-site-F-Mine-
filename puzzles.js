@@ -695,6 +695,7 @@ function onPuzzleSolvedSuccess() {
   sessionStats.correct++;
   sessionStats.attempts++;
   sessionStats.streak++;
+  userStreak++;
   
   // Update overall achievements
   checkAchievements();

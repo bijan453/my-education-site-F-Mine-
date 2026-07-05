@@ -1041,15 +1041,18 @@ async function fetchWikiFacts(topic) {
 // ══════════════════════════════════════════════════════
 // AI HUB (MULTI-FORMAT API ROUTER)
 // ══════════════════════════════════════════════════════
+
+// Set your Render backend URL here (or keep empty for local /api/chat-stream)
+const API_BASE_URL = 'http://localhost:3000';
+
 async function callAI(systemPrompt, userMessage, onChunk) {
   setAiStatus('busy');
 
   try {
-    const response = await fetch('/api/chat-stream', {
+    const url = (API_BASE_URL || '') + '/api/chat-stream';
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'openrouter/free',
         stream: !!onChunk,
@@ -1079,7 +1082,7 @@ async function callAI(systemPrompt, userMessage, onChunk) {
         buffer += decoder.decode(value, { stream: true });
         
         const lines = buffer.split('\n');
-        buffer = lines.pop(); // keep last incomplete chunk
+        buffer = lines.pop();
         
         for (const line of lines) {
           if (line.trim().startsWith('data: ')) {

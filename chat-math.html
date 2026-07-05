@@ -10038,15 +10038,16 @@
       
       showToast((isEN() ? "Trying model: " : "Пробую модель: ") + currentModel);
       
+      var userApiKey = settings.apiKey || '';
       var headers = {
         "Content-Type": "application/json"
       };
-      var userApiKey = settings.apiKey || '';
       if (userApiKey) {
         headers["Authorization"] = "Bearer " + userApiKey;
       }
 
-      try {
+      // Try backend proxy first, then fallback to direct OpenRouter call
+      async function _tryBackend() {
         var response = await fetch("/api/chat-stream", {
           method: "POST",
           headers: headers,
@@ -10057,20 +10058,54 @@
             stream: false
           })
         });
-        
         if (!response.ok) {
           var errData;
           try { errData = await response.json(); } catch(e) {}
           var status = response.status;
           var errMsg = (errData && errData.error && errData.error.message) || response.statusText || ("HTTP " + status);
-          throw new Error("Status " + status + ": " + errMsg);
+          throw new Error(errMsg);
         }
-        
-        var data = await response.json();
+        return await response.json();
+      }
+
+      async function _tryDirect(apiKey) {
+        var resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + apiKey,
+            "HTTP-Referer": window.location.origin,
+            "X-Title": "F-Mine Chat"
+          },
+          body: JSON.stringify({
+            model: currentModel,
+            messages: messages,
+            temperature: 0.3,
+            stream: false
+          })
+        });
+        if (!resp.ok) {
+          var errD; try { errD = await resp.json(); } catch(e) {}
+          throw new Error((errD && errD.error && errD.error.message) || "HTTP " + resp.status);
+        }
+        return await resp.json();
+      }
+
+      try {
+        var data;
+        try {
+          data = await _tryBackend();
+        } catch (backendErr) {
+          if (userApiKey) {
+            showToast((isEN() ? "Backend unavailable, trying direct API..." : "Бекенд недоступен, пробую прямой API..."));
+            data = await _tryDirect(userApiKey);
+          } else {
+            throw backendErr;
+          }
+        }
         if (!data.choices || !data.choices[0] || !data.choices[0].message) {
           throw new Error("Invalid API response structure");
         }
-        
         return {
           text: data.choices[0].message.content,
           modelUsed: currentModel
@@ -11006,26 +11041,64 @@
         var lastErr = null;
         var resultText = null;
 
+        async function _tryVisionBackend(vModel) {
+          var resp = await fetch('/api/chat-stream', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+              model: vModel,
+              messages: messages,
+              temperature: 0.2,
+              max_tokens: 2048,
+              stream: false
+            })
+          });
+          if (!resp.ok) {
+            var errD; try { errD = await resp.json(); } catch(e) {}
+            throw new Error('HTTP ' + resp.status + ': ' + ((errD && errD.error && errD.error.message) || resp.statusText));
+          }
+          return await resp.json();
+        }
+
+        async function _tryVisionDirect(vModel, apiKey) {
+          var resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + apiKey,
+              'HTTP-Referer': window.location.origin,
+              'X-Title': 'F-Mine Vision'
+            },
+            body: JSON.stringify({
+              model: vModel,
+              messages: messages,
+              temperature: 0.2,
+              max_tokens: 2048,
+              stream: false
+            })
+          });
+          if (!resp.ok) {
+            var errD; try { errD = await resp.json(); } catch(e) {}
+            throw new Error('HTTP ' + resp.status + ': ' + ((errD && errD.error && errD.error.message) || resp.statusText));
+          }
+          return await resp.json();
+        }
+
         for (var vi = 0; vi < VISION_MODELS.length; vi++) {
           var vModel = VISION_MODELS[vi];
           showToast((isEN() ? 'Trying: ' : 'Пробую: ') + vModel);
           try {
-            var resp = await fetch('/api/chat-stream', {
-              method: 'POST',
-              headers: headers,
-              body: JSON.stringify({
-                model: vModel,
-                messages: messages,
-                temperature: 0.2,
-                max_tokens: 2048,
-                stream: false
-              })
-            });
-            if (!resp.ok) {
-              var errD; try { errD = await resp.json(); } catch(e) {}
-              throw new Error('HTTP ' + resp.status + ': ' + ((errD && errD.error && errD.error.message) || resp.statusText));
+            var data;
+            try {
+              data = await _tryVisionBackend(vModel);
+            } catch (backendErr) {
+              if (userApiKey) {
+                showToast((isEN() ? 'Backend unavailable, trying direct API...' : 'Бекенд недоступен, пробую прямой API...'));
+                data = await _tryVisionDirect(vModel, userApiKey);
+              } else {
+                throw backendErr;
+              }
             }
-            var data = await resp.json();
             if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
               resultText = data.choices[0].message.content;
               break;
