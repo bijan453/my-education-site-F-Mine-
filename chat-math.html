@@ -16320,12 +16320,12 @@
       }
 
       // ──────────────────────────────────────────────
-      // General rational equation — clear denominators
+      // General rational equation — try every approach
       // ──────────────────────────────────────────────
       var hGen = '';
       var odzGen = [];
 
-      // 1. Find all denominators from original text
+      // Find all denominators
       var rawDenoms = [];
       var dmRx = /\/([^\s=]+?(?:x[^\s=]*))/gi;
       var dm;
@@ -16334,19 +16334,16 @@
         if (dPart && rawDenoms.indexOf(dPart) < 0) rawDenoms.push(dPart);
       }
 
-      // 2. Build LCD: product of unique normNerded denominators (parenthesized)
+      // Build LCD
       var lcdTerms = [];
       var seenLcd = {};
       for (var di = 0; di < rawDenoms.length; di++) {
         var dNorm = normNerd(rawDenoms[di]);
-        if (!seenLcd[dNorm]) {
-          seenLcd[dNorm] = true;
-          lcdTerms.push('(' + dNorm + ')');
-        }
+        if (!seenLcd[dNorm]) { seenLcd[dNorm] = true; lcdTerms.push('(' + dNorm + ')'); }
       }
       var lcdStr = lcdTerms.join('*');
 
-      // 3. Find ODZ
+      // Find ODZ
       for (var di3 = 0; di3 < rawDenoms.length; di3++) {
         var dNorm3 = normNerd(rawDenoms[di3]);
         try {
@@ -16366,131 +16363,83 @@
       }
 
       hGen += conceptBlock(E()
-        ? 'A <b>rational equation</b> has variables in denominators. Multiply by the LCD to clear fractions.'
-        : '<b>Рациональное уравнение</b> содержит переменные в знаменателях. Умножаем на общий знаменатель для избавления от дробей.');
-
-      // 4. Show denominators and ODZ
-      hGen += stepBlock(1, E() ? 'Find Common Denominator' : 'Находим общий знаменатель',
-        (E() ? 'Denominators found:' : 'Найденные знаменатели:') + '<br>');
+        ? 'A <b>rational equation</b> has variables in denominators.'
+        : '<b>Рациональное уравнение</b> содержит переменные в знаменателях.');
+      hGen += stepBlock(1, E() ? 'Find Domain (ODZ)' : 'Находим ОДЗ',
+        (E() ? 'Denominators:' : 'Знаменатели:') + '<br>');
       for (var di4 = 0; di4 < rawDenoms.length; di4++) {
-        hGen += '&nbsp;&nbsp;<b style="color:var(--a)">' + rawDenoms[di4] + '</b>';
-        var dNorm4 = normNerd(rawDenoms[di4]);
-        var dFact4 = ndFactor(dNorm4);
-        if (dFact4 && dFact4 !== dNorm4) hGen += ' = ' + dFact4;
-        hGen += '<br>';
+        hGen += '&nbsp;&nbsp;<b style="color:var(--a)">' + rawDenoms[di4] + '</b><br>';
       }
-      hGen += '<br>' + (E() ? 'LCD = ' : 'ООЗ = ') +
-        '<b style="color:var(--c)">' + lcdStr + '</b><br>';
       if (odzGen.length) hGen += odzBlock(odzGen);
 
-      // 5. Build the numerator polynomial manually:
-      //    Each fraction term (Ni/Di) → Ni * (LCD/Di), sum all, = 0
+      // Try approach 1: call nerdamer.solveEquations on eqExpr
       var rootsGen = [];
-      var lhsRaw = text.split('=')[0].trim();
-      var rhsRaw = text.split('=')[1] ? text.split('=')[1].trim() : '0';
+      hGen += stepBlock(2, E() ? 'Solve' : 'Решаем', '');
 
-      // Collect all unique denominator strings (normNerded, parenthesized)
-      var denSet = {};
-      lcdTerms.forEach(function(t) { denSet[t] = true; });
-      var allDens = Object.keys(denSet);
-
-      // Helper: parse fraction terms from an expression string
-      function parseFracTerms(s) {
-        var terms = [];
-        var ns = s.replace(/\s+/g, '');
-        if (ns[0] !== '+' && ns[0] !== '-') ns = '+' + ns;
-        // Try parenthesized numerator first: ±(num)/(den)
-        var ftRe1 = /([+-])\(([^)]+)\)\s*\/\s*\(([^)]+)\)/gi;
-        var fm1;
-        while ((fm1 = ftRe1.exec(ns)) !== null) {
-          terms.push({ sign: fm1[1], num: fm1[2], den: fm1[3] });
-        }
-        // Try non-parenthesized: ±num/(den)
-        var ftRe2 = /([+-])(\d+(?:\.\d+)?)\s*\/\s*\(([^)]+)\)/gi;
-        var fm2;
-        while ((fm2 = ftRe2.exec(ns)) !== null) {
-          terms.push({ sign: fm2[1], num: fm2[2], den: fm2[3] });
-        }
-        // Try variable numerator: ±var/(den)
-        var ftRe3 = /([+-])([a-z]\d*(?:\^?\d+)?)\s*\/\s*\(([^)]+)\)/gi;
-        var fm3;
-        while ((fm3 = ftRe3.exec(ns)) !== null) {
-          terms.push({ sign: fm3[1], num: fm3[2], den: fm3[3] });
-        }
-        return terms;
-      }
-
-      // Parse LHS and RHS fraction terms
-      var lhsTerms = parseFracTerms(lhsRaw);
-      var rhsTerms = parseFracTerms(rhsRaw);
-
-      // Build polynomial expression string
-      var polyParts = [];
-      function addTerm(sign, numStr, denStr) {
-        var tNum = numStr.indexOf('(') === 0 ? '(' + normNerd(numStr.slice(1, -1)) + ')' : '(' + normNerd(numStr) + ')';
-        var tDen = '(' + normNerd(denStr) + ')';
-        var otherDens = allDens.filter(function(d) { return d !== tDen; });
-        var otherStr = otherDens.length ? otherDens.join('*') : '1';
-        polyParts.push(sign + tNum + '*' + otherStr);
-      }
-
-      lhsTerms.forEach(function(t) { addTerm(t.sign, t.num, t.den); });
-      rhsTerms.forEach(function(t) {
-        // Flip sign when moving to LHS
-        addTerm(t.sign === '+' ? '-' : '+', t.num, t.den);
-      });
-
-      var polyExpr = polyParts.join(' ');
-
-      hGen += stepBlock(2, E() ? 'Clear Denominators' : 'Избавляемся от знаменателей',
-        (E() ? 'Multiply each term by the LCD:' : 'Умножаем каждый член на ООЗ:') + '<br><br>'
-        + '<span style="font-size:13px">' + polyExpr + ' = 0</span><br><br>');
-
-      // 6. Use nerdamer to expand the polynomial
-      var expandedPoly = null;
       try {
-        expandedPoly = nerdamer('expand(' + polyExpr + ')').toString();
+        var directSols = ndSolve(eqExpr);
+        if (directSols && directSols.length) {
+          var dirNums = [];
+          for (var ds = 0; ds < directSols.length; ds++) {
+            var dv = parseFloat(nerdamer(directSols[ds]).evaluate().text());
+            if (isFinite(dv)) dirNums.push(dv);
+          }
+          if (dirNums.length) {
+            rootsGen = dirNums;
+            hGen += (E() ? 'nerdamer found solutions:' : 'nerdamer нашёл решения:') + '<br>';
+            for (var dsi = 0; dsi < dirNums.length; dsi++) {
+              hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(dirNums[dsi]) + '</b><br>';
+            }
+          }
+        }
       } catch (e) {}
 
-      if (expandedPoly && expandedPoly.indexOf('/') < 0) {
-        hGen += (E() ? 'Expanded polynomial:' : 'Раскрытый многочлен:') +
-          '<br><b style="color:var(--v);font-size:14px">' + expandedPoly + ' = 0</b><br><br>';
-        // 7. Solve the polynomial
-        var polyRoots = solveWithNerdamer(expandedPoly + '=0') || [];
-        if (polyRoots.length) {
-          rootsGen = polyRoots;
-          hGen += (E() ? 'Solving the polynomial gives:' : 'Решаем многочлен:') + '<br>';
-          for (var ri = 0; ri < polyRoots.length; ri++) {
-            hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(polyRoots[ri]) + '</b><br>';
-          }
-        } else {
-          hGen += (E() ? 'Could not find exact roots for the polynomial.<br>'
-            : 'Не удалось найти точные корни многочлена.<br>');
-        }
-      } else {
-        // Fallback: try ndSolve directly on eqExpr
-        hGen += '<span style="color:var(--text3)">' + (E() ? 'Could not expand the polynomial. Trying direct solve...'
-          : 'Не удалось раскрыть многочлен. Пробуем прямой решатель...') + '</span><br><br>';
+      if (!rootsGen.length) {
+        // Approach 2: try clearing denominators via nerdamer.simplify on eqExpr * LCD
         try {
-          var dirSols = ndSolve(eqExpr);
-          if (dirSols && dirSols.length) {
-            var dirNums = [];
-            for (var ds = 0; ds < dirSols.length; ds++) {
-              var dv = parseFloat(nerdamer(dirSols[ds]).evaluate().text());
-              if (isFinite(dv)) dirNums.push(dv);
-            }
-            if (dirNums.length) {
-              rootsGen = dirNums;
-              hGen += (E() ? 'Direct solve gives:' : 'Прямое решение даёт:') + '<br>';
-              for (var dsi = 0; dsi < dirNums.length; dsi++) {
-                hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(dirNums[dsi]) + '</b><br>';
+          var multStr = '((' + eqExpr + ')*(' + lcdStr + '))';
+          var multResult = nerdamer(multStr).toString();
+          if (multResult && multResult.indexOf('/') < 0) {
+            hGen += (E() ? 'LCD approach gave polynomial:' : 'Метод ООЗ дал многочлен:') +
+              '<br><b style="color:var(--v);font-size:14px">' + multResult + ' = 0</b><br><br>';
+            var polyRoots = solveWithNerdamer(multResult + '=0') || [];
+            if (polyRoots.length) {
+              rootsGen = polyRoots;
+              hGen += (E() ? 'Solving the polynomial:' : 'Решаем многочлен:') + '<br>';
+              for (var ri = 0; ri < polyRoots.length; ri++) {
+                hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(polyRoots[ri]) + '</b><br>';
+              }
+            } else {
+              // Try factoring the polynomial
+              var factoredPoly = ndFactor(multResult);
+              if (factoredPoly && factoredPoly !== multResult) {
+                hGen += (E() ? 'Factored form:' : 'Разложение на множители:') +
+                  '<br><b style="color:var(--c)">' + factoredPoly + ' = 0</b><br><br>';
+                var factorTerms = factoredPoly.split('*');
+                var allFactRoots = [];
+                for (var ft = 0; ft < factorTerms.length; ft++) {
+                  var ftClean = factorTerms[ft].trim();
+                  var ftRoots = solveWithNerdamer(ftClean + '=0') || [];
+                  for (var fr = 0; fr < ftRoots.length; fr++) {
+                    if (allFactRoots.indexOf(ftRoots[fr]) < 0) allFactRoots.push(ftRoots[fr]);
+                  }
+                }
+                if (allFactRoots.length) {
+                  rootsGen = allFactRoots;
+                  hGen += (E() ? 'Solving each factor:' : 'Решаем каждый множитель:') + '<br>';
+                  for (var ri2 = 0; ri2 < allFactRoots.length; ri2++) {
+                    hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(allFactRoots[ri2]) + '</b><br>';
+                  }
+                }
               }
             }
           }
         } catch (e) {}
-        if (!rootsGen.length) {
-          hGen += (E() ? 'Could not find exact roots.' : 'Не удалось найти точные корни.') + '<br>';
-        }
+      }
+
+      if (!rootsGen.length) {
+        // All approaches failed — fall through to original solver
+        return _prevTryMega(text);
       }
 
       hGen += answerBlock(rootsGen, odzGen);
