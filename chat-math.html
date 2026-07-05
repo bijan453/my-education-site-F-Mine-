@@ -16319,130 +16319,121 @@
         return h;
       }
 
-      // General rational equation with one denominator on RHS
-      // Try nerdamer direct solve
+      // ──────────────────────────────────────────────
+      // General rational equation — multiply by LCD
+      // ──────────────────────────────────────────────
       var hGen = '';
       var odzGen = [];
 
-      // Find ODZ from all denominators
-      var denomRe2 = /\/\(([^)]*x[^)]*)\)/gi;
-      var dm2;
-      while ((dm2 = denomRe2.exec(text)) !== null) {
-        var ds = dm2[1];
-        var dsNorm = normNerd(ds);
+      // 1. Find all denominator expressions from original text
+      var rawDenoms = [];
+      var dmRx = /\/([^\s=]+?(?:x[^\s=]*))/gi;
+      var dm;
+      while ((dm = dmRx.exec(text)) !== null) {
+        var dPart = dm[1].replace(/[()]/g, '').trim();
+        if (dPart && rawDenoms.indexOf(dPart) < 0) rawDenoms.push(dPart);
+      }
+
+      // 2. Build LCD: unique denominators normNerded, each parenthesized, multiplied
+      var lcdTerms = [];
+      var seenLcd = {};
+      for (var di = 0; di < rawDenoms.length; di++) {
+        var dNorm = normNerd(rawDenoms[di]);
+        if (!seenLcd[dNorm]) {
+          seenLcd[dNorm] = true;
+          lcdTerms.push('(' + dNorm + ')');
+        }
+      }
+      var lcdStr = lcdTerms.join('*');
+
+      // 3. Find ODZ: solve each denominator = 0
+      for (var di3 = 0; di3 < rawDenoms.length; di3++) {
+        var dNorm3 = normNerd(rawDenoms[di3]);
         try {
-          var dsSol = ndSolve(dsNorm);
-          if (dsSol && dsSol.length) {
-            for (var si = 0; si < dsSol.length; si++) {
-              var dv = parseFloat(nerdamer(dsSol[si]).evaluate().text());
-              if (isFinite(dv) && odzGen.indexOf(dv) < 0) odzGen.push(dv);
+          // Try to factor first then solve each factor
+          var dFact3 = ndFactor(dNorm3);
+          var dExprs = dFact3 && dFact3 !== dNorm3 ? dFact3.split('*') : [dNorm3];
+          for (var f3 = 0; f3 < dExprs.length; f3++) {
+            var f3s = dExprs[f3].trim();
+            var f3Sol = ndSolve(f3s);
+            if (f3Sol && f3Sol.length) {
+              for (var s3 = 0; s3 < f3Sol.length; s3++) {
+                var dv3 = parseFloat(nerdamer(f3Sol[s3]).evaluate().text());
+                if (isFinite(dv3) && odzGen.indexOf(dv3) < 0) odzGen.push(dv3);
+              }
             }
           }
         } catch (e) {}
       }
-      // Also find linear denominators like /(x-4) etc
-      var ldRe = /\/\(?\s*x\s*([+-])\s*(\d+\.?\d*)\s*\)?/gi;
-      var ldMatch;
-      while ((ldMatch = ldRe.exec(text)) !== null) {
-        var ldv = parseFloat(ldMatch[2]);
-        if (ldMatch[1] === '+') ldv = -ldv;
-        if (odzGen.indexOf(ldv) < 0) odzGen.push(ldv);
-      }
 
       hGen += conceptBlock(E()
-        ? 'A <b>rational equation</b> has variables in denominators. First we find the domain (ODZ), then multiply by the common denominator to clear fractions.'
-        : '<b>Рациональное уравнение</b> содержит переменные в знаменателях. Сначала находим область допустимых значений (ОДЗ), затем умножаем на общий знаменатель.');
+        ? 'A <b>rational equation</b> has variables in denominators. Multiply by the LCD to clear fractions.'
+        : '<b>Рациональное уравнение</b> содержит переменные в знаменателях. Умножаем на общий знаменатель для избавления от дробей.');
 
+      // 4. Show denominators and LCD
+      hGen += stepBlock(1, E() ? 'Find Common Denominator' : 'Находим общий знаменатель',
+        (E() ? 'Denominators found:' : 'Найденные знаменатели:') + '<br>');
+      for (var di4 = 0; di4 < rawDenoms.length; di4++) {
+        hGen += '&nbsp;&nbsp;<b style="color:var(--a)">' + rawDenoms[di4] + '</b>';
+        var dNorm4 = normNerd(rawDenoms[di4]);
+        var dFact4 = ndFactor(dNorm4);
+        if (dFact4 && dFact4 !== dNorm4) hGen += ' = ' + dFact4;
+        hGen += '<br>';
+      }
+      hGen += '<br>' + (E() ? 'LCD = ' : 'ООЗ = ') +
+        '<b style="color:var(--c)">' + lcdStr + '</b><br>';
       if (odzGen.length) hGen += odzBlock(odzGen);
 
-      // Try to solve: simplify rational → extract numerator → solve polynomial
+      // 5. Multiply equation by LCD and expand
       var rootsGen = [];
-      var combinedFrac = ndSimplify(eqExpr);
-      var expandedEq = ndExpand(eqExpr);
+      var multipliedStr = 'expand((' + eqExpr + ')*(' + lcdStr + '))';
+      var multipliedResult = null;
+      try {
+        multipliedResult = nerdamer(multipliedStr).toString();
+      } catch (e) {}
 
-      hGen += stepBlock(1, E() ? 'Solve Algebraically' : 'Решаем алгебраически',
-        (E() ? 'Using algebraic manipulation to clear denominators:' : 'Используем алгебраические преобразования:') + '<br><br>');
-
-      if (combinedFrac) {
-        hGen += (E() ? 'Combined into single fraction:' : 'Объединяем в одну дробь:') + '<br><b style="color:var(--v)">' + combinedFrac + ' = 0</b><br><br>';
-      }
-      if (expandedEq && expandedEq !== combinedFrac) {
-        hGen += (E() ? 'Expanded numerator:' : 'Раскрытый числитель:') + '<br><b style="color:var(--c)">' + expandedEq + ' = 0</b><br><br>';
-      }
-
-      // Try to solve numerator = 0
-      var numPoly = null;
-      if (combinedFrac && combinedFrac.indexOf('/') >= 0) {
-        // Extract numerator from the combined fraction: "N/D" → N
-        var fracParts = combinedFrac.split('/');
-        numPoly = fracParts[0].trim();
-        // Handle parentheses around numerator (possibly nested)
-        while (numPoly.indexOf('(') === 0 && numPoly.lastIndexOf(')') === numPoly.length - 1) {
-          numPoly = numPoly.slice(1, -1).trim();
-        }
-        hGen += (E() ? 'Set numerator = 0:' : 'Приравниваем числитель к нулю:') + '<br><b style="color:var(--a);font-size:14px">' + numPoly + ' = 0</b><br><br>';
-      } else if (expandedEq) {
-        numPoly = expandedEq;
-      } else {
-        numPoly = eqExpr;
-      }
-
-      if (numPoly) {
-        var polyRoots = solveWithNerdamer(numPoly + '=0') || [];
+      hGen += stepBlock(2, E() ? 'Clear Denominators' : 'Избавляемся от знаменателей',
+        (E() ? 'Multiply by the LCD:' : 'Умножаем на общий знаменатель:') + '<br><br>');
+      if (multipliedResult && multipliedResult.indexOf('/') < 0) {
+        hGen += (E() ? 'Polynomial equation:' : 'Полиномиальное уравнение:') +
+          '<br><b style="color:var(--v);font-size:14px">' + multipliedResult + ' = 0</b><br><br>';
+        // 6. Solve the polynomial using nerdamer
+        var polyRoots = solveWithNerdamer(multipliedResult + '=0') || [];
         if (polyRoots.length) {
           rootsGen = polyRoots;
           hGen += (E() ? 'Solving the polynomial gives:' : 'Решаем многочлен:') + '<br>';
           for (var ri = 0; ri < polyRoots.length; ri++) {
             hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(polyRoots[ri]) + '</b><br>';
           }
-          hGen += '<br>';
         } else {
-          // Try to solve as quadratic
-          var qMatch = (numPoly).match(/^([+-]?\d*\.?\d*)\*?x\^2\s*([+-]\s*\d*\.?\d*)\*?x\s*([+-]\s*\d*\.?\d*)$/i);
-          if (!qMatch) qMatch = (numPoly).match(/^([+-]?\d*\.?\d*)x\^2\s*([+-]\s*\d*\.?\d*)x\s*([+-]\s*\d*\.?\d*)$/i);
-          if (!qMatch) {
-            // Try without spaces
-            var cleanNum = numPoly.replace(/\s/g, '');
-            qMatch = cleanNum.match(/^([+-]?\d*\.?\d*)\*?x\^2([+-]\d*\.?\d*)\*?x([+-]\d*\.?\d*)$/i);
-            if (!qMatch) qMatch = cleanNum.match(/^([+-]?\d*\.?\d*)x\^2([+-]\d*\.?\d*)x([+-]\d*\.?\d*)$/i);
+          hGen += (E() ? 'Could not find exact roots for the polynomial.<br>'
+            : 'Не удалось найти точные корни многочлена.<br>');
+        }
+      } else {
+        // Fallback: try combined fraction approach
+        hGen += '<span style="color:var(--text3)">' + (E() ? 'Could not fully clear denominators with LCD. Trying combined fraction...'
+          : 'Не удалось полностью избавиться от знаменателей через ООЗ. Пробуем объединение дробей...') + '</span><br><br>';
+        var combinedFrac2 = ndSimplify(eqExpr);
+        if (combinedFrac2 && combinedFrac2.indexOf('/') >= 0) {
+          var numPoly2 = combinedFrac2.split('/')[0].trim();
+          while (numPoly2.indexOf('(') === 0 && numPoly2.lastIndexOf(')') === numPoly2.length - 1) {
+            numPoly2 = numPoly2.slice(1, -1).trim();
           }
-          if (qMatch) {
-            var qa = parseFloat(qMatch[1].replace(/\s/g, '') || '1');
-            var qb = parseFloat(qMatch[2].replace(/\s/g, '') || '0');
-            var qc = parseFloat(qMatch[3].replace(/\s/g, '') || '0');
-            if (qMatch[1] === '' || qMatch[1] === '+') qa = 1;
-            if (qMatch[1] === '-') qa = -1;
-            if (qa !== 0) {
-              var D = qb * qb - 4 * qa * qc;
-              hGen += (E() ? 'Quadratic equation detected:' : 'Обнаружено квадратное уравнение:') + '<br>';
-              hGen += pN(qa) + 'x² + ' + pN(qb) + 'x + ' + pN(qc) + ' = 0<br>';
-              hGen += 'D = ' + pN(qb) + '² − 4·' + pN(qa) + '·' + pN(qc) + ' = ' + pN(D) + '<br>';
-              if (D >= 0) {
-                var sqrtD = Math.sqrt(D);
-                var x1 = (-qb + sqrtD) / (2 * qa);
-                var x2 = (-qb - sqrtD) / (2 * qa);
-                hGen += 'x₁ = ' + pN(x1) + ', x₂ = ' + pN(x2) + '<br>';
-                rootsGen = [x1, x2];
-              } else {
-                hGen += '<span style="color:var(--r)">' + (E() ? 'No real roots (D<0)' : 'Нет действительных корней (D<0)') + '</span><br>';
-              }
+          hGen += (E() ? 'Combined fraction: ' : 'Объединенная дробь: ') + combinedFrac2 + ' = 0<br>';
+          hGen += (E() ? 'Set numerator = 0: ' : 'Числитель = 0: ') +
+            '<b style="color:var(--a)">' + numPoly2 + ' = 0</b><br><br>';
+          var pr2 = solveWithNerdamer(numPoly2 + '=0') || [];
+          if (pr2.length) {
+            rootsGen = pr2;
+            hGen += (E() ? 'Solving the numerator:' : 'Решаем числитель:') + '<br>';
+            for (var ri2 = 0; ri2 < pr2.length; ri2++) {
+              hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(pr2[ri2]) + '</b><br>';
             }
           } else {
-            // Try linear
-            var lMatch = (numPoly).match(/^([+-]?\d*\.?\d*)\*?x\s*([+-]\s*\d*\.?\d*)$/i);
-            if (!lMatch) lMatch = (numPoly).match(/^([+-]?\d*\.?\d*)x\s*([+-]\s*\d*\.?\d*)$/i);
-            if (lMatch) {
-              var la = parseFloat(lMatch[1].replace(/\s/g, '') || '1');
-              if (lMatch[1] === '' || lMatch[1] === '+') la = 1;
-              if (lMatch[1] === '-') la = -1;
-              var lb = parseFloat(lMatch[2].replace(/\s/g, '') || '0');
-              var lRoot = -lb / la;
-              hGen += (E() ? 'Linear equation:' : 'Линейное уравнение:') + ' ' + pN(la) + 'x + ' + pN(lb) + ' = 0 → x = <b style="color:var(--g)">' + pN(lRoot) + '</b><br>';
-              rootsGen = [lRoot];
-            } else {
-              hGen += '<br><span style="color:var(--text3)">' + (E() ? 'Could not find exact roots.' : 'Не удалось найти точные корни.') + '</span>';
-            }
+            hGen += (E() ? 'Could not find exact roots.' : 'Не удалось найти точные корни.') + '<br>';
           }
+        } else {
+          hGen += (E() ? 'Could not find exact roots.' : 'Не удалось найти точные корни.') + '<br>';
         }
       }
 
