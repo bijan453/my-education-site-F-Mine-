@@ -16460,18 +16460,19 @@
         var dNorm3 = normNerd(rawDenoms[di3]);
         try {
           var dFact3 = ndFactor(dNorm3);
-          var dExprs = dFact3 && dFact3 !== dNorm3 ? dFact3.split('*') : [dNorm3];
+          var dExprs = (dFact3 && dFact3 !== dNorm3) ? (dFact3.match(/\([^)]+\)/g) || []) : [dNorm3];
+          if (!dExprs.length) dExprs = [dNorm3];
           for (var f3 = 0; f3 < dExprs.length; f3++) {
-            var f3s = dExprs[f3].trim();
-            var f3Sol = ndSolve(f3s);
-            if (f3Sol && f3Sol.length) {
-              for (var s3 = 0; s3 < f3Sol.length; s3++) {
-                var dv3 = parseFloat(nerdamer(f3Sol[s3]).evaluate().text());
-                if (isFinite(dv3) && odzGen.indexOf(dv3) < 0) odzGen.push(dv3);
-              }
-            }
+            var f3s = dExprs[f3];
+            solveWithNerdamer(f3s + '=0').forEach(function(rt) {
+              if (odzGen.indexOf(rt) < 0) odzGen.push(rt);
+            });
           }
-        } catch (e) {}
+        } catch (e) {
+          solveWithNerdamer(dNorm3 + '=0').forEach(function(rt) {
+            if (odzGen.indexOf(rt) < 0) odzGen.push(rt);
+          });
+        }
       }
 
       hGen += conceptBlock(E()
