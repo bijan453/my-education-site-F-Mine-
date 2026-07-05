@@ -15534,6 +15534,917 @@
   })();
   </script>
 
+<!-- ═══════════════════════════════════════════════════════════
+     15 TYPES ADVANCED EQUATION SOLVER
+     Fractional-rational, biquadratic, modular, etc.
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  var E = function () { return typeof isEN === 'function' && isEN(); };
+  function tx(k) { return typeof t === 'function' ? t(k) : k; }
+  function pN(n) {
+    if (typeof n !== 'number' || !isFinite(n)) return String(n);
+    return (Math.abs(n - Math.round(n)) < 1e-9) ? String(Math.round(n)) : n.toFixed(6).replace(/\.?0+$/, '');
+  }
+  function fmt(n) { return pN(n); }
+
+  // Normalize math input for nerdamer
+  function normNerd(s) {
+    return s
+      .replace(/[−–—]/g, '-').replace(/²/g, '^2').replace(/³/g, '^3').replace(/⁴/g, '^4')
+      .replace(/ₓ/g, 'x').replace(/∗/g, '*').replace(/·/g, '*').replace(/×/g, '*')
+      .replace(/\s+/g, '')
+      .replace(/(\d)([a-zA-Z])/g, '$1*$2')
+      .replace(/([a-zA-Z])\(/g, '$1*(')
+      .replace(/\)\(/g, ')*(')
+      .replace(/\)(\d)/g, ')*$1')
+      .replace(/\)([a-zA-Z])/g, ')*$1');
+  }
+
+  // Safe nerdamer calls
+  function ndExpand(s) { try { return nerdamer('expand(' + s + ')').toString(); } catch (e) { return null; } }
+  function ndFactor(s) { try { return nerdamer('factor(' + s + ')').toString(); } catch (e) { return null; } }
+  function ndSimplify(s) { try { return nerdamer(s).toString(); } catch (e) { return null; } }
+  function ndEval(s, vars) { try { return nerdamer(s).evaluate(vars || {}).toString(); } catch (e) { return null; } }
+  function ndSolve(expr) { try { return nerdamer.solveEquations(expr, 'x'); } catch (e) { return null; } }
+
+  // Solve equation string using nerdamer, return numeric roots array
+  function solveWithNerdamer(eq) {
+    var norm = normNerd(eq);
+    if (norm.indexOf('=') < 0) return [];
+    var sides = norm.split('=');
+    var expr = sides[0] + '-(' + sides[1] + ')';
+    var sols = ndSolve(expr);
+    if (!sols || !sols.length) return [];
+    var roots = [];
+    for (var i = 0; i < sols.length; i++) {
+      try {
+        var sv = parseFloat(nerdamer(sols[i]).evaluate().text());
+        if (!isNaN(sv) && isFinite(sv)) roots.push(sv);
+      } catch (e) {}
+    }
+    return roots;
+  }
+
+  // Try to factor a polynomial expression string; return factored form or null
+  function tryFactor(s) {
+    var n = normNerd(s);
+    var f = ndFactor(n);
+    return f && f !== n ? f : null;
+  }
+
+  // Try to expand an expression
+  function tryExpand(s) {
+    var n = normNerd(s);
+    var e = ndExpand(n);
+    return e && e !== n ? e : null;
+  }
+
+  // ==== HELPER: Odz display ====
+  function odzBlock(odz) {
+    if (!odz || !odz.length) return '';
+    var h = '<div class="mega-section"><div class="mega-section-title">🚫 ' + (E() ? 'Domain (ODZ)' : 'ОДЗ (Область допустимых значений)') + '</div>';
+    h += '<div class="mega-section-body">' + (E() ? 'Values to exclude:' : 'Значения, которые нужно исключить:') + '<br>';
+    for (var i = 0; i < odz.length; i++) {
+      h += '&nbsp;&nbsp;x ≠ <b style="color:var(--r)">' + pN(odz[i]) + '</b><br>';
+    }
+    h += (E() ? 'These make denominators zero, so division by zero is undefined.' : 'При этих x знаменатели обращаются в ноль, деление на ноль не определено.');
+    h += '</div></div>';
+    return h;
+  }
+
+  // ==== HELPER: Factor & cancel for rational expressions ====
+  function factorCancelBlock(numerStr, denomStr) {
+    var h = '';
+    var nFact = tryFactor(numerStr);
+    var dFact = tryFactor(denomStr);
+    h += '<div style="margin:6px 0"><span style="color:var(--text3);font-size:13px">' + numerStr + ' / ' + denomStr + '</span><br>';
+    if (nFact) h += '→ <b style="color:var(--c)">' + nFact + '</b> / ';
+    else h += '→ ' + numerStr + ' / ';
+    if (dFact) h += '<b style="color:var(--c)">' + dFact + '</b><br>';
+    else h += denomStr + '<br>';
+    // Check if cancellation possible
+    if (nFact && dFact) {
+      // Try simplifying the fraction
+      var frac = '((' + nFact + ')/(' + dFact + '))';
+      var simp = ndSimplify(frac);
+      if (simp && simp.indexOf('/') < 0) {
+        h += '→ <b style="color:var(--g);font-size:14px">' + simp + '</b> (сократили)<br>';
+      }
+    }
+    h += '</div>';
+    return h;
+  }
+
+  // ==== HELPER: Step section ====
+  function stepBlock(num, title, body) {
+    return '<div class="mega-section"><div class="mega-section-title">📐 ' + (E() ? 'Step ' : 'Шаг ') + num + ': ' + title + '</div><div class="mega-section-body">' + body + '</div></div>';
+  }
+
+  // ==== HELPER: Concept block ====
+  function conceptBlock(text) {
+    return '<div class="t-concept"><div class="t-concept-lbl">📚 ' + (E() ? 'What is this?' : 'Что это?') + '</div><div class="t-concept-text">' + text + '</div></div>';
+  }
+
+  // ==== HELPER: Formula box wrapper ====
+  function formulaBlock(label, formula, vars, why) {
+    return tfBox ? tfBox(label, formula, vars, why) : '<div><b>' + label + '</b>: ' + formula + '</div>';
+  }
+
+  // ==== HELPER: Answer block ====
+  function answerBlock(roots, odz) {
+    var h = '<br><div class="result-banner">✅ ' + tx('answer') + ': ';
+    if (!roots || !roots.length) {
+      h += (E() ? 'No solutions' : 'Нет решений');
+    } else {
+      // Filter out any violating ODZ
+      var valid = roots;
+      if (odz && odz.length) {
+        valid = [];
+        for (var i = 0; i < roots.length; i++) {
+          var bad = false;
+          for (var j = 0; j < odz.length; j++) {
+            if (Math.abs(roots[i] - odz[j]) < 1e-9) { bad = true; break; }
+          }
+          if (!bad) valid.push(roots[i]);
+        }
+      }
+      if (valid.length !== roots.length && odz && odz.length) {
+        h += '<br><span style="color:var(--r);font-size:13px">⚠️ ' + (E() ? 'Extraneous roots removed: ' : 'Посторонние корни удалены: ')
+          + roots.filter(function(r) { return valid.indexOf(r) < 0; }).map(pN).join(', ') + '</span><br>';
+      }
+      h += valid.map(function(r) { return 'x = <b>' + pN(r) + '</b>'; }).join(';  ');
+    }
+    h += '</div>';
+    return h;
+  }
+
+  // ==== HELPER: Expand & simplify block ====
+  function expandSimplifyBlock(expr) {
+    var h = '';
+    var expanded = tryExpand(expr);
+    var simplified = ndSimplify(normNerd(expr));
+    if (expanded) {
+      h += (E() ? 'Expanded form: ' : 'Раскрываем скобки: ') + '<b style="color:var(--v)">' + expanded + '</b><br>';
+    }
+    if (simplified && simplified !== expr && simplified !== expanded) {
+      h += (E() ? 'Simplified: ' : 'Упрощаем: ') + '<b style="color:var(--g)">' + simplified + '</b><br>';
+    }
+    return h;
+  }
+
+  // ═══════════════════════════════════════════
+  // TYPE DISPATCHER
+  // ═══════════════════════════════════════════
+
+  var _prevTryMega = tryMegaSolve;
+
+  tryMegaSolve = function (text) {
+    var lo = text.toLowerCase().replace(/\s+/g, ' ').trim();
+    var e = E();
+
+    // ── Quick domain check: must have '=' to be an equation ──
+    if (lo.indexOf('=') < 0) return _prevTryMega(text);
+
+    // ── Build normalized nerdamer-friendly equation ──
+    var norm = normNerd(text);
+    var sides = norm.split('=');
+    if (sides.length !== 2) return _prevTryMega(text);
+    var lhs = sides[0], rhs = sides[1];
+    var eqExpr = lhs + '-(' + rhs + ')'; // expr = 0 form
+
+    // ── Check if nerdamer can solve directly as a polynomial ──
+    // Count max power of x
+    var maxPow = 0;
+    var powMatch;
+    var powRe = /x(?:\^(\d+))?/gi;
+    while ((powMatch = powRe.exec(lo)) !== null) {
+      var p = powMatch[1] ? parseInt(powMatch[1]) : 1;
+      if (p > maxPow) maxPow = p;
+    }
+
+    // Check for absolute values
+    var hasAbs = lo.indexOf('|') >= 0 || lo.indexOf('abs') >= 0;
+
+    // Check for rational (x in denominator)
+    var hasRational = /\/(?:\(?[^)]*x[^)]*\)?)/i.test(lo);
+
+    // ════════════════════════════════════════
+    // TYPE 14: Difference of squares of quadratics
+    // 9(x²-4)² - 25(x²-1)² = 0
+    // ════════════════════════════════════════
+    if (!hasAbs && maxPow === 4 && !hasRational) {
+      // Check pattern: A*(something)^2 - B*(something)^2 or A(x^n ± b)^2 ± ...
+      var m14 = text.match(/(\d+)\s*\(\s*x\s*\^\s*2\s*([+-]\s*\d+)\s*\)\s*\^\s*2\s*([+-])\s*(\d+)\s*\(\s*x\s*\^\s*2\s*([+-]\s*\d+)\s*\)\s*\^\s*2\s*=\s*0/i);
+      if (m14) {
+        var A14 = parseFloat(m14[1]), sign14 = m14[3], B14 = parseFloat(m14[4]);
+        var c1 = parseFloat(m14[2].replace(/\s/g, '')), c2 = parseFloat(m14[5].replace(/\s/g, ''));
+        var h = '';
+        h += conceptBlock(E()
+          ? 'We have a <b>difference of squares</b>: A² − B² = (A−B)(A+B). Here ' + A14 + '(x²' + (c1 >= 0 ? '+' : '') + c1 + ')² − ' + B14 + '(x²' + (c2 >= 0 ? '+' : '') + c2 + ')² = 0.'
+          : 'Перед нами <b>разность квадратов</b>: A² − B² = (A−B)(A+B). Здесь ' + A14 + '(x²' + (c1 >= 0 ? '+' : '') + c1 + ')² − ' + B14 + '(x²' + (c2 >= 0 ? '+' : '') + c2 + ')² = 0.');
+        h += formulaBlock(E() ? '📐 Formula: Difference of Squares' : '📐 Формула: Разность квадратов',
+          'A² − B² = (A−B)(A+B)',
+          [['A', E() ? 'first term = ' + Math.sqrt(A14) + '(x²' + (c1 >= 0 ? '+' : '') + c1 + ')' : 'первое выражение = ' + Math.sqrt(A14) + '(x²' + (c1 >= 0 ? '+' : '') + c1 + ')'],
+           ['B', E() ? 'second term = ' + Math.sqrt(B14) + '(x²' + (c2 >= 0 ? '+' : '') + c2 + ')' : 'второе выражение = ' + Math.sqrt(B14) + '(x²' + (c2 >= 0 ? '+' : '') + c2 + ')']],
+          E() ? 'Factor each bracket and solve separately.' : 'Раскладываем каждую скобку и решаем отдельно.');
+        var sqrtA = Math.sqrt(A14), sqrtB = Math.sqrt(B14);
+        // A = sqrtA*(x² + c1), B = sqrtB*(x² + c2)
+        // (A-B)(A+B) = 0
+        // sqrtA*x² + sqrtA*c1 - sqrtB*x² - sqrtB*c2 = 0 → (sqrtA - sqrtB)x² + (sqrtA*c1 - sqrtB*c2) = 0
+        // sqrtA*x² + sqrtA*c1 + sqrtB*x² + sqrtB*c2 = 0 → (sqrtA + sqrtB)x² + (sqrtA*c1 + sqrtB*c2) = 0
+        var a1 = sqrtA - sqrtB, b1 = sqrtA * c1 - sqrtB * c2;
+        var a2 = sqrtA + sqrtB, b2 = sqrtA * c1 + sqrtB * c2;
+        var roots14 = [];
+        var stepHtml = '';
+        var signOp = sign14 === '+' ? '−' : '+';
+        stepHtml += (E() ? 'Rewrite as difference of squares:' : 'Перепишем как разность квадратов:') + '<br>';
+        stepHtml += '<b style="color:var(--v);font-size:14px">(' + sqrtA + '(x²' + (c1 >= 0 ? '+' : '') + c1 + ') − ' + sqrtB + '(x²' + (c2 >= 0 ? '+' : '') + c2 + ')) · (' + sqrtA + '(x²' + (c1 >= 0 ? '+' : '') + c1 + ') + ' + sqrtB + '(x²' + (c2 >= 0 ? '+' : '') + c2 + ')) = 0</b><br><br>';
+        stepHtml += (E() ? 'Now solve each factor = 0 separately:' : 'Теперь решаем каждый множитель = 0 отдельно:') + '<br><br>';
+        // Factor 1
+        stepHtml += '<b style="color:var(--c)">' + (E() ? 'Case 1:' : 'Случай 1:') + '</b> ' + sqrtA + '(x²' + (c1 >= 0 ? '+' : '') + c1 + ') − ' + sqrtB + '(x²' + (c2 >= 0 ? '+' : '') + c2 + ') = 0<br>';
+        stepHtml += '→ (' + sqrtA + ' − ' + sqrtB + ')x² + (' + sqrtA + '·' + c1 + ' − ' + sqrtB + '·' + c2 + ') = 0<br>';
+        stepHtml += '→ ' + a1 + 'x² + ' + b1 + ' = 0<br>';
+        if (Math.abs(a1) < 1e-9) {
+          stepHtml += (E() ? 'No x² term — no solution from this case.' : 'Нет члена x² — нет решений в этом случае.') + '<br>';
+        } else {
+          var x2_1 = -b1 / a1;
+          stepHtml += '→ x² = ' + pN(x2_1) + '<br>';
+          if (x2_1 < 0) {
+            stepHtml += (E() ? '→ No real solutions (x² cannot be negative).' : '→ Нет действительных решений (x² не может быть отрицательным).') + '<br>';
+          } else {
+            var r1 = Math.sqrt(x2_1);
+            stepHtml += '→ x = <b style="color:var(--g)">±' + pN(r1) + '</b><br>';
+            roots14.push(r1, -r1);
+          }
+        }
+        stepHtml += '<br>';
+        // Factor 2
+        stepHtml += '<b style="color:var(--c)">' + (E() ? 'Case 2:' : 'Случай 2:') + '</b> ' + sqrtA + '(x²' + (c1 >= 0 ? '+' : '') + c1 + ') + ' + sqrtB + '(x²' + (c2 >= 0 ? '+' : '') + c2 + ') = 0<br>';
+        stepHtml += '→ (' + sqrtA + ' + ' + sqrtB + ')x² + (' + sqrtA + '·' + c1 + ' + ' + sqrtB + '·' + c2 + ') = 0<br>';
+        stepHtml += '→ ' + a2 + 'x² + ' + b2 + ' = 0<br>';
+        if (Math.abs(a2) < 1e-9) {
+          stepHtml += (E() ? 'No x² term — no solution from this case.' : 'Нет члена x² — нет решений в этом случае.') + '<br>';
+        } else {
+          var x2_2 = -b2 / a2;
+          stepHtml += '→ x² = ' + pN(x2_2) + '<br>';
+          if (x2_2 < 0) {
+            stepHtml += (E() ? '→ No real solutions (x² cannot be negative).' : '→ Нет действительных решений (x² не может быть отрицательным).') + '<br>';
+          } else {
+            var r2 = Math.sqrt(x2_2);
+            stepHtml += '→ x = <b style="color:var(--g)">±' + pN(r2) + '</b><br>';
+            roots14.push(r2, -r2);
+          }
+        }
+        h += stepBlock(1, E() ? 'Apply Difference of Squares' : 'Применяем разность квадратов', stepHtml);
+        h += answerBlock(roots14);
+        h += megaMistakes(E()
+          ? ['Forgetting the ± when taking square root', 'Not checking x² < 0 → no real roots']
+          : ['Забыть про ± при извлечении корня', 'Не проверить x² < 0 → нет корней']);
+        h += megaPractice(E()
+          ? ['9(x^2 - 4)^2 - 25(x^2 - 1)^2 = 0', '4(x^2 - 9)^2 - 9(x^2 - 4)^2 = 0', '16(x^2 - 1)^2 - 25(x^2 - 4)^2 = 0']
+          : ['9(x^2 - 4)^2 - 25(x^2 - 1)^2 = 0', '4(x^2 - 9)^2 - 9(x^2 - 4)^2 = 0', '16(x^2 - 1)^2 - 25(x^2 - 4)^2 = 0']);
+        return h;
+      }
+
+      // ════════════════════════════════════════
+      // TYPE 7: Standard biquadratic  ax⁴ + bx² + c = 0
+      // ════════════════════════════════════════
+      // Look for pattern: a*x^4 + b*x^2 + c = 0 (no x^1, x^3 terms)
+      var m7 = eqExpr.match(/^\s*([+-]?\d*\.?\d*)\*?x\^4\s*([+-]\s*\d*\.?\d*)\*?x\^2\s*([+-]\s*\d*\.?\d*)\s*$/i);
+      if (!m7) {
+        // Try expanded form like 4x^4 - 53x^2 + 49 = 0
+        m7 = norm.match(/^\s*([+-]?\d*\.?\d*)\s*\*?\s*x\s*\^\s*4\s*([+-]\s*\d*\.?\d*)\s*\*?\s*x\s*\^\s*2\s*([+-]\s*\d*\.?\d*)\s*=\s*0\s*$/i);
+      }
+      if (!m7) {
+        // Check if expanded/factored form has only x^4, x^2, constant
+        var expandedEq = ndExpand(eqExpr);
+        if (expandedEq) {
+          // Check terms: just x^4, x^2, constant, no x or x^3
+          var terms = expandedEq.match(/([+-]?\d*\.?\d*)\*?x(?:\^(\d+))?/gi);
+          var hasX1 = false, hasX3 = false;
+          if (terms) {
+            for (var ti = 0; ti < terms.length; ti++) {
+              var tp = terms[ti].match(/x\^?(\d+)?/i);
+              var deg = tp ? (tp[1] ? parseInt(tp[1]) : 1) : 0;
+              if (deg === 1) hasX1 = true;
+              if (deg === 3) hasX3 = true;
+            }
+          }
+          if (!hasX1 && !hasX3) {
+            // Biquadratic candidate — extract coefficients
+            var polyStr = expandedEq.replace(/\s/g, '');
+            var coeff4 = 0, coeff2 = 0, coeff0 = 0;
+            var t4 = polyStr.match(/([+-]?\d*\.?\d*)\*?x\^4/i);
+            if (t4) coeff4 = parseFloat(t4[1].replace(/^\+/, '') || '1');
+            else { var t4a = polyStr.match(/x\^4/); if (t4a) coeff4 = 1; }
+            var t2 = polyStr.match(/([+-]?\d*\.?\d*)\*?x\^2/i);
+            if (t2 && !t2[0].match(/x\^4/)) coeff2 = parseFloat(t2[1].replace(/^\+/, '') || '1');
+            else { var t2a = polyStr.match(/(?<!\^)[+-]?\d*\.?\d*\*?x\^2(?!\*?x)/i); if (t2a) coeff2 = parseFloat(t2a[0].replace(/x\^2/, '').replace(/[+\*]/g, '') || '1'); }
+            var t0 = polyStr.match(/([+-]?\d+\.?\d*)$/);
+            if (t0) coeff0 = parseFloat(t0[1]);
+            if (coeff4 !== 0) {
+              m7 = [null, String(coeff4), String(coeff2 >= 0 ? '+' + coeff2 : coeff2), String(coeff0 >= 0 ? '+' + coeff0 : coeff0)];
+            }
+          }
+        }
+      }
+
+      if (m7) {
+        var a7 = parseFloat(m7[1].replace(/\s/g, '') || '1');
+        var b7 = parseFloat(m7[2].replace(/\s/g, '') || '0');
+        var c7 = parseFloat(m7[3].replace(/\s/g, '') || '0');
+        // Handle leading sign: if eqExpr starts with '-', negate all
+        if (a7 === 0) return _prevTryMega(text);
+        var h = '';
+        h += conceptBlock(E()
+          ? 'A <b>biquadratic equation</b> has the form <b>ax⁴ + bx² + c = 0</b>. It is quadratic in <b>x²</b> — we solve by substituting <b>t = x²</b>.'
+          : '<b>Биквадратное уравнение</b> имеет вид <b>ax⁴ + bx² + c = 0</b>. Оно квадратное относительно <b>x²</b> — решаем подстановкой <b>t = x²</b>.');
+        h += formulaBlock(E() ? '📐 Substitution Method' : '📐 Метод подстановки',
+          't = x² → a·t² + b·t + c = 0',
+          [['t', E() ? 'substitution for x²' : 'подстановка для x²'],
+           ['a', '' + a7], ['b', '' + b7], ['c', '' + c7]],
+          E() ? 'Solve for t, then x = ±√t.' : 'Находим t, затем x = ±√t.');
+        h += stepBlock(1, E() ? 'Substitute t = x²' : 'Подставляем t = x²',
+          (E() ? 'Let <b>t = x²</b>. Then the equation becomes:' : 'Пусть <b>t = x²</b>. Тогда уравнение принимает вид:') + '<br><br>'
+          + '<b style="color:var(--v);font-size:15px">' + a7 + 't² + ' + b7 + 't + ' + c7 + ' = 0</b>');
+        // Solve quadratic
+        var D7 = b7 * b7 - 4 * a7 * c7;
+        h += stepBlock(2, E() ? 'Solve the Quadratic in t' : 'Решаем квадратное относительно t',
+          'D = ' + b7 + '² − 4·' + a7 + '·' + c7 + ' = ' + D7 + '<br>'
+          + (D7 < 0 ? (E() ? 'No real solutions for t → no real x.' : 'Нет решений для t → нет действительных x.')
+            : (E() ? 't₁₂ = (' + (-b7) + ' ± √' + D7 + ') / ' + (2 * a7) + '<br>' : 't₁₂ = (' + (-b7) + ' ± √' + D7 + ') / ' + (2 * a7) + '<br>')));
+        var roots7 = [];
+        if (D7 >= 0) {
+          var sqrtD7 = Math.sqrt(D7);
+          var t1 = (-b7 + sqrtD7) / (2 * a7);
+          var t2 = (-b7 - sqrtD7) / (2 * a7);
+          h += 't₁ = ' + pN(t1) + ', t₂ = ' + pN(t2) + '<br><br>';
+          h += stepBlock(3, E() ? 'Back-substitute x = ±√t' : 'Обратная подстановка x = ±√t',
+            (E() ? 'For each t ≥ 0, we get x = ±√t:' : 'Для каждого t ≥ 0 получаем x = ±√t:') + '<br><br>');
+          [t1, t2].forEach(function (tVal, idx) {
+            var lbl = idx === 0 ? '₁' : '₂';
+            h += '<b>' + (E() ? 'From t' : 'От t') + lbl + ' = ' + pN(tVal) + ':</b><br>';
+            if (tVal < 0) {
+              h += '&nbsp;&nbsp;' + (E() ? 't < 0 → no real x (x² cannot be negative).' : 't < 0 → нет действительных x (x² не может быть отрицательным).') + '<br><br>';
+            } else if (Math.abs(tVal) < 1e-9) {
+              h += '&nbsp;&nbsp;x = <b style="color:var(--g)">0</b><br><br>';
+              roots7.push(0);
+            } else {
+              var xVal = Math.sqrt(tVal);
+              h += '&nbsp;&nbsp;x = <b style="color:var(--g)">±' + pN(xVal) + '</b><br><br>';
+              roots7.push(xVal, -xVal);
+            }
+          });
+        }
+        h += answerBlock(roots7);
+        h += megaMistakes(E()
+          ? ['Forgetting to back-substitute t → x = ±√t', 'Not checking if t ≥ 0 before taking square root']
+          : ['Забыть про обратную подстановку t → x = ±√t', 'Не проверить t ≥ 0 перед извлечением корня']);
+        h += megaPractice(E()
+          ? ['4x^4 - 53x^2 + 49 = 0', 'x^4 - 10x^2 + 9 = 0', '9x^4 - 37x^2 + 4 = 0']
+          : ['4x^4 - 53x^2 + 49 = 0', 'x^4 - 10x^2 + 9 = 0', '9x^4 - 37x^2 + 4 = 0']);
+        return h;
+      }
+
+      // ════════════════════════════════════════
+      // TYPE 6: Hidden biquadratic (perfect square)
+      // x⁴ - 26x² + 169 = 24  →  (x²-13)² = 24
+      // ════════════════════════════════════════
+      // Check if RHS is a number (not 0) and LHS is x⁴ + bx² + c
+      var rhsNum = parseFloat(rhs);
+      if (!isNaN(rhsNum) && Math.abs(rhsNum) > 1e-9 && maxPow === 4 && !hasRational) {
+        // Try to detect (x² - k)² pattern on LHS
+        var lhsPoly = lhs.replace(/\s/g, '');
+        // Pattern: x^4 - 2k*x^2 + k^2  or x^4 + 2k*x^2 + k^2
+        var m6 = lhsPoly.match(/^x\^4([+-]\d*\.?\d*)x\^2([+-]\d+\.?\d*)$/i);
+        if (m6) {
+          var b6 = parseFloat(m6[1].replace(/\s/g, ''));
+          var c6 = parseFloat(m6[2].replace(/\s/g, ''));
+          // Is c6 a perfect square? sqrt(c6) ^2
+          var k6 = Math.sqrt(Math.abs(c6));
+          if (Math.abs(k6 * k6 - Math.abs(c6)) < 1e-9 && c6 > 0) {
+            var signB = b6 >= 0 ? '+' : '';
+            // b6 should be ±2*k6
+            if (Math.abs(Math.abs(b6) - 2 * k6) < 1e-3) {
+              // Found pattern: (x² - k6)² or (x² + k6)²
+              var signK = b6 < 0 ? '' : '+';
+              var h = '';
+              h += conceptBlock(E()
+                ? 'Notice that <b>x⁴ − ' + (2*k6) + 'x² + ' + c6 + '</b> is a <b>perfect square</b>: <b>(x² − ' + k6 + ')²</b>. This transforms into a simple square equation!'
+                : 'Заметим, что <b>x⁴ − ' + (2*k6) + 'x² + ' + c6 + '</b> — это <b>полный квадрат</b>: <b>(x² − ' + k6 + ')²</b>. Получаем простое уравнение с квадратом!');
+              h += formulaBlock(E() ? '📐 Perfect Square' : '📐 Полный квадрат',
+                '(x² − ' + k6 + ')² = ' + rhsNum,
+                [['x² − ' + k6, E() ? 'the expression being squared' : 'выражение в квадрате'],
+                 ['' + rhsNum, E() ? 'the right side' : 'правая часть']],
+                E() ? 'Take square root of both sides. Remember the ±!' : 'Извлекаем квадратный корень из обеих частей. Не забываем про ±!');
+              h += stepBlock(1, E() ? 'Rewrite as Perfect Square' : 'Переписываем как полный квадрат',
+                'x⁴ − ' + (2*k6) + 'x² + ' + c6 + ' = ' + rhsNum + '<br>'
+                + '→ <b style="color:var(--c);font-size:15px">(x² − ' + k6 + ')² = ' + rhsNum + '</b>');
+              h += stepBlock(2, E() ? 'Take Square Root' : 'Извлекаем корень',
+                'x² − ' + k6 + ' = ±√' + rhsNum + '<br>'
+                + 'x² − ' + k6 + ' = ±' + pN(Math.sqrt(rhsNum)) + '<br><br>'
+                + (E() ? 'Two cases:' : 'Два случая:') + '<br>'
+                + '<b style="color:var(--c)">' + (E() ? 'Case 1:' : 'Случай 1:') + '</b> x² − ' + k6 + ' = ' + pN(Math.sqrt(rhsNum)) + '<br>'
+                + '→ x² = ' + pN(k6 + Math.sqrt(rhsNum)) + '<br>'
+                + '<b style="color:var(--c)">' + (E() ? 'Case 2:' : 'Случай 2:') + '</b> x² − ' + k6 + ' = −' + pN(Math.sqrt(rhsNum)) + '<br>'
+                + '→ x² = ' + pN(k6 - Math.sqrt(rhsNum)));
+              var roots6 = [];
+              [k6 + Math.sqrt(rhsNum), k6 - Math.sqrt(rhsNum)].forEach(function (x2) {
+                if (x2 < 0) {
+                  h += (E() ? '→ No real roots (x² < 0)' : '→ Нет корней (x² < 0)') + '<br>';
+                } else if (Math.abs(x2) < 1e-9) {
+                  roots6.push(0);
+                } else {
+                  roots6.push(Math.sqrt(x2), -Math.sqrt(x2));
+                }
+              });
+              h += answerBlock(roots6);
+              h += megaPractice(E()
+                ? ['x^4 - 26x^2 + 169 = 24', 'x^4 - 10x^2 + 25 = 16', 'x^4 + 6x^2 + 9 = 25']
+                : ['x^4 - 26x^2 + 169 = 24', 'x^4 - 10x^2 + 25 = 16', 'x^4 + 6x^2 + 9 = 25']);
+              return h;
+            }
+          }
+        }
+      }
+    }
+
+    // ════════════════════════════════════════
+    // TYPE 15: Shifted biquadratic (x - k)^4 + b(x - k)² + c = 0
+    // ════════════════════════════════════════
+    var m15 = text.match(/\(x\s*([+-])\s*(\d+\.?\d*)\)\s*\^\s*4\s*([+-])\s*(\d+\.?\d*)\s*\(\s*x\s*([+-])\s*(\d+\.?\d*)\s*\)\s*\^\s*2\s*([+-])\s*(\d+\.?\d*)\s*=\s*0/i);
+    if (m15) {
+      var shift15 = parseFloat((m15[1] === '+' ? '' : '-') + m15[2]);
+      var coefB15 = parseFloat((m15[3] === '+' ? '' : '-') + m15[4]);
+      var shiftB = parseFloat((m15[5] === '+' ? '' : '-') + m15[6]);
+      var coefC = parseFloat((m15[7] === '+' ? '' : '-') + m15[8]);
+      // Should be: (x + shift15)^4 + coefB15(x + shiftB)^2 + coefC = 0
+      // Check if shift15 ≈ shiftB (same shift)
+      if (Math.abs(shift15 - shiftB) < 1e-6) {
+        var k = shift15;
+        var h = '';
+        h += conceptBlock(E()
+          ? 'The equation has the form <b>(x − k)⁴ + b·(x − k)² + c = 0</b> — it is biquadratic with a shifted variable. Substitute <b>t = (x − k)²</b>.'
+          : 'Уравнение имеет вид <b>(x − k)⁴ + b·(x − k)² + c = 0</b> — биквадратное со смещённой переменной. Подставим <b>t = (x − k)²</b>.');
+        h += stepBlock(1, E() ? 'Substitute t = (x − k)²' : 'Подставляем t = (x − k)²',
+          'Let <b>t = (x ' + (k >= 0 ? '− ' : '+ ') + Math.abs(k) + ')²</b>.<br>'
+          + (E() ? 'Then the equation becomes:' : 'Тогда уравнение принимает вид:') + '<br><br>'
+          + '<b style="color:var(--v);font-size:15px">t² ' + (coefB15 >= 0 ? '+ ' : '− ') + Math.abs(coefB15) + '·t ' + (coefC >= 0 ? '+ ' : '− ') + Math.abs(coefC) + ' = 0</b>');
+        // Solve quadratic in t
+        var a15 = 1, b15 = coefB15, c15 = coefC;
+        var D15 = b15 * b15 - 4 * a15 * c15;
+        h += stepBlock(2, E() ? 'Solve Quadratic in t' : 'Решаем квадратное для t',
+          't² ' + (b15 >= 0 ? '+ ' : '− ') + Math.abs(b15) + 't ' + (c15 >= 0 ? '+ ' : '− ') + Math.abs(c15) + ' = 0<br>'
+          + 'D = ' + b15 + '² − 4·' + a15 + '·' + c15 + ' = ' + D15 + '<br>');
+        var roots15 = [];
+        if (D15 >= 0) {
+          var sqrtD15 = Math.sqrt(D15);
+          var t1_15 = (-b15 + sqrtD15) / (2 * a15);
+          var t2_15 = (-b15 - sqrtD15) / (2 * a15);
+          h += 't₁ = ' + pN(t1_15) + ', t₂ = ' + pN(t2_15) + '<br><br>';
+          h += stepBlock(3, E() ? 'Back-substitute' : 'Обратная подстановка',
+            (E() ? '(x ' : '(x ') + (k >= 0 ? '− ' : '+ ') + Math.abs(k) + ')² = t<br>'
+            + '→ x ' + (k >= 0 ? '− ' : '+ ') + Math.abs(k) + ' = ±√t<br>'
+            + '→ x = ' + fmt(k) + ' ± √t<br><br>');
+          [t1_15, t2_15].forEach(function (tVal) {
+            if (tVal < 0) {
+              h += 't = ' + pN(tVal) + ' → ' + (E() ? 'No real x (t < 0).' : 'Нет действительных x (t < 0).') + '<br>';
+            } else if (Math.abs(tVal) < 1e-9) {
+              h += 't = 0 → x = <b style="color:var(--g)">' + pN(k) + '</b><br>';
+              roots15.push(k);
+            } else {
+              var xv = Math.sqrt(tVal);
+              h += 't = ' + pN(tVal) + ' → x = <b style="color:var(--g)">' + pN(k + xv) + '</b> или <b style="color:var(--g)">' + pN(k - xv) + '</b><br>';
+              roots15.push(k + xv, k - xv);
+            }
+          });
+        }
+        h += answerBlock(roots15);
+        h += megaPractice(E()
+          ? ['(x - 2.5)^4 - 13(x - 2.5)^2 + 36 = 0', '(x + 1)^4 - 10(x + 1)^2 + 9 = 0']
+          : ['(x - 2.5)^4 - 13(x - 2.5)^2 + 36 = 0', '(x + 1)^4 - 10(x + 1)^2 + 9 = 0']);
+        return h;
+      }
+    }
+
+    // ════════════════════════════════════════
+    // TYPES 8 & 9: Modular (absolute value) equations
+    // ════════════════════════════════════════
+    if (hasAbs) {
+      // Simple pattern: |ax+b| ± |cx+d| ± ... = k
+      // Extract absolute value expressions
+      var absBlocks = [];
+      var absRe = /\|([^|]+)\|/g;
+      var absMatch;
+      while ((absMatch = absRe.exec(text)) !== null) {
+        absBlocks.push(absMatch[1].trim());
+      }
+
+      // Parse each linear block: ax + b
+      function parseLinear(s) {
+        s = s.replace(/\s/g, '');
+        if (s[0] !== '-' && s[0] !== '+') s = '+' + s;
+        var a = 0, b = 0;
+        var terms = s.match(/[+-][^+-]*/g) || [];
+        for (var i = 0; i < terms.length; i++) {
+          var t = terms[i];
+          if (/x/i.test(t)) {
+            var co = t.replace(/x/gi, '').replace(/^\+/, '');
+            a += co === '' ? 1 : co === '-' ? -1 : parseFloat(co);
+          } else {
+            b += parseFloat(t) || 0;
+          }
+        }
+        return { a: a, b: b };
+      }
+
+      if (absBlocks.length >= 2) {
+        var linears = [];
+        for (var i = 0; i < absBlocks.length; i++) {
+          var p = parseLinear(absBlocks[i]);
+          if (p.a !== 0 || p.b !== 0) linears.push(p);
+        }
+        // Find critical points
+        var critPoints = [];
+        for (var i = 0; i < linears.length; i++) {
+          var cp = -linears[i].b / linears[i].a;
+          var dup = false;
+          for (var j = 0; j < critPoints.length; j++) {
+            if (Math.abs(critPoints[j] - cp) < 1e-9) dup = true;
+          }
+          if (!dup) critPoints.push(cp);
+        }
+        critPoints.sort(function (a, b) { return a - b; });
+
+        // Build the full expression (move all to left)
+        // We'll solve using interval splitting
+        var h = '';
+        h += conceptBlock(E()
+          ? 'An equation with absolute values requires <b>interval splitting</b>. Each |ax+b| changes sign at x = −b/a. We divide the number line into intervals and solve each case separately.'
+          : 'Уравнение с модулями решается <b>методом интервалов</b>. Каждый |ax+b| меняет знак в точке x = −b/a. Делим числовую прямую на интервалы и решаем каждый случай отдельно.');
+        h += formulaBlock(E() ? '📐 Definition of |x|' : '📐 Определение модуля',
+          '|u| = u if u ≥ 0, |u| = −u if u < 0',
+          [['u', E() ? 'any expression' : 'любое выражение']],
+          E() ? 'We apply this rule to each absolute value on each interval.' : 'Применяем это правило к каждому модулю на каждом интервале.');
+
+        // Display critical points
+        h += stepBlock(1, E() ? 'Find Critical Points' : 'Находим критические точки',
+          (E() ? 'Each |ax+b| = 0 when x = −b/a:' : 'Каждый |ax+b| = 0 при x = −b/a:') + '<br>');
+        for (var i = 0; i < linears.length; i++) {
+          var cp_i = -linears[i].b / linears[i].a;
+          h += '&nbsp;&nbsp;|' + pN(linears[i].a) + 'x' + (linears[i].b >= 0 ? '+' : '') + pN(linears[i].b) + '| → x = ' + pN(cp_i) + '<br>';
+        }
+        h += '<br>' + (E() ? 'Critical points (sorted):' : 'Критические точки (по порядку):') + ' <b style="color:var(--a)">' + critPoints.map(pN).join(', ') + '</b><br>';
+        h += (E() ? 'These divide the number line into ' + (critPoints.length + 1) + ' intervals.' : 'Они делят числовую прямую на ' + (critPoints.length + 1) + ' интервалов.') + '<br><br>';
+
+        // Solve on each interval
+        var allRoots = [];
+        var intervals = [];
+        // Build intervals: (-∞, cp0], [cp0, cp1], ..., [cpN-1, cpN], [cpN, ∞)
+        intervals.push({ start: -Infinity, end: critPoints[0] });
+        for (var i = 0; i < critPoints.length - 1; i++) {
+          intervals.push({ start: critPoints[i], end: critPoints[i + 1] });
+        }
+        intervals.push({ start: critPoints[critPoints.length - 1], end: Infinity });
+        // Also include each critical point as a separate interval (single point)
+        var fullIntervals = [];
+        for (var i = 0; i < intervals.length; i++) {
+          fullIntervals.push(intervals[i]);
+        }
+
+        h += stepBlock(2, E() ? 'Solve on Each Interval' : 'Решаем на каждом интервале',
+          (E() ? 'On each interval, the sign of each (ax+b) is known, so we can replace |ax+b| with either (ax+b) or −(ax+b).' : 'На каждом интервале знак каждого (ax+b) известен, поэтому заменяем |ax+b| на (ax+b) или −(ax+b).') + '<br><br>');
+
+        // Helper to check sign of linear expression at a test point
+        function signOf(lin, x) {
+          var val = lin.a * x + lin.b;
+          return val >= 0 ? 1 : -1;
+        }
+
+        var intervalResults = [];
+
+        function getTestPoint(interval) {
+          if (isFinite(interval.start) && isFinite(interval.end)) {
+            return (interval.start + interval.end) / 2;
+          } else if (!isFinite(interval.start)) {
+            return interval.end - 1;
+          } else {
+            return interval.start + 1;
+          }
+        }
+
+        for (var ii = 0; ii < fullIntervals.length; ii++) {
+          var intv = fullIntervals[ii];
+          var testX = getTestPoint(intv);
+          // Build the equation on this interval
+          // The original text with |...| replaced by signed expressions
+          var intervalEq = text;
+          for (var li = 0; li < linears.length; li++) {
+            var sign = signOf(linears[li], testX);
+            var absStr = '|' + pN(linears[li].a) + 'x' + (linears[li].b >= 0 ? '+' : '') + pN(linears[li].b) + '|';
+            var replacement = sign >= 0
+              ? (pN(linears[li].a) + '*x' + (linears[li].b >= 0 ? '+' : '') + pN(linears[li].b))
+              : '-(' + pN(linears[li].a) + '*x' + (linears[li].b >= 0 ? '+' : '') + pN(linears[li].b) + ')';
+            intervalEq = intervalEq.replace(absStr, replacement);
+          }
+
+          // Solve this interval's equation
+          var nInt = normNerd(intervalEq);
+          if (nInt.indexOf('=') >= 0) {
+            var intSides = nInt.split('=');
+            var intExpr = intSides[0] + '-(' + intSides[1] + ')';
+            var intSols = ndSolve(intExpr);
+            if (intSols && intSols.length) {
+              for (var si = 0; si < intSols.length; si++) {
+                try {
+                  var rootVal = parseFloat(nerdamer(intSols[si]).evaluate().text());
+                  if (!isNaN(rootVal) && isFinite(rootVal)) {
+                    // Check if root is within this interval
+                    var inRange = true;
+                    if (isFinite(intv.start) && rootVal < intv.start - 1e-9) inRange = false;
+                    if (isFinite(intv.end) && rootVal > intv.end + 1e-9) inRange = false;
+                    if (inRange) {
+                      var dup = false;
+                      for (var di = 0; di < allRoots.length; di++) {
+                        if (Math.abs(allRoots[di] - rootVal) < 1e-9) dup = true;
+                      }
+                      if (!dup) {
+                        var intervalDesc = '';
+                        if (!isFinite(intv.start)) intervalDesc = '(−∞, ' + pN(intv.end) + ']';
+                        else if (!isFinite(intv.end)) intervalDesc = '[' + pN(intv.start) + ', ∞)';
+                        else intervalDesc = '[' + pN(intv.start) + ', ' + pN(intv.end) + ']';
+                        intervalResults.push({ interval: intervalDesc, root: rootVal });
+                        allRoots.push(rootVal);
+                      }
+                    }
+                  }
+                } catch (e) {}
+              }
+            }
+          }
+        }
+
+        if (intervalResults.length) {
+          for (var ir = 0; ir < intervalResults.length; ir++) {
+            h += '&nbsp;&nbsp;' + (E() ? 'Interval ' : 'Интервал ') + intervalResults[ir].interval + ': x = <b style="color:var(--g)">' + pN(intervalResults[ir].root) + '</b><br>';
+          }
+        } else {
+          h += '&nbsp;&nbsp;<span style="color:var(--r)">' + (E() ? 'No solutions found' : 'Решений не найдено') + '</span><br>';
+        }
+
+        h += answerBlock(allRoots);
+        h += megaMistakes(E()
+          ? ['Forgetting to check if the root lies in the current interval', 'Missing a critical point']
+          : ['Забыть проверить, что корень лежит в текущем интервале', 'Пропустить критическую точку']);
+        h += megaPractice(E()
+          ? ['|3x - 7| + |2x + 9| = |5x + 2| + 11', '|2x - 11| - |x + 7| = |x - 4|', '|x - 3| + |x + 2| = 5']
+          : ['|3x - 7| + |2x + 9| = |5x + 2| + 11', '|2x - 11| - |x + 7| = |x - 4|', '|x - 3| + |x + 2| = 5']);
+        return h;
+      }
+    }
+
+    // ════════════════════════════════════════
+    // TYPES 1,2,5,10,12,13: Rational equations
+    // ════════════════════════════════════════
+    if (hasRational) {
+      // Detect Type 10 pattern: (x²-8x+15)/(x-5) - (x²-9)/(x+3) + (x²-4x-21)/(x-7) = 5
+      // → factor and cancel each numerator with denominator
+      var hasCancelPattern = false;
+      // Check if each numerator factors to include its denominator
+      var fracTerms = [];
+      // Split equation at + and - keeping track of parens
+      var eqDisp = text;
+      var sidesEq = eqDisp.split('=');
+      var lhsStr = sidesEq[0], rhsStr = sidesEq[1] || '0';
+
+      // Check if this is the Type 10 pattern: all numerators factor and cancel
+      var t10Match = text.match(/\(x\^2[^)]+\)\/\(x[^)]+\)\s*[-+]\s*\(x\^2[^)]+\)\/\(x[^)]+\)\s*[-+]\s*\(x\^2[^)]+\)\/\(x[^)]+\)/i);
+      if (!t10Match) {
+        // Broader: check for rational with quadratics in numerator and linears in denominator
+        t10Match = text.match(/x\^2.*\/.*x[-+]/i);
+      }
+
+      if (t10Match) {
+        // Try using nerdamer to simplify the whole rational expression
+        var fullExpr = '(' + lhsStr + ')-(' + rhsStr + ')';
+        var nFull = normNerd(fullExpr);
+        var simpFull = ndSimplify(nFull);
+        var expandedFull = ndExpand(nFull);
+        var factoredFull = ndFactor(nFull);
+
+        var h = '';
+        h += conceptBlock(E()
+          ? 'This is a <b>rational equation</b> where the numerators can be factored and cancelled with denominators. Instead of a common denominator, we simplify each fraction individually — this avoids a high-degree equation.'
+          : 'Это <b>рациональное уравнение</b>, где числители раскладываются на множители и сокращаются со знаменателями. Вместо общего знаменателя упрощаем каждую дробь отдельно — это позволяет избежать уравнения высокой степени.');
+
+        // Find ODZ
+        var odzVals = [];
+        var denomRe = /\(([^)]*x[^)]*)\)/g;
+        var denomMatch;
+        while ((denomMatch = denomRe.exec(text)) !== null) {
+          var dStr = denomMatch[1];
+          // Try to solve denom = 0
+          var dNorm = normNerd(dStr);
+          var dSolve = ndSolve(dNorm);
+          if (dSolve && dSolve.length) {
+            for (var si = 0; si < dSolve.length; si++) {
+              try {
+                var dv = parseFloat(nerdamer(dSolve[si]).evaluate().text());
+                if (isFinite(dv)) {
+                  var dup = false;
+                  for (var di = 0; di < odzVals.length; di++) {
+                    if (Math.abs(odzVals[di] - dv) < 1e-9) dup = true;
+                  }
+                  if (!dup) odzVals.push(dv);
+                }
+              } catch (e) {}
+            }
+          } else {
+            // Simple linear denominator: x - k
+            var ld = dStr.match(/x\s*([+-])\s*(\d+\.?\d*)/i);
+            if (ld) {
+              var dv2 = parseFloat(ld[2]);
+              if (ld[1] === '+') dv2 = -dv2;
+              var dup = false;
+              for (var di = 0; di < odzVals.length; di++) {
+                if (Math.abs(odzVals[di] - dv2) < 1e-9) dup = true;
+              }
+              if (!dup) odzVals.push(dv2);
+            }
+          }
+        }
+
+        h += odzBlock(odzVals);
+
+        // Show factorization steps
+        h += stepBlock(1, E() ? 'Factor Each Numerator' : 'Раскладываем каждый числитель',
+          (E() ? 'Let\'s factor each numerator and cancel with its denominator:' : 'Раскладываем каждый числитель на множители и сокращаем с его знаменателем:') + '<br><br>');
+
+        // Use nerdamer factor on the whole simplified expression
+        if (simpFull && simpFull !== nFull) {
+          h += (E() ? 'The equation simplifies to:' : 'Уравнение упрощается до:') + '<br>';
+          h += '<b style="color:var(--v);font-size:15px">' + simpFull + ' = 0</b><br><br>';
+        }
+        if (expandedFull && expandedFull !== simpFull) {
+          h += (E() ? 'Expanded form:' : 'Раскрытая форма:') + '<br>';
+          h += '<b style="color:var(--c);font-size:14px">' + expandedFull + ' = 0</b><br><br>';
+        }
+
+        // Solve using nerdamer
+        var rootsRat = solveWithNerdamer(fullExpr);
+        if (rootsRat.length) {
+          h += stepBlock(2, E() ? 'Solve Simplified Equation' : 'Решаем упрощённое уравнение',
+            (E() ? 'After simplification, we get a linear/quadratic equation.' : 'После сокращения получаем линейное/квадратное уравнение.') + '<br><br>'
+            + (E() ? 'Root found:' : 'Найден корень:') + ' x = <b style="color:var(--g)">' + rootsRat.map(pN).join(', '));
+        } else {
+          // Fallback: try nerdamer direct solve
+          var directRoots = solveWithNerdamer(text);
+          if (directRoots.length) {
+            rootsRat = directRoots;
+            h += stepBlock(2, E() ? 'Solving...' : 'Решаем...',
+              (E() ? 'Using the algebraic solver:' : 'Используя алгебраический решатель:') + '<br>'
+              + 'x = <b style="color:var(--g)">' + rootsRat.map(pN).join(', '));
+          } else {
+            h += (E() ? 'Could not find explicit roots with algebraic methods.' : 'Не удалось найти корни алгебраическими методами.') + '<br>';
+          }
+        }
+
+        h += answerBlock(rootsRat, odzVals);
+        h += megaPractice(E()
+          ? ['(x^2-8x+15)/(x-5) - (x^2-9)/(x+3) + (x^2-4x-21)/(x-7) = 5', '(x^2-9x+20)/(x-4) + (x^2-16)/(x+4) = (2x^2-5x-12)/(x-4)']
+          : ['(x^2-8x+15)/(x-5) - (x^2-9)/(x+3) + (x^2-4x-21)/(x-7) = 5', '(x^2-9x+20)/(x-4) + (x^2-16)/(x+4) = (2x^2-5x-12)/(x-4)']);
+        return h;
+      }
+
+      // General rational equation with one denominator on RHS
+      // Try nerdamer direct solve
+      var hGen = '';
+      var odzGen = [];
+
+      // Find ODZ from all denominators
+      var denomRe2 = /\((?:\d*\.?\d*x[^)]*)\)|(?:\/\s*(\d*\.?\d*x\b))/gi;
+      var dm2;
+      while ((dm2 = /\/\(([^)]*x[^)]*)\)/gi.exec(text)) !== null) {
+        var ds = dm2[1];
+        var dsNorm = normNerd(ds);
+        try {
+          var dsSol = ndSolve(dsNorm);
+          if (dsSol && dsSol.length) {
+            for (var si = 0; si < dsSol.length; si++) {
+              var dv = parseFloat(nerdamer(dsSol[si]).evaluate().text());
+              if (isFinite(dv) && odzGen.indexOf(dv) < 0) odzGen.push(dv);
+            }
+          }
+        } catch (e) {}
+      }
+      // Also find linear denominators like /(x-4) etc
+      var ldRe = /\/\(?\s*x\s*([+-])\s*(\d+\.?\d*)\s*\)?/gi;
+      var ldMatch;
+      while ((ldMatch = ldRe.exec(text)) !== null) {
+        var ldv = parseFloat(ldMatch[2]);
+        if (ldMatch[1] === '+') ldv = -ldv;
+        if (odzGen.indexOf(ldv) < 0) odzGen.push(ldv);
+      }
+
+      hGen += conceptBlock(E()
+        ? 'A <b>rational equation</b> has variables in denominators. First we find the domain (ODZ), then multiply by the common denominator to clear fractions.'
+        : '<b>Рациональное уравнение</b> содержит переменные в знаменателях. Сначала находим область допустимых значений (ОДЗ), затем умножаем на общий знаменатель.');
+
+      if (odzGen.length) hGen += odzBlock(odzGen);
+
+      // Try to solve
+      var rootsGen = solveWithNerdamer(text);
+
+      hGen += stepBlock(1, E() ? 'Solve Algebraically' : 'Решаем алгебраически',
+        (E() ? 'Using algebraic manipulation to clear denominators:' : 'Используем алгебраические преобразования:') + '<br><br>');
+      var expandedEq = ndExpand(eqExpr);
+      var simplifiedEq = ndSimplify(eqExpr);
+      if (expandedEq) hGen += (E() ? 'Expanded: ' : 'Раскрыто: ') + '<b style="color:var(--v)">' + expandedEq + ' = 0</b><br>';
+      if (simplifiedEq && simplifiedEq !== expandedEq) hGen += (E() ? 'Simplified: ' : 'Упрощено: ') + '<b style="color:var(--c)">' + simplifiedEq + ' = 0</b><br>';
+
+      if (rootsGen.length) {
+        hGen += '<br>' + (E() ? 'Solutions:' : 'Решения:') + ' x = <b style="color:var(--g)">' + rootsGen.map(pN).join(', ');
+      } else {
+        hGen += '<br><span style="color:var(--text3)">' + (E() ? 'Could not find exact roots. Try using the numeric solver.' : 'Не удалось найти точные корни. Попробуйте численный решатель.') + '</span>';
+      }
+
+      hGen += answerBlock(rootsGen, odzGen);
+      hGen += megaPractice(E()
+        ? ['(x+7)/(x-2) - (x-5)/(x+3) = 28/((x-2)(x+3))', '2/(x-4) + 5/(x+3) - 7/(x-1) = (9x+11)/((x-4)(x+3)(x-1))', '(5x-7)/(x^2-9) + (4x+3)/(x^2-4x+3) = (3x^2-8x+5)/((x-3)(x+3)(x-1))']
+        : ['(x+7)/(x-2) - (x-5)/(x+3) = 28/((x-2)(x+3))', '2/(x-4) + 5/(x+3) - 7/(x-1) = (9x+11)/((x-4)(x+3)(x-1))', '(5x-7)/(x^2-9) + (4x+3)/(x^2-4x+3) = (3x^2-8x+5)/((x-3)(x+3)(x-1))']);
+      return hGen;
+    }
+
+    // ════════════════════════════════════════
+    // TYPES 3, 4, 11: Expand & solve (linear/quadratic)
+    // ════════════════════════════════════════
+    // Detect brackets that need expanding: (x + a)(x + b) or (x + a)^2 patterns
+    var hasExpandPattern = /\([^)]*\)\([^)]*\)/.test(text) || /\(x\s*[+-]\s*\d+\.?\d*\)\s*\^\s*2/.test(text);
+
+    if (hasExpandPattern && !hasRational) {
+      var expResult = ndExpand(eqExpr);
+      var simpResult = ndSimplify(expResult || eqExpr);
+
+      var hExp = '';
+      hExp += conceptBlock(E()
+        ? 'This equation has brackets that need to be <b>expanded</b>. After expansion, we collect like terms and solve the resulting equation.'
+        : 'В этом уравнении нужно <b>раскрыть скобки</b>. После раскрытия приводим подобные и решаем полученное уравнение.');
+
+      hExp += stepBlock(1, E() ? 'Expand Brackets' : 'Раскрываем скобки',
+        (E() ? 'Original:' : 'Исходное:') + '<br>'
+        + '<b style="color:var(--text)">' + text + '</b><br><br>'
+        + (expResult ? (E() ? 'After expansion:' : 'После раскрытия:') + '<br><b style="color:var(--v);font-size:14px">' + expResult + ' = 0</b><br>' : ''));
+
+      if (simpResult && simpResult !== expResult) {
+        hExp += (E() ? 'Simplified:' : 'Упрощено:') + '<br><b style="color:var(--c);font-size:14px">' + simpResult + ' = 0</b><br>';
+      }
+
+      // Try to solve
+      var rootsExp = solveWithNerdamer(simpResult || expResult || text);
+      var odzExp = [];
+
+      if (rootsExp.length) {
+        hExp += stepBlock(2, E() ? 'Solve the Equation' : 'Решаем уравнение',
+          (E() ? 'After simplification, we solve:' : 'После упрощения решаем:') + '<br>'
+          + (rootsExp.length === 1
+            ? 'x = <b style="color:var(--g)">' + pN(rootsExp[0]) + '</b>'
+            : 'x₁ = <b style="color:var(--g)">' + pN(rootsExp[0]) + '</b>, x₂ = <b style="color:var(--g)">' + pN(rootsExp[1]) + '</b>'));
+      } else {
+        // Could be linear: try manual solving
+        var linRe = simpResult ? simpResult.match(/^([+-]?\d*\.?\d*)\*?x\s*([+-]\s*\d*\.?\d*)\s*$/i) : null;
+        if (linRe) {
+          var aLin = parseFloat(linRe[1].replace(/\s/g, '') || '1');
+          var bLin = parseFloat(linRe[2].replace(/\s/g, '') || '0');
+          if (aLin !== 0) {
+            var rootLin = -bLin / aLin;
+            hExp += stepBlock(2, E() ? 'Solve Linear Equation' : 'Решаем линейное уравнение',
+              pN(aLin) + 'x ' + (bLin >= 0 ? '+ ' : '− ') + Math.abs(bLin) + ' = 0<br>'
+              + 'x = ' + pN(-bLin) + ' / ' + pN(aLin) + ' = <b style="color:var(--g)">' + pN(rootLin) + '</b>');
+            rootsExp = [rootLin];
+          }
+        }
+      }
+
+      hExp += answerBlock(rootsExp, odzExp);
+      hExp += megaMistakes(E()
+        ? ['(x + a)(x + b) ≠ x² + a·b (missing the cross term a·x + b·x!)', 'Forgetting to distribute the minus sign: −(x + a) = −x − a']
+        : ['(x + a)(x + b) ≠ x² + a·b (пропущен перекрёстный член a·x + b·x!)', 'Забыть распределить минус: −(x + a) = −x − a']);
+      hExp += megaPractice(E()
+        ? ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']
+        : ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']);
+      return hExp;
+    }
+
+    // Fall through to previous solvers
+    return _prevTryMega(text);
+  };
+
+})();
+</script>
+
 </body>
 
 </html>
