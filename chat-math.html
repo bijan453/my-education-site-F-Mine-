@@ -16376,8 +16376,10 @@
         // Extract numerator from the combined fraction: "N/D" → N
         var fracParts = combinedFrac.split('/');
         numPoly = fracParts[0].trim();
-        // Handle parentheses around numerator
-        if (numPoly.indexOf('(') === 0) numPoly = numPoly.slice(1, -1).trim();
+        // Handle parentheses around numerator (possibly nested)
+        while (numPoly.indexOf('(') === 0 && numPoly.lastIndexOf(')') === numPoly.length - 1) {
+          numPoly = numPoly.slice(1, -1).trim();
+        }
         hGen += (E() ? 'Set numerator = 0:' : 'Приравниваем числитель к нулю:') + '<br><b style="color:var(--a);font-size:14px">' + numPoly + ' = 0</b><br><br>';
       } else if (expandedEq) {
         numPoly = expandedEq;
