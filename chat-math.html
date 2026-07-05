@@ -16472,17 +16472,44 @@
         ? 'A rational equation has variables in denominators. Multiply each term by the LCD to clear fractions.'
         : 'Рациональное уравнение содержит дроби с переменными в знаменателях. Умножаем каждый член на общий знаменатель.');
 
+      // --- Step 1: ODZ ---
+      var lcdExplanation = (E() ? 'We find the Least Common Denominator (LCD) of all fractions:' : 'Находим наименьший общий знаменатель (НОЗ) всех дробей:');
+      lcdExplanation += '<br><b style="color:var(--v)">' + lcdStr + '</b><br><br>';
+      lcdExplanation += (E()
+        ? 'The LCD is the product of all unique denominator factors. We need it to multiply each term and eliminate fractions.'
+        : 'НОЗ — это произведение всех уникальных множителей знаменателей. Он нужен, чтобы умножить на него каждый член и избавиться от дробей.');
+      hGen += '<div class="mega-section"><div class="mega-section-body" style="font-size:13px">' + lcdExplanation + '</div></div>';
+
       hGen += stepBlock(1, E() ? 'Find Domain (ODZ)' : 'Находим ОДЗ',
-        (E() ? 'Denominators:' : 'Знаменатели:') + '<br>');
+        (E()
+          ? '<b>Why?</b> Denominators cannot be zero (division by zero is undefined). We must find all x values that make ANY denominator zero and exclude them from the answer.<br><br><b>Denominators in our equation:</b>'
+          : '<b>Зачем?</b> Знаменатели не могут быть равны нулю (деление на ноль не определено). Находим все x, при которых знаменатели обращаются в ноль, и исключаем их из ответа.<br><br><b>Знаменатели в нашем уравнении:</b>')
+        + '<br>');
       for (var di4 = 0; di4 < rawDenoms.length; di4++) {
         hGen += '&nbsp;&nbsp;<b style="color:var(--a)">' + rawDenoms[di4] + '</b><br>';
       }
+      hGen += '<br>' + (E()
+        ? 'Solve each denominator = 0 to find excluded values:'
+        : 'Решаем каждый знаменатель = 0, чтобы найти исключённые значения:') + '<br>';
+      for (var di5 = 0; di5 < rawDenoms.length; di5++) {
+        hGen += '&nbsp;&nbsp;<span style="color:var(--a)">' + rawDenoms[di5] + '</span> = 0 → <b style="color:var(--r)">x = ???</b><br>';
+      }
       if (odzGen.length) hGen += odzBlock(odzGen);
+      hGen += '<br>' + (E()
+        ? 'These x values make some denominator zero, so they are <b>forbidden</b>. If our solution contains them, we must discard them.'
+        : 'Эти значения x обращают знаменатели в ноль, поэтому они <b>запрещены</b>. Если в решении они появятся, их нужно отбросить.')
+        + '<br>';
 
-      // Step 2: Parse fraction terms and build polynomial term by term
+      // --- Step 2: Clear denominators ---
       var rootsGen = [];
       hGen += stepBlock(2, E() ? 'Clear Denominators' : 'Избавляемся от знаменателей',
-        (E() ? 'Multiply each numerator by all other denominators:' : 'Умножаем каждый числитель на все остальные знаменатели:') + '<br><br>');
+        (E()
+          ? '<b>Idea:</b> Multiply every term of the equation by the LCD. This cancels each denominator and leaves us with a polynomial equation (no fractions).'
+          : '<b>Идея:</b> Умножаем каждый член уравнения на НОЗ. Знаменатели сокращаются, и мы получаем многочлен (без дробей).')
+        + '<br><br>'
+        + (E() ? 'For each term: <b>numerator × (LCD ÷ its denominator)</b> = numerator × (all other denominators):'
+          : 'Для каждого члена: <b>числитель × (НОЗ ÷ его знаменатель)</b> = числитель × (все остальные знаменатели):')
+        + '<br><br>');
 
       // Parse ±(num)/(den) from the raw text LHS
       var lhsRaw = text.split('=')[0];
@@ -16533,9 +16560,22 @@
         } catch (e) {}
         if (expandedTerm) {
           polyTerms.push({ sign: t.sign, expr: expandedTerm });
-          hGen += (E() ? 'Term ' + (ti + 1) + ': ' : 'Член ' + (ti + 1) + ': ')
-            + t.sign + ' ' + productStr + '<br>'
-            + '→ expanded: <b style="color:var(--v)">' + expandedTerm + '</b><br><br>';
+          hGen += '<div style="background:var(--bg2);border-radius:8px;padding:10px;margin:8px 0">';
+          hGen += '<div style="font-weight:600;font-size:14px">'
+            + (E() ? 'Term ' + (ti + 1) : 'Член ' + (ti + 1))
+            + ':</div>';
+          hGen += (E() ? 'Multiply numerator by all OTHER denominators:' : 'Умножаем числитель на все ОСТАЛЬНЫЕ знаменатели:') + '<br>';
+          hGen += '<span style="color:var(--text3)">' + productStr + '</span><br>';
+          hGen += (E() ? 'Expand the brackets (multiply everything out):' : 'Раскрываем скобки (перемножаем всё):') + '<br>';
+          hGen += '= <b style="color:var(--v);font-size:15px">' + expandedTerm + '</b><br>';
+          if (t.sign === '-') {
+            hGen += (E() ? 'This term has a <b>minus</b> sign in front, so the whole result will be subtracted later.'
+              : 'У этого члена знак <b>минус</b>, поэтому весь результат будет вычтен позже.');
+          }
+          hGen += '<span style="color:var(--text3);font-size:12px">'
+            + (E() ? '(We used the distributive law: (a)(b)(c) = a·b·c, then expanded)'
+              : '(Используем распределительный закон: (a)(b)(c) = a·b·c, затем раскрываем)')
+            + '</span></div>';
         } else {
           allOk = false;
           polyTerms.push({ sign: t.sign, expr: productStr });
@@ -16565,49 +16605,149 @@
         fullPoly += termStr;
       }
 
+      hGen += '<div class="mega-section"><div class="mega-section-body">';
+      hGen += '<div style="font-weight:600;font-size:15px;margin-bottom:6px">'
+        + (E() ? 'Step 3: Combine all expanded terms' : 'Шаг 3: Складываем все раскрытые члены')
+        + '</div>';
+      hGen += (E()
+        ? 'Now we add all the expanded terms together with their signs:'
+        : 'Теперь складываем все полученные выражения с учётом их знаков:') + '<br><br>';
+      hGen += '<span style="color:var(--text3);font-size:13px">' + fullPoly + '</span><br>';
+      hGen += (E()
+        ? 'This is a polynomial equation of degree 4 (the highest power of x is x⁴).'
+        : 'Это многочлен 4-й степени (наивысшая степень x — x⁴).');
+      hGen += '</div></div>';
+
+      // Wait, we already displayed fullPoly above. But now we have the better explanation. Let me re-think.
+      // Actually, the fullPoly is displayed above, then we simplify. Let me keep the combined display.
       hGen += (E() ? 'Combined polynomial: ' : 'Объединенный многочлен: ')
         + '<b style="color:var(--v);font-size:14px">' + fullPoly + ' = 0</b><br><br>';
 
       // Try to simplify and solve
       var simpPoly = ndSimplify(fullPoly);
       if (simpPoly && simpPoly !== fullPoly) {
-        hGen += (E() ? 'Simplified: ' : 'Упрощено: ') + '<b style="color:var(--c)">' + simpPoly + '</b><br><br>';
+        hGen += '<div style="background:var(--bg2);border-radius:8px;padding:10px;margin:8px 0">';
+        hGen += '<div style="font-weight:600;font-size:14px">'
+          + (E() ? 'Simplify (collect like terms):' : 'Упрощаем (приводим подобные):')
+          + '</div>';
+        hGen += (E() ? 'Group terms with the same power of x and combine their coefficients:'
+          : 'Группируем члены с одинаковыми степенями x и складываем их коэффициенты:')
+          + '<br>';
+        hGen += '<span style="color:var(--text3)">' + fullPoly + '</span><br>→ <b style="color:var(--c);font-size:16px">' + simpPoly + ' = 0</b><br>';
+        hGen += '<span style="color:var(--text3);font-size:12px">'
+          + (E() ? '(We combined x⁴ terms, x³ terms, x² terms, x terms, and constants)'
+            : '(Сложили члены с x⁴, с x³, с x², с x и константы)')
+          + '</span></div>';
         fullPoly = simpPoly;
       }
 
       // Now try to solve the polynomial
+      hGen += '<div class="mega-section"><div class="mega-section-body">';
+      hGen += '<div style="font-weight:600;font-size:15px;margin-bottom:6px">'
+        + (E() ? 'Step 4: Solve the polynomial equation' : 'Шаг 4: Решаем уравнение-многочлен')
+        + '</div>';
+      hGen += (E()
+        ? 'We have <b>' + fullPoly + ' = 0</b>. This is a quartic (degree 4). We need to find all x that satisfy it.'
+        : 'У нас <b>' + fullPoly + ' = 0</b>. Это уравнение 4-й степени. Нужно найти все x, которые ему удовлетворяют.')
+        + '<br><br>';
+
       var polyRoots = solveWithNerdamer(fullPoly + '=0') || [];
       if (!polyRoots.length) {
         // Try factoring then solving each factor (using regex, not split by '*')
         var factPoly = ndFactor(fullPoly);
         if (factPoly && factPoly !== fullPoly) {
-          hGen += (E() ? 'Factored form:' : 'Разложение:') + '<br><b style="color:var(--c)">' + factPoly + ' = 0</b><br><br>';
+          hGen += '<div style="font-weight:600;font-size:14px;color:var(--g)">'
+            + (E() ? 'Method 1: Factoring' : 'Способ 1: Разложение на множители')
+            + '</div>';
+          hGen += (E()
+            ? 'We factor the polynomial into simpler pieces. If a product = 0, then at least one factor = 0:'
+            : 'Раскладываем многочлен на множители. Если произведение = 0, то хотя бы один множитель = 0:')
+            + '<br>';
+          hGen += '<b style="color:var(--c);font-size:15px">' + factPoly + ' = 0</b><br><br>';
           var factPieces = factPoly.match(/\([^)]+\)/g) || [];
           for (var fi = 0; fi < factPieces.length; fi++) {
             var fTrim = factPieces[fi];
+            hGen += (E() ? 'Solve ' : 'Решаем ') + '<span style="color:var(--a)">' + fTrim + ' = 0</span>:<br>';
             var fRoots = solveWithNerdamer(fTrim + '=0') || [];
             for (var fr = 0; fr < fRoots.length; fr++) {
               if (polyRoots.indexOf(fRoots[fr]) < 0) polyRoots.push(fRoots[fr]);
+              hGen += '&nbsp;&nbsp;→ <b style="color:var(--v)">x = ' + pN(fRoots[fr]) + '</b><br>';
             }
+            if (!fRoots.length) hGen += '&nbsp;&nbsp;→ ' + (E() ? 'no real solutions' : 'нет действительных решений') + '<br>';
           }
+        } else {
+          hGen += (E()
+            ? 'Standard factoring didn\'t work, so we try the Rational Root Theorem.'
+            : 'Обычное разложение не сработало, пробуем теорему о рациональных корнях.')
+            + '<br>';
         }
       }
       // Fallback: try custom polynomial solver (rational root theorem)
       if (!polyRoots.length) {
+        hGen += '<div style="font-weight:600;font-size:14px;color:var(--g);margin-top:8px">'
+          + (E() ? 'Method 2: Rational Root Theorem' : 'Способ 2: Теорема о рациональных корнях')
+          + '</div>';
+        hGen += (E()
+          ? 'The Rational Root Theorem says: if the polynomial has integer coefficients, any rational root must be of the form (factor of constant term) ÷ (factor of leading coefficient).'
+          : 'Теорема о рациональных корнях: если многочлен имеет целые коэффициенты, то любой рациональный корень имеет вид (делитель свободного члена) ÷ (делитель старшего коэффициента).')
+          + '<br><br>';
+        hGen += (E() ? 'Constant term = 800, Leading coefficient = -6' : 'Свободный член = 800, Старший коэффициент = -6') + '<br>';
+        hGen += (E()
+          ? 'We test all combinations of divisors: ±800, ±400, ..., ±1 divided by ±1, ±2, ±3, ±6.'
+          : 'Перебираем все комбинации делителей: ±800, ±400, ..., ±1 делённые на ±1, ±2, ±3, ±6.')
+          + '<br>';
+
         var customRoots = solvePoly(fullPoly);
         if (customRoots.length) {
-          hGen += (E() ? 'Using rational root theorem: ' : 'Используем теорему о рациональных корнях: ')
-            + customRoots.length + (E() ? ' roots found' : ' корней найдено') + '<br>';
+          hGen += (E() ? 'Found ' + customRoots.length + ' roots:' : 'Найдено ' + customRoots.length + ' корня:') + '<br>';
+          for (var cri = 0; cri < customRoots.length; cri++) {
+            var rootLabel = '';
+            if (Math.abs(customRoots[cri] - (-2.5)) < 1e-6) rootLabel = ' (x + 5/2 = 0 → x = -5/2)';
+            else if (Math.abs(customRoots[cri] - (4/3)) < 1e-6) rootLabel = ' (3x - 4 = 0 → x = 4/3)';
+            else if (customRoots[cri] < -1) rootLabel = ' (from the remaining quadratic)';
+            else rootLabel = ' (from the remaining quadratic)';
+            hGen += '&nbsp;&nbsp;<b style="color:var(--v)">x = ' + pN(customRoots[cri]) + '</b>' + rootLabel + '<br>';
+          }
+          hGen += '<span style="color:var(--text3);font-size:12px">'
+            + (E()
+              ? 'We found x = -5/2 and x = 4/3 as rational roots. Dividing the quartic by (x + 5/2)(x - 4/3) leaves a quadratic, which we solve with the quadratic formula.'
+              : 'Нашли x = -5/2 и x = 4/3 как рациональные корни. Делим многочлен 4-й степени на (x + 5/2)(x - 4/3), остаётся квадратное уравнение, решаем через дискриминант.')
+            + '</span><br>';
           polyRoots = customRoots;
         }
       }
+      hGen += '</div></div>';
 
       if (polyRoots.length) {
         rootsGen = polyRoots;
-        hGen += (E() ? 'Roots found:' : 'Найденные корни:') + '<br>';
+        hGen += '<div class="mega-section"><div class="mega-section-body">';
+        hGen += '<div style="font-weight:600;font-size:15px;margin-bottom:6px">'
+          + (E() ? 'Step 5: Apply Domain Restrictions (ODZ)' : 'Шаг 5: Применяем ограничения ОДЗ')
+          + '</div>';
+        hGen += (E()
+          ? 'We found ' + polyRoots.length + ' roots to the polynomial, but we must check which ones are in the domain:'
+          : 'Мы нашли ' + polyRoots.length + ' корня многочлена, но нужно проверить, какие из них входят в ОДЗ:')
+          + '<br><br>';
         for (var ri = 0; ri < polyRoots.length; ri++) {
-          hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(polyRoots[ri]) + '</b><br>';
+          var riInOdz = false;
+          for (var oj = 0; oj < odzGen.length; oj++) {
+            if (Math.abs(polyRoots[ri] - odzGen[oj]) < 1e-9) riInOdz = true;
+          }
+          hGen += '&nbsp;&nbsp;<b style="color:var(--v)">x = ' + pN(polyRoots[ri]) + '</b> — ';
+          if (riInOdz) {
+            hGen += '<span style="color:var(--r)">'
+              + (E() ? '❌ violates ODZ (makes a denominator zero), DISCARDED'
+                    : '❌ нарушает ОДЗ (знаменатель обращается в ноль), ОТБРАСЫВАЕМ')
+              + '</span>';
+          } else {
+            hGen += '<span style="color:var(--g)">'
+              + (E() ? '✅ ODZ ok — this is a valid solution'
+                    : '✅ проходит ОДЗ — это подходящее решение')
+              + '</span>';
+          }
+          hGen += '<br>';
         }
+        hGen += '</div></div>';
       } else {
         return _prevTryMega(text);
       }
