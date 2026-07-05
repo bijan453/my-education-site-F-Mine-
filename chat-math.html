@@ -16355,20 +16355,93 @@
 
       if (odzGen.length) hGen += odzBlock(odzGen);
 
-      // Try to solve
-      var rootsGen = solveWithNerdamer(text);
+      // Try to solve: simplify rational → extract numerator → solve polynomial
+      var rootsGen = [];
+      var combinedFrac = ndSimplify(eqExpr);
+      var expandedEq = ndExpand(eqExpr);
 
       hGen += stepBlock(1, E() ? 'Solve Algebraically' : 'Решаем алгебраически',
         (E() ? 'Using algebraic manipulation to clear denominators:' : 'Используем алгебраические преобразования:') + '<br><br>');
-      var expandedEq = ndExpand(eqExpr);
-      var simplifiedEq = ndSimplify(eqExpr);
-      if (expandedEq) hGen += (E() ? 'Expanded: ' : 'Раскрыто: ') + '<b style="color:var(--v)">' + expandedEq + ' = 0</b><br>';
-      if (simplifiedEq && simplifiedEq !== expandedEq) hGen += (E() ? 'Simplified: ' : 'Упрощено: ') + '<b style="color:var(--c)">' + simplifiedEq + ' = 0</b><br>';
 
-      if (rootsGen.length) {
-        hGen += '<br>' + (E() ? 'Solutions:' : 'Решения:') + ' x = <b style="color:var(--g)">' + rootsGen.map(pN).join(', ');
+      if (combinedFrac) {
+        hGen += (E() ? 'Combined into single fraction:' : 'Объединяем в одну дробь:') + '<br><b style="color:var(--v)">' + combinedFrac + ' = 0</b><br><br>';
+      }
+      if (expandedEq && expandedEq !== combinedFrac) {
+        hGen += (E() ? 'Expanded numerator:' : 'Раскрытый числитель:') + '<br><b style="color:var(--c)">' + expandedEq + ' = 0</b><br><br>';
+      }
+
+      // Try to solve numerator = 0
+      var numPoly = null;
+      if (combinedFrac && combinedFrac.indexOf('/') >= 0) {
+        // Extract numerator from the combined fraction: "N/D" → N
+        var fracParts = combinedFrac.split('/');
+        numPoly = fracParts[0].trim();
+        // Handle parentheses around numerator
+        if (numPoly.indexOf('(') === 0) numPoly = numPoly.slice(1, -1).trim();
+        hGen += (E() ? 'Set numerator = 0:' : 'Приравниваем числитель к нулю:') + '<br><b style="color:var(--a);font-size:14px">' + numPoly + ' = 0</b><br><br>';
+      } else if (expandedEq) {
+        numPoly = expandedEq;
       } else {
-        hGen += '<br><span style="color:var(--text3)">' + (E() ? 'Could not find exact roots. Try using the numeric solver.' : 'Не удалось найти точные корни. Попробуйте численный решатель.') + '</span>';
+        numPoly = eqExpr;
+      }
+
+      if (numPoly) {
+        var polyRoots = solveWithNerdamer(numPoly + '=0') || [];
+        if (polyRoots.length) {
+          rootsGen = polyRoots;
+          hGen += (E() ? 'Solving the polynomial gives:' : 'Решаем многочлен:') + '<br>';
+          for (var ri = 0; ri < polyRoots.length; ri++) {
+            hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(polyRoots[ri]) + '</b><br>';
+          }
+          hGen += '<br>';
+        } else {
+          // Try to solve as quadratic
+          var qMatch = (numPoly).match(/^([+-]?\d*\.?\d*)\*?x\^2\s*([+-]\s*\d*\.?\d*)\*?x\s*([+-]\s*\d*\.?\d*)$/i);
+          if (!qMatch) qMatch = (numPoly).match(/^([+-]?\d*\.?\d*)x\^2\s*([+-]\s*\d*\.?\d*)x\s*([+-]\s*\d*\.?\d*)$/i);
+          if (!qMatch) {
+            // Try without spaces
+            var cleanNum = numPoly.replace(/\s/g, '');
+            qMatch = cleanNum.match(/^([+-]?\d*\.?\d*)\*?x\^2([+-]\d*\.?\d*)\*?x([+-]\d*\.?\d*)$/i);
+            if (!qMatch) qMatch = cleanNum.match(/^([+-]?\d*\.?\d*)x\^2([+-]\d*\.?\d*)x([+-]\d*\.?\d*)$/i);
+          }
+          if (qMatch) {
+            var qa = parseFloat(qMatch[1].replace(/\s/g, '') || '1');
+            var qb = parseFloat(qMatch[2].replace(/\s/g, '') || '0');
+            var qc = parseFloat(qMatch[3].replace(/\s/g, '') || '0');
+            if (qMatch[1] === '' || qMatch[1] === '+') qa = 1;
+            if (qMatch[1] === '-') qa = -1;
+            if (qa !== 0) {
+              var D = qb * qb - 4 * qa * qc;
+              hGen += (E() ? 'Quadratic equation detected:' : 'Обнаружено квадратное уравнение:') + '<br>';
+              hGen += pN(qa) + 'x² + ' + pN(qb) + 'x + ' + pN(qc) + ' = 0<br>';
+              hGen += 'D = ' + pN(qb) + '² − 4·' + pN(qa) + '·' + pN(qc) + ' = ' + pN(D) + '<br>';
+              if (D >= 0) {
+                var sqrtD = Math.sqrt(D);
+                var x1 = (-qb + sqrtD) / (2 * qa);
+                var x2 = (-qb - sqrtD) / (2 * qa);
+                hGen += 'x₁ = ' + pN(x1) + ', x₂ = ' + pN(x2) + '<br>';
+                rootsGen = [x1, x2];
+              } else {
+                hGen += '<span style="color:var(--r)">' + (E() ? 'No real roots (D<0)' : 'Нет действительных корней (D<0)') + '</span><br>';
+              }
+            }
+          } else {
+            // Try linear
+            var lMatch = (numPoly).match(/^([+-]?\d*\.?\d*)\*?x\s*([+-]\s*\d*\.?\d*)$/i);
+            if (!lMatch) lMatch = (numPoly).match(/^([+-]?\d*\.?\d*)x\s*([+-]\s*\d*\.?\d*)$/i);
+            if (lMatch) {
+              var la = parseFloat(lMatch[1].replace(/\s/g, '') || '1');
+              if (lMatch[1] === '' || lMatch[1] === '+') la = 1;
+              if (lMatch[1] === '-') la = -1;
+              var lb = parseFloat(lMatch[2].replace(/\s/g, '') || '0');
+              var lRoot = -lb / la;
+              hGen += (E() ? 'Linear equation:' : 'Линейное уравнение:') + ' ' + pN(la) + 'x + ' + pN(lb) + ' = 0 → x = <b style="color:var(--g)">' + pN(lRoot) + '</b><br>';
+              rootsGen = [lRoot];
+            } else {
+              hGen += '<br><span style="color:var(--text3)">' + (E() ? 'Could not find exact roots.' : 'Не удалось найти точные корни.') + '</span>';
+            }
+          }
+        }
       }
 
       hGen += answerBlock(rootsGen, odzGen);
