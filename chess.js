@@ -489,6 +489,10 @@ function applyTranslations() {
 
 // --- SETUP SCREEN TRIGGERS ---
 window.selectMode = function(m) {
+  if (m === "puzzle") {
+    location.href = "puzzles.html";
+    return;
+  }
   mode = m;
   document.getElementById("btnModeBot").classList.toggle("active", m === "bot");
   document.getElementById("btnModeMulti").classList.toggle("active", m === "multiplayer");
@@ -499,11 +503,6 @@ window.selectMode = function(m) {
   document.getElementById("panelMulti").classList.toggle("active", m === "multiplayer");
   const panelPuzzle = document.getElementById("panelPuzzle");
   if (panelPuzzle) panelPuzzle.classList.toggle("active", m === "puzzle");
-  
-  // Update puzzle level progress when switching to puzzle mode
-  if (m === "puzzle") {
-    updatePuzzleLevelProgress();
-  }
 };
 
 window.selectDiff = function(diff) {
@@ -3396,44 +3395,7 @@ window.selectPuzzleLevel = function(level) {
 
 // --- START PUZZLE MODE ---
 window.startPuzzleMode = function() {
-  mode = "puzzle";
-  isPuzzleMode = true;
-  cleanupSSE();
-  clearActiveGameStorage();
-
-  // Hide setup, show arena
-  document.getElementById("setupView").style.display = "none";
-  document.getElementById("arenaView").classList.add("active");
-
-  // Hide multiplayer-specific elements
-  document.getElementById("roomCodeBadge").classList.add("hidden");
-  document.getElementById("btnGameOverRematch").classList.add("hidden");
-
-  // Hide sidebar multiplayer controls
-  const drawBtn = document.getElementById("btnOfferDraw");
-  const resignBtn = document.getElementById("btnResign");
-  if (drawBtn) drawBtn.style.display = "none";
-  if (resignBtn) resignBtn.style.display = "none";
-
-  // Hide timers
-  const pTimer = document.getElementById("playerTimer");
-  const oTimer = document.getElementById("opponentTimer");
-  if (pTimer) pTimer.classList.add("hidden");
-  if (oTimer) oTimer.classList.add("hidden");
-
-  // Show puzzle UI
-  const infoBar = document.getElementById("puzzleInfoBar");
-  if (infoBar) infoBar.classList.add("active");
-  const controls = document.getElementById("puzzleControls");
-  if (controls) controls.classList.add("active");
-
-  // Set player names
-  const rating = parseInt(localStorage.getItem("fmine_chess_rating") || "1200");
-  document.getElementById("playerName").textContent = `${userNick} ${getTitleAndRatingStr(rating)}`;
-  document.getElementById("opponentName").textContent = LANG === 'ru' ? `🧩 Задачи (Ур. ${puzzleLevel})` : `🧩 Puzzles (Lv. ${puzzleLevel})`;
-
-  // Load first unsolved puzzle
-  loadNextPuzzle();
+  location.href = "puzzles.html";
 };
 
 function loadNextPuzzle() {
