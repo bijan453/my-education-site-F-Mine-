@@ -16325,9 +16325,9 @@
       var odzGen = [];
 
       // Find ODZ from all denominators
-      var denomRe2 = /\((?:\d*\.?\d*x[^)]*)\)|(?:\/\s*(\d*\.?\d*x\b))/gi;
+      var denomRe2 = /\/\(([^)]*x[^)]*)\)/gi;
       var dm2;
-      while ((dm2 = /\/\(([^)]*x[^)]*)\)/gi.exec(text)) !== null) {
+      while ((dm2 = denomRe2.exec(text)) !== null) {
         var ds = dm2[1];
         var dsNorm = normNerd(ds);
         try {
