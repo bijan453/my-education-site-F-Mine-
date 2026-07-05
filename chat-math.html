@@ -16320,12 +16320,12 @@
       }
 
       // ──────────────────────────────────────────────
-      // General rational equation — try every approach
+      // General rational equation — manual polynomial construction
       // ──────────────────────────────────────────────
       var hGen = '';
       var odzGen = [];
 
-      // Find all denominators
+      // Find all denominators from original text
       var rawDenoms = [];
       var dmRx = /\/([^\s=]+?(?:x[^\s=]*))/gi;
       var dm;
@@ -16334,7 +16334,7 @@
         if (dPart && rawDenoms.indexOf(dPart) < 0) rawDenoms.push(dPart);
       }
 
-      // Build LCD
+      // Build LCD strings
       var lcdTerms = [];
       var seenLcd = {};
       for (var di = 0; di < rawDenoms.length; di++) {
@@ -16363,8 +16363,9 @@
       }
 
       hGen += conceptBlock(E()
-        ? 'A <b>rational equation</b> has variables in denominators.'
-        : '<b>Рациональное уравнение</b> содержит переменные в знаменателях.');
+        ? 'A rational equation has variables in denominators. Multiply each term by the LCD to clear fractions.'
+        : 'Рациональное уравнение содержит дроби с переменными в знаменателях. Умножаем каждый член на общий знаменатель.');
+
       hGen += stepBlock(1, E() ? 'Find Domain (ODZ)' : 'Находим ОДЗ',
         (E() ? 'Denominators:' : 'Знаменатели:') + '<br>');
       for (var di4 = 0; di4 < rawDenoms.length; di4++) {
@@ -16372,77 +16373,127 @@
       }
       if (odzGen.length) hGen += odzBlock(odzGen);
 
-      // Try approach 1: call nerdamer.solveEquations on eqExpr
+      // Step 2: Parse fraction terms and build polynomial term by term
       var rootsGen = [];
-      hGen += stepBlock(2, E() ? 'Solve' : 'Решаем', '');
+      hGen += stepBlock(2, E() ? 'Clear Denominators' : 'Избавляемся от знаменателей',
+        (E() ? 'Multiply each numerator by all other denominators:' : 'Умножаем каждый числитель на все остальные знаменатели:') + '<br><br>');
 
-      try {
-        var directSols = ndSolve(eqExpr);
-        if (directSols && directSols.length) {
-          var dirNums = [];
-          for (var ds = 0; ds < directSols.length; ds++) {
-            var dv = parseFloat(nerdamer(directSols[ds]).evaluate().text());
-            if (isFinite(dv)) dirNums.push(dv);
-          }
-          if (dirNums.length) {
-            rootsGen = dirNums;
-            hGen += (E() ? 'nerdamer found solutions:' : 'nerdamer нашёл решения:') + '<br>';
-            for (var dsi = 0; dsi < dirNums.length; dsi++) {
-              hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(dirNums[dsi]) + '</b><br>';
+      // Parse ±(num)/(den) from the raw text LHS
+      var lhsRaw = text.split('=')[0];
+      var rhsRaw = text.split('=')[1] ? text.split('=')[1].trim() : '0';
+
+      // Normalize LHS: add + prefix
+      var lhsNorm = lhsRaw.replace(/\s+/g, '');
+      if (lhsNorm[0] !== '+' && lhsNorm[0] !== '-') lhsNorm = '+' + lhsNorm;
+
+      // Collect terms
+      var allTerms = [];
+      var termRe = /([+-])\(([^)]+)\)\/\(([^)]+)\)/g;
+      var tM;
+      while ((tM = termRe.exec(lhsNorm)) !== null) {
+        allTerms.push({ side: 'LHS', sign: tM[1], num: tM[2], den: tM[3] });
+      }
+      // Also handle RHS
+      var rhsNorm = rhsRaw.replace(/\s+/g, '');
+      if (rhsNorm[0] !== '+' && rhsNorm[0] !== '-') rhsNorm = '+' + rhsNorm;
+      while ((tM = termRe.exec(rhsNorm)) !== null) {
+        // Flip sign when moving to LHS
+        var flipSign = tM[1] === '+' ? '-' : '+';
+        allTerms.push({ side: 'RHS', sign: flipSign, num: tM[2], den: tM[3] });
+      }
+
+      // If no terms parsed, use original solver
+      if (!allTerms.length) return _prevTryMega(text);
+
+      // Build individual product terms, expand each separately
+      var allDenoms = lcdTerms; // array like ['(2*x+5)', '(3*x-4)', '(6*x^2+7*x-20)']
+      var polyTerms = [];
+      var allOk = true;
+
+      for (var ti = 0; ti < allTerms.length; ti++) {
+        var t = allTerms[ti];
+        var tNum = normNerd(t.num);
+        var tDen = '(' + normNerd(t.den) + ')';
+        // Build product of all OTHER denominators
+        var otherDens = [];
+        for (var od = 0; od < allDenoms.length; od++) {
+          if (allDenoms[od] !== tDen) otherDens.push(allDenoms[od]);
+        }
+        var productStr = '(' + tNum + ')' + (otherDens.length ? '*' + otherDens.join('*') : '');
+        // Expand THIS product individually
+        var expandedTerm = null;
+        try {
+          expandedTerm = nerdamer('expand(' + productStr + ')').toString();
+        } catch (e) {}
+        if (expandedTerm) {
+          polyTerms.push({ sign: t.sign, expr: expandedTerm });
+          hGen += (E() ? 'Term ' + (ti + 1) + ': ' : 'Член ' + (ti + 1) + ': ')
+            + t.sign + ' ' + productStr + '<br>'
+            + '→ expanded: <b style="color:var(--v)">' + expandedTerm + '</b><br><br>';
+        } else {
+          allOk = false;
+          polyTerms.push({ sign: t.sign, expr: productStr });
+        }
+      }
+
+      // Also handle non-fraction RHS constant
+      var rhsConst = parseFloat(rhsRaw);
+      if (!isNaN(rhsConst) && rhsConst !== 0) {
+        // -constant * LCD
+        var constProd = '(' + (-rhsConst) + ')*' + lcdStr;
+        var expConst = nerdamer('expand(' + constProd + ')').toString();
+        if (expConst) {
+          polyTerms.push({ sign: '+', expr: expConst });
+          hGen += (E() ? 'RHS constant: ' : 'Константа RHS: ') + constProd + '<br>'
+            + '→ expanded: <b style="color:var(--c)">' + expConst + '</b><br><br>';
+        }
+      }
+
+      if (!allOk || !polyTerms.length) return _prevTryMega(text);
+
+      // Combine all expanded terms into one expression
+      var fullPoly = '';
+      for (var pti = 0; pti < polyTerms.length; pti++) {
+        var pt = polyTerms[pti];
+        var termStr = pt.sign === '-' ? '-' + pt.expr : (fullPoly ? '+' + pt.expr : pt.expr);
+        fullPoly += termStr;
+      }
+
+      hGen += (E() ? 'Combined polynomial: ' : 'Объединенный многочлен: ')
+        + '<b style="color:var(--v);font-size:14px">' + fullPoly + ' = 0</b><br><br>';
+
+      // Try to simplify and solve
+      var simpPoly = ndSimplify(fullPoly);
+      if (simpPoly && simpPoly !== fullPoly) {
+        hGen += (E() ? 'Simplified: ' : 'Упрощено: ') + '<b style="color:var(--c)">' + simpPoly + '</b><br><br>';
+        fullPoly = simpPoly;
+      }
+
+      // Now try to solve the polynomial
+      var polyRoots = solveWithNerdamer(fullPoly + '=0') || [];
+      if (!polyRoots.length) {
+        // Try factoring then solving each factor
+        var factPoly = ndFactor(fullPoly);
+        if (factPoly && factPoly !== fullPoly) {
+          hGen += (E() ? 'Factored form:' : 'Разложение:') + '<br><b style="color:var(--c)">' + factPoly + ' = 0</b><br><br>';
+          var factList = factPoly.split('*');
+          for (var fi = 0; fi < factList.length; fi++) {
+            var fTrim = factList[fi].trim();
+            var fRoots = solveWithNerdamer(fTrim + '=0') || [];
+            for (var fr = 0; fr < fRoots.length; fr++) {
+              if (polyRoots.indexOf(fRoots[fr]) < 0) polyRoots.push(fRoots[fr]);
             }
           }
         }
-      } catch (e) {}
-
-      if (!rootsGen.length) {
-        // Approach 2: clear denominators by evaluating (eqExpr)*(LCD), then expand, factor, solve
-        try {
-          var multStr = '((' + eqExpr + ')*(' + lcdStr + '))';
-          var multResult = nerdamer(multStr).toString();
-          if (multResult) {
-            // Try to expand to get a proper polynomial
-            var expandedResult = ndExpand(multResult) || multResult;
-            if (expandedResult.indexOf('/') < 0) {
-              hGen += (E() ? 'LCD approach gave equation:' : 'Метод ООЗ дал уравнение:') +
-                '<br><b style="color:var(--v);font-size:14px">' + expandedResult + ' = 0</b><br><br>';
-              var polyRoots = solveWithNerdamer(expandedResult + '=0') || [];
-              if (polyRoots.length) {
-                rootsGen = polyRoots;
-                hGen += (E() ? 'Solving gives:' : 'Решение:') + '<br>';
-                for (var ri = 0; ri < polyRoots.length; ri++) {
-                  hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(polyRoots[ri]) + '</b><br>';
-                }
-              } else {
-                // Try factoring the expanded polynomial
-                var factoredPoly = ndFactor(expandedResult);
-                if (factoredPoly && factoredPoly !== expandedResult) {
-                  hGen += (E() ? 'Factored form:' : 'Разложение:') +
-                    '<br><b style="color:var(--c)">' + factoredPoly + ' = 0</b><br><br>';
-                  var factorTerms = factoredPoly.split('*');
-                  var allFactRoots = [];
-                  for (var ft = 0; ft < factorTerms.length; ft++) {
-                    var ftClean = factorTerms[ft].trim();
-                    var ftRoots = solveWithNerdamer(ftClean + '=0') || [];
-                    for (var fr = 0; fr < ftRoots.length; fr++) {
-                      if (allFactRoots.indexOf(ftRoots[fr]) < 0) allFactRoots.push(ftRoots[fr]);
-                    }
-                  }
-                  if (allFactRoots.length) {
-                    rootsGen = allFactRoots;
-                    hGen += (E() ? 'Solving each factor:' : 'Решаем каждый множитель:') + '<br>';
-                    for (var ri2 = 0; ri2 < allFactRoots.length; ri2++) {
-                      hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(allFactRoots[ri2]) + '</b><br>';
-                    }
-                  }
-                }
-              }
-            }
-          }
-        } catch (e) {}
       }
 
-      if (!rootsGen.length) {
-        // All approaches failed — fall through to original solver
+      if (polyRoots.length) {
+        rootsGen = polyRoots;
+        hGen += (E() ? 'Roots found:' : 'Найденные корни:') + '<br>';
+        for (var ri = 0; ri < polyRoots.length; ri++) {
+          hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(polyRoots[ri]) + '</b><br>';
+        }
+      } else {
         return _prevTryMega(text);
       }
 
