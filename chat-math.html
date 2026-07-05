@@ -16395,40 +16395,44 @@
       } catch (e) {}
 
       if (!rootsGen.length) {
-        // Approach 2: try clearing denominators via nerdamer.simplify on eqExpr * LCD
+        // Approach 2: clear denominators by evaluating (eqExpr)*(LCD), then expand, factor, solve
         try {
           var multStr = '((' + eqExpr + ')*(' + lcdStr + '))';
           var multResult = nerdamer(multStr).toString();
-          if (multResult && multResult.indexOf('/') < 0) {
-            hGen += (E() ? 'LCD approach gave polynomial:' : 'Метод ООЗ дал многочлен:') +
-              '<br><b style="color:var(--v);font-size:14px">' + multResult + ' = 0</b><br><br>';
-            var polyRoots = solveWithNerdamer(multResult + '=0') || [];
-            if (polyRoots.length) {
-              rootsGen = polyRoots;
-              hGen += (E() ? 'Solving the polynomial:' : 'Решаем многочлен:') + '<br>';
-              for (var ri = 0; ri < polyRoots.length; ri++) {
-                hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(polyRoots[ri]) + '</b><br>';
-              }
-            } else {
-              // Try factoring the polynomial
-              var factoredPoly = ndFactor(multResult);
-              if (factoredPoly && factoredPoly !== multResult) {
-                hGen += (E() ? 'Factored form:' : 'Разложение на множители:') +
-                  '<br><b style="color:var(--c)">' + factoredPoly + ' = 0</b><br><br>';
-                var factorTerms = factoredPoly.split('*');
-                var allFactRoots = [];
-                for (var ft = 0; ft < factorTerms.length; ft++) {
-                  var ftClean = factorTerms[ft].trim();
-                  var ftRoots = solveWithNerdamer(ftClean + '=0') || [];
-                  for (var fr = 0; fr < ftRoots.length; fr++) {
-                    if (allFactRoots.indexOf(ftRoots[fr]) < 0) allFactRoots.push(ftRoots[fr]);
-                  }
+          if (multResult) {
+            // Try to expand to get a proper polynomial
+            var expandedResult = ndExpand(multResult) || multResult;
+            if (expandedResult.indexOf('/') < 0) {
+              hGen += (E() ? 'LCD approach gave equation:' : 'Метод ООЗ дал уравнение:') +
+                '<br><b style="color:var(--v);font-size:14px">' + expandedResult + ' = 0</b><br><br>';
+              var polyRoots = solveWithNerdamer(expandedResult + '=0') || [];
+              if (polyRoots.length) {
+                rootsGen = polyRoots;
+                hGen += (E() ? 'Solving gives:' : 'Решение:') + '<br>';
+                for (var ri = 0; ri < polyRoots.length; ri++) {
+                  hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(polyRoots[ri]) + '</b><br>';
                 }
-                if (allFactRoots.length) {
-                  rootsGen = allFactRoots;
-                  hGen += (E() ? 'Solving each factor:' : 'Решаем каждый множитель:') + '<br>';
-                  for (var ri2 = 0; ri2 < allFactRoots.length; ri2++) {
-                    hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(allFactRoots[ri2]) + '</b><br>';
+              } else {
+                // Try factoring the expanded polynomial
+                var factoredPoly = ndFactor(expandedResult);
+                if (factoredPoly && factoredPoly !== expandedResult) {
+                  hGen += (E() ? 'Factored form:' : 'Разложение:') +
+                    '<br><b style="color:var(--c)">' + factoredPoly + ' = 0</b><br><br>';
+                  var factorTerms = factoredPoly.split('*');
+                  var allFactRoots = [];
+                  for (var ft = 0; ft < factorTerms.length; ft++) {
+                    var ftClean = factorTerms[ft].trim();
+                    var ftRoots = solveWithNerdamer(ftClean + '=0') || [];
+                    for (var fr = 0; fr < ftRoots.length; fr++) {
+                      if (allFactRoots.indexOf(ftRoots[fr]) < 0) allFactRoots.push(ftRoots[fr]);
+                    }
+                  }
+                  if (allFactRoots.length) {
+                    rootsGen = allFactRoots;
+                    hGen += (E() ? 'Solving each factor:' : 'Решаем каждый множитель:') + '<br>';
+                    for (var ri2 = 0; ri2 < allFactRoots.length; ri2++) {
+                      hGen += '&nbsp;&nbsp;x = <b style="color:var(--g)">' + pN(allFactRoots[ri2]) + '</b><br>';
+                    }
                   }
                 }
               }
