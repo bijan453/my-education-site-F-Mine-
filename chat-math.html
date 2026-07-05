@@ -1074,6 +1074,9 @@
     .mega-section-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#f59e0b;margin-bottom:8px;display:flex;align-items:center;gap:6px;letter-spacing:0.3px}
     .mega-section-body{color:#cbd5e1;font-size:13.5px;line-height:1.75;}
     .mega-section-body b{color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,0.2)}
+    .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px}
+    .frac-top{padding:0 6px 3px;border-bottom:2px solid currentColor;color:var(--text)}
+    .frac-bot{padding:3px 6px 0;color:var(--text)}
 
     .glossary-term {
       color: var(--m);
@@ -12992,6 +12995,13 @@
       return sn + '/' + sd;
     }
 
+    // Visual fraction renderer: "(3x-7)/(2x+5)" → HTML fraction display
+    function visFrac(text) {
+      return text.replace(/\(([^()]+)\)\s*\/\s*\(([^()]+)\)/g, function(m, num, den) {
+        return '<span class="frac"><span class="frac-top">' + num + '</span><span class="frac-bot">' + den + '</span></span>';
+      });
+    }
+
     // ══════════════════════════════════════════════════════
     // SOLVER A — PRIME FACTORIZATION
     // "factor 360" / "разложить 360" / "prime factors 97"
@@ -16471,6 +16481,8 @@
       hGen += conceptBlock(E()
         ? 'A rational equation has variables in denominators. Multiply each term by the LCD to clear fractions.'
         : 'Рациональное уравнение содержит дроби с переменными в знаменателях. Умножаем каждый член на общий знаменатель.');
+      hGen += '<div style="text-align:center;font-size:18px;padding:12px;background:var(--bg2);border-radius:10px;margin:8px 0">'
+        + visFrac(text) + '</div>';
 
       // --- Step 1: ODZ ---
       var lcdExplanation = (E() ? 'We find the Least Common Denominator (LCD) of all fractions:' : 'Находим наименьший общий знаменатель (НОЗ) всех дробей:');
@@ -16538,6 +16550,15 @@
       // If no terms parsed, use original solver
       if (!allTerms.length) return _prevTryMega(text);
 
+      // Show original fractions visually
+      hGen += '<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;padding:12px;background:var(--bg2);border-radius:10px;margin:8px 0">';
+      for (var tvi = 0; tvi < allTerms.length; tvi++) {
+        if (tvi > 0) hGen += '<span style="color:var(--text3);font-size:22px">' + allTerms[tvi].sign + '</span>';
+        hGen += '<span class="frac"><span class="frac-top" style="border-color:var(--a)">' + allTerms[tvi].num + '</span><span class="frac-bot" style="border-top:2px solid var(--a)">' + allTerms[tvi].den + '</span></span>';
+      }
+      hGen += ' <span style="color:var(--text3);font-size:20px">= 0</span>';
+      hGen += '</div>';
+
       // Build individual product terms, expand each separately
       var allDenoms = lcdTerms; // array like ['(2*x+5)', '(3*x-4)', '(6*x^2+7*x-20)']
       var polyTerms = [];
@@ -16564,6 +16585,9 @@
           hGen += '<div style="font-weight:600;font-size:14px">'
             + (E() ? 'Term ' + (ti + 1) : 'Член ' + (ti + 1))
             + ':</div>';
+          hGen += (E() ? 'Original fraction:'
+            : 'Исходная дробь:') + ' '
+            + '<span class="frac"><span class="frac-top" style="border-color:var(--a)">' + t.num + '</span><span class="frac-bot" style="border-top:2px solid var(--a)">' + t.den + '</span></span><br>';
           hGen += (E() ? 'Multiply numerator by all OTHER denominators:' : 'Умножаем числитель на все ОСТАЛЬНЫЕ знаменатели:') + '<br>';
           hGen += '<span style="color:var(--text3)">' + productStr + '</span><br>';
           hGen += (E() ? 'Expand the brackets (multiply everything out):' : 'Раскрываем скобки (перемножаем всё):') + '<br>';
