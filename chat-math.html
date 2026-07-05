@@ -16455,24 +16455,17 @@
       }
       var lcdStr = lcdTerms.join('*');
 
-      // Find ODZ
+      // Find ODZ — solve each denominator polynomial for roots
       for (var di3 = 0; di3 < rawDenoms.length; di3++) {
         var dNorm3 = normNerd(rawDenoms[di3]);
         try {
-          var dFact3 = ndFactor(dNorm3);
-          var dExprs = (dFact3 && dFact3 !== dNorm3) ? (dFact3.match(/\([^)]+\)/g) || []) : [dNorm3];
-          if (!dExprs.length) dExprs = [dNorm3];
-          for (var f3 = 0; f3 < dExprs.length; f3++) {
-            var f3s = dExprs[f3];
-            solveWithNerdamer(f3s + '=0').forEach(function(rt) {
-              if (odzGen.indexOf(rt) < 0) odzGen.push(rt);
-            });
+          var denomRoots = solvePoly(dNorm3);
+          if (denomRoots && denomRoots.length) {
+            for (var dr = 0; dr < denomRoots.length; dr++) {
+              if (odzGen.indexOf(denomRoots[dr]) < 0) odzGen.push(denomRoots[dr]);
+            }
           }
-        } catch (e) {
-          solveWithNerdamer(dNorm3 + '=0').forEach(function(rt) {
-            if (odzGen.indexOf(rt) < 0) odzGen.push(rt);
-          });
-        }
+        } catch (e) {}
       }
 
       hGen += conceptBlock(E()
