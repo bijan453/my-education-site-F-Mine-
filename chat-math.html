@@ -16455,7 +16455,7 @@
       var fullPoly = '';
       for (var pti = 0; pti < polyTerms.length; pti++) {
         var pt = polyTerms[pti];
-        var termStr = pt.sign === '-' ? '-' + pt.expr : (fullPoly ? '+' + pt.expr : pt.expr);
+        var termStr = pt.sign === '-' ? '-(' + pt.expr + ')' : (fullPoly ? '+' + pt.expr : pt.expr);
         fullPoly += termStr;
       }
 
