@@ -16906,20 +16906,15 @@
           + (rootsExp.length === 1
             ? 'x = <b style="color:var(--g)">' + pN(rootsExp[0]) + '</b>'
             : rootsExp.map(function(r, i) { return 'x' + (i+1) + ' = <b style="color:var(--g)">' + pN(r) + '</b>'; }).join(', ')));
-      } else {
-
-      hExp += answerBlock(rootsExp, odzExp);
-      hExp += megaMistakes(E()
-        ? ['(x + a)(x + b) ≠ x² + a·b (missing the cross term a·x + b·x!)', 'Forgetting to distribute the minus sign: −(x + a) = −x − a']
-        : ['(x + a)(x + b) ≠ x² + a·b (пропущен перекрёстный член a·x + b·x!)', 'Забыть распределить минус: −(x + a) = −x − a']);
-      hExp += megaPractice(E()
-        ? ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']
-        : ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']);
-      return hExp;
     }
-
-    // Fall through to previous solvers
-    return _prevTryMega(text);
+    hExp += answerBlock(rootsExp, odzExp);
+    hExp += megaMistakes(E()
+      ? ['(x + a)(x + b) ≠ x² + a·b (missing the cross term a·x + b·x!)', 'Forgetting to distribute the minus sign: −(x + a) = −x − a']
+      : ['(x + a)(x + b) ≠ x² + a·b (пропущен перекрёстный член a·x + b·x!)', 'Забыть распределить минус: −(x + a) = −x − a']);
+    hExp += megaPractice(E()
+      ? ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']
+      : ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']);
+    return hExp;
   };
 
 })();
