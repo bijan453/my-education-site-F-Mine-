@@ -16787,7 +16787,7 @@
     // TYPES 3, 4, 11: Expand & solve (linear/quadratic)
     // ════════════════════════════════════════
     // Detect brackets that need expanding: (x + a)(x + b) or (x + a)^2 patterns
-    var hasExpandPattern = /\([^)]*\)\([^)]*\)/.test(text) || /\(x\s*[+-]\s*\d+\.?\d*\)\s*\^\s*2/.test(text);
+    var hasExpandPattern = /\)\s*\(/.test(text) || /\(x\s*[+-]\s*\d+\.?\d*\)\s*\^\s*2/.test(text);
 
     // Type 4: Fraction squares like ((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18
     var hasFracSquares = /\(\(x\s*[+-]\s*\d+\.?\d*\)\s*\/\s*\d+\.?\d*\)\s*\^\s*2/.test(text);
@@ -16871,6 +16871,8 @@
     }
 
     if (hasExpandPattern && !hasRational) {
+      // Diagnostic
+      if (text.indexOf('(x-3)') >= 0) { return '<div style="color:red">DEBUG: Type 3/11 reached! hasExpand=' + hasExpandPattern + ' hasRational=' + hasRational + '</div>'; }
       var expResult = ndExpand(eqExpr);
       var simpResult = ndSimplify(expResult || eqExpr);
 
