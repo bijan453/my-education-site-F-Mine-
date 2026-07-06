@@ -16870,9 +16870,15 @@
       return hFs;
     }
 
+    // Type 3/11: any equation with expandable brackets and no fractions/abs
+    if (!hasAbs && !hasRational && !hasFracSquares && !hasExpandPattern) {
+      // Check if it really needs expanding: look for ')(', '(x' patterns, or '^2' after parens
+      var reallyNeedsExpand = /\)\s*\(/.test(text) || /\(x\s*[+-]/.test(text) || /x\s*[+-]\s*\d+\s*\)\s*\^\s*2/.test(text);
+      if (reallyNeedsExpand) {
+        hasExpandPattern = true;
+      }
+    }
     if (hasExpandPattern && !hasRational) {
-      // Diagnostic
-      if (text.indexOf('(x-3)') >= 0) { return '<div style="color:red">DEBUG: Type 3/11 reached! hasExpand=' + hasExpandPattern + ' hasRational=' + hasRational + '</div>'; }
       var expResult = ndExpand(eqExpr);
       var simpResult = ndSimplify(expResult || eqExpr);
 
