@@ -16889,9 +16889,9 @@
       }
 
       // Try to solve
-      var eqForSolve = simpResult || expResult || text;
-      if (eqForSolve.indexOf('=') < 0) eqForSolve += '=0';
-      var rootsExp = solveWithNerdamer(eqForSolve);
+      var polyForSolve = (simpResult || expResult || text).replace(/=0$/i, '');
+      var rootsExp = solvePoly(polyForSolve);
+      if (!rootsExp.length) rootsExp = solveWithNerdamer(polyForSolve + '=0');
       var odzExp = [];
 
       if (rootsExp.length) {
@@ -16899,22 +16899,8 @@
           (E() ? 'After simplification, we solve:' : 'После упрощения решаем:') + '<br>'
           + (rootsExp.length === 1
             ? 'x = <b style="color:var(--g)">' + pN(rootsExp[0]) + '</b>'
-            : 'x₁ = <b style="color:var(--g)">' + pN(rootsExp[0]) + '</b>, x₂ = <b style="color:var(--g)">' + pN(rootsExp[1]) + '</b>'));
+            : rootsExp.map(function(r, i) { return 'x' + (i+1) + ' = <b style="color:var(--g)">' + pN(r) + '</b>'; }).join(', ')));
       } else {
-        // Could be linear: try manual solving
-        var linRe = simpResult ? simpResult.match(/^([+-]?\d*\.?\d*)\*?x\s*([+-]\s*\d*\.?\d*)\s*$/i) : null;
-        if (linRe) {
-          var aLin = parseFloat(linRe[1].replace(/\s/g, '') || '1');
-          var bLin = parseFloat(linRe[2].replace(/\s/g, '') || '0');
-          if (aLin !== 0) {
-            var rootLin = -bLin / aLin;
-            hExp += stepBlock(2, E() ? 'Solve Linear Equation' : 'Решаем линейное уравнение',
-              pN(aLin) + 'x ' + (bLin >= 0 ? '+ ' : '− ') + Math.abs(bLin) + ' = 0<br>'
-              + 'x = ' + pN(-bLin) + ' / ' + pN(aLin) + ' = <b style="color:var(--g)">' + pN(rootLin) + '</b>');
-            rootsExp = [rootLin];
-          }
-        }
-      }
 
       hExp += answerBlock(rootsExp, odzExp);
       hExp += megaMistakes(E()
