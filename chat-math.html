@@ -8133,13 +8133,11 @@
         }
       }
 
-      // Try mega-enhanced solver first if mega mode is active
-      if (megaMode) {
-        var mr = tryMegaSolve(userText);
-        if (mr) return mr;
-        // also try with expanded form
-        if (expandedEq) { var mr2 = tryMegaSolve(expandedEq); if (mr2) return mr2; }
-      }
+      // Try mega-enhanced solver first (always, not just in mega mode)
+      var mr = tryMegaSolve(userText);
+      if (mr) return mr;
+      // also try with expanded form
+      if (expandedEq) { var mr2 = tryMegaSolve(expandedEq); if (mr2) return mr2; }
 
       // ─── ORIGINAL SOLVERS ───
 
