@@ -15822,7 +15822,7 @@
   var _prevTryMega = tryMegaSolve;
 
   tryMegaSolve = function (text) {
-    try {
+    alert('tryMegaSolve CALLED with: ' + text);
     var lo = text.toLowerCase().replace(/\s+/g, ' ').trim();
     var e = E();
 
@@ -16878,6 +16878,7 @@
       }
     }
     if (hasExpandPattern && !hasRational) {
+      alert('TYPE 3/11 ENTERED: hasExpandPattern=' + hasExpandPattern + ', hasRational=' + hasRational);
       var expResult = ndExpand(eqExpr);
       var simpResult = ndSimplify(expResult || eqExpr);
 
@@ -16915,8 +16916,8 @@
     hExp += megaPractice(E()
       ? ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']
       : ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']);
+    alert('TYPE 3/11 FINISHED, roots=' + JSON.stringify(rootsExp));
     return hExp;
-    } catch (ee) { return '<div style="color:var(--r);padding:12px;background:var(--bg2);border-radius:10px">🔥 <b>tryMegaSolve ERROR:</b> ' + ee.message + '<br><span style="font-size:11px;color:var(--text3)">' + ee.stack.replace(/\n/g,'<br>') + '</span></div>'; }
   };
 
 })();
