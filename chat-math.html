@@ -16889,7 +16889,9 @@
       }
 
       // Try to solve
-      var rootsExp = solveWithNerdamer(simpResult || expResult || text);
+      var eqForSolve = simpResult || expResult || text;
+      if (eqForSolve.indexOf('=') < 0) eqForSolve += '=0';
+      var rootsExp = solveWithNerdamer(eqForSolve);
       var odzExp = [];
 
       if (rootsExp.length) {
