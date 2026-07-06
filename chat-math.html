@@ -16789,6 +16789,87 @@
     // Detect brackets that need expanding: (x + a)(x + b) or (x + a)^2 patterns
     var hasExpandPattern = /\([^)]*\)\([^)]*\)/.test(text) || /\(x\s*[+-]\s*\d+\.?\d*\)\s*\^\s*2/.test(text);
 
+    // Type 4: Fraction squares like ((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18
+    var hasFracSquares = /\(\(x\s*[+-]\s*\d+\.?\d*\)\s*\/\s*\d+\.?\d*\)\s*\^\s*2/.test(text);
+
+    if (hasFracSquares && !hasRational) {
+      var hFs = '';
+      hFs += conceptBlock(E()
+        ? 'This equation has <b>fractions raised to powers</b>. We multiply each term by the common denominator (squared) to clear fractions, then expand and solve.'
+        : 'В этом уравнении <b>дроби возводятся в степень</b>. Умножаем каждый член на общий знаменатель (в квадрате), раскрываем скобки и решаем.');
+      hFs += '<div style="text-align:center;font-size:17px;padding:12px;background:var(--bg2);border-radius:10px;margin:8px 0">' + text + '</div>';
+
+      // Extract denominators from squared fractions and plain fractions
+      var fsDenoms = [];
+      var fsRe = /\/\s*(\d+\.?\d*)\)\s*\^\s*2/g;
+      var fm2;
+      while ((fm2 = fsRe.exec(text)) !== null) {
+        var d = parseFloat(fm2[1]);
+        fsDenoms.push(d * d); // square the denominator
+      }
+      // Also find plain fractions
+      var pfRe = /\/\s*(\d+\.?\d*)(?:\s*[+-]|\s*$)/g;
+      while ((fm2 = pfRe.exec(text)) !== null) {
+        var pv = parseFloat(fm2[1]);
+        if (fsDenoms.indexOf(pv) < 0) fsDenoms.push(pv);
+      }
+
+      // LCM helper
+      function _gcd2(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
+      function _lcm2(a, b) { return Math.abs(a * b) / _gcd2(a, b); }
+      var lcmVal = fsDenoms.reduce(function(acc, v) { return _lcm2(acc, v); }, 1);
+
+      // Build the multiplication expression
+      var eqNorm = text.replace(/\s+/g, '');
+      var sides = eqNorm.split('=');
+      var lhsExpr = sides[0], rhsExpr = sides[1] || '0';
+      var fullExpr = '(' + lhsExpr + ')-(' + rhsExpr + ')';
+      var multExpr = lcmVal + '*(' + fullExpr + ')';
+
+      hFs += stepBlock(1, E() ? 'Clear Fractions' : 'Избавляемся от дробей',
+        (E() ? 'Step 1: Find the common denominator of all fractions.' : 'Шаг 1: Находим общий знаменатель всех дробей.') + '<br>'
+        + (E() ? 'Detected denominators (squared): ' : 'Найденные знаменатели (в квадрате): ')
+        + fsDenoms.map(function(d) { return Math.sqrt(d); }).join(', ') + '<br>'
+        + (E() ? 'Least Common Multiple: ' : 'Наименьшее общее кратное: ') + '<b style="color:var(--c)">' + lcmVal + '</b><br><br>'
+        + (E() ? 'Multiply both sides by ' + lcmVal + ':' : 'Умножаем обе части на ' + lcmVal + ':') + '<br>'
+        + '<span style="color:var(--text3)">' + lcmVal + ' · [' + fullExpr + '] = 0</span><br>');
+
+      // Expand
+      var expResult = ndExpand(multExpr);
+      var simpResult = ndSimplify(expResult || multExpr);
+
+      if (expResult) {
+        hFs += (E() ? 'After expansion:' : 'После раскрытия:') + '<br>'
+          + '<b style="color:var(--v);font-size:14px">' + expResult + ' = 0</b><br>';
+      }
+      if (simpResult && simpResult !== expResult) {
+        hFs += (E() ? 'Simplified:' : 'Упрощено:') + '<br>'
+          + '<b style="color:var(--c);font-size:14px">' + simpResult + ' = 0</b><br>';
+      }
+
+      // Solve
+      var finalEq = simpResult || expResult || multExpr;
+      var rootsFs = solveWithNerdamer(finalEq + '=0') || [];
+      if (!rootsFs.length) rootsFs = solvePoly(finalEq);
+      var odzFs = [];
+
+      if (rootsFs.length) {
+        hFs += stepBlock(2, E() ? 'Solve the Equation' : 'Решаем уравнение',
+          (E() ? 'After clearing fractions and simplifying:' : 'После избавления от дробей и упрощения:') + '<br>');
+        for (var fi = 0; fi < rootsFs.length; fi++) {
+          hFs += (fi === 0 ? '' : '; ') + 'x = <b style="color:var(--g)">' + pN(rootsFs[fi]) + '</b>';
+        }
+      } else {
+        hFs += (E() ? 'Could not solve algebraically.' : 'Не удалось решить алгебраически.');
+      }
+
+      hFs += answerBlock(rootsFs, odzFs);
+      hFs += megaPractice(E()
+        ? ['((x-1)/3)^2 - ((2x+3)/4)^2 = (5x-7)/12', '((x+2)/5)^2 + ((3x-1)/2)^2 = (x-4)/10']
+        : ['((x-1)/3)^2 - ((2x+3)/4)^2 = (5x-7)/12', '((x+2)/5)^2 + ((3x-1)/2)^2 = (x-4)/10']);
+      return hFs;
+    }
+
     if (hasExpandPattern && !hasRational) {
       var expResult = ndExpand(eqExpr);
       var simpResult = ndSimplify(expResult || eqExpr);
