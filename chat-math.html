@@ -14181,7 +14181,13 @@
          ['±p/q', e ? 'all candidate rational roots' : 'все кандидаты на рациональные корни']],
         e ? 'If a rational root exists, it must be of the form ±p/q.' : 'Если рациональный корень существует, он имеет вид ±p/q.');
 
-      // Find divisors
+      // Helper: inline-flex fraction (same as _frac but inlined since _frac is in a different script)
+      function _frac1(n, d) {
+        return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.85em;line-height:1.2;margin:0 2px">'
+          + '<span style="border-bottom:1.5px solid var(--v);padding:0 5px 1px">' + n + '</span>'
+          + '<span style="padding:0 5px">' + d + '</span></span>';
+      }
+
       function getDivisors(n) {
         n = Math.abs(Math.round(n));
         if (n === 0) return [0];
@@ -14194,12 +14200,13 @@
       var divA = getDivisors(a);
       var candidates = [];
       var candidateSet = {};
+      var fracPairs = [];
       for (var i = 0; i < divD.length; i++) {
         for (var j = 0; j < divA.length; j++) {
           var v = divD[i] / divA[j];
           var key1 = pN(v), key2 = pN(-v);
-          if (!candidateSet[key1]) { candidates.push(v); candidateSet[key1] = true; }
-          if (v !== 0 && !candidateSet[key2]) { candidates.push(-v); candidateSet[key2] = true; }
+          if (!candidateSet[key1]) { candidates.push(v); candidateSet[key1] = true; fracPairs.push({v: v, p: divD[i], q: divA[j], sign: 1}); }
+          if (v !== 0 && !candidateSet[key2]) { candidates.push(-v); candidateSet[key2] = true; fracPairs.push({v: -v, p: divD[i], q: divA[j], sign: -1}); }
         }
       }
 
@@ -14207,10 +14214,22 @@
       h += '<div class="mega-section"><div class="mega-section-title">📊 '
         + (e ? 'Step 1: Find Candidate Rational Roots' : 'Шаг 1: Найти кандидатов рациональных корней') + '</div>'
         + '<div class="mega-section-body">';
-      h += (e ? 'Divisors of d = ' + pN(d) + ': ' : 'Делители d = ' + pN(d) + ': ') + '±{' + divD.join(', ') + '}<br>';
-      h += (e ? 'Divisors of |a| = ' + pN(Math.abs(a)) + ': ' : 'Делители |a| = ' + pN(Math.abs(a)) + ': ') + '±{' + divA.join(', ') + '}<br>';
-      h += (e ? 'Candidates: ' : 'Кандидаты: ') + candidates.map(pN).join(', ');
-      h += '</div></div>';
+      h += '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:8px">';
+      h += '<div><b>' + (e ? 'Divisors of d = ' : 'Делители d = ') + pN(d) + ':</b><br>'
+        + '<span style="font-family:\'DM Mono\',monospace;font-size:13px;color:var(--v)">&plusmn;{' + divD.join(', ') + '}</span></div>';
+      h += '<div><b>' + (e ? 'Divisors of |a| = ' : 'Делители |a| = ') + pN(Math.abs(a)) + ':</b><br>'
+        + '<span style="font-family:\'DM Mono\',monospace;font-size:13px;color:var(--v)">&plusmn;{' + divA.join(', ') + '}</span></div>';
+      h += '</div>';
+      h += '<b>' + (e ? 'Candidates (p/q):' : 'Кандидаты (p/q):') + '</b><br>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">';
+      for (var fi = 0; fi < fracPairs.length; fi++) {
+        var fp = fracPairs[fi];
+        var decStr = pN(fp.v);
+        var fracStr = (fp.sign < 0 ? '&minus;' : '') + _frac1(pN(fp.p), pN(fp.q));
+        h += '<span style="display:inline-flex;align-items:center;gap:3px;background:var(--glass2);padding:2px 8px;border-radius:6px;font-size:12px">'
+          + fracStr + '&nbsp;= ' + decStr + '</span>';
+      }
+      h += '</div></div></div>';
 
       // ── STEP 2: Test candidates ──
       var foundRoot = null;
@@ -14219,13 +14238,24 @@
         var cv = candidates[k];
         var fv = evalCubic(cv);
         var ok = Math.abs(fv) < 1e-9;
-        testHtml += '&nbsp;&nbsp;f(' + pN(cv) + ') = ' + pN(fv) + (ok ? ' <b style="color:var(--g)">✓ ROOT!</b>' : '') + '<br>';
+        // Show the evaluation work
+        var c2 = cv * cv, c3 = c2 * cv;
+        var termA = pN(a) + '&middot;' + pN(c3);
+        var termB = (b >= 0 ? '+ ' : '- ') + pN(Math.abs(b)) + '&middot;' + pN(c2);
+        var termC = (c >= 0 ? '+ ' : '- ') + pN(Math.abs(c)) + '&middot;' + pN(cv);
+        var termD = (d >= 0 ? '+ ' : '- ') + pN(Math.abs(d));
+        var calcA = a * c3, calcB = b * c2, calcC = c * cv;
+        testHtml += '<div style="padding:3px 0;' + (ok ? 'background:rgba(184,157,255,0.08);border-radius:4px;padding-left:6px' : '') + '">'
+          + '<span style="font-size:12px">f(' + pN(cv) + ') = ' + termA + ' ' + termB + ' ' + termC + ' ' + termD + '</span><br>'
+          + '<span style="font-size:12px;color:var(--text2)">&nbsp;&nbsp;&nbsp;&nbsp;= ' + pN(calcA) + ' ' + (calcB >= 0 ? '+ ' : '- ') + pN(Math.abs(calcB)) + ' ' + (calcC >= 0 ? '+ ' : '- ') + pN(Math.abs(calcC)) + ' ' + (d >= 0 ? '+ ' : '- ') + pN(Math.abs(d)) + '</span><br>'
+          + '<span style="font-size:12px;color:' + (ok ? 'var(--g)' : 'var(--text2)') + '">&nbsp;&nbsp;&nbsp;&nbsp;= ' + pN(fv) + (ok ? ' <b style="color:var(--g)">✓ ROOT!</b>' : '') + '</span>'
+          + '</div>';
         if (ok && foundRoot === null) foundRoot = cv;
       }
 
       h += '<div class="mega-section"><div class="mega-section-title">🎯 '
         + (e ? 'Step 2: Test Candidates' : 'Шаг 2: Проверить кандидатов') + '</div>'
-        + '<div class="mega-section-body" style="font-family:\'DM Mono\',monospace;font-size:12px;line-height:1.9">'
+        + '<div class="mega-section-body" style="font-family:\'DM Mono\',monospace;font-size:12px;line-height:1.7">'
         + testHtml + '</div></div>';
 
       var roots = [];
