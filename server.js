@@ -212,86 +212,101 @@ app.post("/api/chat-stream", async (req, res) => {
   try {
     const { model, messages, stream, temperature, max_tokens } = req.body;
     
-    // Determine which API key to use:
     // If the client provided their own key in Authorization header, use it.
-    // Otherwise, use the one from our environment.
-    let apiKey = process.env.OPENROUTER_API_KEY;
+    // Otherwise, use the keys from our environment.
+    let userApiKey = "";
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const userKey = authHeader.substring(7).trim();
       if (userKey && userKey !== "undefined" && userKey !== "null" && userKey !== "") {
-        apiKey = userKey;
+        userApiKey = userKey;
       }
     }
 
-    if (!apiKey) {
-      return res.status(400).json({ 
-        error: { 
-          message: "OpenRouter API key is missing. Add OPENROUTER_API_KEY to your server's .env file or enter one in the settings." 
-        } 
-      });
-    }
+    const groqApiKey = process.env.GROQ_API_KEY;
+    const openrouterApiKey = userApiKey || process.env.OPENROUTER_API_KEY;
 
-    const openrouterUrl = "https://openrouter.ai/api/v1/chat/completions";
-    const headers = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-      "HTTP-Referer": "https://f-mine.app",
-      "X-Title": "F-Mine Bot Proxy"
-    };
-
-    const body = {
-      model: model || "openrouter/free",
-      messages: messages,
-      stream: !!stream
-    };
-    if (temperature !== undefined) body.temperature = temperature;
-    if (max_tokens !== undefined) body.max_tokens = max_tokens;
-
-    if (stream) {
-      // Set up Server-Sent Events headers
-      res.setHeader("Content-Type", "text/event-stream");
-      res.setHeader("Cache-Control", "no-cache");
-      res.setHeader("Connection", "keep-alive");
-
-      const response = await fetch(openrouterUrl, {
+    async function _tryGroq() {
+      if (!groqApiKey) throw new Error("GROQ_API_KEY not configured on server");
+      const groqModel = "mixtral-8x7b-32768";
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
-        headers: headers,
-        body: JSON.stringify(body)
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${groqApiKey}`
+        },
+        body: JSON.stringify({
+          model: groqModel,
+          messages: messages,
+          temperature: temperature || 0.3,
+          stream: false,
+          max_tokens: max_tokens || 4096
+        })
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errMsg = errorData.error?.message || `HTTP ${response.status}`;
-        console.error("OpenRouter stream error:", errMsg);
-        res.write(`data: ${JSON.stringify({ error: { message: errMsg } })}\n\n`);
-        return res.end();
-      }
-
-      // Read from fetch response body stream and write to express response stream
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        res.write(chunk);
-      }
-      res.end();
-    } else {
-      // Normal JSON response
-      const response = await fetch(openrouterUrl, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(body)
-      });
-
       const data = await response.json();
       if (!response.ok) {
-        return res.status(response.status).json(data);
+        const errMsg = data.error?.message || `HTTP ${response.status}`;
+        throw new Error(errMsg);
       }
-      res.json(data);
+      return data;
+    }
+
+    async function _tryOpenRouter() {
+      if (!openrouterApiKey) throw new Error("OpenRouter API key is missing. Add OPENROUTER_API_KEY to your server's .env file or enter one in the settings.");
+      const url = "https://openrouter.ai/api/v1/chat/completions";
+      const headers = {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${openrouterApiKey}`,
+        "HTTP-Referer": "https://f-mine.app",
+        "X-Title": "F-Mine Bot Proxy"
+      };
+      const body = {
+        model: model || "openrouter/free",
+        messages: messages,
+        stream: !!stream
+      };
+      if (temperature !== undefined) body.temperature = temperature;
+      if (max_tokens !== undefined) body.max_tokens = max_tokens;
+
+      if (stream) {
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
+        const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          const errMsg = errorData.error?.message || `HTTP ${response.status}`;
+          console.error("OpenRouter stream error:", errMsg);
+          res.write(`data: ${JSON.stringify({ error: { message: errMsg } })}\n\n`);
+          return res.end();
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          res.write(decoder.decode(value, { stream: true }));
+        }
+        res.end();
+      } else {
+        const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+        const data = await response.json();
+        if (!response.ok) return res.status(response.status).json(data);
+        res.json(data);
+      }
+    }
+
+    if (stream) {
+      await _tryOpenRouter();
+    } else {
+      // Non-streaming: try Groq first, fall back to OpenRouter
+      try {
+        const data = await _tryGroq();
+        return res.json(data);
+      } catch (groqErr) {
+        console.warn("Groq failed, trying OpenRouter:", groqErr.message);
+        await _tryOpenRouter();
+      }
     }
   } catch (err) {
     console.error("Error in /api/chat-stream:", err);
@@ -476,12 +491,12 @@ app.get("/api/chess/join", (req, res) => {
 
   res.json({ ok: true, gameId, color: assignedColor });
   
-  // Broadcast init to the creator so game properly starts
-  broadcastToGame(gameId, { type: "init", game });
+  // Broadcast update to the creator
+  broadcastToGame(gameId, { type: "update", game });
 });
 
 app.get("/api/chess/matchmake", (req, res) => {
-  const { player, timeControl, playerRating } = req.query;
+  const { player, timeControl, playerRating, clientId } = req.query;
   if (!player) {
     return res.status(400).json({ ok: false, error: "Player name is required" });
   }
@@ -489,13 +504,13 @@ app.get("/api/chess/matchmake", (req, res) => {
   // Prune stale games in queue
   matchmakingQueue = matchmakingQueue.filter(item => {
     const g = chessGames.get(item.gameId);
-    return g && g.status === "waiting" && g.playerWhite !== player && g.playerBlack !== player;
+    return g && g.status === "waiting";
   });
 
   const ratingVal = parseInt(playerRating || "1200");
 
-  // Find game with matching time control
-  const matchIndex = matchmakingQueue.findIndex(item => item.timeControl === (timeControl || "infinite"));
+  // Find game with matching time control and different client ID
+  const matchIndex = matchmakingQueue.findIndex(item => item.timeControl === (timeControl || "infinite") && item.creatorClientId !== clientId);
 
   if (matchIndex !== -1) {
     const match = matchmakingQueue[matchIndex];
@@ -544,7 +559,7 @@ app.get("/api/chess/matchmake", (req, res) => {
     
     chessGames.set(gameId, game);
     
-    matchmakingQueue.push({ gameId, timeControl: game.timeControl, creatorColor });
+    matchmakingQueue.push({ gameId, timeControl: game.timeControl, creatorColor, creatorClientId: clientId });
     
     res.json({ ok: true, gameId: gameId, color: creatorColor });
   }
@@ -670,7 +685,6 @@ app.get("/api/chess/stream/:gameId", (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
-  res.setHeader("X-Accel-Buffering", "no");
 
   if (!chessClients.has(gameId)) {
     chessClients.set(gameId, new Set());
@@ -680,22 +694,17 @@ app.get("/api/chess/stream/:gameId", (req, res) => {
   // Send initial state immediately
   res.write(`data: ${JSON.stringify({ type: "init", game })}\n\n`);
 
-  // Keep-alive heartbeat every 15s to prevent proxy/mobile connection drops
-  const heartbeat = setInterval(() => {
-    try {
-      res.write(`:heartbeat\n\n`);
-    } catch (e) {
-      clearInterval(heartbeat);
-    }
-  }, 15000);
-
   req.on("close", () => {
-    clearInterval(heartbeat);
     const clients = chessClients.get(gameId);
     if (clients) {
       clients.delete(res);
       if (clients.size === 0) {
         chessClients.delete(gameId);
+        const game = chessGames.get(gameId);
+        if (game && game.status === "waiting") {
+          matchmakingQueue = matchmakingQueue.filter(item => item.gameId !== gameId);
+          chessGames.delete(gameId);
+        }
       }
     }
   });

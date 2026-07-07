@@ -10205,7 +10205,7 @@
         headers["Authorization"] = "Bearer " + userApiKey;
       }
 
-      // Try backend proxy first, then fallback to direct OpenRouter call
+      // Backend proxy handles Groq → OpenRouter fallback automatically
       async function _tryBackend() {
         var response = await fetch("/api/chat-stream", {
           method: "POST",
@@ -10690,6 +10690,7 @@
 
     function detectDeepTopic(problem) {
       var lo = problem.toLowerCase();
+      if (/x\^[3456]|x[³⁴⁵⁶]|куб|cubic|биквадр|biquadr/i.test(lo)) return 'generic';
       if (/квадрат|quadratic|x\^2|x²|дискримин|discriminant/i.test(lo)) return 'quadratic';
       if (/производн|derivative|дифференц|d\/dx/i.test(lo)) return 'derivative';
       if (/интеграл|integral|∫/i.test(lo)) return 'integral';
@@ -10706,22 +10707,6 @@
       var topic = detectDeepTopic(problem);
       var db = DEEP_DB[topic] || DEEP_DB.generic;
       var L = isEN() ? 'EN' : 'RU';
-
-      // ── STEP-BY-STEP REVEAL WRAPPING ──
-      var sections = bubble.querySelectorAll('.mega-section');
-      if (sections.length > 2) {
-        for (var i = 1; i < sections.length; i++) {
-          sections[i].style.display = 'none';
-          sections[i].classList.add('hidden-step-' + i);
-          sections[i].setAttribute('data-step-index', i);
-        }
-        var nextBtn = document.createElement('button');
-        nextBtn.className = 'btn';
-        nextBtn.style.cssText = 'margin:10px 0; background:var(--v); color:white; width:100%; font-weight:800; border-radius:12px;';
-        nextBtn.textContent = isEN() ? 'Show Next Step ➔' : 'Показать следующий шаг ➔';
-        nextBtn.onclick = function() { revealNextStep(this, sections.length); };
-        bubble.appendChild(nextBtn);
-      }
 
       var deepSection = document.createElement('div');
       deepSection.style.cssText = 'margin-top:18px;border-top:1.5px solid rgba(184,157,255,0.2);padding-top:14px;';
@@ -15661,6 +15646,11 @@
         var sd = Math.sqrt(disc);
         roots.push((-b + sd) / (2 * a));
         roots.push((-b - sd) / (2 * a));
+      } else {
+        var rp = -b / (2 * a);
+        var ip = Math.sqrt(-disc) / (2 * a);
+        roots.push(rp + '+' + ip + 'i');
+        roots.push(rp + '-' + ip + 'i');
       }
       return roots;
     }
@@ -15815,6 +15805,9 @@
     return h;
   }
 
+  // ==== HELPER: Format expression (replace * with ·) ====
+  function _tr(s) { return s.replace(/\*/g, '·'); }
+
   // ═══════════════════════════════════════════
   // TYPE DISPATCHER
   // ═══════════════════════════════════════════
@@ -15822,7 +15815,6 @@
   var _prevTryMega = tryMegaSolve;
 
   tryMegaSolve = function (text) {
-    alert('tryMegaSolve CALLED with: ' + text);
     var lo = text.toLowerCase().replace(/\s+/g, ' ').trim();
     var e = E();
 
@@ -16884,17 +16876,147 @@
 
       var hExp = '';
       hExp += conceptBlock(E()
-        ? 'This equation has brackets that need to be <b>expanded</b>. After expansion, we collect like terms and solve the resulting equation.'
-        : 'В этом уравнении нужно <b>раскрыть скобки</b>. После раскрытия приводим подобные и решаем полученное уравнение.');
+        ? 'This equation has brackets. Remember the rule: <b>(a + b)(c + d) = ac + ad + bc + bd</b>. Let\'s expand each pair step by step, then combine like terms and solve.'
+        : 'Перед нами уравнение со скобками. Вспоминаем правило: <b>(a + b)(c + d) = ac + ad + bc + bd</b>. Раскрываем каждую пару скобок по отдельности, затем приводим подобные и решаем.');
 
-      hExp += stepBlock(1, E() ? 'Expand Brackets' : 'Раскрываем скобки',
-        (E() ? 'Original:' : 'Исходное:') + '<br>'
-        + '<b style="color:var(--text)">' + text + '</b><br><br>'
-        + (expResult ? (E() ? 'After expansion:' : 'После раскрытия:') + '<br><b style="color:var(--v);font-size:14px">' + expResult + ' = 0</b><br>' : ''));
+      function _split(s) {
+        var r = [], c = '';
+        for (var i = 0; i < s.length; i++) {
+          if ((s[i] === '+' || s[i] === '-') && i > 0) { r.push(c); c = s[i]; }
+          else c += s[i];
+        }
+        if (c) r.push(c);
+        if (r.length && r[0][0] !== '+' && r[0][0] !== '-') r[0] = '+' + r[0];
+        return r;
+      }
+
+      function _showBB(expr) {
+        var m = expr.match(/^\(([^)]+)\)\(([^)]+)\)$/);
+        if (!m) return expr + ' = ' + _tr(ndExpand(expr) || expr);
+        var a = m[1], b = m[2];
+        var ta = _split(a), tb = _split(b);
+        var foilTerms = [], computedTerms = [];
+        for (var i = 0; i < ta.length; i++) {
+          for (var j = 0; j < tb.length; j++) {
+            var t1 = ta[i], t2 = tb[j];
+            var s1 = t1[0], b1 = t1.substring(1);
+            var s2 = t2[0], b2 = t2.substring(1);
+            var prodSign = (s1 === '-' ? (s2 === '-' ? '' : '-') : (s2 === '-' ? '-' : ''));
+            foilTerms.push(prodSign + b1 + '·' + b2);
+            var nerd = ndExpand((s1 === '-' ? '-' : '') + b1 + '*' + (s2 === '-' ? '-' : '') + b2);
+            var body = nerd ? _tr(nerd) : (prodSign + b1 + '·' + b2);
+            computedTerms.push(body);
+          }
+        }
+        var foilStr = foilTerms.join(' + ').replace(/\+\s*-/g, '- ');
+        var sumStr = '';
+        for (var k = 0; k < computedTerms.length; k++) {
+          var cb = computedTerms[k];
+          if (k === 0) sumStr += cb;
+          else sumStr += (cb[0] === '-' ? ' - ' : ' + ') + cb.replace(/^-/, '');
+        }
+        var total = ndExpand(expr);
+        return '<span style="color:#e74c3c">' + expr + '</span><br>'
+          + '&nbsp;&nbsp;' + foilStr + '<br>'
+          + '&nbsp;&nbsp;= ' + sumStr + '<br>'
+          + '&nbsp;&nbsp;= <b style="color:var(--v)">' + (total ? _tr(total) : '?') + '</b>';
+      }
+
+      function _showNB(coeff, inside) {
+        var terms = _split(inside);
+        var distTerms = [], computed = [];
+        for (var i = 0; i < terms.length; i++) {
+          var t = terms[i];
+          var s = t[0], b = t.substring(1);
+          var prodSign = (coeff[0] === '-' ? (s === '-' ? '' : '-') : (s === '-' ? '-' : ''));
+          distTerms.push(prodSign + coeff.replace(/^-/, '') + '·' + b);
+          var nerd = ndExpand(coeff + '*' + (s === '-' ? '-' : '') + b);
+          var body = nerd ? _tr(nerd) : (prodSign + coeff.replace(/^-/, '') + '·' + b);
+          computed.push(body);
+        }
+        var distStr = distTerms.join(' + ').replace(/\+\s*-/g, '- ');
+        var sumStr = '';
+        for (var k = 0; k < computed.length; k++) {
+          var cb = computed[k];
+          if (k === 0) sumStr += cb;
+          else sumStr += (cb[0] === '-' ? ' - ' : ' + ') + cb.replace(/^-/, '');
+        }
+        var total = ndExpand(coeff + '*(' + inside + ')');
+        return '<span style="color:#2980b9">' + coeff + '(' + inside + ')</span><br>'
+          + '&nbsp;&nbsp;' + distStr + '<br>'
+          + '&nbsp;&nbsp;= ' + sumStr + '<br>'
+          + '&nbsp;&nbsp;= <b style="color:var(--v)">' + (total ? _tr(total) : '?') + '</b>';
+      }
+
+      var stepHtml = '<b style="color:var(--text);font-size:15px">' + (E() ? 'Original equation:' : 'Исходное уравнение:') + '</b><br>'
+        + '<b style="font-size:16px;color:var(--text)">' + text + '</b><br><br>';
+
+      // Parse the original text for bracket expressions
+      var norm = text.replace(/\s/g, '');
+      var eqParts = norm.split('=');
+      var normLeft = eqParts[0], normRight = eqParts.length > 1 ? eqParts[1] : '';
+
+      function collectExps(str) {
+        var res = [], done = [];
+        var reBB = /\([^)]+\)\([^)]+\)/g;
+        var m;
+        while ((m = reBB.exec(str)) !== null) { res.push({ t: 'bb', e: m[0] }); done.push({ s: m.index, e: m.index + m[0].length }); }
+        var reNB = /([+-]?\d+\.?\d*\*?x?\^?\d*)\(([^)]+)\)/g;
+        while ((m = reNB.exec(str)) !== null) {
+          var ov = done.some(function(p) { return m.index < p.e && (m.index + m[0].length) > p.s; });
+          if (!ov && m[1]) { res.push({ t: 'nb', e: m[0], c: m[1], i: m[2] }); done.push({ s: m.index, e: m.index + m[0].length }); }
+        }
+        return res;
+      }
+
+      var leftExps = collectExps(normLeft);
+      var rightExps = collectExps(normRight);
+
+      if (leftExps.length === 0 && rightExps.length === 0) {
+        stepHtml += (E() ? 'No brackets found to expand.' : 'Скобки для раскрытия не найдены.');
+      } else {
+        stepHtml += '<b style="font-size:14px">' + (E() ? 'Expand each bracket, multiplying every term:' : 'Раскрываем каждую скобку, перемножая все члены:') + '</b><br>';
+
+        if (leftExps.length > 0) {
+          stepHtml += '<div style="margin-top:10px;margin-bottom:4px"><b>' + (E() ? 'Left side:' : 'Левая часть:') + '</b></div>';
+          for (var ei = 0; ei < leftExps.length; ei++) {
+            var exp = leftExps[ei];
+            var detailHtml = exp.t === 'bb' ? _showBB(exp.e) : _showNB(exp.c, exp.i);
+            stepHtml += '<div style="margin-left:12px;margin-bottom:10px">' + detailHtml + '</div>';
+          }
+        }
+
+        if (rightExps.length > 0) {
+          stepHtml += '<div style="margin-top:10px;margin-bottom:4px"><b>' + (E() ? 'Right side:' : 'Правая часть:') + '</b></div>';
+          for (var ei2 = 0; ei2 < rightExps.length; ei2++) {
+            var exp2 = rightExps[ei2];
+            var detailHtml2 = exp2.t === 'bb' ? _showBB(exp2.e) : _showNB(exp2.c, exp2.i);
+            stepHtml += '<div style="margin-left:12px;margin-bottom:10px">' + detailHtml2 + '</div>';
+          }
+        }
+      }
+
+      stepHtml += '<br><b style="font-size:14px">' + (E() ? 'Bring all terms to one side (LHS − RHS = 0):' : 'Переносим всё в левую часть (ЛЧ − ПЧ = 0):') + '</b><br>'
+        + (E() ? 'After expanding and collecting like terms:' : 'После раскрытия скобок и приведения подобных:') + '<br>'
+        + '<b style="color:var(--v);font-size:15px">'
+        + (expResult ? _tr(expResult) : '') + ' = 0</b><br>';
 
       if (simpResult && simpResult !== expResult) {
-        hExp += (E() ? 'Simplified:' : 'Упрощено:') + '<br><b style="color:var(--c);font-size:14px">' + simpResult + ' = 0</b><br>';
+        stepHtml += '<br><b style="font-size:14px">' + (E() ? 'Simplify (collect like terms):' : 'Упрощаем (приводим подобные):') + '</b><br>'
+          + '<b style="color:var(--c);font-size:15px">' + _tr(simpResult) + ' = 0</b><br>';
       }
+
+      stepHtml += '<br><b style="font-size:14px">' + (E() ? 'Bring everything to one side (LHS − RHS = 0):' : 'Переносим всё в одну сторону (ЛЧ − ПЧ = 0):') + '</b><br>'
+        + (E() ? 'After expanding and combining all terms:' : 'После раскрытия и приведения всех членов:') + '<br>'
+        + '<b style="color:var(--v);font-size:15px">'
+        + (expResult ? _tr(expResult) : '') + ' = 0</b><br>';
+
+      if (simpResult && simpResult !== expResult) {
+        stepHtml += '<br><b style="font-size:14px">' + (E() ? 'Simplify like terms:' : 'Приводим подобные:') + '</b><br>'
+          + '<b style="color:var(--c);font-size:15px">' + _tr(simpResult) + ' = 0</b><br>';
+      }
+
+      hExp += stepBlock(1, E() ? 'Bracket Expansion (Detailed)' : 'Раскрытие скобок (подробно)', stepHtml);
 
       // Try to solve
       var polyForSolve = (simpResult || expResult || text).replace(/=0$/i, '');
@@ -16903,22 +17025,136 @@
       var odzExp = [];
 
       if (rootsExp.length) {
-        hExp += stepBlock(2, E() ? 'Solve the Equation' : 'Решаем уравнение',
-          (E() ? 'After simplification, we solve:' : 'После упрощения решаем:') + '<br>'
-          + (rootsExp.length === 1
-            ? 'x = <b style="color:var(--g)">' + pN(rootsExp[0]) + '</b>'
-            : rootsExp.map(function(r, i) { return 'x' + (i+1) + ' = <b style="color:var(--g)">' + pN(r) + '</b>'; }).join(', ')));
+        var polyStr = _tr(simpResult || expResult);
+        // Extract a, b, c by parsing terms (order-independent)
+        var _rawExpr = (simpResult || expResult).replace(/\s+/g, '').replace(/\*/g, '');
+        if (_rawExpr[0] !== '-' && _rawExpr[0] !== '+') _rawExpr = '+' + _rawExpr;
+        var _parts = _rawExpr.match(/[+-][^+-]+/g) || [];
+        var _a = 0, _b = 0, _c = 0;
+        _parts.forEach(function(p) {
+          var _sign = p[0] === '-' ? -1 : 1;
+          var _term = p.substring(1);
+          if (/x\^2/.test(_term)) {
+            var _cv = _term.replace(/x\^2/, '');
+            _a += _sign * (_cv === '' ? 1 : parseFloat(_cv));
+          } else if (/x(?!\^)/.test(_term)) {
+            var _cv = _term.replace(/x/, '');
+            _b += _sign * (_cv === '' ? 1 : parseFloat(_cv));
+          } else {
+            _c += _sign * parseFloat(_term);
+          }
+        });
+
+        if (Math.abs(_a) > 1e-12) {
+          hExp += '<div style="font-weight:800;font-size:15px;color:#f59e0b;margin:16px 0 4px">📐 ' + (E() ? 'Step 2: Solve Quadratic Equation' : 'Шаг 2: Решаем квадратное уравнение') + '</div>'
+            + megaSolveQuadratic(_a, _b, _c);
+        } else {
+          var solveHtml = (E() ? 'After bringing all terms:' : 'После приведения всех членов:') + '<br>'
+            + '<b style="color:var(--c);font-size:15px">' + polyStr + ' = 0</b><br><br>'
+            + '<b style="font-size:14px">' + (E() ? 'Roots:' : 'Корни:') + '</b><br>'
+            + (rootsExp.length === 1
+              ? 'x = <b style="color:var(--g);font-size:16px">' + pN(rootsExp[0]) + '</b>'
+              : rootsExp.map(function(r, i) { return 'x<sub>' + (i+1) + '</sub> = <b style="color:var(--g);font-size:16px">' + pN(r) + '</b>'; }).join('<br>'));
+          hExp += stepBlock(2, E() ? 'Solve Equation' : 'Решаем уравнение', solveHtml);
+        }
+    } else {
+      hExp += (E() ? 'Could not solve this equation algebraically.' : 'Не удалось решить уравнение алгебраически.');
     }
-    hExp += answerBlock(rootsExp, odzExp);
     hExp += megaMistakes(E()
       ? ['(x + a)(x + b) ≠ x² + a·b (missing the cross term a·x + b·x!)', 'Forgetting to distribute the minus sign: −(x + a) = −x − a']
       : ['(x + a)(x + b) ≠ x² + a·b (пропущен перекрёстный член a·x + b·x!)', 'Забыть распределить минус: −(x + a) = −x − a']);
     hExp += megaPractice(E()
       ? ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']
       : ['(x-3)(2x+5) - (3x-7)(x+4) = 5(x-6) - 2(3x+11)', '(x-5)^2 - (3x+7)(x-2) + 2(x+4)(x-9) = 0', '((x-3)/2)^2 - ((2x+5)/3)^2 = (7x-11)/18']);
-    alert('TYPE 3/11 FINISHED, roots=' + JSON.stringify(rootsExp));
     return hExp;
+    }
+
+    // ── No type handler matched — try biquadratic only ──
+    if (typeof rootsExp === 'undefined' && !hasAbs && !hasRational) {
+      var _deg = 0, _rx = /x(?:\^(\d+))?/gi, _m2;
+      while ((_m2 = _rx.exec(eqExpr)) !== null) {
+        var _d = _m2[1] ? parseInt(_m2[1]) : 1;
+        if (_d > _deg) _deg = _d;
+      }
+      // Only handle pure biquadratics (deg 4, no odd terms). Everything else falls through.
+      if (_deg === 4) {
+        var _hasX1 = false, _hasX3 = false, _hasX4 = false;
+        var _tRe = /([+-]?\d*\.?\d*)\*?x(?:\^(\d+))?/gi, _tm2;
+        while ((_tm2 = _tRe.exec(eqExpr)) !== null) {
+          var _td = _tm2[2] ? parseInt(_tm2[2]) : 1;
+          if (_td === 1) _hasX1 = true;
+          if (_td === 3) _hasX3 = true;
+          if (_td === 4) _hasX4 = true;
+        }
+        if (_hasX4 && !_hasX1 && !_hasX3) {
+          var _pStr2 = eqExpr.replace(/[-+]\(0\)\s*$/i, '');
+          var _roots2 = solvePoly(_pStr2);
+          if (!_roots2.length) _roots2 = solveWithNerdamer(eqExpr + '=0');
+          var _hF = '';
+          var _nice = ndSimplify(_pStr2) || _pStr2;
+          var _c4 = 0, _c2 = 0, _c0 = 0;
+          var _t4 = _nice.match(/([+-]?\d*\.?\d*)\*?x\^4/i);
+          if (_t4) _c4 = parseFloat(_t4[1].replace(/^\+/, '') || '1');
+          else { var _t4a = _nice.match(/x\^4/); if (_t4a) _c4 = 1; }
+          var _t2m = _nice.match(/([+-]?\d*\.?\d*)\*?x\^2/i);
+          if (_t2m) _c2 = parseFloat(_t2m[1].replace(/^\+/, '') || '1');
+          var _t0 = _nice.match(/([+-]?\d+\.?\d*)$/);
+          if (_t0) _c0 = parseFloat(_t0[1]);
+
+          _hF += conceptBlock(E()
+            ? 'A <b>biquadratic equation</b> has the form <b>ax⁴ + bx² + c = 0</b>. We substitute <b>t = x²</b> to get a quadratic.'
+            : '<b>Биквадратное уравнение</b> имеет вид <b>ax⁴ + bx² + c = 0</b>. Решаем подстановкой <b>t = x²</b>.');
+
+          _hF += stepBlock(1, E() ? 'Substitute t = x²' : 'Подставляем t = x²',
+            (E() ? 'Let <b>t = x²</b>. Then:' : 'Пусть <b>t = x²</b>. Тогда:') + '<br><br>'
+            + '<b style="color:var(--v);font-size:15px">' + _c4 + 't² + ' + _c2 + 't + ' + _c0 + ' = 0</b>');
+
+          var _D4 = _c2*_c2 - 4*_c4*_c0;
+          _hF += stepBlock(2, E() ? 'Solve the quadratic in t' : 'Решаем квадратное относительно t',
+            'D = ' + _c2 + '² − 4·' + _c4 + '·' + _c0 + ' = ' + _D4 + '<br><br>'
+            + (_D4 < 0
+              ? (E() ? 'No real solutions for t.' : 'Нет действительных решений для t.')
+              : 't = (' + (-_c2) + ' ± √' + _D4 + ') / ' + (2*_c4) + '<br><br>'
+              + (E() ? 'Then x = ±√t gives:' : 'Тогда x = ±√t:')));
+
+          if (_D4 >= 0) {
+            var _sqD4 = Math.sqrt(_D4);
+            var _t1 = (-_c2 + _sqD4) / (2*_c4);
+            var _t2 = (-_c2 - _sqD4) / (2*_c4);
+            var _xRoots = [];
+            if (_t1 >= 0) { _xRoots.push(Math.sqrt(_t1)); _xRoots.push(-Math.sqrt(_t1)); }
+            if (_t2 >= 0 && Math.abs(_t1 - _t2) > 1e-10) { _xRoots.push(Math.sqrt(_t2)); _xRoots.push(-Math.sqrt(_t2)); }
+            _xRoots.sort(function(a,b){return a-b;});
+            _hF += stepBlock(3, E() ? 'Find x' : 'Находим x',
+              _xRoots.map(function(r, i) { return 'x<sub>' + (i+1) + '</sub> = <b style="color:var(--g);font-size:15px">' + pN(r) + '</b>'; }).join('<br>'));
+            _roots2 = _xRoots;
+          }
+
+          _hF += answerBlock(_roots2, []);
+          return _hF;
+        }
+      }
+      
+      // ── Generic polynomial solver (any degree not handled above) ──
+      var _pStrG = eqExpr.replace(/[-+]\(0\)\s*$/i, '');
+      var _gRoots = solvePoly(_pStrG);
+      var _gNerdRoots = [];
+      try { _gNerdRoots = solveWithNerdamer(eqExpr + '=0') || []; } catch(e) {}
+      if (_gNerdRoots.length > _gRoots.length) _gRoots = _gNerdRoots;
+      if (_gRoots && _gRoots.length > 0) {
+        var _gH = '';
+        var _displayEq = text;
+        _gH += stepBlock(1, E() ? 'Solve Polynomial Equation' : 'Решаем уравнение',
+          '<b style="font-size:15px">' + _displayEq + '</b>');
+        _gH += stepBlock(2, E() ? 'Roots' : 'Корни',
+          _gRoots.map(function(r, i) { return 'x<sub>' + (i+1) + '</sub> = <b style="color:var(--g);font-size:15px">' + pN(r) + '</b>'; }).join('<br>'));
+        _gH += answerBlock(_gRoots, []);
+        return _gH;
+      }
+    }
   };
+  
+ 
 
 })();
 </script>
