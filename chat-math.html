@@ -14208,7 +14208,7 @@
         + (e ? 'Step 1: Find Candidate Rational Roots' : 'Шаг 1: Найти кандидатов рациональных корней') + '</div>'
         + '<div class="mega-section-body">';
       h += (e ? 'Divisors of d = ' + pN(d) + ': ' : 'Делители d = ' + pN(d) + ': ') + '±{' + divD.join(', ') + '}<br>';
-      h += (e ? 'Divisors of a = ' + pN(a) + ': ' : 'Делители a = ' + pN(a) + ': ') + '±{' + divA.join(', ') + '}<br>';
+      h += (e ? 'Divisors of |a| = ' + pN(Math.abs(a)) + ': ' : 'Делители |a| = ' + pN(Math.abs(a)) + ': ') + '±{' + divA.join(', ') + '}<br>';
       h += (e ? 'Candidates: ' : 'Кандидаты: ') + candidates.map(pN).join(', ');
       h += '</div></div>';
 
@@ -14282,18 +14282,31 @@
 
         if (D > 0) {
           var sqD = Math.sqrt(D);
+          var _sqrtDisp = '√' + pN(D);
           var x1 = (-q2b + sqD) / (2 * q2a);
           var x2 = (-q2b - sqD) / (2 * q2a);
           roots.push(x1);
           roots.push(x2);
-          h += 'x₂ = (' + pN(-q2b) + ' + √' + pN(D) + ') / ' + pN(2 * q2a) + ' = <b style="color:var(--g)">' + pN(x1) + '</b><br>';
-          h += 'x₃ = (' + pN(-q2b) + ' − √' + pN(D) + ') / ' + pN(2 * q2a) + ' = <b style="color:var(--g)">' + pN(x2) + '</b>';
+          h += 'x₂, x₃ = <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.85em;line-height:1.2;margin:0 2px">'
+            + '<span style="border-bottom:1.5px solid var(--v);padding:0 5px 1px">' + pN(-q2b) + ' &plusmn; ' + _sqrtDisp + '</span>'
+            + '<span style="padding:0 5px">' + pN(2 * q2a) + '</span></span><br><br>'
+            + 'x₂ = <b style="color:var(--g);font-size:14px">' + pN(x1) + '</b><br>'
+            + 'x₃ = <b style="color:var(--g);font-size:14px">' + pN(x2) + '</b>';
         } else if (D === 0) {
           var x1s = -q2b / (2 * q2a);
           roots.push(x1s);
-          h += 'D = 0 → x₂ = ' + pN(-q2b) + ' / ' + pN(2 * q2a) + ' = <b style="color:var(--g)">' + pN(x1s) + '</b> ' + (e ? '(double root)' : '(двойной корень)');
+          h += 'D = 0 &rarr; x₂ = <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.85em;line-height:1.2;margin:0 2px">'
+            + '<span style="border-bottom:1.5px solid var(--v);padding:0 5px 1px">' + pN(-q2b) + '</span>'
+            + '<span style="padding:0 5px">' + pN(2 * q2a) + '</span></span> = <b style="color:var(--g);font-size:14px">' + pN(x1s) + '</b> ' + (e ? '(double root)' : '(двойной корень)');
         } else {
-          h += '<b style="color:var(--r)">' + (e ? 'D < 0 → No more real roots from this quadratic' : 'D < 0 → Больше действительных корней из этого квадратного нет') + '</b>';
+          var _rePart = pN(-q2b / (2 * q2a));
+          var _imPart = pN(Math.sqrt(-D) / (2 * q2a));
+          h += '<b>D = ' + pN(D) + ' &lt; 0</b> &rarr; ' + (e ? 'two complex roots' : 'два комплексных корня') + '<br><br>'
+            + 'x₂, x₃ = <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.85em;line-height:1.2;margin:0 2px">'
+            + '<span style="border-bottom:1.5px solid var(--v);padding:0 5px 1px">' + pN(-q2b) + ' &plusmn; i' + _imPart + '</span>'
+            + '<span style="padding:0 5px">' + pN(2 * q2a) + '</span></span><br><br>'
+            + 'x₂ = <b style="color:var(--g);font-size:14px">' + _rePart + '+' + _imPart + 'i</b><br>'
+            + 'x₃ = <b style="color:var(--g);font-size:14px">' + _rePart + '-' + _imPart + 'i</b>';
         }
         h += '</div></div>';
 
