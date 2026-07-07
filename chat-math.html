@@ -14176,10 +14176,33 @@
       h += tfBox(
         e ? '📐 Rational Root Theorem' : '📐 Теорема о рациональных корнях',
         'x = ±p/q,  p | d,  q | a',
-        [['p', e ? 'divisors of the free term d' : 'делители свободного члена d'],
-         ['q', e ? 'divisors of the leading coefficient a' : 'делители старшего коэффициента a'],
+        [['p', e ? 'divisors of the free term d = ' + pN(d) : 'делители свободного члена d = ' + pN(d)],
+         ['q', e ? 'divisors of |a| = ' + pN(Math.abs(a)) : 'делители |a| = ' + pN(Math.abs(a))],
          ['±p/q', e ? 'all candidate rational roots' : 'все кандидаты на рациональные корни']],
         e ? 'If a rational root exists, it must be of the form ±p/q.' : 'Если рациональный корень существует, он имеет вид ±p/q.');
+
+      h += megaExpandable(e ? '🤔 Why does the Rational Root Theorem work?' : '🤔 Почему работает теорема о рациональных корнях?',
+        '<div class="mega-section-body" style="font-size:12px;line-height:1.85">'
+        + (e
+          ? 'If x = p/q is a root of ax³+bx²+cx+d=0, then:<br><br>'
+          + '<b style="color:var(--v)">a(p/q)³ + b(p/q)² + c(p/q) + d = 0</b><br><br>'
+          + 'Multiply by q³:<br>'
+          + '<b style="color:var(--c)">ap³ + bp²q + cpq² + dq³ = 0</b><br><br>'
+          + 'Rearranging: <b>ap³ = −q(bp² + cpq + dq²)</b><br>'
+          + 'So q divides ap³. Since gcd(p,q)=1, q must divide a.<br><br>'
+          + 'Similarly, <b>dq³ = −p(ap² + bpq + cq²)</b><br>'
+          + 'So p divides dq³. Since gcd(p,q)=1, p must divide d.<br><br>'
+          + 'Therefore p|d and q|a. <b>Every rational root must be of the form ±p/q.</b>'
+          : 'Если x = p/q — корень уравнения ax³+bx²+cx+d=0, то:<br><br>'
+          + '<b style="color:var(--v)">a(p/q)³ + b(p/q)² + c(p/q) + d = 0</b><br><br>'
+          + 'Умножаем на q³:<br>'
+          + '<b style="color:var(--c)">ap³ + bp²q + cpq² + dq³ = 0</b><br><br>'
+          + 'Перегруппируем: <b>ap³ = −q(bp² + cpq + dq²)</b><br>'
+          + 'Значит q делит ap³. Так как gcd(p,q)=1, то q делит a.<br><br>'
+          + 'Аналогично: <b>dq³ = −p(ap² + bpq + cq²)</b><br>'
+          + 'Значит p делит dq³. Так как gcd(p,q)=1, то p делит d.<br><br>'
+          + 'Следовательно, p|d и q|a. <b>Любой рациональный корень имеет вид ±p/q.</b>')
+        + '</div>');
 
       // Helper: inline-flex fraction (same as _frac but inlined since _frac is in a different script)
       function _frac1(n, d) {
@@ -14308,6 +14331,7 @@
           + '<div class="mega-section-body" style="font-family:\'DM Mono\',monospace;font-size:12.5px;line-height:2">';
 
         h += polyStr2(q2a, q2b, q2c) + ' = 0<br>';
+        h += (e ? 'Calculate the discriminant: ' : 'Вычисляем дискриминант: ') + fe('D = b² - 4ac') + '<br>';
         h += 'D = (' + pN(q2b) + ')² − 4·(' + pN(q2a) + ')·(' + pN(q2c) + ') = ' + pN(q2b * q2b) + ' − ' + pN(4 * q2a * q2c) + ' = <b style="color:var(--a)">' + pN(D) + '</b><br>';
 
         if (D > 0) {
@@ -14317,7 +14341,8 @@
           var x2 = (-q2b - sqD) / (2 * q2a);
           roots.push(x1);
           roots.push(x2);
-          h += 'x₂, x₃ = <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.85em;line-height:1.2;margin:0 2px">'
+          h += (e ? 'Now use the quadratic formula: ' : 'Используем формулу: ') + fe('x = (-b ± √D) / 2a') + '<br><br>'
+            + 'x₂, x₃ = <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.85em;line-height:1.2;margin:0 2px">'
             + '<span style="border-bottom:1.5px solid var(--v);padding:0 5px 1px">' + pN(-q2b) + ' &plusmn; ' + _sqrtDisp + '</span>'
             + '<span style="padding:0 5px">' + pN(2 * q2a) + '</span></span><br><br>'
             + 'x₂ = <b style="color:var(--g);font-size:14px">' + pN(x1) + '</b><br>'
@@ -14421,6 +14446,17 @@
             ? '<b style="color:var(--c)">Δ = 0 → ' + (e ? 'all real, at least 2 equal' : 'все действительные, минимум 2 равны') + '</b>'
             : '<b style="color:var(--g)">Δ < 0 → ' + (e ? 'all 3 roots real (casus irreducibilis)' : 'все 3 корня действительные (casus irreducibilis)') + '</b>')
         + '</div>');
+
+      // ── COMMON MISTAKES ──
+      h += megaMistakes(e
+        ? ['Forgetting the ± sign in ±p/q (both positive AND negative must be tested)',
+           'Using divisors of a instead of |a| — a could be negative, divisors use absolute value',
+           'Skipping candidates and missing a root — always test ALL candidates in order',
+           'Dividing only √D by 2a in Step 4: both −b AND ±√D are divided by 2a']
+        : ['Забывать знак ± в ±p/q (надо проверить и положительные, И отрицательные)',
+           'Использовать делители a вместо |a| — a может быть отрицательным, делители берутся по модулю',
+           'Пропускать кандидатов — проверять нужно ВСЕ по порядку',
+           'В шаге 4 делить на 2a только √D: на 2a делится ВЕСЬ числитель (−b ± √D)']);
 
       // ── VERIFICATION ──
       if (roots.length) {
@@ -17315,8 +17351,26 @@
       }
     }
   };
-  
- 
+        h += megaExpandable(e ? '🔍 How does Horner\'s scheme work?' : '🔍 Как работает схема Горнера?',
+          '<div class="mega-section-body" style="font-size:12px;line-height:1.8">'
+          + (e
+            ? 'Horner\'s scheme (synthetic division) is a compact way to divide a polynomial by (x−r):<br><br>'
+            + '1. Write the coefficients: <b style="color:var(--v)">a, b, c, d</b><br>'
+            + '2. Bring down <b style="color:var(--g)">a</b> (it becomes q2a)<br>'
+            + '3. Multiply by r: <b style="color:var(--c)">a·r</b>, add to next coefficient: <b style="color:var(--g)">b + a·r = q2b</b><br>'
+            + '4. Multiply q2b by r: <b style="color:var(--c)">q2b·r</b>, add to c: <b style="color:var(--g)">c + q2b·r = q2c</b><br>'
+            + '5. Multiply q2c by r: <b style="color:var(--c)">q2c·r</b>, add to d — should give 0<br><br>'
+            + 'The bottom row gives coefficients of the reduced polynomial: <b style="color:var(--g)">q2a·x² + q2b·x + q2c</b>'
+            : 'Схема Горнера — компактный способ деления многочлена на (x−r):<br><br>'
+            + '1. Записываем коэффициенты: <b style="color:var(--v)">a, b, c, d</b><br>'
+            + '2. Сносим <b style="color:var(--g)">a</b> (это q2a)<br>'
+            + '3. Умножаем на r: <b style="color:var(--c)">a·r</b>, прибавляем к следующему: <b style="color:var(--g)">b + a·r = q2b</b><br>'
+            + '4. Умножаем q2b на r: <b style="color:var(--c)">q2b·r</b>, прибавляем к c: <b style="color:var(--g)">c + q2b·r = q2c</b><br>'
+            + '5. Умножаем q2c на r: <b style="color:var(--c)">q2c·r</b>, прибавляем к d — остаток 0<br><br>'
+            + 'Нижняя строка — коэффициенты пониженного многочлена: <b style="color:var(--g)">q2a·x² + q2b·x + q2c</b>')
+          + '</div>');
+
+
 
 })();
 </script>
