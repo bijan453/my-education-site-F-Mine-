@@ -15542,6 +15542,11 @@
     return (Math.abs(n - Math.round(n)) < 1e-9) ? String(Math.round(n)) : n.toFixed(6).replace(/\.?0+$/, '');
   }
   function fmt(n) { return pN(n); }
+  function _frac(n, d) {
+    return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.85em;line-height:1.2;margin:0 2px">' +
+      '<span style="border-bottom:1.5px solid var(--v);padding:0 5px 1px">' + n + '</span>' +
+      '<span style="padding:0 5px">' + d + '</span></span>';
+  }
 
   // Normalize math input for nerdamer
   function normNerd(s) {
@@ -17132,6 +17137,120 @@
 
           _hF += answerBlock(_roots2, []);
           return _hF;
+        }
+      
+      // ── Reciprocal (palindromic) quartic: ax⁴+bx³+cx²+bx+a=0 ──
+      if (_deg === 4) {
+        var _rcC = {}, _rcRe = /([+-]?)([^+-]+)/g, _rcS = eqExpr.replace(/\s+/g, '');
+        if (_rcS[0] !== '-' && _rcS[0] !== '+') _rcS = '+' + _rcS;
+        var _rcM;
+        while ((_rcM = _rcRe.exec(_rcS)) !== null) {
+          var _rcSign = _rcM[1] === '-' ? -1 : 1;
+          var _rcTerm = _rcM[2];
+          var _rcDeg = 0, _rcVal = 1;
+          var _rcX = _rcTerm.indexOf('x');
+          if (_rcX >= 0) {
+            var _rcDM = _rcTerm.match(/x\^(\d+)/);
+            _rcDeg = _rcDM ? parseInt(_rcDM[1]) : 1;
+            var _rcCStr = _rcTerm.replace(/x(?:\^(\d+))?/, '');
+            _rcVal = _rcCStr ? parseFloat(_rcCStr) : 1;
+          } else {
+            _rcVal = parseFloat(_rcTerm);
+          }
+          _rcC[_rcDeg] = (_rcC[_rcDeg] || 0) + _rcSign * _rcVal;
+        }
+        var _ra = _rcC[4] || 0, _rb = _rcC[3] || 0, _rc2 = _rcC[2] || 0, _rd = _rcC[1] || 0, _re = _rcC[0] || 0;
+        if (Math.abs(_ra - _re) < 1e-9 && Math.abs(_rb - _rd) < 1e-9 && Math.abs(_ra) > 1e-9) {
+          var _rh = '';
+          var _pADisplay = pN(_ra), _pBDisplay = pN(_rb), _pCDisplay = pN(_rc2);
+          _rh += conceptBlock(E()
+            ? 'This is a <b>reciprocal (palindromic) quartic</b>: coefficients are symmetric ($' + _pADisplay + ', ' + _pBDisplay + ', ' + _pCDisplay + ', ' + _pBDisplay + ', ' + _pADisplay + '$). We solve by dividing by $x^2$ and substituting $t = x + 1/x$.'
+            : 'Это <b>возвратное (симметричное) уравнение</b>: коэффициенты симметричны ($' + _pADisplay + ', ' + _pBDisplay + ', ' + _pCDisplay + ', ' + _pBDisplay + ', ' + _pADisplay + '$). Решаем делением на $x^2$ и заменой $t = x + 1/x$.');
+          _rh += stepBlock(1, E() ? 'Divide by x²' : 'Делим на x²',
+            (E() ? 'Check $x=0$ is not a root: plugging $x=0$ gives $' + _re + ' \\neq 0$, so we can divide.' : 'Проверяем, что $x=0$ не корень (подстановка даёт $' + _re + ' \\neq 0$), значит можно делить.') + '<br><br>'
+            + (E() ? 'Divide both sides by $x^2$:' : 'Делим обе части на $x^2$:') + '<br>'
+            + '<b style="font-size:14px;color:var(--v)">'
+            + _pADisplay + 'x² ' + (_rb >= 0 ? '+ ' : '- ') + Math.abs(_rb) + 'x ' + (_rc2 >= 0 ? '+ ' : '- ') + Math.abs(_rc2) + ' '
+            + (_rd >= 0 ? '+ ' : '- ') + Math.abs(_rd) + _frac('1', 'x') + ' ' + (_re >= 0 ? '+ ' : '- ') + Math.abs(_re) + _frac('1', 'x²')
+            + ' = 0</b>');
+          var _step2Content = (E() ? 'Group terms with matching coefficients:' : 'Группируем слагаемые с одинаковыми коэффициентами:') + '<br>'
+            + '<b style="font-size:14px;color:var(--c)">' + _pADisplay + '(x² + ' + _frac('1', 'x²') + ') '
+            + (_rb >= 0 ? '+ ' : '- ') + Math.abs(_rb) + '(x + ' + _frac('1', 'x') + ') '
+            + (_rc2 >= 0 ? '+ ' : '- ') + Math.abs(_rc2) + ' = 0</b>';
+          _rh += stepBlock(2, E() ? 'Group terms' : 'Группируем', _step2Content);
+          _rh += stepBlock(3, E() ? 'Substitute t = x + 1/x' : 'Замена t = x + 1/x',
+            (E() ? 'Let <b>t = x + ' + _frac('1', 'x') + '</b>. Then:' : 'Пусть <b>t = x + ' + _frac('1', 'x') + '</b>. Тогда:') + '<br><br>'
+            + 't² = (x + ' + _frac('1', 'x') + ')² = x² + 2 + ' + _frac('1', 'x²') + '<br>'
+            + (E() ? 'So <b>x² + ' + _frac('1', 'x²') + ' = t² − 2</b>' : 'Значит <b>x² + ' + _frac('1', 'x²') + ' = t² − 2</b>'));
+          var _D = _rb * _rb - 4 * _ra * _rc2;
+          var _DDisplay = pN(_D);
+          var _t1 = (-_rb + Math.sqrt(_D)) / (2 * _ra);
+          var _t2 = (-_rb - Math.sqrt(_D)) / (2 * _ra);
+          _rh += stepBlock(4, E() ? 'Solve quadratic in t' : 'Решаем квадратное уравнение',
+            (E() ? 'Substitute into the original equation:' : 'Подставляем в исходное уравнение:') + '<br><br>'
+            + _pADisplay + '(t² − 2) ' + (_rb >= 0 ? '+ ' : '- ') + Math.abs(_rb) + 't ' + (_rc2 >= 0 ? '+ ' : '- ') + Math.abs(_rc2) + ' = 0<br>'
+            + _pADisplay + 't² − ' + (2*_ra) + ' ' + (_rb >= 0 ? '+ ' : '- ') + Math.abs(_rb) + 't ' + (_rc2 >= 0 ? '+ ' : '- ') + Math.abs(_rc2) + ' = 0<br>'
+            + '<b style="font-size:14px;color:var(--v)">' + _pADisplay + 't² ' + (_rb >= 0 ? '+ ' : '- ') + Math.abs(_rb) + 't ' + (_rc2 - 2*_ra >= 0 ? '+ ' : '- ') + Math.abs(_rc2 - 2*_ra) + ' = 0</b><br><br>'
+            + 'D = ' + Math.abs(_rb) + '² − 4·' + _pADisplay + '·' + pN(Math.abs(_rc2 - 2*_ra)) + ' = ' + _DDisplay + '<br><br>'
+            + 't₁ = ' + _frac(pN(-_rb + Math.sqrt(_D)), pN(2*_ra)) + ' = <b style="color:var(--g);font-size:15px">' + pN(_t1) + '</b><br>'
+            + 't₂ = ' + _frac(pN(-_rb - Math.sqrt(_D)), pN(2*_ra)) + ' = <b style="color:var(--g);font-size:15px">' + pN(_t2) + '</b>');
+          var _recRoots = [];
+          // Case t1
+          var _disc1 = _t1 * _t1 - 4;
+          var _step5Html = (E() ? 'Case 1: t = ' + pN(_t1) : 'Случай 1: t = ' + pN(_t1)) + '<br><br>'
+            + 'x + ' + _frac('1', 'x') + ' = ' + pN(_t1) + '<br>'
+            + 'x² − ' + pN(_t1) + 'x + 1 = 0<br>';
+          if (_disc1 >= 0) {
+            var _sd1 = Math.sqrt(_disc1);
+            var _x1a = (_t1 + _sd1) / 2;
+            var _x1b = (_t1 - _sd1) / 2;
+            _step5Html += 'x = ' + _frac(pN(_t1) + ' ± √' + pN(_disc1), '2') + '<br><br>'
+              + 'x₁ = <b style="color:var(--g);font-size:15px">' + pN(_x1a) + '</b>';
+            _recRoots.push(_x1a);
+            if (Math.abs(_x1a - _x1b) > 1e-10) {
+              _step5Html += ', x₂ = <b style="color:var(--g);font-size:15px">' + pN(_x1b) + '</b>';
+              _recRoots.push(_x1b);
+            }
+          } else {
+            var _realPart1 = _t1 / 2;
+            var _imagPart1 = Math.sqrt(-_disc1) / 2;
+            _step5Html += (E() ? 'No real roots (D = ' + pN(_disc1) + ' < 0).' : 'Нет действительных корней (D = ' + pN(_disc1) + ' < 0).') + '<br>'
+              + 'x₁,₂ = ' + _frac(pN(_t1), '2') + ' ± ' + _frac('i√' + pN(-_disc1), '2') + '<br><br>'
+              + 'x₁ = <b style="color:var(--g);font-size:15px">' + pN(_realPart1) + '+' + pN(_imagPart1) + 'i</b><br>'
+              + 'x₂ = <b style="color:var(--g);font-size:15px">' + pN(_realPart1) + '-' + pN(_imagPart1) + 'i</b>';
+            _recRoots.push(_realPart1 + '+' + _imagPart1 + 'i');
+            _recRoots.push(_realPart1 + '-' + _imagPart1 + 'i');
+          }
+          _rh += stepBlock(5, E() ? 'Back-substitute' : 'Обратная замена', _step5Html);
+          // Case t2
+          var _disc2 = _t2 * _t2 - 4;
+          var _step6Html = (E() ? 'Case 2: t = ' + pN(_t2) : 'Случай 2: t = ' + pN(_t2)) + '<br><br>'
+            + 'x + ' + _frac('1', 'x') + ' = ' + pN(_t2) + '<br>'
+            + 'x² − ' + pN(_t2) + 'x + 1 = 0<br>';
+          if (_disc2 >= 0) {
+            var _sd2 = Math.sqrt(_disc2);
+            var _x2a = (_t2 + _sd2) / 2;
+            var _x2b = (_t2 - _sd2) / 2;
+            _step6Html += 'x = ' + _frac(pN(_t2) + ' ± √' + pN(_disc2), '2') + '<br><br>'
+              + 'x₃ = <b style="color:var(--g);font-size:15px">' + pN(_x2a) + '</b>';
+            _recRoots.push(_x2a);
+            if (Math.abs(_x2a - _x2b) > 1e-10) {
+              _step6Html += ', x₄ = <b style="color:var(--g);font-size:15px">' + pN(_x2b) + '</b>';
+              _recRoots.push(_x2b);
+            }
+          } else {
+            var _realPart2 = _t2 / 2;
+            var _imagPart2 = Math.sqrt(-_disc2) / 2;
+            _step6Html += (E() ? 'No real roots (D = ' + pN(_disc2) + ' < 0).' : 'Нет действительных корней (D = ' + pN(_disc2) + ' < 0).') + '<br>'
+              + 'x₃,₄ = ' + _frac(pN(_t2), '2') + ' ± ' + _frac('i√' + pN(-_disc2), '2') + '<br><br>'
+              + 'x₃ = <b style="color:var(--g);font-size:15px">' + pN(_realPart2) + '+' + pN(_imagPart2) + 'i</b><br>'
+              + 'x₄ = <b style="color:var(--g);font-size:15px">' + pN(_realPart2) + '-' + pN(_imagPart2) + 'i</b>';
+            _recRoots.push(_realPart2 + '+' + _imagPart2 + 'i');
+            _recRoots.push(_realPart2 + '-' + _imagPart2 + 'i');
+          }
+          _rh += stepBlock(6, E() ? 'Back-substitute (continued)' : 'Обратная замена (продолжение)', _step6Html);
+          _rh += answerBlock(_recRoots, []);
+          return _rh;
         }
       }
       
