@@ -110,7 +110,60 @@ app.post("/api/chat", async (req, res) => {
     } else if (deepseekApiKey) {
       reply = await callDeepSeek(systemPrompt, userMessage);
     } else {
-      throw new Error("No API key configured on server.");
+      // Fallback: try Groq → OpenRouter (same pattern as /api/chat-stream)
+      const groqApiKey = process.env.GROQ_API_KEY;
+      const openrouterApiKey = process.env.OPENROUTER_API_KEY;
+      let groqErr = null;
+      if (groqApiKey) {
+        try {
+          const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${groqApiKey}` },
+            body: JSON.stringify({
+              model: "mixtral-8x7b-32768",
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userMessage }
+              ],
+              temperature: 0.3,
+              max_tokens: 1024
+            })
+          });
+          const groqData = await groqRes.json();
+          if (groqRes.ok) {
+            reply = groqData.choices?.[0]?.message?.content || "";
+          } else {
+            groqErr = new Error(groqData.error?.message || `Groq HTTP ${groqRes.status}`);
+          }
+        } catch (e) { groqErr = e; }
+      }
+      if (!reply && openrouterApiKey) {
+        try {
+          const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${openrouterApiKey}`,
+              "HTTP-Referer": "https://f-mine.app",
+              "X-Title": "F-Mine Bot Proxy"
+            },
+            body: JSON.stringify({
+              model: "openrouter/free",
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userMessage }
+              ],
+              temperature: 0.3,
+              max_tokens: 1024
+            })
+          });
+          const orData = await orRes.json();
+          if (orRes.ok) {
+            reply = orData.choices?.[0]?.message?.content || "";
+          }
+        } catch (e) { /* both failed */ }
+      }
+      if (!reply) throw new Error(groqErr ? `Groq: ${groqErr.message}` : "No API key configured on server.");
     }
 
     res.json({ reply: reply || "Пустой ответ" });
