@@ -3246,7 +3246,7 @@
 
     <div class="chat-main">
       <div class="chat-window" id="chatWindow"><button id="scrollBottomBtn"
-          onclick="chatWindow.scrollTo({top:chatWindow.scrollHeight,behavior:'smooth'})"
+          onclick="smartScroll('smooth')"
           style="display:none; position:fixed; bottom:100px; right:20px; z-index:200; background:var(--v); color:#fff; border:none; border-radius:50%; width:36px; height:36px; font-size:18px; cursor:pointer; box-shadow:var(--sh-btn);">↓</button>
         <div class="welcome" id="welcomeBanner">
           <div class="welcome-title">🤖 <span id="wTitle">Математика Бот — 1–11 класс</span></div>
@@ -3336,6 +3336,16 @@
   </div>
 
   <script>
+  // Smart scroll: auto-scroll only if user is near bottom
+  window.smartScroll = function(behavior) {
+    var cw = document.getElementById('chatWindow');
+    if (!cw) return;
+    if (cw.scrollTop + cw.clientHeight >= cw.scrollHeight - 100) {
+      if (behavior === 'smooth') cw.scrollTo({ top: cw.scrollHeight, behavior: 'smooth' });
+      else cw.scrollTop = cw.scrollHeight;
+    }
+  };
+
     // ══════════════════════════════════════════════════════
     // STATE
     // ══════════════════════════════════════════════════════
@@ -9361,7 +9371,7 @@
       graphWrap.appendChild(canvas); var time = document.createElement('div'); time.className = 'msg-time';
       time.textContent = new Date().toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
       wrapDiv.appendChild(graphWrap); wrapDiv.appendChild(time); row.appendChild(av); row.appendChild(wrapDiv);
-      chatWindow.appendChild(row); chatWindow.scrollTop = chatWindow.scrollHeight;
+      chatWindow.appendChild(row); smartScroll();
       var ctx = canvas.getContext('2d'); ctx.scale(DPR, DPR); var w = W, h = H, scale = 28;
       ctx.fillStyle = '#06080f'; ctx.fillRect(0, 0, w, h); ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.lineWidth = 1;
       for (var gx = 0; gx <= w; gx += scale) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke() }
@@ -10002,7 +10012,7 @@
         }
         
         el.innerHTML = currentHTML + '<span class="cursor"></span>';
-        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+        smartScroll('smooth');
         requestAnimationFrame(next);
       }
       requestAnimationFrame(next);
@@ -10014,7 +10024,7 @@
       if (isHtml) bubble.innerHTML = content; else bubble.textContent = content;
       var time = document.createElement('div'); time.className = 'msg-time'; time.textContent = new Date().toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
       wrap.appendChild(bubble); wrap.appendChild(time); row.appendChild(av); row.appendChild(wrap);
-      chatWindow.appendChild(row); chatWindow.scrollTop = chatWindow.scrollHeight;
+      chatWindow.appendChild(row); smartScroll();
       if (role === 'bot') {
         finalizeBotBubble(bubble);
       }
@@ -10025,7 +10035,7 @@
       var av = document.createElement('div'); av.className = 'msg-avatar bot-av'; av.textContent = '🤖';
       var b = document.createElement('div'); b.className = 'thinking-bubble' + (megaMode ? ' mega-think' : '');
       for (var i = 0; i < 3; i++) { var d = document.createElement('div'); d.className = 't-dot'; b.appendChild(d) }
-      row.appendChild(av); row.appendChild(b); chatWindow.appendChild(row); chatWindow.scrollTop = chatWindow.scrollHeight;
+      row.appendChild(av); row.appendChild(b); chatWindow.appendChild(row); smartScroll();
     }
     function hideThinking() { var el = document.getElementById('thinkRow'); if (el) el.remove() }
     function showToast(msg) { var el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(function () { el.classList.remove('show') }, 2600) }
@@ -10338,7 +10348,7 @@
           chatWindow.appendChild(_gRow);
           var gHtml = buildGraphExplanation(gi.label, gi.expr);
           streamHTML(_gBubble, gHtml, 10, function() {
-            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+            smartScroll('smooth');
             isBusy = false; sendBtn.disabled = false;
             finalizeBotBubble(_gBubble);
           });
@@ -10412,7 +10422,7 @@
           formattedHtml += modelFooter;
           
           streamHTML(_bubble, formattedHtml, 12, function() {
-            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+            smartScroll('smooth');
             isBusy = false; sendBtn.disabled = false;
             finalizeBotBubble(_bubble);
           });
@@ -10439,7 +10449,7 @@
           chatWindow.appendChild(_row);
           
           streamHTML(_bubble, result, 8, function() {
-            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+            smartScroll('smooth');
             appendAIDeepExplanation(_bubble, problemText, result);
           });
           
@@ -10776,7 +10786,7 @@
       bubble.appendChild(deepSection);
 
       streamHTML(content, html, 10, function() {
-        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+        smartScroll('smooth');
         isBusy = false; sendBtn.disabled = false;
         finalizeBotBubble(bubble);
       });
@@ -10789,7 +10799,7 @@
         var next = hidden[0];
         next.style.display = 'block';
         next.style.animation = 'fadeIn 0.4s ease';
-        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+        smartScroll('smooth');
         if (hidden.length === 1) btn.remove();
       } else {
         btn.remove();
@@ -12702,7 +12712,7 @@
       wrapDiv.appendChild(graphWrap); wrapDiv.appendChild(time);
       row.appendChild(av); row.appendChild(wrapDiv);
       chatWindow.appendChild(row);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
+      smartScroll();
       if (typeof stats !== 'undefined') { stats.solved++; if(window.saveStats) saveStats(); if(window.updateStatUI) updateStatUI(); }
     }
 
