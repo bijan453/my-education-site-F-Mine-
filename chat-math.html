@@ -4406,6 +4406,7 @@
       RU: {
         'x = (-b ± √D) / 2a': { name: 'Формула дискриминанта (корни квадратного)', vars: [['x','решения уравнения — значения, при которых выражение = 0'],['b','коэффициент при x'],['D','дискриминант = b²−4ac'],['a','коэффициент при x²']], why: 'Получается из метода выделения полного квадрата. Квадрат раскрывается до формулы дискриминанта. Знак ± даёт два корня, так как √D может быть положительным или отрицательным.', qa: [['почему ±?','Потому что √D имеет два значения: +√D и −√D. Каждое даёт отдельный корень.'],['что если D<0?','Нет действительных корней. Парабола не пересекает ось x.'],['что если D=0?','Ровно один корень: x = −b/2a. Парабола касается оси x.'],['что такое a?','Коэффициент перед x². Он определяет, раскрыта ли парабола вверх (a>0) или вниз (a<0).']] },
         'D = b² - 4ac': { name: 'Дискриминант', vars: [['D','дискриминант — определяет количество корней'],['b','коэффициент при x'],['a','коэффициент при x²'],['c','свободный член (без x)']], why: 'D>0 → два корня, D=0 → один корень, D<0 → нет действительных корней. Дискриминант — это "разборщик" уравнения.', qa: [['откуда взялась формула?','Из выделения полного квадрата: a(x+b/2a)²=b²/4a−c. Правая часть = D/4a.'],['почему 4ac?','Потому что полный квадрат даёт (b/2a)²=b²/4a², и 4a² умножается обратно на 4ac.']] },
+        'x = ±p/q, p | d, q | a': { name: 'Теорема о рациональных корнях', vars: [['x','корень уравнения, если такой существует'],['p','делители свободного члена d'],['q','делители старшего коэффициента a'],['d','свободный член (без x)'],['a','старший коэффициент (при x³)']], why: 'Если многочлен имеет рациональный корень ±p/q в несократимой форме, то p делит d, а q делит a. Доказывается подстановкой x=p/q, умножением на qⁿ и перегруппировкой.', qa: [['почему p делит d?','Подставляем x=p/q, умножаем на qⁿ, переносим все члены с p в одну сторону: d·qⁿ = −p·(...). Значит p делит d·qⁿ, и так как p и q взаимно просты, p делит d.'],['почему q делит a?','Аналогично: a·pⁿ = −q·(...), значит q делит a·pⁿ, и так как p и q взаимно просты, q делит a.'],['что если нет рациональных корней?','Тогда корни либо иррациональные, либо комплексные. Используем численные методы (Ньютона) или формулу Кардано.'],['всегда ли сработает?','Теорема даёт только кандидаты. Если ни один не подошёл, рациональных корней нет — но могут быть иррациональные.']] },
         'd/dx[xⁿ] = n·xⁿ⁻¹': { name: 'Степенное правило дифференцирования', vars: [['d/dx','оператор производной: "изменение f при изменении x"'],['xⁿ','функция x в степени n'],['n','степень (любое число)'],['n−1','степень уменьшается на 1 при дифференцировании']], why: 'Производная измеряет скорость изменения. Степенное правило — самое распространённое. Доказывается через биномиальное разложение предела.', qa: [['почему n уходит вперёд?','При раскрытии (x+h)ⁿ через предел остаётся только n·xⁿ⁻¹.'],['что такое производная константы?','Равна нулю, потому что константа не меняется.'],['работает ли для дробных степеней?','Да! d/dx[x^(1/2)] = (1/2)·x^(-1/2) = 1/(2√x)']] },
         '∫xⁿ dx = xⁿ⁺¹/(n+1) + C': { name: 'Степенное правило интегрирования', vars: [['∫','знак интеграла: "сумма бесконечно малых частей"'],['xⁿ','функция, которую интегрируем'],['n+1','степень увеличивается на 1'],['C','константа интегрирования (произвольная)']], why: 'Интеграл — обратная операция к производной. Проверить: берём производную от xⁿ⁺¹/(n+1) и получаем xⁿ.', qa: [['что такое C?','Производная любой константы = 0, поэтому у нас семейство функций, отличающихся на константу.'],['почему делим на n+1?','Потому что при обратном дифференцировании нужно компенсировать умножение на показатель степени.'],['что если n=-1?','∫(1/x)dx = ln|x|+C — отдельный случай!']] },
         'S = √(p(p-a)(p-b)(p-c))': { name: 'Формула Герона (площадь треугольника)', vars: [['S','площадь треугольника'],['p','полупериметр = (a+b+c)/2'],['a,b,c','стороны треугольника']], why: 'Позволяет найти площадь зная только три стороны, без высоты. Вывел Герон Александрийский ≈ 60 г. н.э.', qa: [['что такое полупериметр?','p = (a+b+c)/2 — половина периметра треугольника.'],['можно ли использовать для любого треугольника?','Да, для любого: остроугольного, тупоугольного, прямоугольного.']] },
@@ -4414,6 +4415,7 @@
       EN: {
         'x = (-b ± √D) / 2a': { name: 'Quadratic Formula', vars: [['x','the solutions — values that make the equation equal zero'],['b','coefficient of x (linear term)'],['D','discriminant = b²−4ac'],['a','coefficient of x² (quadratic term)']], why: 'Derived by completing the square on ax²+bx+c=0. The ± sign gives two roots because √D can be added or subtracted.', qa: [['why ±?','√D has two values: +√D and −√D. Each gives a different root.'],['what if D<0?','No real roots — the parabola never crosses the x-axis.'],['what if D=0?','Exactly one root: x = −b/2a. The parabola just touches the x-axis.']] },
         'D = b² - 4ac': { name: 'Discriminant', vars: [['D','discriminant — determines number of roots'],['b','coefficient of x'],['a','coefficient of x²'],['c','constant term (no x)']], why: 'D>0 → two roots, D=0 → one double root, D<0 → no real roots. It "discriminates" between the cases.', qa: [['where does the formula come from?','Completing the square: a(x+b/2a)²=b²/4a−c. The right side equals D/4a.'],['why 4ac?','From (b/2a)²=b²/4a², then multiplying back gives 4ac.']] },
+        'x = ±p/q, p | d, q | a': { name: 'Rational Root Theorem', vars: [['x','a root of the polynomial, if one exists'],['p','divisors of the constant term d'],['q','divisors of the leading coefficient a'],['d','the constant term (no x)'],['a','the leading coefficient (of x³)']], why: 'If a polynomial has a rational root ±p/q in lowest terms, then p divides the constant term d and q divides the leading coefficient a. Proven by substituting x=p/q, multiplying by qⁿ, and regrouping.', qa: [['why does p divide d?','Substitute x=p/q, multiply by qⁿ, move all p-terms: d·qⁿ = −p·(...). So p divides d·qⁿ. Since gcd(p,q)=1, p must divide d.'],['why does q divide a?','Similarly: a·pⁿ = −q·(...). So q divides a·pⁿ. Since gcd(p,q)=1, q must divide a.'],['what if no rational roots exist?','Then the roots are either irrational or complex. Use numerical methods (Newton) or Cardano\'s formula.'],['does it always work?','The theorem only gives candidates. If none work, there are no rational roots — but irrational ones may still exist.']] },
         'd/dx[xⁿ] = n·xⁿ⁻¹': { name: 'Power Rule (Differentiation)', vars: [['d/dx','derivative operator: "rate of change with respect to x"'],['xⁿ','a function of x raised to power n'],['n','the exponent (any number)'],['n−1','exponent decreases by 1 when differentiating']], why: 'The derivative measures instantaneous rate of change. Proved via binomial expansion of the limit definition: lim(h→0)[(x+h)ⁿ−xⁿ]/h.', qa: [['why does n move to front?','Expanding (x+h)ⁿ by binomial theorem, only the n·xⁿ⁻¹ term survives as h→0.'],['what is the derivative of a constant?','Zero — constants never change, so their rate of change is 0.'],['does it work for fractions?','Yes! d/dx[x^(1/2)] = (1/2)x^(-1/2) = 1/(2√x)']] },
         '∫xⁿ dx = xⁿ⁺¹/(n+1) + C': { name: 'Power Rule (Integration)', vars: [['∫','integral sign: "sum of infinitely thin slices"'],['xⁿ','the function being integrated'],['n+1','exponent increases by 1'],['C','constant of integration (arbitrary)']], why: 'Integration reverses differentiation. Check: take d/dx of xⁿ⁺¹/(n+1) and you get back xⁿ.', qa: [['why +C?','The derivative of any constant is 0, so infinitely many functions have the same derivative — they differ by a constant.'],['why divide by n+1?','Because differentiating multiplies by the exponent; integrating undoes that by dividing.'],['what if n=-1?','∫(1/x)dx = ln|x|+C — a special case!']] },
         'S = √(p(p-a)(p-b)(p-c))': { name: "Heron's Formula (Triangle Area)", vars: [['S','area of the triangle'],['p','semi-perimeter = (a+b+c)/2'],['a,b,c','lengths of the three sides']], why: "Lets you find area knowing only the three sides, no height needed. Discovered by Heron of Alexandria ~60 AD.", qa: [["what's the semi-perimeter?","p = (a+b+c)/2 — half the perimeter of the triangle."],['does it work for any triangle?','Yes — acute, obtuse, and right triangles all work.']] },
@@ -4456,24 +4458,46 @@
     window.closeFmlPopup = function() { document.getElementById('fmlPopup').classList.remove('show'); };
 
     window.fmlAsk = function() {
-      var q = document.getElementById('fmlAskInput').value.trim().toLowerCase();
+      var q = document.getElementById('fmlAskInput').value.trim();
       if (!q || !_fmlCurrent) return;
       document.getElementById('fmlAskInput').value = '';
       var body = document.getElementById('fmlBody');
       var answered = false;
+      var lq = q.toLowerCase();
       if (_fmlCurrent.qa) {
         for (var i=0; i<_fmlCurrent.qa.length; i++) {
           var pair = _fmlCurrent.qa[i];
           var keywords = pair[0].split(/\s+/);
-          var matches = keywords.filter(function(w){ return q.indexOf(w)>=0 || w.indexOf(q.split(' ')[0])>=0; }).length;
-          if (matches >= 1 || q.indexOf(pair[0].split(' ')[0]) >= 0) {
+          var matches = keywords.filter(function(w){ return lq.indexOf(w)>=0 || w.indexOf(lq.split(' ')[0])>=0; }).length;
+          if (matches >= 1 || lq.indexOf(pair[0].split(' ')[0]) >= 0) {
             body.innerHTML += '<div style="margin-top:10px;padding:8px 12px;background:rgba(94,243,255,.06);border-radius:8px;font-size:12px;color:var(--text)"><b style="color:var(--c)">Q: '+pair[0]+'</b><br>'+pair[1]+'</div>';
             answered = true; break;
           }
         }
       }
       if (!answered) {
-        body.innerHTML += '<div style="margin-top:10px;padding:8px 12px;background:rgba(184,157,255,.06);border-radius:8px;font-size:12px;color:var(--text2)">' + (isEN() ? 'Try questions like: "why?", "what if?", "example?", "how?" — or ask about a specific symbol.' : 'Попробуй спросить: "почему?", "что если?", "пример?", "как?" — или о конкретном символе.') + '</div>';
+        // Show "thinking" indicator
+        var thinkId = 'fmlThink_' + Date.now();
+        body.innerHTML += '<div id="' + thinkId + '" style="margin-top:10px;padding:8px 12px;background:rgba(184,157,255,.06);border-radius:8px;font-size:12px;color:var(--text2)">' + (isEN() ? 'Thinking...' : 'Думаю...') + '</div>';
+        document.getElementById('fmlBody').scrollTop = 999;
+        // Call the server AI API
+        var formulaName = _fmlCurrent.name || _fmlCurrent.formula || 'formula';
+        var prompt = isEN()
+          ? 'You are a math tutor. Answer briefly and clearly (max 3 sentences). The user clicked on the formula "' + formulaName + '" and asks: "' + q + '". Give a direct, helpful answer with an example if relevant.'
+          : 'Ты репетитор по математике. Ответь кратко и понятно (максимум 3 предложения). Пользователь нажал на формулу "' + formulaName + '" и спрашивает: "' + q + '". Дай прямой полезный ответ, если нужно — с примером.';
+        fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ systemPrompt: prompt, userMessage: q })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          var el = document.getElementById(thinkId);
+          if (el) {
+            el.innerHTML = '<b style="color:var(--c)">Q: ' + q.replace(/</g,'&lt;') + '</b><br>' + (data.reply || (isEN() ? 'No answer' : 'Нет ответа'));
+          }
+        }).catch(function() {
+          var el = document.getElementById(thinkId);
+          if (el) el.innerHTML = '<span style="color:var(--r)">' + (isEN() ? 'Server error. Try again later.' : 'Ошибка сервера. Попробуйте позже.') + '</span>';
+        });
       }
       document.getElementById('fmlBody').scrollTop = 999;
     };
