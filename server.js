@@ -763,6 +763,67 @@ app.get("/api/chess/stream/:gameId", (req, res) => {
   });
 });
 
+app.post("/api/check-math", async (req, res) => {
+  try {
+    const { expression, userAnswer, expectedAnswer } = req.body;
+    if (!expression || !userAnswer || !expectedAnswer) {
+      return res.json({ equivalent: false, error: "Missing fields" });
+    }
+    const prompt = `You are a math equivalence checker. Determine if the user's answer is algebraically equivalent to the expected answer for the given expression.
+
+Expression: ${expression}
+Expected answer: ${expectedAnswer}
+User's answer: ${userAnswer}
+
+Reply with ONLY a JSON object: {"equivalent": true/false, "reason": "brief explanation"}`;
+
+    const groqKey = process.env.GROQ_API_KEY;
+    const openrouterKey = process.env.OPENROUTER_API_KEY;
+    let reply = null;
+    if (groqKey) {
+      try {
+        const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${groqKey}` },
+          body: JSON.stringify({
+            model: "mixtral-8x7b-32768",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.1,
+            max_tokens: 200
+          })
+        });
+        const d = await r.json();
+        reply = d.choices?.[0]?.message?.content;
+      } catch (e) { reply = null; }
+    }
+    if (!reply && openrouterKey) {
+      try {
+        const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${openrouterKey}` },
+          body: JSON.stringify({
+            model: "deepseek/deepseek-r1-distill-llama-70b:free",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.1,
+            max_tokens: 200
+          })
+        });
+        const d = await r.json();
+        reply = d.choices?.[0]?.message?.content;
+      } catch (e) { reply = null; }
+    }
+    if (!reply) return res.json({ equivalent: false, error: "AI unavailable" });
+    try {
+      const parsed = JSON.parse(reply.replace(/^[^{]*/, "").replace(/[^}]*$/, ""));
+      return res.json(parsed);
+    } catch (e) {
+      return res.json({ equivalent: false, error: "Parse failed", raw: reply });
+    }
+  } catch (e) {
+    res.status(500).json({ equivalent: false, error: e.message });
+  }
+});
+
 app.listen(3000, () => {
   console.log("Server started on http://localhost:3000");
 });

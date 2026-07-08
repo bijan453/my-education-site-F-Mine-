@@ -6495,7 +6495,7 @@
         var _h = '<div style="font-size:15px;line-height:1.9;word-break:break-word;overflow-wrap:break-word">';
         var V = '<span style="color:var(--v)">', V_ = '</span>';
         var G = '<span style="color:var(--g)">', G_ = '</span>';
-        var AC = '<span style="color:#f59e0b;font-weight:700">(b \u2212 c)</span>';
+        var AC = '<span class="cyclic-anchor">(b \u2212 c)</span>';
         function sb(n,t,b) {
           var sid = 'cyclic-step-'+n;
           return '<div id="'+sid+'" class="mega-section" style="scroll-margin-top:20px"><div class="mega-section-title">📐 '+(E?'Step ':'Шаг ')+n+': '+t+'</div><div class="mega-section-body">'+b+'</div></div>';
@@ -6504,7 +6504,15 @@
         function frac(n,d) { return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.92em;line-height:1.2;margin:0 3px"><span style="border-bottom:2px solid var(--v);padding:0 5px 2px">'+n+'</span><span style="padding:0 5px">'+d+'</span></span>'; }
         var p3 = V+'3'+V_, p2 = V+'2'+V_;
         function stepNav(n) {
-          var h = '<style>.cyclic-dot{cursor:pointer;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:700;transition:background .2s,color .2s;user-select:none}.cyclic-dot:hover{background:#f59e0b!important;color:#fff!important;transform:scale(1.15)}.cyclic-dot:active{transform:scale(.92)}</style>';
+          var css = '<style>'
+            + '.cyclic-dot{cursor:pointer;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:700;transition:background .2s,color .2s,transform .15s;user-select:none}'
+            + '.cyclic-dot:hover{background:#f59e0b!important;color:#fff!important;transform:scale(1.15)}'
+            + '.cyclic-dot:active{transform:scale(.92)}'
+            + '.cyclic-anchor{color:#f59e0b;font-weight:700}'
+            + '.mega-section:has(.mega-section-title:hover) .cyclic-anchor{animation:cyclic-pulse .6s ease-in-out infinite alternate}'
+            + '@keyframes cyclic-pulse{from{filter:brightness(1)}to{filter:brightness(1.35);text-shadow:0 0 8px rgba(245,158,11,.45)}}'
+            + '</style>';
+          var h = css;
           h += '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:6px 10px;background:var(--glass);border:1px solid var(--border);border-radius:10px">';
           h += '<span style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--text2);letter-spacing:.1em;margin-right:4px">'+(E?'Steps':'Шаги')+'</span>';
           for (var i = 1; i <= n; i++) {
@@ -6641,15 +6649,53 @@
                'Пытаться сокращать отдельные слагаемые до полного разложения',
                'Раскрывать все скобки и запутаться — метод «якоря» этого избегает!']);
         }
-        if (typeof megaPractice === 'function') {
-          _h += megaPractice(E
-            ? ['Try: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))',
-               'Simplify (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))',
-               'Factor a^3(b-c)+b^3(c-a)+c^3(a-b)']
-            : ['Попробуйте: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))',
-               'Упростить (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))',
-               'Разложить a^3(b-c)+b^3(c-a)+c^3(a-b)']);
+        // ── Interactive practice with answer checker ──
+        var pb = E
+          ? [{p:'(a³(b−c)+b³(c−a)+c³(a−b))/(a²(b−c)+b²(c−a)+c²(a−b))', a:'a+b+c'},
+             {p:'(a⁴(b−c)+b⁴(c−a)+c⁴(a−b))/(a³(b−c)+b³(c−a)+c³(a−b))', a:'a+b+c'},
+             {p:'a³(b−c)+b³(c−a)+c³(a−b)', a:'−(a−b)(b−c)(c−a)(a+b+c)'}]
+          : [{p:'(a³(b−c)+b³(c−a)+c³(a−b))/(a²(b−c)+b²(c−a)+c²(a−b))', a:'a+b+c'},
+             {p:'(a⁴(b−c)+b⁴(c−a)+c⁴(a−b))/(a³(b−c)+b³(c−a)+c³(a−b))', a:'a+b+c'},
+             {p:'a³(b−c)+b³(c−a)+c³(a−b)', a:'−(a−b)(b−c)(c−a)(a+b+c)'}];
+        _h += '<div class="mega-practice"><div class="mp-title">'+(E?'✏️ Practice — check your answer':'✏️ Практика — проверь свой ответ')+'</div>';
+        for (var pi = 0; pi < pb.length; pi++) {
+          var pid = 'cyclic-pb-'+pi;
+          _h += '<div style="margin:8px 0;padding:8px 10px;background:var(--glass);border:1px solid var(--border);border-radius:8px">'
+            +'<div class="mp-item" style="padding:0;border:none;margin-bottom:6px">→ <b>'+pb[pi].p+'</b></div>'
+            +'<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
+            +'<input id="cyclic-inp-'+pi+'" type="text" placeholder="'+(E?'Your answer...':'Ваш ответ...')+'" style="flex:1;min-width:120px;padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px">'
+            +'<button onclick="checkCyclicAns('+pi+')" style="padding:6px 14px;border-radius:6px;border:none;background:var(--m);color:#fff;font-weight:700;font-size:12px;cursor:pointer;transition:var(--ease)" onmouseover="this.style.filter=\'brightness(1.15)\'" onmouseout="this.style.filter=\'none\'">'+(E?'Check':'Проверить')+'</button>'
+            +'<span id="cyclic-fb-'+pi+'" style="font-size:18px;font-weight:700;min-width:24px;text-align:center"></span>'
+            +'</div></div>';
         }
+        _h += '</div>';
+        _h += '<div style="margin-top:6px;font-size:11px;color:var(--text2)">'+(E?'💡 Use * for multiplication, ^ for powers. E.g. a+b+c or -(a-b)*(b-c)*(c-a)*(a+b+c)':'💡 Используйте * для умножения, ^ для степеней. Например: a+b+c или -(a-b)*(b-c)*(c-a)*(a+b+c)')+'</div>';
+        // Register global answer checker
+        window.checkCyclicAns = function(num) {
+          var inp = document.getElementById('cyclic-inp-'+num);
+          var fb = document.getElementById('cyclic-fb-'+num);
+          var val = inp.value.trim();
+          if (!val) { fb.textContent = '❌'; fb.style.color = 'var(--a)'; return; }
+          var ans = pb[num].a;
+          var eq = false;
+          if (typeof nerdamer !== 'undefined') {
+            try {
+              if (nerdamer('simplify(('+val+')-('+ans+'))').toString() === '0') eq = true;
+              if (!eq && nerdamer('simplify(('+val+')+('+ans+'))').toString() === '0') eq = true;
+            } catch(_){}
+          } else {
+            eq = val.replace(/\\s/g,'') === ans.replace(/\\s/g,'');
+          }
+          if (eq) {
+            fb.textContent = '✅';
+            fb.style.color = 'var(--g)';
+            inp.style.borderColor = 'var(--g)';
+          } else {
+            fb.textContent = '❌';
+            fb.style.color = 'var(--a)';
+            inp.style.borderColor = 'var(--a)';
+          }
+        };
         return _h + '</div>';
       }
 
@@ -10680,6 +10726,25 @@
           
           streamHTML(_bubble, result, 8, function() {
             smartScroll('smooth');
+            setTimeout(function() {
+              var _d = document.querySelectorAll('.cyclic-dot');
+              if (_d.length) {
+                var _s = document.querySelectorAll('[id^="cyclic-step-"]');
+                var _obs = new IntersectionObserver(function(e) {
+                  e.forEach(function(ev) {
+                    if (ev.isIntersecting) {
+                      var n = ev.target.id.replace('cyclic-step-', '');
+                      _d.forEach(function(d) {
+                        var active = d.textContent === n;
+                        d.style.background = active ? '#f59e0b' : 'var(--glass2)';
+                        d.style.color = active ? '#fff' : 'var(--text)';
+                      });
+                    }
+                  });
+                }, { threshold: 0.35 });
+                _s.forEach(function(s) { _obs.observe(s); });
+              }
+            }, 150);
             appendAIDeepExplanation(_bubble, problemText, result);
           });
           
