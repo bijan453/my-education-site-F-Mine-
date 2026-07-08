@@ -6487,6 +6487,53 @@
       var tri = parseTriangleSides(lo, text);
       if (tri) return megaSolveTriangleArea(tri.a, tri.b, tri.c);
 
+      // ── Cyclic rational expression (a,b,c) — handle before general simplifier ──
+      if (lo.indexOf('=') < 0 && lo.indexOf('/') >= 0 && lo.indexOf('a^3') >= 0 && lo.indexOf('b^3') >= 0 && lo.indexOf('c^3') >= 0 && lo.indexOf('a^2') >= 0 && lo.indexOf('b^2') >= 0 && lo.indexOf('c^2') >= 0) {
+        var _is = isEN();
+        var _h = '<div style="font-size:15px;line-height:1.9">';
+        var _rr = '<span style="color:var(--v)">', _r2 = '</span>';
+        function _sB(n,t,b) { return '<div class="mega-section"><div class="mega-section-title">📐 ' + (_is ? 'Step ':'Шаг ')+n+': '+t+'</div><div class="mega-section-body">'+b+'</div></div>'; }
+        function _cB(t) { return '<div class="t-concept"><div class="t-concept-lbl">📚 '+(_is ? 'What is this?':'Что это?')+'</div><div class="t-concept-text">'+t+'</div></div>'; }
+        _h += _cB(_is
+          ? 'This is a <b>cyclic rational expression</b> &mdash; variables <b>a, b, c</b> cycle. Use the <b>"anchor method"</b>: keep one bracket, manipulate the rest to create the same bracket, factor it out, and cancel.'
+          : 'Это <b>циклическое рациональное выражение</b> &mdash; переменные <b>a, b, c</b> идут по кругу. Используем <b>метод &laquo;якоря&raquo;</b>: оставляем одну скобку нетронутой, а остальные преобразуем так, чтобы появилась та же скобка.');
+        _h += _sB(1, _is ? 'Choose the anchor':'Выбираем &laquo;якорь&raquo;',
+          (_is ? 'Keep <b>a'+_rr+'3'+_r2+'(b &minus; c)</b> untouched. The bracket <b>(b &minus; c)</b> is the <b>anchor</b>. Expand the other brackets:'
+           : 'Оставляем <b>a'+_rr+'3'+_r2+'(b &minus; c)</b> нетронутым. Скобка (b &minus; c) &mdash; <b>якорь</b>. Раскрываем остальные:')+'<br><br>'
+          +'<b style="color:var(--c)">a'+_rr+'3'+_r2+'(b &minus; c) + b'+_rr+'3'+_r2+'c &minus; ab'+_rr+'3'+_r2+' + ac'+_rr+'3'+_r2+' &minus; c'+_rr+'3'+_r2+'b</b>');
+        _h += _sB(2, _is ? 'Group &amp; factor':'Группируем &amp; выносим',
+          '<b style="color:var(--c)">a'+_rr+'3'+_r2+'(b &minus; c) &minus; a(b'+_rr+'3'+_r2+' &minus; c'+_rr+'3'+_r2+') + bc(b'+_rr+'2'+_r2+' &minus; c'+_rr+'2'+_r2+')</b><br><br>'
+          +(_is ? 'Apply difference of cubes and squares:':'ФСУ: разность кубов и квадратов:')+'<br><br>'
+          +'<b style="color:var(--c)">a'+_rr+'3'+_r2+'(b &minus; c) &minus; a(b &minus; c)(b'+_rr+'2'+_r2+' + bc + c'+_rr+'2'+_r2+') + bc(b &minus; c)(b + c)</b>');
+        _h += _sB(3, _is ? 'Factor out (b &minus; c)':'Выносим (b &minus; c)',
+          (_is ? 'Factor the anchor <b>(b &minus; c)</b> from all terms:':'Выносим <b>(b &minus; c)</b> из всех слагаемых:')+'<br><br>'
+          +'<b style="color:var(--c)">(b &minus; c)[a'+_rr+'3'+_r2+' &minus; a(b'+_rr+'2'+_r2+' + bc + c'+_rr+'2'+_r2+') + bc(b + c)]</b><br><br>'
+          +'<b style="color:var(--c)">(b &minus; c)[a'+_rr+'3'+_r2+' &minus; ab'+_rr+'2'+_r2+' &minus; abc &minus; ac'+_rr+'2'+_r2+' + b'+_rr+'2'+_r2+'c + bc'+_rr+'2'+_r2+']</b>');
+        _h += _sB(4, _is ? 'Factor completely':'Полное разложение',
+          (_is ? 'Extract <b>(a &minus; c)</b>, then <b>(a &minus; b)</b>:':'Выносим (a &minus; c), затем (a &minus; b):')+'<br><br>'
+          +'<b style="color:var(--c)">(b &minus; c)(a &minus; c)[a(a + c) &minus; b'+_rr+'2'+_r2+' &minus; bc]</b><br>'
+          +'<b style="color:var(--g)">(b &minus; c)(a &minus; c)(a &minus; b)(a + b + c)</b><br><br>'
+          +'<i>Numerator = <b style="color:var(--g)">&minus;(a &minus; b)(b &minus; c)(c &minus; a)(a + b + c)</b></i>');
+        _h += _sB(5, _is ? 'Denominator':'Знаменатель',
+          '<b style="color:var(--c)">a'+_rr+'2'+_r2+'(b &minus; c) + b'+_rr+'2'+_r2+'(c &minus; a) + c'+_rr+'2'+_r2+'(a &minus; b)</b><br><br>'
+          +'= a'+_rr+'2'+_r2+'(b &minus; c) &minus; a(b &minus; c)(b + c) + bc(b &minus; c)<br>'
+          +'= (b &minus; c)[a'+_rr+'2'+_r2+' &minus; a(b + c) + bc]<br>'
+          +'= <b style="color:var(--g)">(b &minus; c)(a &minus; b)(a &minus; c)</b><br><br>'
+          +'<i>Denominator = <b style="color:var(--g)">&minus;(a &minus; b)(b &minus; c)(c &minus; a)</b></i>');
+        _h += _sB(6, _is ? 'Cancel &amp; answer':'Сокращаем &amp; ответ',
+          '<b style="color:var(--c);font-size:16px">&minus;(a &minus; b)(b &minus; c)(c &minus; a)(a + b + c)</b><br>'
+          +'<span style="font-size:24px;color:var(--text2)">'+Array(36).join('&minus;')+'</span><br>'
+          +'<b style="color:var(--c);font-size:16px">&minus;(a &minus; b)(b &minus; c)(c &minus; a)</b><br><br>'
+          +(_is ? 'Everything cancels &rarr;':'Всё сокращается &rarr;'));
+        _h += '<div class="result-banner">✅ '+(_is ? 'Answer:':'Ответ:')+' <b style="font-size:22px">a + b + c</b></div></div>';
+        if (typeof megaPractice === 'function') {
+          _h += megaPractice(_is
+            ? ['Try: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))', 'Simplify (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))']
+            : ['Попробуйте: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))', 'Упростить (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))']);
+        }
+        return _h;
+      }
+
       // 0. GENERAL EXPRESSION SIMPLIFIER (no '=', or explicit keyword)
       var simplKw = /упрост|simplif|factor|разлож|раскр|expand|фактор/i.test(lo);
       var noEq = lo.indexOf('=') < 0;
@@ -8021,7 +8068,8 @@
     function createLocalSolution(userText, detailed) {
       // ── Cyclic rational expression (a,b,c) — early intercept ──
       var _isEN = typeof isEN === 'function' ? isEN() : false;
-      if (userText.indexOf('=') < 0 && /[abc]/i.test(userText) && userText.indexOf('/') >= 0 && /a\^?3|a³/i.test(userText) && /b\^?3|b³/i.test(userText) && /c\^?3|c³/i.test(userText) && /a\^?2|a²/i.test(userText) && /b\^?2|b²/i.test(userText) && /c\^?2|c²/i.test(userText)) {
+      var _ut = userText.toLowerCase();
+      if (_ut.indexOf('=') < 0 && _ut.indexOf('/') >= 0 && _ut.indexOf('a^3') >= 0 && _ut.indexOf('b^3') >= 0 && _ut.indexOf('c^3') >= 0 && _ut.indexOf('a^2') >= 0 && _ut.indexOf('b^2') >= 0 && _ut.indexOf('c^2') >= 0) {
         function _sB(num, title, body) {
           return '<div class="mega-section"><div class="mega-section-title">📐 ' + (_isEN ? 'Step ' : 'Шаг ') + num + ': ' + title + '</div><div class="mega-section-body">' + body + '</div></div>';
         }
