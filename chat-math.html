@@ -8029,6 +8029,85 @@
       var triEarly = parseTriangleSides(lo, userText);
       if (triEarly) return solveTriangleHeron(triEarly.a, triEarly.b, triEarly.c, detailed);
 
+      // ── Cyclic rational expression (a,b,c) — anchor method ──
+      if (userText.indexOf('=') < 0 && /[a-c]/.test(lo) && lo.indexOf('/') >= 0) {
+        var _cycLo = lo.replace(/\s+/g, '').replace(/\*\*/g, '^').replace(/²/g, '^2').replace(/³/g, '^3');
+        var _cycA3 = /a\^3/.test(_cycLo), _cycB3 = /b\^3/.test(_cycLo), _cycC3 = /c\^3/.test(_cycLo);
+        var _cycA2 = /a\^2/.test(_cycLo), _cycB2 = /b\^2/.test(_cycLo), _cycC2 = /c\^2/.test(_cycLo);
+        if (_cycA3 && _cycB3 && _cycC3 && _cycA2 && _cycB2 && _cycC2) {
+          var _IS = isEN();
+          function _stepB(num, title, body) {
+            return '<div class="mega-section"><div class="mega-section-title">📐 ' + (_IS ? 'Step ' : 'Шаг ') + num + ': ' + title + '</div><div class="mega-section-body">' + body + '</div></div>';
+          }
+          function _concB(text) {
+            return '<div class="t-concept"><div class="t-concept-lbl">📚 ' + (_IS ? 'What is this?' : 'Что это?') + '</div><div class="t-concept-text">' + text + '</div></div>';
+          }
+          function _trC(s) { return s.replace(/\*/g, '·'); }
+          var _R = '<span style="color:var(--v)">', _R2 = '</span>';
+          var _cH = '<div style="font-size:15px;line-height:1.9">';
+
+          _cH += _concB(_IS
+            ? 'This is a <b>cyclic rational expression</b> &mdash; variables <b>a, b, c</b> cycle. The key is <b>NOT to expand everything!</b> Use the <b>"anchor method"</b>: keep one bracket, manipulate the rest to create the same bracket, and factor it out.'
+            : 'Это <b>циклическое рациональное выражение</b> &mdash; переменные <b>a, b, c</b> идут по кругу. Главное &mdash; <b>НЕ раскрывать всё сразу!</b> Используем <b>метод &laquo;якоря&raquo;</b>: оставляем одну скобку нетронутой, а остальные преобразуем так, чтобы появилась та же скобка.');
+
+          _cH += _stepB(1, _IS ? 'Choose the anchor' : 'Выбираем &laquo;якорь&raquo;',
+            (_IS
+              ? 'Keep <b>a' + _R + '3' + _R2 + '(b − c)</b> untouched. The bracket <b>(b − c)</b> is the <b>anchor</b>. Expand the other brackets to force (b − c) to appear:'
+              : 'Оставляем <b>a' + _R + '3' + _R2 + '(b − c)</b> нетронутым. Скобка (b − c) &mdash; <b>якорь</b>. Раскрываем остальные скобки, чтобы получить (b − c):') + '<br><br>'
+            + '<b style="color:var(--c)">a' + _R + '3' + _R2 + '(b − c) + b' + _R + '3' + _R2 + 'c − ab' + _R + '3' + _R2 + ' + ac' + _R + '3' + _R2 + ' − c' + _R + '3' + _R2 + 'b</b>');
+
+          _cH += _stepB(2, _IS ? 'Group terms' : 'Группируем',
+            (_IS
+              ? 'Collect terms with <b>a</b>: <b>−ab' + _R + '3' + _R2 + ' + ac' + _R + '3' + _R2 + '</b>, and without a: <b>b' + _R + '3' + _R2 + 'c − c' + _R + '3' + _R2 + 'b</b>:'
+              : 'Группируем слагаемые с <b>a</b> и без a:') + '<br><br>'
+            + '<b style="color:var(--c)">a' + _R + '3' + _R2 + '(b − c) − a(b' + _R + '3' + _R2 + ' − c' + _R + '3' + _R2 + ') + bc(b' + _R + '2' + _R2 + ' − c' + _R + '2' + _R2 + ')</b>');
+
+          _cH += _stepB(3, _IS ? 'Apply formulas' : 'Применяем ФСУ',
+            (_IS
+              ? 'b' + _R + '3' + _R2 + ' − c' + _R + '3' + _R2 + ' = (b − c)(b' + _R + '2' + _R2 + ' + bc + c' + _R + '2' + _R2 + ')<br>b' + _R + '2' + _R2 + ' − c' + _R + '2' + _R2 + ' = (b − c)(b + c)<br><br>The anchor <b>(b − c)</b> appears in each!'
+              : 'Раскладываем разность кубов и квадратов &mdash; внутри каждой появился (b − c)!') + '<br><br>'
+            + '<b style="color:var(--c)">a' + _R + '3' + _R2 + '(b − c) − a(b − c)(b' + _R + '2' + _R2 + ' + bc + c' + _R + '2' + _R2 + ') + bc(b − c)(b + c)</b>');
+
+          _cH += _stepB(4, _IS ? 'Factor out (b − c)' : 'Выносим (b − c)',
+            (_IS ? 'Now <b>(b − c)</b> is in every term! Factor it:' : '(b − c) есть в каждом слагаемом! Выносим:') + '<br><br>'
+            + '<b style="color:var(--c)">(b − c) · [</b>' + _trC('a^3 − a(b^2 + bc + c^2) + bc(b + c)') + '<b style="color:var(--c)">]</b><br><br>'
+            + (_IS ? 'Expand inside:' : 'Раскрываем внутри:') + '<br>'
+            + '<b style="color:var(--c)">(b − c) · [</b>' + _trC('a^3 − ab^2 − abc − ac^2 + b^2c + bc^2') + '<b style="color:var(--c)">]</b>');
+
+          _cH += _stepB(5, _IS ? 'Factor inner bracket' : 'Разлагаем внутри',
+            (_IS ? 'Group inside to extract <b>(a − c)</b>, then <b>(a − b)</b>:' : 'Группируем внутри, выносим (a − c) и (a − b):') + '<br><br>'
+            + '<b style="color:var(--c)">(b − c)(a − c) · [</b>' + _trC('a(a + c) − b^2 − bc') + '<b style="color:var(--c)">]</b><br><br>'
+            + '<b style="color:var(--g)">(b − c)(a − c)(a − b)(a + b + c)</b><br><br>'
+            + (_IS ? 'Rearranging signs:' : 'Меняем знаки:') + '<br>'
+            + '<b style="color:var(--g)">Numerator = −(a − b)(b − c)(c − a)(a + b + c)</b>');
+
+          _cH += _stepB(6, _IS ? 'Denominator' : 'Знаменатель',
+            (_IS ? 'Same anchor method for denominator:' : 'Тот же метод для знаменателя:') + '<br><br>'
+            + '<b style="color:var(--c)">a' + _R + '2' + _R2 + '(b − c) + b' + _R + '2' + _R2 + '(c − a) + c' + _R + '2' + _R2 + '(a − b)</b><br><br>'
+            + '= a' + _R + '2' + _R2 + '(b − c) − a(b − c)(b + c) + bc(b − c)<br>'
+            + '= (b − c) · [' + _trC('a^2 − a(b + c) + bc') + ']<br>'
+            + '= <b style="color:var(--g)">(b − c)(a − b)(a − c)</b><br><br>'
+            + (_IS ? 'Rearranging:' : 'Меняем знаки:') + '<br>'
+            + '<b style="color:var(--g)">Denominator = −(a − b)(b − c)(c − a)</b>');
+
+          _cH += _stepB(7, _IS ? 'Cancel' : 'Сокращаем',
+            (_IS ? 'Combine and cancel common factors:' : 'Соединяем и сокращаем:') + '<br><br>'
+            + '<b style="color:var(--c);font-size:16px">−(a − b)(b − c)(c − a)(a + b + c)</b><br>'
+            + '<span style="font-size:24px;color:var(--text2)">' + Array(36).join('&minus;') + '</span><br>'
+            + '<b style="color:var(--c);font-size:16px">−(a − b)(b − c)(c − a)</b><br><br>'
+            + (_IS ? 'Minus signs and all three brackets cancel.' : 'Минусы и все три скобки сокращаются.'));
+
+          _cH += '<div class="result-banner">✅ ' + (_IS ? 'Answer:' : 'Ответ:') + ' <b style="font-size:22px">a + b + c</b></div>';
+          _cH += '</div>';
+          if (typeof megaPractice === 'function') {
+            _cH += megaPractice(_IS
+              ? ['Try: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))', 'Simplify (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))']
+              : ['Попробуйте: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))', 'Упростить (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))']);
+          }
+          return _cH;
+        }
+      }
+
       // ─── GENERAL EXPRESSION SIMPLIFIER ──────────────────────────────────
       // Fires for: "упростить", "simplify", "factor", "expand", "раскрыть",
       //            "разложить", "факторизовать", or any no-'=' algebraic expression
