@@ -6489,50 +6489,152 @@
 
       // ── Cyclic rational expression (a,b,c) — handle before general simplifier ──
       if (lo.indexOf('=') < 0 && lo.indexOf('/') >= 0 && lo.indexOf('a^3') >= 0 && lo.indexOf('b^3') >= 0 && lo.indexOf('c^3') >= 0 && lo.indexOf('a^2') >= 0 && lo.indexOf('b^2') >= 0 && lo.indexOf('c^2') >= 0) {
-        var _is = isEN();
+        var E = isEN();
         var _h = '<div style="font-size:15px;line-height:1.9">';
-        var _rr = '<span style="color:var(--v)">', _r2 = '</span>';
-        function _sB(n,t,b) { return '<div class="mega-section"><div class="mega-section-title">📐 ' + (_is ? 'Step ':'Шаг ')+n+': '+t+'</div><div class="mega-section-body">'+b+'</div></div>'; }
-        function _cB(t) { return '<div class="t-concept"><div class="t-concept-lbl">📚 '+(_is ? 'What is this?':'Что это?')+'</div><div class="t-concept-text">'+t+'</div></div>'; }
-        _h += _cB(_is
-          ? 'This is a <b>cyclic rational expression</b> &mdash; variables <b>a, b, c</b> cycle. Use the <b>"anchor method"</b>: keep one bracket, manipulate the rest to create the same bracket, factor it out, and cancel.'
-          : 'Это <b>циклическое рациональное выражение</b> &mdash; переменные <b>a, b, c</b> идут по кругу. Используем <b>метод &laquo;якоря&raquo;</b>: оставляем одну скобку нетронутой, а остальные преобразуем так, чтобы появилась та же скобка.');
-        _h += _sB(1, _is ? 'Choose the anchor':'Выбираем &laquo;якорь&raquo;',
-          (_is ? 'Keep <b>a'+_rr+'3'+_r2+'(b &minus; c)</b> untouched. The bracket <b>(b &minus; c)</b> is the <b>anchor</b>. Expand the other brackets:'
-           : 'Оставляем <b>a'+_rr+'3'+_r2+'(b &minus; c)</b> нетронутым. Скобка (b &minus; c) &mdash; <b>якорь</b>. Раскрываем остальные:')+'<br><br>'
-          +'<b style="color:var(--c)">a'+_rr+'3'+_r2+'(b &minus; c) + b'+_rr+'3'+_r2+'c &minus; ab'+_rr+'3'+_r2+' + ac'+_rr+'3'+_r2+' &minus; c'+_rr+'3'+_r2+'b</b>');
-        _h += _sB(2, _is ? 'Group &amp; factor':'Группируем &amp; выносим',
-          '<b style="color:var(--c)">a'+_rr+'3'+_r2+'(b &minus; c) &minus; a(b'+_rr+'3'+_r2+' &minus; c'+_rr+'3'+_r2+') + bc(b'+_rr+'2'+_r2+' &minus; c'+_rr+'2'+_r2+')</b><br><br>'
-          +(_is ? 'Apply difference of cubes and squares:':'ФСУ: разность кубов и квадратов:')+'<br><br>'
-          +'<b style="color:var(--c)">a'+_rr+'3'+_r2+'(b &minus; c) &minus; a(b &minus; c)(b'+_rr+'2'+_r2+' + bc + c'+_rr+'2'+_r2+') + bc(b &minus; c)(b + c)</b>');
-        _h += _sB(3, _is ? 'Factor out (b &minus; c)':'Выносим (b &minus; c)',
-          (_is ? 'Factor the anchor <b>(b &minus; c)</b> from all terms:':'Выносим <b>(b &minus; c)</b> из всех слагаемых:')+'<br><br>'
-          +'<b style="color:var(--c)">(b &minus; c)[a'+_rr+'3'+_r2+' &minus; a(b'+_rr+'2'+_r2+' + bc + c'+_rr+'2'+_r2+') + bc(b + c)]</b><br><br>'
-          +'<b style="color:var(--c)">(b &minus; c)[a'+_rr+'3'+_r2+' &minus; ab'+_rr+'2'+_r2+' &minus; abc &minus; ac'+_rr+'2'+_r2+' + b'+_rr+'2'+_r2+'c + bc'+_rr+'2'+_r2+']</b>');
-        _h += _sB(4, _is ? 'Factor completely':'Полное разложение',
-          (_is ? 'Extract <b>(a &minus; c)</b>, then <b>(a &minus; b)</b>:':'Выносим (a &minus; c), затем (a &minus; b):')+'<br><br>'
-          +'<b style="color:var(--c)">(b &minus; c)(a &minus; c)[a(a + c) &minus; b'+_rr+'2'+_r2+' &minus; bc]</b><br>'
-          +'<b style="color:var(--g)">(b &minus; c)(a &minus; c)(a &minus; b)(a + b + c)</b><br><br>'
-          +'<i>Numerator = <b style="color:var(--g)">&minus;(a &minus; b)(b &minus; c)(c &minus; a)(a + b + c)</b></i>');
-        _h += _sB(5, _is ? 'Denominator':'Знаменатель',
-          '<b style="color:var(--c)">a'+_rr+'2'+_r2+'(b &minus; c) + b'+_rr+'2'+_r2+'(c &minus; a) + c'+_rr+'2'+_r2+'(a &minus; b)</b><br><br>'
-          +'= a'+_rr+'2'+_r2+'(b &minus; c) &minus; a(b &minus; c)(b + c) + bc(b &minus; c)<br>'
-          +'= (b &minus; c)[a'+_rr+'2'+_r2+' &minus; a(b + c) + bc]<br>'
-          +'= <b style="color:var(--g)">(b &minus; c)(a &minus; b)(a &minus; c)</b><br><br>'
-          +'<i>Denominator = <b style="color:var(--g)">&minus;(a &minus; b)(b &minus; c)(c &minus; a)</b></i>');
-        _h += _sB(6, _is ? 'Cancel &amp; answer':'Сокращаем &amp; ответ',
-           '<div style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:16px;line-height:1.3;margin:8px 0">'
-          +'<span style="border-bottom:2px solid var(--v);padding:0 12px 3px"><b style="color:var(--c)">&minus;(a &minus; b)(b &minus; c)(c &minus; a)</b><b style="color:var(--g)">(a + b + c)</b></span>'
-          +'<span style="padding:3px 12px 0"><b style="color:var(--c)">&minus;(a &minus; b)(b &minus; c)(c &minus; a)</b></span>'
-          +'</div><br>'
-          +(_is ? 'Everything except <b style="color:var(--g)">a + b + c</b> cancels!':'Всё, кроме <b style="color:var(--g)">a + b + c</b>, сокращается!'));
-        _h += '<div class="result-banner">✅ '+(_is ? 'Answer:':'Ответ:')+' <b style="font-size:22px">a + b + c</b></div></div>';
-        if (typeof megaPractice === 'function') {
-          _h += megaPractice(_is
-            ? ['Try: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))', 'Simplify (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))']
-            : ['Попробуйте: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))', 'Упростить (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))']);
+        var V = '<span style="color:var(--v)">', V_ = '</span>';
+        var G = '<span style="color:var(--g)">', G_ = '</span>';
+        function sb(n,t,b) { return '<div class="mega-section"><div class="mega-section-title">📐 '+(E?'Step ':'Шаг ')+n+': '+t+'</div><div class="mega-section-body">'+b+'</div></div>'; }
+        function eb(t,c) { var id='me_'+(Math.random()+1).toString(36).substr(2,8); return '<div class="mega-expand" onclick="toggleMegaExpand(\''+id+'\',this)"><span class="me-arrow">▶</span> '+t+'</div><div class="mega-expand-content" id="'+id+'">'+c+'</div>'; }
+        function frac(n,d) { return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.92em;line-height:1.2;margin:0 3px"><span style="border-bottom:2px solid var(--v);padding:0 5px 2px">'+n+'</span><span style="padding:0 5px">'+d+'</span></span>'; }
+        var p3 = V+'3'+V_, p2 = V+'2'+V_;
+
+        _h += '<div class="t-concept"><div class="t-concept-lbl">📚 '+(E?'What is this?':'Что это?')+'</div><div class="t-concept-text">';
+        _h += E
+          ? 'This is a <b>cyclic rational expression</b> — variables <b>a, b, c</b> cycle in a symmetric pattern. We need to simplify the fraction using the <b>"anchor method"</b>: keep one bracket untouched (the <b>anchor</b>), rewrite the remaining terms to create the same bracket, factor it out, and cancel.<br><br><b>Why "cyclic"?</b> Rotating (a→b→c→a) leaves the expression unchanged. This symmetry is the key — the denominator will turn out to be exactly the same "core" that appears inside the numerator.'
+          : 'Это <b>циклическое рациональное выражение</b> — переменные <b>a, b, c</b> чередуются по кругу. Упростим дробь <b>методом «якоря»</b>: оставляем одну скобку нетронутой (<b>якорь</b>), преобразуем остальные слагаемые так, чтобы появилась та же скобка, выносим её и сокращаем.<br><br><b>Почему «циклическое»?</b> Замена (a→b→c→a) не меняет выражение. Эта симметрия — ключ: знаменатель окажется той же «основой», что внутри числителя.';
+        _h += '</div></div>';
+
+        // ── STEP 1 ──
+        var s1 = E
+          ? 'Keep <b>a'+p3+'(b − c)</b> as our <b>anchor</b>. The bracket <b>(b − c)</b> will appear in every other term once we factor.<br><br>Expand <b>b³(c − a)</b> and <b>c³(a − b)</b>:'
+          : 'Оставляем <b>a'+p3+'(b − c)</b> как <b>якорь</b> — скобка (b − c) появится в каждом слагаемом после разложения.<br><br>Раскрываем <b>b³(c − a)</b> и <b>c³(a − b)</b>:';
+        s1 += '<br><br><b style="color:var(--c)">a'+p3+'(b − c) + b'+p3+'c − ab'+p3+' + ac'+p3+' − c'+p3+'b</b>';
+        s1 += '<br><br><i>'+(E?'We expanded: b³(c−a)=b³c−ab³  and  c³(a−b)=ac³−c³b':'Раскрыли: b³(c−a)=b³c−ab³  и  c³(a−b)=ac³−c³b')+'</i>';
+        s1 += eb(E?'💡 Why this anchor?':'💡 Почему этот якорь?',
+          E
+          ? '<b>Strategy:</b> We pick <b>(b−c)</b> because it already appears in the first term. If we can rewrite the other two terms so that <b>(b−c)</b> factors out of them too, then the whole numerator becomes <b>(b−c)×(something)</b>. That "something" will then factor further and cancel with the denominator.<br><br><b>Puzzle analogy:</b> Pick one piece as a reference, reshape the others to match it.'
+          : '<b>Стратегия:</b> Выбираем <b>(b−c)</b>, потому что он уже есть в первом слагаемом. Если получится преобразовать остальные так, чтобы <b>(b−c)</b> выносился и из них, весь числитель станет <b>(b−c)×(что-то)</b>. Это «что-то» потом разложится дальше и сократится со знаменателем.<br><br><b>Аналогия-пазл:</b> Берём один кусочек как эталон, подгоняем остальные к нему.');
+        _h += sb(1, E?'Choose the anchor':'Выбираем «якорь»', s1);
+
+        // ── STEP 2 ──
+        var s2 = E
+          ? 'Group terms to reveal <b>difference of cubes</b> and <b>difference of squares</b> — the key factoring formulas:'
+          : 'Группируем слагаемые, чтобы применить <b>разность кубов</b> и <b>разность квадратов</b> — ключевые формулы сокращённого умножения:';
+        s2 += '<br><br><b style="color:var(--c)">a'+p3+'(b − c) − a(b'+p3+' − c'+p3+') + bc(b'+p2+' − c'+p2+')</b>';
+        s2 += '<br><br>'+(E?'Apply the formulas:':'Применяем формулы:')+'<br>';
+        s2 += eb(E?'📐 Formula: Difference of cubes X³−Y³ = (X−Y)(X²+XY+Y²)':'📐 Формула: Разность кубов X³−Y³ = (X−Y)(X²+XY+Y²)',
+          E
+          ? '<b>b³ − c³ = (b − c)(b² + bc + c²)</b><br><br><b>Proof:</b> (b−c)(b²+bc+c²) = b·b² + b·bc + b·c² − c·b² − c·bc − c·c² = b³ + b²c + bc² − b²c − bc² − c³ = b³ − c³ ✓<br><br>This works for <b>any</b> two numbers — the middle terms always cancel.'
+          : '<b>b³ − c³ = (b − c)(b² + bc + c²)</b><br><br><b>Доказательство:</b> (b−c)(b²+bc+c²) = b·b² + b·bc + b·c² − c·b² − c·bc − c·c² = b³ + b²c + bc² − b²c − bc² − c³ = b³ − c³ ✓<br><br>Формула работает для <b>любых</b> двух чисел — средние члены всегда сокращаются.');
+        s2 += eb(E?'📐 Formula: Difference of squares X²−Y² = (X−Y)(X+Y)':'📐 Формула: Разность квадратов X²−Y² = (X−Y)(X+Y)',
+          E
+          ? '<b>b² − c² = (b − c)(b + c)</b><br><br><b>Proof:</b> (b−c)(b+c) = b² + bc − bc − c² = b² − c² ✓<br><br>This is the simplest factoring formula — learn it by heart!'
+          : '<b>b² − c² = (b − c)(b + c)</b><br><br><b>Доказательство:</b> (b−c)(b+c) = b² + bc − bc − c² = b² − c² ✓<br><br>Это самая простая формула сокращённого умножения — выучи наизусть!');
+        s2 += '<br>'+(E?'After substitution:':'После подстановки:');
+        s2 += '<br><br><b style="color:var(--c)">a'+p3+'(b − c) − a(b − c)(b² + bc + c²) + bc(b − c)(b + c)</b>';
+        s2 += '<br><br>'+(E?'Now <b>(b − c)</b> appears in <b>all three terms</b>!':'Теперь <b>(b − c)</b> есть во <b>всех трёх</b> слагаемых!');
+        _h += sb(2, E?'Apply factoring formulas':'Применяем формулы ФСУ', s2);
+
+        // ── STEP 3 ──
+        var s3 = E
+          ? 'Every term contains <b>(b − c)</b>, so we factor it out — like pulling <b>x</b> out of <b>x² + xy</b>:'
+          : 'Каждое слагаемое содержит <b>(b − c)</b> — выносим его за скобки, как <b>x</b> из <b>x² + xy</b>:';
+        s3 += '<br><br><b style="color:var(--c)">(b − c)·[a'+p3+' − a(b² + bc + c²) + bc(b + c)]</b>';
+        s3 += '<br><br>'+(E?'Expand the inner bracket:':'Раскрываем внутренние скобки:');
+        s3 += '<br><br><b style="color:var(--c)">(b − c)·[a'+p3+' − ab'+p2+' − abc − ac'+p2+' + b'+p2+'c + bc'+p2+']</b>';
+        s3 += '<br><br><i>'+(E?'Expanded −a(b²+bc+c²) = −ab²−abc−ac² and bc(b+c) = b²c+bc²':'Раскрыли −a(b²+bc+c²) = −ab²−abc−ac² и bc(b+c) = b²c+bc²')+'</i>';
+        s3 += eb(E?'💡 Why this works':'💡 Почему это работает',
+          E
+          ? 'This is the <b>distributive property in reverse:</b> A·X + B·X + C·X = X·(A + B + C).<br><br>Here X = (b−c), A = a³, B = −a(b²+bc+c²), C = bc(b+c).<br><br>We simply "pull out" the common factor, just like: 2x + 3x = x(2+3) = 5x.'
+          : 'Это <b>распределительное свойство наоборот:</b> A·X + B·X + C·X = X·(A + B + C).<br><br>Здесь X = (b−c), A = a³, B = −a(b²+bc+c²), C = bc(b+c).<br><br>Мы просто «вытаскиваем» общий множитель, как: 2x + 3x = x(2+3) = 5x.');
+        _h += sb(3, E?'Factor out (b−c)':'Выносим (b−c)', s3);
+
+        // ── STEP 4 ──
+        var s4 = E
+          ? 'Now factor the inner cubic <b>a³ − ab² − abc − ac² + b²c + bc²</b>.<br><br>Check if <b>(a − c)</b> is a factor — plug a = c into the cubic:'
+          : 'Раскладываем внутренний кубический многочлен <b>a³ − ab² − abc − ac² + b²c + bc²</b>.<br><br>Проверим, делится ли он на <b>(a − c)</b> — подставим a = c:';
+        s4 += '<br><br><b style="color:var(--c)">c³ − cb² − c·b·c − c·c² + b²c + bc²</b>';
+        s4 += '<br>= c³ − cb² − bc² − c³ + b²c + bc² = <b>0</b>';
+        s4 += '<br><br>'+(E?'Since it\'s zero, <b>(a − c)</b> is a factor! This is the <b>Remainder Theorem</b> in action.':'Раз ноль, то <b>(a − c)</b> — множитель! Это <b>теорема Безу</b> в действии.');
+        s4 += eb(E?'📐 Remainder Theorem':'📐 Теорема Безу',
+          E
+          ? 'If a polynomial P(a) equals 0 when a = c, then (a − c) divides P(a) evenly.<br><br>Here P(a) = a³ − ab² − abc − ac² + b²c + bc². At a = c, all terms cancel → (a−c) is a factor.'
+          : 'Если многочлен P(a) равен 0 при a = c, то (a − c) делит P(a) без остатка.<br><br>Здесь P(a) = a³ − ab² − abc − ac² + b²c + bc². При a = c все члены сокращаются → (a−c) — множитель.');
+        s4 += '<br><br>'+(E?'After factoring <b>(a − c)</b>:':'После вынесения <b>(a − c)</b>:');
+        s4 += '<br><br><b style="color:var(--c)">(b − c)(a − c)·[a(a + c) − b'+p2+' − bc]</b>';
+        s4 += '<br><br>'+(E?'Finally, factor <b>(a − b)</b> from the remaining bracket:':'Наконец, выносим <b>(a − b)</b> из оставшейся скобки:');
+        s4 += '<br><br><b style="color:var(--g)">(b − c)(a − c)(a − b)(a + b + c)</b>';
+        s4 += '<br><br><i>'+(E?'Numerator = <b style="color:var(--g)">−(a − b)(b − c)(c − a)(a + b + c)</b>':'Числитель = <b style="color:var(--g)">−(a − b)(b − c)(c − a)(a + b + c)</b>')+'</i>';
+        s4 += eb(E?'🤔 Why the minus?':'🤔 Откуда минус?',
+          E
+          ? '<b>(b − c)(a − c)(a − b)(a + b + c)</b> — but we want the symmetric form <b>−(a − b)(b − c)(c − a)(a + b + c)</b>.<br><br>Notice: <b>(a − c) = −(c − a)</b>. So (b−c)(a−c)(a−b) = −(a−b)(b−c)(c−a).<br><br>The minus is just a cosmetic reordering to make the numerator look symmetric — easier to compare with the denominator.'
+          : '<b>(b − c)(a − c)(a − b)(a + b + c)</b> — но мы хотим симметричную форму <b>−(a − b)(b − c)(c − a)(a + b + c)</b>.<br><br>Заметим: <b>(a − c) = −(c − a)</b>. Тогда (b−c)(a−c)(a−b) = −(a−b)(b−c)(c−a).<br><br>Минус — косметическая перестановка для симметрии, чтобы числитель было легче сравнивать со знаменателем.');
+        _h += sb(4, E?'Factor the numerator completely':'Полное разложение числителя', s4);
+
+        // ── STEP 5 ──
+        var s5 = E
+          ? 'Apply the same method to the denominator:'
+          : 'Применяем тот же метод к знаменателю:';
+        s5 += '<br><br><b style="color:var(--c)">a'+p2+'(b − c) + b'+p2+'(c − a) + c'+p2+'(a − b)</b>';
+        s5 += '<br><br>'+(E?'Expand the last two terms:':'Раскрываем последние два слагаемых:');
+        s5 += '<br><br><b style="color:var(--c)">= a'+p2+'(b − c) − a(b − c)(b + c) + bc(b − c)</b>';
+        s5 += '<br><br>'+(E?'Factor out <b>(b − c)</b>:':'Выносим <b>(b − c)</b>:');
+        s5 += '<br><br><b style="color:var(--c)">= (b − c)·[a'+p2+' − a(b + c) + bc]</b>';
+        s5 += '<br><br>'+(E?'The bracket <b>a² − a(b+c) + bc</b> is quadratic in a. Factor it:':'Скобка <b>a² − a(b+c) + bc</b> — квадратный трёхчлен по a. Раскладываем:');
+        s5 += '<br><br><b style="color:var(--g)">= (b − c)(a − b)(a − c)</b>';
+        s5 += '<br><br><i>'+(E?'Denominator = <b style="color:var(--g)">−(a − b)(b − c)(c − a)</b>':'Знаменатель = <b style="color:var(--g)">−(a − b)(b − c)(c − a)</b>')+'</i>';
+        s5 += eb(E?'💡 Same pattern!':'💡 Тот же шаблон!',
+          E
+          ? 'The denominator factors the same way as the numerator — just without the <b>(a+b+c)</b> part. This is not a coincidence!<br><br><b>Quick check:</b> (a−b)(a−c) = a² − ac − ab + bc = a² − a(b+c) + bc ✓<br><br>The two numbers b and c are exactly the "roots" of this quadratic in a.'
+          : 'Знаменатель раскладывается так же, как числитель — только без <b>(a+b+c)</b>. Это не совпадение!<br><br><b>Проверка:</b> (a−b)(a−c) = a² − ac − ab + bc = a² − a(b+c) + bc ✓<br><br>Числа b и c — это и есть «корни» этого квадратного трёхчлена по a.');
+        _h += sb(5, E?'Factor the denominator':'Разложение знаменателя', s5);
+
+        // ── STEP 6 ──
+        var s6 = E
+          ? 'We have both numerator and denominator in factored form:'
+          : 'У нас есть разложение числителя и знаменателя:';
+        s6 += '<br><br>'+frac(
+          '<b style="color:var(--c)">−(a − b)(b − c)(c − a)</b><b style="color:var(--g)">(a + b + c)</b>',
+          '<b style="color:var(--c)">−(a − b)(b − c)(c − a)</b>');
+        s6 += '<br><br>'+(E
+          ? 'The identical factor <b style="color:var(--c)">−(a − b)(b − c)(c − a)</b> appears in both — it <b>cancels completely</b>!'
+          : 'Одинаковый множитель <b style="color:var(--c)">−(a − b)(b − c)(c − a)</b> есть и вверху, и внизу — он <b>полностью сокращается</b>!');
+        s6 += '<br><br><div class="result-banner">✅ '+(E?'Answer:':'Ответ:')+'<b style="font-size:20px"> a + b + c</b></div>';
+        s6 += eb(E?'🎯 Verification with numbers':'🎯 Проверка на числах',
+          E
+          ? 'Try a = 1, b = 2, c = 3:<br><br>'
+          + 'Original: (1³(2−3) + 2³(3−1) + 3³(1−2)) / (1²(2−3) + 2²(3−1) + 3²(1−2))<br>'
+          + '= (1·(−1) + 8·2 + 27·(−1)) / (1·(−1) + 4·2 + 9·(−1))<br>'
+          + '= (−1 + 16 − 27) / (−1 + 8 − 9) = (−12)/(−2) = <b>6</b><br><br>'
+          + 'Our answer a + b + c = 1 + 2 + 3 = <b>6</b> ✓<br><br>'
+          + 'The simplification is correct!'
+          : 'Проверим a = 1, b = 2, c = 3:<br><br>'
+          + 'Исходное: (1³(2−3) + 2³(3−1) + 3³(1−2)) / (1²(2−3) + 2²(3−1) + 3²(1−2))<br>'
+          + '= (1·(−1) + 8·2 + 27·(−1)) / (1·(−1) + 4·2 + 9·(−1))<br>'
+          + '= (−1 + 16 − 27) / (−1 + 8 − 9) = (−12)/(−2) = <b>6</b><br><br>'
+          + 'Наш ответ a + b + c = 1 + 2 + 3 = <b>6</b> ✓<br><br>'
+          + 'Упрощение верно!');
+        _h += sb(6, E?'Cancel & get the answer':'Сокращение и ответ', s6);
+
+        if (typeof megaMistakes === 'function') {
+          _h += megaMistakes(E
+            ? ['Forgetting the minus sign when reordering factors (a−c) to (c−a)',
+               'Trying to cancel individual terms instead of waiting for the full factored form',
+               'Expanding all brackets and getting lost — the anchor method avoids this!']
+            : ['Забыть минус при перестановке (a−c)→(c−a)',
+               'Пытаться сокращать отдельные слагаемые до полного разложения',
+               'Раскрывать все скобки и запутаться — метод «якоря» этого избегает!']);
         }
-        return _h;
+        if (typeof megaPractice === 'function') {
+          _h += megaPractice(E
+            ? ['Try: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))',
+               'Simplify (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))',
+               'Factor a^3(b-c)+b^3(c-a)+c^3(a-b)']
+            : ['Попробуйте: (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))',
+               'Упростить (a^4(b-c)+b^4(c-a)+c^4(a-b))/(a^3(b-c)+b^3(c-a)+c^3(a-b))',
+               'Разложить a^3(b-c)+b^3(c-a)+c^3(a-b)']);
+        }
+        return _h + '</div>';
       }
 
       // 0. GENERAL EXPRESSION SIMPLIFIER (no '=', or explicit keyword)
