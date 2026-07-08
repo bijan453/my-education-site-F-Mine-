@@ -1216,13 +1216,15 @@
     .mega-expand-content {
       max-height: 0;
       overflow: hidden;
-      transition: max-height .35s ease, padding .35s ease;
-      padding: 0 10px
+      transition: max-height .4s ease, padding .4s ease, opacity .3s ease;
+      padding: 0 10px;
+      opacity: 0
     }
 
     .mega-expand-content.open {
       max-height: 2000px;
-      padding: 8px 10px
+      padding: 8px 10px;
+      opacity: 1
     }
 
     .mega-practice {
@@ -6494,16 +6496,29 @@
         var V = '<span style="color:var(--v)">', V_ = '</span>';
         var G = '<span style="color:var(--g)">', G_ = '</span>';
         var AC = '<span style="color:#f59e0b;font-weight:700">(b \u2212 c)</span>';
-        function sb(n,t,b) { return '<div class="mega-section"><div class="mega-section-title">📐 '+(E?'Step ':'Шаг ')+n+': '+t+'</div><div class="mega-section-body">'+b+'</div></div>'; }
+        function sb(n,t,b) {
+          var sid = 'cyclic-step-'+n;
+          return '<div id="'+sid+'" class="mega-section" style="scroll-margin-top:20px"><div class="mega-section-title">📐 '+(E?'Step ':'Шаг ')+n+': '+t+'</div><div class="mega-section-body">'+b+'</div></div>';
+        }
         function eb(t,c) { var id='me_'+(Math.random()+1).toString(36).substr(2,8); return '<div class="mega-expand" onclick="toggleMegaExpand(\''+id+'\',this)"><span class="me-arrow">▶</span> '+t+'</div><div class="mega-expand-content" id="'+id+'">'+c+'</div>'; }
         function frac(n,d) { return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.92em;line-height:1.2;margin:0 3px"><span style="border-bottom:2px solid var(--v);padding:0 5px 2px">'+n+'</span><span style="padding:0 5px">'+d+'</span></span>'; }
         var p3 = V+'3'+V_, p2 = V+'2'+V_;
+        function stepNav(n) {
+          var h = '<style>.cyclic-dot{cursor:pointer;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:700;transition:background .2s,color .2s;user-select:none}.cyclic-dot:hover{background:#f59e0b!important;color:#fff!important;transform:scale(1.15)}.cyclic-dot:active{transform:scale(.92)}</style>';
+          h += '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:6px 10px;background:var(--glass);border:1px solid var(--border);border-radius:10px">';
+          h += '<span style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--text2);letter-spacing:.1em;margin-right:4px">'+(E?'Steps':'Шаги')+'</span>';
+          for (var i = 1; i <= n; i++) {
+            h += '<span class="cyclic-dot" onclick="document.getElementById(\'cyclic-step-'+i+'\').scrollIntoView({behavior:\'smooth\'})" style="background:'+(i===1?'#f59e0b':'var(--glass2)')+';color:'+(i===1?'#fff':'var(--text)')+'">'+i+'</span>';
+          }
+          return h + '</div>';
+        }
 
         _h += '<div class="t-concept"><div class="t-concept-lbl">📚 '+(E?'What is this?':'Что это?')+'</div><div class="t-concept-text">';
         _h += E
           ? 'This is a <b>cyclic rational expression</b> — variables <b>a, b, c</b> cycle in a symmetric pattern. We need to simplify the fraction using the <b>"anchor method"</b>: keep one bracket untouched (the <b>anchor</b>), rewrite the remaining terms to create the same bracket, factor it out, and cancel.<br><br><b>Why "cyclic"?</b> Rotating (a→b→c→a) leaves the expression unchanged. This symmetry is the key — the denominator will turn out to be exactly the same "core" that appears inside the numerator.'
           : 'Это <b>циклическое рациональное выражение</b> — переменные <b>a, b, c</b> чередуются по кругу. Упростим дробь <b>методом «якоря»</b>: оставляем одну скобку нетронутой (<b>якорь</b>), преобразуем остальные слагаемые так, чтобы появилась та же скобка, выносим её и сокращаем.<br><br><b>Почему «циклическое»?</b> Замена (a→b→c→a) не меняет выражение. Эта симметрия — ключ: знаменатель окажется той же «основой», что внутри числителя.';
         _h += '</div></div>';
+        _h += stepNav(6);
 
         // ── STEP 1 ──
         var s1 = E
