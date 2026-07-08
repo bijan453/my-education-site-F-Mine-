@@ -6521,10 +6521,11 @@
           +'= <b style="color:var(--g)">(b &minus; c)(a &minus; b)(a &minus; c)</b><br><br>'
           +'<i>Denominator = <b style="color:var(--g)">&minus;(a &minus; b)(b &minus; c)(c &minus; a)</b></i>');
         _h += _sB(6, _is ? 'Cancel &amp; answer':'Сокращаем &amp; ответ',
-          '<b style="color:var(--c);font-size:16px">&minus;(a &minus; b)(b &minus; c)(c &minus; a)(a + b + c)</b><br>'
-          +'<span style="font-size:24px;color:var(--text2)">'+Array(36).join('&minus;')+'</span><br>'
-          +'<b style="color:var(--c);font-size:16px">&minus;(a &minus; b)(b &minus; c)(c &minus; a)</b><br><br>'
-          +(_is ? 'Everything cancels &rarr;':'Всё сокращается &rarr;'));
+           '<div style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:16px;line-height:1.3;margin:8px 0">'
+          +'<span style="border-bottom:2px solid var(--v);padding:0 12px 3px"><b style="color:var(--c)">&minus;(a &minus; b)(b &minus; c)(c &minus; a)</b><b style="color:var(--g)">(a + b + c)</b></span>'
+          +'<span style="padding:3px 12px 0"><b style="color:var(--c)">&minus;(a &minus; b)(b &minus; c)(c &minus; a)</b></span>'
+          +'</div><br>'
+          +(_is ? 'Everything except <b style="color:var(--g)">a + b + c</b> cancels!':'Всё, кроме <b style="color:var(--g)">a + b + c</b>, сокращается!'));
         _h += '<div class="result-banner">✅ '+(_is ? 'Answer:':'Ответ:')+' <b style="font-size:22px">a + b + c</b></div></div>';
         if (typeof megaPractice === 'function') {
           _h += megaPractice(_is
