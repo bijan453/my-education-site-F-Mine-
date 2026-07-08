@@ -1072,7 +1072,7 @@
     .mega-section{background:linear-gradient(160deg,rgba(245,158,11,.07),rgba(236,72,153,.03));border:1.5px solid rgba(245,158,11,.2);border-radius:14px;padding:16px;margin:12px 0;position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.4)}
     .mega-section::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--m),var(--p));border-radius:4px 0 0 4px}
     .mega-section-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#f59e0b;margin-bottom:8px;display:flex;align-items:center;gap:6px;letter-spacing:0.3px}
-    .mega-section-body{color:#cbd5e1;font-size:13.5px;line-height:1.75;}
+    .mega-section-body{color:#cbd5e1;font-size:13.5px;line-height:1.75;overflow-wrap:anywhere;word-break:break-word}
     .mega-section-body b{color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,0.2)}
     .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px}
     .frac-top{padding:0 6px 3px;border-bottom:2px solid currentColor;color:var(--text)}
@@ -6490,9 +6490,10 @@
       // ── Cyclic rational expression (a,b,c) — handle before general simplifier ──
       if (lo.indexOf('=') < 0 && lo.indexOf('/') >= 0 && lo.indexOf('a^3') >= 0 && lo.indexOf('b^3') >= 0 && lo.indexOf('c^3') >= 0 && lo.indexOf('a^2') >= 0 && lo.indexOf('b^2') >= 0 && lo.indexOf('c^2') >= 0) {
         var E = isEN();
-        var _h = '<div style="font-size:15px;line-height:1.9">';
+        var _h = '<div style="font-size:15px;line-height:1.9;word-break:break-word;overflow-wrap:break-word">';
         var V = '<span style="color:var(--v)">', V_ = '</span>';
         var G = '<span style="color:var(--g)">', G_ = '</span>';
+        var AC = '<span style="color:#f59e0b;font-weight:700">(b \u2212 c)</span>';
         function sb(n,t,b) { return '<div class="mega-section"><div class="mega-section-title">📐 '+(E?'Step ':'Шаг ')+n+': '+t+'</div><div class="mega-section-body">'+b+'</div></div>'; }
         function eb(t,c) { var id='me_'+(Math.random()+1).toString(36).substr(2,8); return '<div class="mega-expand" onclick="toggleMegaExpand(\''+id+'\',this)"><span class="me-arrow">▶</span> '+t+'</div><div class="mega-expand-content" id="'+id+'">'+c+'</div>'; }
         function frac(n,d) { return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.92em;line-height:1.2;margin:0 3px"><span style="border-bottom:2px solid var(--v);padding:0 5px 2px">'+n+'</span><span style="padding:0 5px">'+d+'</span></span>'; }
@@ -6508,7 +6509,7 @@
         var s1 = E
           ? 'Keep <b>a'+p3+'(b − c)</b> as our <b>anchor</b>. The bracket <b>(b − c)</b> will appear in every other term once we factor.<br><br>Expand <b>b³(c − a)</b> and <b>c³(a − b)</b>:'
           : 'Оставляем <b>a'+p3+'(b − c)</b> как <b>якорь</b> — скобка (b − c) появится в каждом слагаемом после разложения.<br><br>Раскрываем <b>b³(c − a)</b> и <b>c³(a − b)</b>:';
-        s1 += '<br><br><b style="color:var(--c)">a'+p3+'(b − c) + b'+p3+'c − ab'+p3+' + ac'+p3+' − c'+p3+'b</b>';
+        s1 += '<br><br><b style="color:var(--c)">a'+p3+''+AC+' + b'+p3+'c − ab'+p3+' + ac'+p3+' − c'+p3+'b</b>';
         s1 += '<br><br><i>'+(E?'We expanded: b³(c−a)=b³c−ab³  and  c³(a−b)=ac³−c³b':'Раскрыли: b³(c−a)=b³c−ab³  и  c³(a−b)=ac³−c³b')+'</i>';
         s1 += eb(E?'💡 Why this anchor?':'💡 Почему этот якорь?',
           E
@@ -6531,7 +6532,7 @@
           ? '<b>b² − c² = (b − c)(b + c)</b><br><br><b>Proof:</b> (b−c)(b+c) = b² + bc − bc − c² = b² − c² ✓<br><br>This is the simplest factoring formula — learn it by heart!'
           : '<b>b² − c² = (b − c)(b + c)</b><br><br><b>Доказательство:</b> (b−c)(b+c) = b² + bc − bc − c² = b² − c² ✓<br><br>Это самая простая формула сокращённого умножения — выучи наизусть!');
         s2 += '<br>'+(E?'After substitution:':'После подстановки:');
-        s2 += '<br><br><b style="color:var(--c)">a'+p3+'(b − c) − a(b − c)(b² + bc + c²) + bc(b − c)(b + c)</b>';
+        s2 += '<br><br><b style="color:var(--c)">a'+p3+''+AC+' − a'+AC+'(b² + bc + c²) + bc'+AC+'(b + c)</b>';
         s2 += '<br><br>'+(E?'Now <b>(b − c)</b> appears in <b>all three terms</b>!':'Теперь <b>(b − c)</b> есть во <b>всех трёх</b> слагаемых!');
         _h += sb(2, E?'Apply factoring formulas':'Применяем формулы ФСУ', s2);
 
@@ -6539,9 +6540,9 @@
         var s3 = E
           ? 'Every term contains <b>(b − c)</b>, so we factor it out — like pulling <b>x</b> out of <b>x² + xy</b>:'
           : 'Каждое слагаемое содержит <b>(b − c)</b> — выносим его за скобки, как <b>x</b> из <b>x² + xy</b>:';
-        s3 += '<br><br><b style="color:var(--c)">(b − c)·[a'+p3+' − a(b² + bc + c²) + bc(b + c)]</b>';
+        s3 += '<br><br><b style="color:var(--c)">'+AC+'·[a'+p3+' − a(b² + bc + c²) + bc(b + c)]</b>';
         s3 += '<br><br>'+(E?'Expand the inner bracket:':'Раскрываем внутренние скобки:');
-        s3 += '<br><br><b style="color:var(--c)">(b − c)·[a'+p3+' − ab'+p2+' − abc − ac'+p2+' + b'+p2+'c + bc'+p2+']</b>';
+        s3 += '<br><br><b style="color:var(--c)">'+AC+'·[a'+p3+' − ab'+p2+' − abc − ac'+p2+' + b'+p2+'c + bc'+p2+']</b>';
         s3 += '<br><br><i>'+(E?'Expanded −a(b²+bc+c²) = −ab²−abc−ac² and bc(b+c) = b²c+bc²':'Раскрыли −a(b²+bc+c²) = −ab²−abc−ac² и bc(b+c) = b²c+bc²')+'</i>';
         s3 += eb(E?'💡 Why this works':'💡 Почему это работает',
           E
@@ -6577,9 +6578,9 @@
           : 'Применяем тот же метод к знаменателю:';
         s5 += '<br><br><b style="color:var(--c)">a'+p2+'(b − c) + b'+p2+'(c − a) + c'+p2+'(a − b)</b>';
         s5 += '<br><br>'+(E?'Expand the last two terms:':'Раскрываем последние два слагаемых:');
-        s5 += '<br><br><b style="color:var(--c)">= a'+p2+'(b − c) − a(b − c)(b + c) + bc(b − c)</b>';
+        s5 += '<br><br><b style="color:var(--c)">= a'+p2+''+AC+' − a'+AC+'(b + c) + bc'+AC+'</b>';
         s5 += '<br><br>'+(E?'Factor out <b>(b − c)</b>:':'Выносим <b>(b − c)</b>:');
-        s5 += '<br><br><b style="color:var(--c)">= (b − c)·[a'+p2+' − a(b + c) + bc]</b>';
+        s5 += '<br><br><b style="color:var(--c)">= '+AC+'·[a'+p2+' − a(b + c) + bc]</b>';
         s5 += '<br><br>'+(E?'The bracket <b>a² − a(b+c) + bc</b> is quadratic in a. Factor it:':'Скобка <b>a² − a(b+c) + bc</b> — квадратный трёхчлен по a. Раскладываем:');
         s5 += '<br><br><b style="color:var(--g)">= (b − c)(a − b)(a − c)</b>';
         s5 += '<br><br><i>'+(E?'Denominator = <b style="color:var(--g)">−(a − b)(b − c)(c − a)</b>':'Знаменатель = <b style="color:var(--g)">−(a − b)(b − c)(c − a)</b>')+'</i>';
