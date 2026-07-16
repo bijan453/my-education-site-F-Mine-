@@ -849,7 +849,7 @@ async function makeMove(from, to) {
   const promo = getPromotion(from, to);
 
   try {
-    const r = await fetch('/api/puzzle/move', {
+    const r = await fetch(API_BASE + '/api/puzzle/move', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ puzzleId, userMove: from + to + (promo || ''), moveIndex })
     });
@@ -948,7 +948,7 @@ async function onSolved(opts) {
   // Only update ELO on a clean solve (no prior mistake / solution peek)
   if (!incorrectAttempt && !opts.fromSolution) {
     try {
-      const r = await fetch('/api/puzzle/rating', {
+      const r = await fetch(API_BASE + '/api/puzzle/rating', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentRating: rating, level: ratingLevel(puzzleRating), solved: true })
       });
@@ -1039,7 +1039,7 @@ async function newPuzzle() {
   const maxR = parseInt($('maxRating').value) || 2400;
 
   try {
-    let url = '/api/puzzle/random?minRating=' + minR + '&maxRating=' + maxR;
+    let url = API_BASE + '/api/puzzle/random?minRating=' + minR + '&maxRating=' + maxR;
     if (theme) url += '&theme=' + encodeURIComponent(theme);
 
     const r = await fetch(url);
@@ -1103,7 +1103,7 @@ async function showHint() {
   $('btnHint').disabled = true;
   $('statusDisplay').textContent = t('loading');
   try {
-    const r = await fetch('/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + moveIndex);
+    const r = await fetch(API_BASE + '/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + moveIndex);
     const data = await r.json();
     if (data.nextMove) {
       const from = data.nextMove.slice(0,2);
@@ -1136,7 +1136,7 @@ async function showSolution() {
   let moves = [];
   try {
     while (true) {
-      const r = await fetch('/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + idx);
+      const r = await fetch(API_BASE + '/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + idx);
       const data = await r.json();
       if (!data.nextMove) break;
       moves.push(data.nextMove);
@@ -1201,9 +1201,17 @@ function setMode(m) {
 }
 
 // ---- AI COACH ----
-const COACH_SERVER = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || !window.location.protocol.startsWith('http'))
-  ? 'http://localhost:3000'
-  : 'https://my-education-site-f-mine.onrender.com';
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+let API_BASE = IS_LOCAL ? '' : (localStorage.getItem('fmine_api_url') || '');
+const COACH_SERVER = IS_LOCAL ? 'http://localhost:3000' : API_BASE || 'http://localhost:3000';
+
+if (!IS_LOCAL && !API_BASE) {
+  const url = prompt('Enter your server URL (e.g. https://your-name.ngrok-free.app):');
+  if (url && url.trim()) {
+    API_BASE = url.trim().replace(/\/+$/, '');
+    localStorage.setItem('fmine_api_url', API_BASE);
+  }
+}
 
 function addCoachMsg(text, type) {
   const log = $('coachLog');
@@ -1313,7 +1321,7 @@ $('btnSoftIdea').onclick = () => callCoach('idea');
 $('btnSoftPiece').onclick = () => {
   if (!puzzleId || solved || moving) return;
   // Show the piece to move (first square of next expected move)
-  fetch('/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + moveIndex)
+  fetch(API_BASE + '/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + moveIndex)
     .then(r => r.json())
     .then(data => {
       if (data.nextMove) {
@@ -1327,7 +1335,7 @@ $('btnSoftPiece').onclick = () => {
 };
 $('btnSoftSquare').onclick = () => {
   if (!puzzleId || solved || moving) return;
-  fetch('/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + moveIndex)
+  fetch(API_BASE + '/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + moveIndex)
     .then(r => r.json())
     .then(data => {
       if (data.nextMove) {
