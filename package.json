@@ -4,6 +4,7 @@
   "type": "module",
   "main": "server.js",
   "dependencies": {
+    "chess.js": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -12,5 +13,17 @@
   },
   "scripts": {
     "start": "node server.js"
-  }
+  },
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bijan453/my-education-site-F-Mine-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bijan453/my-education-site-F-Mine-/issues"
+  },
+  "homepage": "https://github.com/bijan453/my-education-site-F-Mine-#readme"
 }

@@ -1,13 +1,3 @@
-a = int(input())
-b = input()
-c = int(input())
-if b == '+':
-    print(a+c)
-elif b == '-':
-    print(a-c)
-elif b == '*':
-    print(a*c)
-elif b == '/':
-    print(a/c)
-else:
-    print("error")
+a = input()
+if "syka" in a:
+    print(a.replace('syka','****'))

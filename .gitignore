@@ -31,3 +31,25 @@ __pycache__/
 
 # Leftover placeholder images
 photo_*.jpg
+
+# Puzzle database (large binaries)
+*.csv.zst
+puzzles.json
+zstd.exe
+
+# API keys / secrets
+ai.css
+
+# Images
+blackhole.png
+
+# Server logs
+server_err.log
+server_out.log
+
+# Temp scripts
+fix_puzzles.py
+test-simple.html
+
+# Internal agent config
+.agents/

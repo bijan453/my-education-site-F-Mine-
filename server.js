@@ -3,9 +3,44 @@ import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
 import nodemailer from "nodemailer";
+import path from "path";
+import fs from "fs";
 import { spawn } from "child_process";
+import { fileURLToPath } from 'url';
+import { createRequire } from "module";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+const { Chess } = require("./node_modules/.chess.js-Ukv5rq01/chess.js");
 
-dotenv.config();
+/** Apply a Lichess UCI move (e2e4 / e7e8q) or SAN string to a Chess instance. */
+function applyPuzzleMove(game, m) {
+  if (!m || typeof m !== 'string') return null;
+  const s = m.trim();
+  if (/^[a-h][1-8][a-h][1-8][qrbn]?$/i.test(s)) {
+    const move = { from: s.slice(0, 2), to: s.slice(2, 4) };
+    if (s.length === 5) move.promotion = s[4].toLowerCase();
+    const r = game.move(move);
+    if (r) return r;
+  }
+  try { return game.move(s); } catch (e) { return null; }
+}
+
+function isUciMoveList(moves) {
+  return Array.isArray(moves) && moves.length > 0 &&
+    moves.every(m => /^[a-h][1-8][a-h][1-8][qrbn]?$/i.test(String(m).trim()));
+}
+
+/**
+ * Lichess UCI DB: FEN side-to-move plays moves[0] (opponent); solver is the other color.
+ * SAN / player-to-move lists: FEN side-to-move is already the solver (moves[0] is theirs).
+ */
+function puzzleSolverColor(fen, moves) {
+  const turn = new Chess(fen).turn();
+  if (isUciMoveList(moves)) return turn === 'w' ? 'b' : 'w';
+  return turn;
+}
+
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 
@@ -22,7 +57,7 @@ app.use((req, res, next) => {
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(process.cwd()));
+app.use(express.static(__dirname));
 
 // Configure email transporter
 const mailTransporter = nodemailer.createTransport({
@@ -821,6 +856,462 @@ Reply with ONLY a JSON object: {"equivalent": true/false, "reason": "brief expla
     }
   } catch (e) {
     res.status(500).json({ equivalent: false, error: e.message });
+  }
+});
+
+// ============================================================================
+// CHESS PUZZLE ENGINE (NDJSON lazy-load, index ~250MB for 6M puzzles)
+// ============================================================================
+
+const PUZZLE_DB_PATH = path.join(__dirname, 'puzzles.json');
+
+let puzzleIndex = [];       // [{id, rating, offset, lineLen, themes}] sorted by rating
+let puzzleIdMap = new Map(); // id -> entry
+
+const DEMO_PUZZLES = [
+  '{"id":"demo1","fen":"r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R","moves":"d4 exd4 Nxd4","rating":1200,"themes":"fork"}\n',
+  '{"id":"demo2","fen":"r1bqkb1r/pppp1ppp/2n5/4p3/2B1Pn2/5N2/PPPP1PPP/RNBQK2R","moves":"Nxe5 Nxe5 Bb5+","rating":1500,"themes":"pin"}\n',
+  '{"id":"demo3","fen":"6k1/5ppp/8/8/8/8/5PPP/6K1","moves":"Kg7 Kh7 Kg8","rating":800,"themes":"endgame"}\n',
+];
+
+function loadPuzzleDb() {
+  try {
+    if (fs.existsSync(PUZZLE_DB_PATH)) {
+      const stats = fs.statSync(PUZZLE_DB_PATH);
+      if (stats.size === 0) throw new Error('Empty file');
+      const fd = fs.openSync(PUZZLE_DB_PATH, 'r');
+      const buf = Buffer.alloc(65536);
+      let filePos = 0, leftover = '';
+      let cumOffset = 0;
+      const entries = [];
+
+      while (true) {
+        const bytesRead = fs.readSync(fd, buf, 0, buf.length, filePos);
+        if (bytesRead === 0) break;
+        filePos += bytesRead;
+        const chunk = leftover + buf.toString('utf8', 0, bytesRead);
+        const lines = chunk.split('\n');
+        leftover = lines.pop();
+        for (const line of lines) {
+          if (!line.trim()) { cumOffset += line.length + 1; continue; }
+          try {
+            const p = JSON.parse(line);
+            if (p.id && typeof p.rating === 'number') {
+              const entry = { id: p.id, rating: p.rating, offset: cumOffset, lineLen: line.length + 1, themes: p.themes || '' };
+              entries.push(entry);
+              puzzleIdMap.set(p.id, entry);
+            }
+          } catch {}
+          cumOffset += line.length + 1;
+        }
+      }
+      if (leftover.trim()) {
+        const p = JSON.parse(leftover);
+        if (p.id && typeof p.rating === 'number') {
+          const entry = { id: p.id, rating: p.rating, offset: cumOffset, lineLen: leftover.length + 1, themes: p.themes || '' };
+          entries.push(entry);
+          puzzleIdMap.set(p.id, entry);
+        }
+      }
+      fs.closeSync(fd);
+      entries.sort((a, b) => a.rating - b.rating);
+      puzzleIndex = entries;
+      const mb = (entries.length * 48 / 1024 / 1024).toFixed(1);
+      console.log(`Puzzle index built: ${puzzleIndex.length} puzzles, index ~${mb}MB RAM`);
+    } else {
+      fs.writeFileSync(PUZZLE_DB_PATH, DEMO_PUZZLES.join(''));
+      let offset = 0;
+      for (const line of DEMO_PUZZLES) {
+        const p = JSON.parse(line);
+        const entry = { id: p.id, rating: p.rating, offset, lineLen: line.length, themes: p.themes || '' };
+        puzzleIndex.push(entry);
+        puzzleIdMap.set(p.id, entry);
+        offset += line.length;
+      }
+      puzzleIndex.sort((a, b) => a.rating - b.rating);
+      console.log('Seeded 3 demo puzzles');
+    }
+  } catch (e) {
+    console.error('Puzzle DB load error:', e.message);
+    puzzleIndex = [];
+    puzzleIdMap = new Map();
+  }
+}
+
+let _puzzleFd = null;
+function readPuzzleLine(entry) {
+  if (!_puzzleFd) _puzzleFd = fs.openSync(PUZZLE_DB_PATH, 'r');
+  const buf = Buffer.alloc(entry.lineLen + 64);
+  const bytes = fs.readSync(_puzzleFd, buf, 0, buf.length, entry.offset);
+  const str = buf.toString('utf8', 0, bytes);
+  const nl = str.indexOf('\n');
+  const line = nl >= 0 ? str.slice(0, nl) : str.replace(/\n$/, '');
+  return JSON.parse(line);
+}
+
+// Binary search by rating, then filter by theme
+function findPuzzles(minRating, maxRating, theme) {
+  let lo = 0, hi = puzzleIndex.length;
+  while (lo < hi) { const m = (lo + hi) >>> 1; if (puzzleIndex[m].rating < minRating) lo = m + 1; else hi = m; }
+  const start = lo;
+  hi = puzzleIndex.length;
+  while (lo < hi) { const m = (lo + hi) >>> 1; if (puzzleIndex[m].rating <= maxRating) lo = m + 1; else hi = m; }
+  let candidates = puzzleIndex.slice(start, lo);
+  if (theme) {
+    const t = theme.toLowerCase();
+    candidates = candidates.filter(e => e.themes.toLowerCase().split(' ').includes(t));
+  }
+  return candidates;
+}
+
+const DIFFICULTY_RANGES = [
+  { level: 'easy',        min: 0,    max: 900   },
+  { level: 'medium-easy', min: 901,  max: 1300  },
+  { level: 'medium',      min: 1301, max: 1700  },
+  { level: 'medium-hard',  min: 1701, max: 2100  },
+  { level: 'hard',        min: 2101, max: 4000  },
+];
+
+loadPuzzleDb();
+
+// GET /api/puzzle/random?level=medium&theme=fork&minRating=1200&maxRating=1800
+app.get('/api/puzzle/random', (req, res) => {
+  let minR = parseInt(req.query.minRating);
+  let maxR = parseInt(req.query.maxRating);
+  const theme = req.query.theme || '';
+
+  if (!isFinite(minR) || !isFinite(maxR)) {
+    const level = req.query.level || 'medium';
+    const range = DIFFICULTY_RANGES.find(r => r.level === level);
+    if (!range) return res.status(400).json({ error: 'Invalid level. Use level or minRating+maxRating' });
+    minR = range.min;
+    maxR = range.max;
+  }
+
+  const entries = findPuzzles(minR, maxR, theme);
+  if (!entries.length) return res.status(404).json({ error: 'No puzzles found' });
+
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const entryR = entries[Math.floor(Math.random() * entries.length)];
+    try {
+      const p = readPuzzleLine(entryR);
+      const movesArr = (p.moves || '').split(/\s+/).filter(Boolean);
+      if (!movesArr.length) continue;
+
+      const game = new Chess(p.fen);
+      const lichess = isUciMoveList(movesArr);
+      const solverColor = puzzleSolverColor(p.fen, movesArr);
+
+      // Replay full line with real UCI/SAN application; skip if the solver gets mated
+      let replayOk = true;
+      for (const m of movesArr) {
+        if (!applyPuzzleMove(game, m)) { replayOk = false; break; }
+      }
+      if (replayOk && game.in_checkmate() && game.turn() === solverColor) continue;
+
+      return res.json({
+        id: p.id, fen: p.fen, rating: p.rating,
+        themes: (p.themes || '').split(' ').filter(Boolean),
+        firstMove: lichess ? movesArr[0] : null,
+        playerColor: solverColor,
+        initialIndex: lichess ? 1 : 0,
+        totalMoves: movesArr.length
+      });
+    } catch(e) { continue; }
+  }
+  return res.status(500).json({ error: 'Failed to load puzzle' });
+});
+
+// POST /api/puzzle/move — validate a move
+app.post('/api/puzzle/move', (req, res) => {
+  try {
+    const { puzzleId, moveIndex, userMove } = req.body || {};
+    const entry = puzzleIdMap.get(puzzleId);
+    if (!entry) return res.status(404).json({ error: 'Puzzle not found' });
+
+    let row, moves, game, solverColor;
+    try {
+      row = readPuzzleLine(entry);
+      moves = (row.moves || '').split(/\s+/).filter(Boolean);
+      game = new Chess(row.fen);
+      solverColor = puzzleSolverColor(row.fen, moves);
+    } catch(e) { return res.status(500).json({ error: 'Failed to read puzzle' }); }
+
+    let idx = moveIndex || 0;
+    for (let i = 0; i < idx; i++) {
+      if (!applyPuzzleMove(game, moves[i])) return res.status(400).json({ error: 'Invalid state' });
+    }
+
+    const result = { correct: false, completed: false };
+
+    // If it's the opponent's turn (e.g. client still at 0), auto-play their book move
+    if (idx < moves.length && game.turn() !== solverColor) {
+      if (!applyPuzzleMove(game, moves[idx])) return res.status(400).json({ error: 'Invalid state' });
+      idx++;
+    }
+
+    const expected = moves[idx];
+    if (!expected) return res.json({ correct: true, completed: true, moveIndex: idx });
+
+    if (userMove === expected) {
+      result.correct = true;
+      if (!applyPuzzleMove(game, userMove)) return res.status(500).json({ error: 'Invalid user move' });
+      idx++;
+      if (idx < moves.length) {
+        const oppMove = moves[idx];
+        if (!applyPuzzleMove(game, oppMove)) return res.status(500).json({ error: 'Invalid opponent move' });
+        idx++;
+        result.nextOpponentMove = oppMove;
+      }
+      result.completed = idx >= moves.length;
+      // Extra safety: never mark complete if the solver was checkmated
+      if (result.completed && game.in_checkmate() && game.turn() === solverColor) {
+        result.correct = false;
+        result.completed = false;
+        delete result.nextOpponentMove;
+      } else {
+        result.moveIndex = idx;
+      }
+    }
+    res.json(result);
+  } catch(e) {
+    console.error('Move handler error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// GET /api/puzzle/solution?puzzleId=xxx — return ONE next move (show hint)
+app.get('/api/puzzle/solution', (req, res) => {
+  const { puzzleId, moveIndex } = req.query;
+  const entry = puzzleIdMap.get(puzzleId);
+  if (!entry) return res.status(404).json({ error: 'Puzzle not found' });
+  let row, moves;
+  try { row = readPuzzleLine(entry); moves = row.moves.split(' '); } catch(e) { return res.status(500).json({ error: 'Failed to read puzzle' }); }
+  let idx = parseInt(moveIndex) || 0;
+  if (idx < moves.length) {
+    res.json({ nextMove: moves[idx], moveIndex: idx + 1 });
+  } else {
+    res.json({ nextMove: null, completed: true });
+  }
+});
+
+// POST /api/puzzle/import-batch — append NDJSON puzzles
+app.post('/api/puzzle/import-batch', (req, res) => {
+  const rows = req.body.puzzles;
+  if (!Array.isArray(rows)) return res.status(400).json({ error: 'Expected {puzzles: [...]}' });
+  let appended = 0;
+  const fd = fs.openSync(PUZZLE_DB_PATH, 'a');
+  const newEntries = [];
+  try {
+    for (const p of rows) {
+      if (puzzleIdMap.has(p.id)) continue;
+      const line = JSON.stringify({ id: p.id, fen: p.fen, moves: p.moves, rating: p.rating, themes: p.themes }) + '\n';
+      const buf = Buffer.from(line, 'utf8');
+      const offset = fs.statSync(PUZZLE_DB_PATH).size;
+      fs.writeSync(fd, buf, 0, buf.length);
+      const entry = { id: p.id, rating: p.rating, offset, lineLen: buf.length, themes: p.themes || '' };
+      newEntries.push(entry);
+      puzzleIdMap.set(p.id, entry);
+      appended++;
+    }
+  } finally { fs.closeSync(fd); }
+  if (newEntries.length) {
+    puzzleIndex = puzzleIndex.concat(newEntries);
+    puzzleIndex.sort((a, b) => a.rating - b.rating);
+  }
+  res.json({ imported: appended, total: puzzleIdMap.size });
+});
+
+// Elo update endpoint
+app.post('/api/puzzle/rating', (req, res) => {
+  const { currentRating, level, solved } = req.body;
+  const cfg = {
+    easy:        { K: 32, w: 0.3 },
+    'medium-easy': { K: 32, w: 0.6 },
+    medium:      { K: 32, w: 1.0 },
+    'medium-hard': { K: 32, w: 1.5 },
+    hard:        { K: 32, w: 2.0 },
+  }[level];
+  if (!cfg) return res.status(400).json({ error: 'Invalid level' });
+
+  const expected = 1 / (1 + Math.pow(10, (1200 - currentRating) / 400));
+  const actual = solved ? 1 : 0;
+  let delta = Math.round(cfg.K * cfg.w * (actual - expected));
+  if (!solved) {
+    const pf = level === 'easy' ? 2.0 : level === 'hard' ? 0.3 : 1.0;
+    delta = Math.round(delta * pf);
+  }
+  res.json({ newRating: Math.max(400, Math.min(3000, currentRating + delta)), delta });
+});
+
+// Free OpenRouter models — cascade when one hits rate limit
+const PUZZLE_COACH_MODELS = [
+  'meta-llama/llama-3.2-3b-instruct:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'nousresearch/hermes-3-llama-3.1-405b:free',
+  'openai/gpt-oss-20b:free',
+  'openrouter/free',
+];
+
+async function callOpenRouterCascade(messages, { temperature = 0.6, max_tokens = 350 } = {}) {
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) {
+    const err = new Error('OPENROUTER_API_KEY is missing in .env');
+    err.code = 'NO_KEY';
+    throw err;
+  }
+  let lastErr = null;
+  for (const model of PUZZLE_COACH_MODELS) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
+      
+      const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${key}`,
+          'HTTP-Referer': 'https://fmine.local',
+          'X-Title': 'F-Mine Puzzle Coach',
+        },
+        body: JSON.stringify({ model, messages, temperature, max_tokens }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
+      const data = await r.json().catch(() => ({}));
+      
+      if (data.error) {
+        lastErr = new Error(data.error.message || `Error payload on ${model}`);
+        console.warn('[puzzle-coach] skip error payload', model, data.error.message);
+        continue;
+      }
+      
+      if (r.status === 429 || r.status === 402 || r.status === 503) {
+        lastErr = new Error((data.error && data.error.message) || `Rate limited on ${model}`);
+        console.warn('[puzzle-coach] skip', model, r.status);
+        continue;
+      }
+      if (!r.ok) {
+        lastErr = new Error((data.error && data.error.message) || `HTTP ${r.status} on ${model}`);
+        console.warn('[puzzle-coach] fail', model, lastErr.message);
+        continue;
+      }
+      const text = data.choices?.[0]?.message?.content || '';
+      if (!text.trim()) {
+        lastErr = new Error(`Empty reply from ${model}`);
+        continue;
+      }
+      return { text: text.trim(), model };
+    } catch (e) {
+      lastErr = e;
+      console.warn('[puzzle-coach] error', model, e.message);
+    }
+  }
+  throw lastErr || new Error('All free models failed');
+}
+
+// POST /api/puzzle/coach — AI trainer for puzzles (emoji style, free-model cascade)
+// Clean response: strip chain-of-thought / thinking from free models
+function cleanCoachReply(text) {
+  if (!text) return text;
+  // Remove ```<think>...</think>``` blocks
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  // Remove ```<thinking>...</thinking>``` blocks
+  text = text.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').trim();
+  // Remove ``` blocks of any kind
+  text = text.replace(/```[\s\S]*?```/g, '').trim();
+
+  // If response is long and has a preamble before emoji content, trim preamble
+  const emojiRe = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u2702-\u27B0]/u;
+  if (text.length > 200 && !text.match(/^\p{Emoji}/u)) {
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      if (emojiRe.test(lines[i]) || lines[i].startsWith('🎯') || lines[i].startsWith('💡') || lines[i].startsWith('♟') || lines[i].startsWith('🤔')) {
+        const trimmed = lines.slice(i).join('\n').trim();
+        if (trimmed.length > 10) return trimmed;
+      }
+    }
+  }
+
+  return text;
+}
+app.post('/api/puzzle/coach', async (req, res) => {
+  try {
+    const {
+      mode = 'help',
+      puzzleId: reqPuzzleId = '',
+      fen = '',
+      themes = '',
+      rating: pRating = 0,
+      lang: coachLang = 'en',
+      userMessage = '',
+      lastMove = '',
+      wrongMove = '',
+    } = req.body || {};
+
+    // Look up puzzle solution from DB
+    let solutionMoves = '';
+    let puzzleFen = fen;
+    if (reqPuzzleId) {
+      const entry = puzzleIdMap.get(reqPuzzleId);
+      if (entry) {
+        try {
+          const row = readPuzzleLine(entry);
+          solutionMoves = row.moves || '';
+          if (row.fen && !puzzleFen) puzzleFen = row.fen;
+        } catch (e) { /* ignore read errors */ }
+      }
+    }
+
+    const isRu = coachLang === 'ru';
+    const solutionHint = solutionMoves
+      ? `\n\nIMPORTANT: The correct solution moves for this puzzle are (UCI format): ${solutionMoves}.
+The first move is white (e.g. "e2e4"), second is black's reply, etc.
+Use this knowledge to guide the player. You MAY hint at squares or piece types, but never reveal the full move sequence unless mode is "explain-mistake" or the user explicitly asks.`
+      : '';
+
+    const system = `You are "F-Mine AI Trainer" — a cheerful chess puzzle coach.
+Always use short sentences and friendly emojis (🎯 ♟️ 💡 🔥 ✅ 😅 👑).
+Never dump long engine lines. Never spoil the full solution unless mode is "explain-mistake" or user explicitly asks for the answer.
+Prefer guiding questions and ideas over giving the winning move.
+Language: ${isRu ? 'Russian' : 'English'}.
+Keep replies under 80 words.${solutionHint}`;
+
+    let userPrompt = '';
+    if (mode === 'greet') {
+      // Client shows the fixed greeting; optional extra tip
+      userPrompt = `New puzzle loaded. Themes: ${themes || 'unknown'}. Rating: ${pRating}. FEN: ${fen}.
+Write ONE short motivational tip about the theme (no exact moves). Start with a relevant emoji.`;
+    } else if (mode === 'idea') {
+      userPrompt = `Puzzle themes: ${themes}. FEN: ${fen}. Rating ${pRating}.
+Give a soft idea (what tactical motif to look for) without naming squares or the winning move. Use 🎯.`;
+    } else if (mode === 'nudge') {
+      userPrompt = `Player asks for a nudge. Themes: ${themes}. FEN: ${fen}. Last book progress move: ${lastMove || 'none'}.
+Ask 1 guiding question + 1 tiny tip. No full solution.`;
+    } else if (mode === 'explain-mistake') {
+      userPrompt = `Player tried wrong move ${wrongMove || 'unknown'} in this position.
+FEN: ${fen}. Themes: ${themes}.
+Briefly explain why that idea fails and what to look at instead. No full solution line.`;
+    } else {
+      userPrompt = `Player says: ${userMessage || 'help'}
+Position FEN: ${fen}. Themes: ${themes}. Rating ${pRating}.
+Help them solve the puzzle like a coach. Use emojis.`;
+    }
+
+    const result = await callOpenRouterCascade([
+      { role: 'system', content: system },
+      { role: 'user', content: userPrompt },
+    ]);
+    res.json({ ok: true, reply: cleanCoachReply(result.text), model: result.model, mode });
+  } catch (e) {
+    console.error('Puzzle coach error:', e.message);
+    const status = e.code === 'NO_KEY' ? 503 : 502;
+    res.status(status).json({
+      ok: false,
+      error: e.message || 'Coach unavailable',
+      reply: null,
+    });
   }
 });
 

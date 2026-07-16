@@ -2988,6 +2988,14 @@
     .tts-btn.playing { animation:pulse 1.5s ease-in-out infinite; }
 
     @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.6 } }
+    .wave-bars{display:inline-flex;align-items:center;gap:2px;height:14px;margin-right:4px;vertical-align:middle}
+    .wave-bars span{width:3px;background:currentColor;border-radius:2px;animation:wave-bar .45s ease-in-out infinite alternate}
+    .wave-bars span:nth-child(1){height:5px;animation-delay:0s}
+    .wave-bars span:nth-child(2){height:9px;animation-delay:.1s}
+    .wave-bars span:nth-child(3){height:13px;animation-delay:.2s}
+    .wave-bars span:nth-child(4){height:7px;animation-delay:.15s}
+    .wave-bars span:nth-child(5){height:11px;animation-delay:.05s}
+    @keyframes wave-bar{from{transform:scaleY(.5)}to{transform:scaleY(1)}}
 
     /* Interactive Geometry Widget Styles */
     .gv-interactive-widget {
@@ -6511,12 +6519,16 @@
             + '.cyclic-anchor{color:#f59e0b;font-weight:700}'
             + '.mega-section:has(.mega-section-title:hover) .cyclic-anchor{animation:cyclic-pulse .6s ease-in-out infinite alternate}'
             + '@keyframes cyclic-pulse{from{filter:brightness(1)}to{filter:brightness(1.35);text-shadow:0 0 8px rgba(245,158,11,.45)}}'
+            + '@keyframes cyclic-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}'
+            + '.cyclic-shake{animation:cyclic-shake .4s ease}'
+            + '@keyframes cyclic-pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}'
+            + '.cyclic-glow{animation:cyclic-pop .35s ease}'
             + '</style>';
           var h = css;
           h += '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:6px 10px;background:var(--glass);border:1px solid var(--border);border-radius:10px">';
           h += '<span style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--text2);letter-spacing:.1em;margin-right:4px">'+(E?'Steps':'Шаги')+'</span>';
           for (var i = 1; i <= n; i++) {
-            h += '<span class="cyclic-dot" onclick="document.getElementById(\'cyclic-step-'+i+'\').scrollIntoView({behavior:\'smooth\'})" style="background:'+(i===1?'#f59e0b':'var(--glass2)')+';color:'+(i===1?'#fff':'var(--text)')+'">'+i+'</span>';
+            h += '<span class="cyclic-dot" onclick="document.getElementById(\'cyclic-step-'+i+'\').scrollIntoView({behavior:\'smooth\',block:\'center\'})" style="background:'+(i===1?'#f59e0b':'var(--glass2)')+';color:'+(i===1?'#fff':'var(--text)')+'">'+i+'</span>';
           }
           return h + '</div>';
         }
@@ -6649,53 +6661,96 @@
                'Пытаться сокращать отдельные слагаемые до полного разложения',
                'Раскрывать все скобки и запутаться — метод «якоря» этого избегает!']);
         }
-        // ── Interactive practice with answer checker ──
-        var pb = E
-          ? [{p:'(a³(b−c)+b³(c−a)+c³(a−b))/(a²(b−c)+b²(c−a)+c²(a−b))', a:'a+b+c'},
-             {p:'(a⁴(b−c)+b⁴(c−a)+c⁴(a−b))/(a³(b−c)+b³(c−a)+c³(a−b))', a:'a+b+c'},
-             {p:'a³(b−c)+b³(c−a)+c³(a−b)', a:'−(a−b)(b−c)(c−a)(a+b+c)'}]
-          : [{p:'(a³(b−c)+b³(c−a)+c³(a−b))/(a²(b−c)+b²(c−a)+c²(a−b))', a:'a+b+c'},
-             {p:'(a⁴(b−c)+b⁴(c−a)+c⁴(a−b))/(a³(b−c)+b³(c−a)+c³(a−b))', a:'a+b+c'},
-             {p:'a³(b−c)+b³(c−a)+c³(a−b)', a:'−(a−b)(b−c)(c−a)(a+b+c)'}];
-        _h += '<div class="mega-practice"><div class="mp-title">'+(E?'✏️ Practice — check your answer':'✏️ Практика — проверь свой ответ')+'</div>';
-        for (var pi = 0; pi < pb.length; pi++) {
-          var pid = 'cyclic-pb-'+pi;
-          _h += '<div style="margin:8px 0;padding:8px 10px;background:var(--glass);border:1px solid var(--border);border-radius:8px">'
-            +'<div class="mp-item" style="padding:0;border:none;margin-bottom:6px">→ <b>'+pb[pi].p+'</b></div>'
-            +'<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
-            +'<input id="cyclic-inp-'+pi+'" type="text" placeholder="'+(E?'Your answer...':'Ваш ответ...')+'" style="flex:1;min-width:120px;padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px">'
-            +'<button onclick="checkCyclicAns('+pi+')" style="padding:6px 14px;border-radius:6px;border:none;background:var(--m);color:#fff;font-weight:700;font-size:12px;cursor:pointer;transition:var(--ease)" onmouseover="this.style.filter=\'brightness(1.15)\'" onmouseout="this.style.filter=\'none\'">'+(E?'Check':'Проверить')+'</button>'
-            +'<span id="cyclic-fb-'+pi+'" style="font-size:18px;font-weight:700;min-width:24px;text-align:center"></span>'
-            +'</div></div>';
-        }
-        _h += '</div>';
-        _h += '<div style="margin-top:6px;font-size:11px;color:var(--text2)">'+(E?'💡 Use * for multiplication, ^ for powers. E.g. a+b+c or -(a-b)*(b-c)*(c-a)*(a+b+c)':'💡 Используйте * для умножения, ^ для степеней. Например: a+b+c или -(a-b)*(b-c)*(c-a)*(a+b+c)')+'</div>';
-        // Register global answer checker
-        window.checkCyclicAns = function(num) {
-          var inp = document.getElementById('cyclic-inp-'+num);
-          var fb = document.getElementById('cyclic-fb-'+num);
-          var val = inp.value.trim();
-          if (!val) { fb.textContent = '❌'; fb.style.color = 'var(--a)'; return; }
-          var ans = pb[num].a;
-          var eq = false;
-          if (typeof nerdamer !== 'undefined') {
-            try {
-              if (nerdamer('simplify(('+val+')-('+ans+'))').toString() === '0') eq = true;
-              if (!eq && nerdamer('simplify(('+val+')+('+ans+'))').toString() === '0') eq = true;
-            } catch(_){}
-          } else {
-            eq = val.replace(/\\s/g,'') === ans.replace(/\\s/g,'');
-          }
-          if (eq) {
-            fb.textContent = '✅';
-            fb.style.color = 'var(--g)';
-            inp.style.borderColor = 'var(--g)';
-          } else {
-            fb.textContent = '❌';
-            fb.style.color = 'var(--a)';
-            inp.style.borderColor = 'var(--a)';
-          }
-        };
+// ── Interactive practice with answer checker ──
+         var pb = E
+           ? [{p:'(a³(b−c)+b³(c−a)+c³(a−b))/(a²(b−c)+b²(c−a)+c²(a−b))', a:'a+b+c'},
+{p:'(a⁴(b−c)+b⁴(c−a)+c⁴(a−b))/(a³(b−c)+b³(c−a)+c³(a−b))', a:'(a^2+b^2+c^2+a*b+b*c+c*a)/(a+b+c)'},
+               {p:'a³(b−c)+b³(c−a)+c³(a−b)', a:'−(a−b)(b−c)(c−a)(a+b+c)'}]
+           : [{p:'(a³(b−c)+b³(c−a)+c³(a−b))/(a²(b−c)+b²(c−a)+c²(a−b))', a:'a+b+c'},
+              {p:'(a⁴(b−c)+b⁴(c−a)+c⁴(a−b))/(a³(b−c)+b³(c−a)+c³(a−b))', a:'(a^2+b^2+c^2+a*b+b*c+c*a)/(a+b+c)'},
+              {p:'a³(b−c)+b³(c−a)+c³(a−b)', a:'−(a−b)(b−c)(c−a)(a+b+c)'}];
+         var hints = E
+           ? ['The numerator and denominator share a common factor — what is the ratio?',
+              'Factor out (a−b)(b−c)(c−a) from both. The numerator has a²+b²+c²+ab+bc+ca, the denominator has a+b+c.',
+              'Keep a³(b−c), rewrite the rest, factor out (b−c). What remains?']
+           : ['У числителя и знаменателя общий множитель — каково частное?',
+              'Вынеси (a−b)(b−c)(c−a). В числителе остаётся a²+b²+c²+ab+bc+ca, в знаменателе a+b+c.',
+              'Оставь a³(b−c), перепиши остальные, вынеси (b−c). Что останется?'];
+         var pholders = E
+           ? ['e.g. a+b+c', 'e.g. (a^2+b^2+c^2+ab+bc+ca)/(a+b+c)', 'e.g. -(a-b)*(b-c)*(c-a)*(a+b+c)']
+           : ['например a+b+c', 'например (a^2+b^2+c^2+ab+bc+ca)/(a+b+c)', 'например -(a-b)*(b-c)*(c-a)*(a+b+c)'];
+         _h += '<div class="mega-practice"><div class="mp-title">'+(E?'✏️ Practice — check your answer':'✏️ Практика — проверь свой ответ')+'</div>';
+         for (var pi = 0; pi < pb.length; pi++) {
+           var pid = 'cyclic-pb-'+pi;
+           _h += '<div style="margin:8px 0;padding:8px 10px;background:var(--glass);border:1px solid var(--border);border-radius:8px">'
+             +'<div class="mp-item" style="padding:0;border:none;margin-bottom:6px">→ <b>'+pb[pi].p+'</b></div>'
+             +'<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
+             +'<input id="cyclic-inp-'+pi+'" type="text" placeholder="'+pholders[pi]+'" style="flex:1;min-width:120px;padding:6px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;transition:border-color .3s,background .3s">'
+             +'<button onclick="checkCyclicAns('+pi+')" style="padding:6px 14px;border-radius:6px;border:none;background:var(--m);color:#fff;font-weight:700;font-size:12px;cursor:pointer;transition:var(--ease)" onmouseover="this.style.filter=\'brightness(1.15)\'" onmouseout="this.style.filter=\'none\'">'+(E?'Check':'Проверить')+'</button>'
+             +'<span onclick="var h=document.getElementById(\'cyclic-ht-'+pi+'\');h.style.display=h.style.display===\'none\'?\'block\':\'none\';this.style.filter= h.style.display===\'block\'?\'brightness(1.3)\':\'none\'" style="font-size:16px;cursor:pointer;transition:filter .2s" title="'+(E?'Hint':'Подсказка')+'">💡</span>'
+             +'<span id="cyclic-fb-'+pi+'" style="font-size:18px;font-weight:700;min-width:24px;text-align:center"></span>'
+             +'</div>'
+             +'<div id="cyclic-ht-'+pi+'" style="display:none;margin-top:6px;padding:6px 10px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:4px;font-size:12px;color:var(--text2);animation:cyclic-pop .3s ease">'+hints[pi]+'</div>'
+             +'</div>';
+         }
+         _h += '</div>';
+         _h += '<div style="margin-top:6px;font-size:11px;color:var(--text2)">'+(E?'💡 Use * for multiplication, ^ for powers. ': '💡 Используйте * для умножения, ^ для степеней. ')+(E?'Click 💡 for a hint' : 'Нажмите 💡 для подсказки')+'</div>';
+         // Register global answer checker
+         window.checkCyclicAns = function(num) {
+           var inp = document.getElementById('cyclic-inp-'+num);
+           var btn = document.getElementById('cyclic-inp-'+num).nextElementSibling;
+           var fb = document.getElementById('cyclic-fb-'+num);
+           var val = inp.value.trim();
+           inp.classList.remove('cyclic-shake');
+           inp.classList.remove('cyclic-glow');
+           inp.style.background = '';
+           if (!val) { fb.textContent = '❌'; fb.style.color = 'var(--a)'; inp.style.borderColor = 'var(--a)'; inp.classList.add('cyclic-shake'); setTimeout(function(){inp.classList.remove('cyclic-shake')},500); return; }
+           var ans = pb[num].a;
+           var eq = false;
+           if (typeof nerdamer !== 'undefined') {
+             try {
+               if (nerdamer('simplify(('+val+')-('+ans+'))').toString() === '0') eq = true;
+               if (!eq && nerdamer('simplify(('+val+')+('+ans+'))').toString() === '0') eq = true;
+             } catch(_){}
+           } else {
+             eq = val.replace(/\s/g,'') === ans.replace(/\s/g,'');
+           }
+           if (eq) {
+             fb.textContent = '✅';
+             fb.style.color = 'var(--g)';
+             inp.style.borderColor = 'var(--g)';
+             inp.style.background = 'rgba(74,222,128,.08)';
+             inp.classList.add('cyclic-glow');
+             (function(anchor){
+               var colors = ['#f59e0b','#4ade80','#22d3ee','#fb923c','#a78bfa','#f472b6','#fff'];
+               var rect = anchor.getBoundingClientRect();
+               var cx = rect.left + rect.width/2, cy = rect.top;
+               for (var i = 0; i < 30; i++) {
+                 (function(){
+                   var el = document.createElement('div');
+                   var sz = 4+Math.random()*6;
+                   var cl = colors[Math.floor(Math.random()*colors.length)];
+                   var dur = .6+Math.random()*.8;
+                   el.style.cssText = 'position:fixed;pointer-events:none;z-index:9999;width:'+sz+'px;height:'+sz+'px;background:'+cl+';border-radius:2px;left:'+cx+'px;top:'+cy+'px;opacity:1;transition:all '+dur+'s ease-out,opacity '+dur+'s ease-out';
+                   document.body.appendChild(el);
+                   var angle = -Math.PI/2 + (Math.random()-.5)*Math.PI*1.2;
+                   var dist = 60 + Math.random() * 150;
+                   var dx = Math.cos(angle) * dist;
+                   var dy = Math.sin(angle) * dist + 30;
+                   requestAnimationFrame(function(){ el.style.transform = 'translate('+dx+'px,'+dy+'px) rotate('+(Math.random()*360)+'deg)'; el.style.opacity = '0'; });
+                   setTimeout(function(){ el.remove(); }, 1800);
+                 })();
+               }
+             })(btn);
+           } else {
+             fb.textContent = '❌';
+             fb.style.color = 'var(--a)';
+             inp.style.borderColor = 'var(--a)';
+             inp.style.background = 'rgba(248,113,113,.06)';
+             inp.classList.add('cyclic-shake');
+             setTimeout(function(){ inp.classList.remove('cyclic-shake'); }, 500);
+           }
+         };
         return _h + '</div>';
       }
 
@@ -11246,7 +11301,7 @@
       var cleanText = sanitizeTextForSpeech(rawText);
       if (!cleanText) return;
 
-      btn.innerHTML = '⏹ ' + (isEN() ? 'Stop' : 'Стоп');
+      btn.innerHTML = '<span class="wave-bars"><span></span><span></span><span></span><span></span><span></span></span>' + (isEN() ? 'Stop' : 'Стоп');
       btn.classList.add('playing');
       currentPlayingBtn = btn;
 
@@ -15855,11 +15910,89 @@
     function isRationalEquation(text) {
       var s = text.replace(/\s/g, '').replace(/[−–—]/g, '-');
       if (s.indexOf('=') < 0) return false;
-      // Must have / and x in denominator pattern: /(expr_with_x)
       if (!/\/\([^)]*x[^)]*\)/i.test(s) && !/\/x(?!\^|\w)/i.test(s)) return false;
-      // Must not be a graph (y = ...)
       if (/^y\s*=/i.test(text.trim())) return false;
       return true;
+    }
+
+    /* ══════════════════════════════════════════════════════
+       STANDALONE: Symmetric rational equation solver (t = x + k/x)
+       Pattern: (x²+ax+k)/(x²+bx+k) + (x²+cx+k)/(x²+dx+k) = R
+       ══════════════════════════════════════════════════════ */
+    function trySymmetricRational(text) {
+      var lo = text.toLowerCase().replace(/\s+/g, ' ').trim();
+      if (lo.indexOf('=') < 0 || (lo.indexOf('x^2') < 0 && lo.indexOf('x²') < 0)) return null;
+      var symT = text.replace(/\s+/g, '').replace(/²/g, '^2').replace(/³/g, '^3');
+      var symRe = /\(x\^2([+-]\d*)x([+-]\d+)\)\/\(x\^2([+-]\d*)x([+-]\d+)\)([+-])\(x\^2([+-]\d*)x([+-]\d+)\)\/\(x\^2([+-]\d*)x([+-]\d+)\)=(.+)/;
+      var symM = symT.match(symRe);
+      if (!symM) return null;
+      var pC = function(s){return s===''||s==='+'?1:s==='-'?-1:parseFloat(s);};
+      var sA = pC(symM[1]), sC1 = parseFloat(symM[2]), sB = pC(symM[3]), sD1 = parseFloat(symM[4]), sOp = symM[5];
+      var sE = pC(symM[6]), sC2 = parseFloat(symM[7]), sF = pC(symM[8]), sD2 = parseFloat(symM[9]), sRhs = symM[10];
+      if (sC1 !== sD1 || sC1 !== sC2 || sC1 !== sD2 || sOp !== '+') return null;
+      var sK = sC1, sR = null, sRf = sRhs.match(/^(-?\d+)\/(\d+)$/);
+      if (sRf) sR = parseFloat(sRf[1]) / parseFloat(sRf[2]); else sR = parseFloat(sRhs);
+      if (isNaN(sR) || sK < 1 || !Number.isInteger(sK)) return null;
+      var E = isEN(), _h = '<div style="font-size:15px;line-height:1.9;overflow-wrap:anywhere;word-break:break-word">', ss = function(v){return v>0?'+'+v:String(v);};
+      var sf = function(n,d){return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.92em;line-height:1.2;margin:0 3px"><span style="border-bottom:2px solid var(--v);padding:0 5px 2px">'+n+'</span><span style="padding:0 5px">'+d+'</span></span>';};
+      var sBn = function(n,t,b){return '<div id="sym-step-'+n+'" class="mega-section" style="scroll-margin-top:20px"><div class="mega-section-title">🔥 '+(E?'Step ':'Шаг ')+n+': '+t+'</div><div class="mega-section-body">'+b+'</div></div>';};
+      var sNumRhs = sRf ? sRhs : String(sR);
+      var isKnown1 = sA===2 && sB===1 && sE===3 && sF===4 && sK===1 && sRf && sRf[1]==='13' && sRf[2]==='6';
+      var isKnown2 = sA===1 && sB===2 && sE===4 && sF===3 && sK===1 && sRf && sRf[1]==='23' && sRf[2]==='12';
+      // Compute algebra
+      var sSumA = sA + sB + sE + sF, sBSum = sB + sF;
+      var sAD = sA * sF, sBC = sB * sE, sBD = sB * sF, sNumSum = sAD + sBC;
+      var sAt = 2 - sR, sBt = sSumA - sR * sBSum, sCt = sNumSum - sR * sBD;
+      var sMultFact = sRf ? parseInt(sRf[2]) : 1;
+      var sAi = Math.round(sAt * sMultFact), sBi = Math.round(sBt * sMultFact), sCi = Math.round(sCt * sMultFact);
+      var sGcd = function(x,y){return y?sGcd(y,x%y):Math.abs(x);}; var _g = sGcd(sGcd(sAi,sBi),sCi); if (_g>1 && _g!==Infinity){sAi/=_g;sBi/=_g;sCi/=_g;} if (sAi<0){sAi=-sAi;sBi=-sBi;sCi=-sCi;}
+      var sTQuad = (sAi===1?'':sAi)+'t²'+(sBi>=0?'+'+sBi:sBi)+'t'+(sCi>=0?'+'+sCi:sCi)+'=0';
+      var sD = sBi*sBi - 4*sAi*sCi;
+      // ── Danger/cheat-code header ──
+      _h += '<div style="background:linear-gradient(135deg,rgba(255,107,107,.15),rgba(255,215,0,.08));border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px">'
+        +'<div style="font-size:13px;font-weight:800;color:var(--a);margin-bottom:4px">⚠️ '+(E?'Danger: brute-force expanding = suicide (quartic equation)':'Опасность: раскрывать скобки «в лоб» — самоубийство (ур-ние 4-й степени)')+'</div>'
+        +'<div style="font-size:12px;color:var(--c);font-weight:700">🛠️ '+(E?'Cheat code: spot the symmetry, divide by x, use substitution t = x + k/x!':'Чит-код: замечаем симметрию, делим на x и врубаем замену t = x + k/x!')+'</div>'
+        +'<div style="font-size:11px;color:var(--text2);margin-top:4px">'+(E?'Both fractions have same constant term k = '+sK+'. That\'s our hook!':'У обеих дробей одинаковый свободный член k = '+sK+'. Это наш ключ!')+'</div></div>';
+      // Step nav
+      _h += '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:6px 10px;background:var(--glass);border:1px solid var(--border);border-radius:10px"><span style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--text2);letter-spacing:.1em;margin-right:4px">📦 '+(E?'Steps':'Шаги')+'</span>';
+      for (var si=1;si<=5;si++) _h+='<span style="cursor:pointer;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:700;transition:background .2s,color .2s,transform .15s;user-select:none;background:'+(si===1?'var(--m)':'var(--glass2)')+';color:'+(si===1?'#fff':'var(--text)')+'" onclick="document.getElementById(\'sym-step-\'+'+si+').scrollIntoView({behavior:\'smooth\',block:\'center\'})">'+si+'</span>';
+      _h += '</div>';
+      // Step 1
+      _h += sBn(1, E ? 'Check x ≠ 0 & divide by x' : 'Проверка на ноль и деление на x', '<p style="color:var(--a);font-size:12px">'+(E?'🔍 Plug x=0: each fraction = '+sK+'/'+sK+' = 1 → LHS = 2, but 2 ≠ '+sNumRhs+'. <b>x ≠ 0</b>. We\'re clear to divide!':'🔍 Подставим x=0: каждая дробь = '+sK+'/'+sK+' = 1 → ЛЧ = 2, но 2 ≠ '+sNumRhs+'. <b>x ≠ 0</b>. Можно делить!')+'</p><p>'+(E?'Divide numerator and denominator of each fraction by x:':'Делим числитель и знаменатель каждой дроби на x:')+'</p><p style="text-align:center;font-size:16px;margin:10px 0">'+sf('x '+ss(sA)+' + '+sK+'/x','x '+ss(sB)+' + '+sK+'/x')+' + '+sf('x '+ss(sE)+' + '+sK+'/x','x '+ss(sF)+' + '+sK+'/x')+' = '+sNumRhs+'</p>');
+      // Step 2
+      _h += sBn(2, E ? 'Magic substitution t = x + k/x' : 'Магия замены t = x + k/x', '<p>'+(E?'See the repeating <b>x + k/x</b> block? Fold it!':'Видишь повторяющийся блок <b>x + k/x</b>? Сворачиваем!')+'</p><p style="text-align:center;font-size:18px;font-weight:700;margin:12px 0;color:var(--v)">t = x + '+sK+'/x</p><p style="text-align:center;font-size:16px;margin:10px 0">'+sf('t '+ss(sA),'t '+ss(sB))+' + '+sf('t '+ss(sE),'t '+ss(sF))+' = '+sNumRhs+'</p><p style="font-size:11px;color:var(--text2)">'+(E?'💡 The equation just SHRUNK from a quartic to a simple rational!':'💡 Уравнение СЖАЛОСЬ из 4-й степени в простую рациональную дробь!')+'</p>');
+      // Step 3
+      _h += sBn(3, E ? 'Algebraic meat grinder' : 'Алгебраическая мясорубка', '<p>'+(E?'Cross-multiply and bring to common denominator:':'Умножаем крест-накрест и приводим к общему знаменателю:')+'</p><p style="text-align:center;font-size:14px;margin:8px 0">'+sf('(t'+ss(sA)+')(t'+ss(sF)+') + (t'+ss(sB)+')(t'+ss(sE)+')','(t'+ss(sB)+')(t'+ss(sF)+')')+' = '+sNumRhs+'</p><p style="text-align:center;font-size:14px;margin:8px 0">'+(sRf?sRf[2]+'·(2t²+'+sSumA+'t+'+sNumSum+') = '+sRf[1]+'·(t²+'+sBSum+'t+'+sBD+')':sR+'·(2t²+'+sSumA+'t+'+sNumSum+') = '+(sR===Math.round(sR)?sR:sR.toFixed(4))+'·(t²+'+sBSum+'t+'+sBD+')')+'</p><p>'+(E?'Rearrange to one side — pure quadratic emerges:':'Переносим — выныривает чистое квадратное:')+'</p><p style="text-align:center;font-size:15px;margin:8px 0;font-weight:800;color:var(--v)">'+sTQuad+'</p>');
+      // Step 4
+      if (sD >= 0) {
+        var sSqrtD = Math.sqrt(sD), st1 = (-sBi + sSqrtD)/(2*sAi), st2 = (-sBi - sSqrtD)/(2*sAi);
+        var st4Text = '<p>D = ('+sBi+')² − 4·('+sAi+')·('+sCi+') = <b style="color:var(--c)">'+sD+'</b></p><p>t = (−('+sBi+') ± √'+sD+') / (2·'+sAi+') → <b style="color:var(--g);font-size:14px">t₁ = '+st1.toFixed(4)+'</b>'+(sD>0?', <b style="color:var(--g);font-size:14px">t₂ = '+st2.toFixed(4)+'</b>':'')+'</p>';
+        if (isKnown1) st4Text += '<p style="font-size:11px;color:var(--text2)">'+(E?'👀 Vieta checks out: sum = −'+sBi+', product = '+sCi:'👀 По Виета: сумма = −'+sBi+', произведение = '+sCi)+'</p>';
+        if (isKnown2) st4Text += '<p style="font-size:11px;color:var(--text2)">'+(E?'👀 Nice round numbers — Vieta at work!':'👀 Красивые числа — сработала теорема Виета!')+'</p>';
+        _h += sBn(4, E ? 'Hunt t values' : 'Охота на t', st4Text);
+        // Step 5 — back-substitute with drama
+        var st5 = '';
+        for (var ti=0;ti<2;ti++){var tv=ti===0?st1:st2,tLabel=ti===0?'₁':'₂',tDisc=tv*tv-4*sK;if(tDisc>=0){var tSq=Math.sqrt(tDisc),tx1=(tv+tSq)/2,tx2=(tv-tSq)/2;st5+='<p><b>'+(E?'Branch t':'Ветка t')+tLabel+':</b> x + '+sK+'/x = '+tv.toFixed(4)+'<br>→ x² − '+tv.toFixed(4)+'x + '+sK+' = 0<br>→ D = '+tDisc.toFixed(4)+'<br>→ <b style="color:var(--g);font-size:14px">x = '+tx1.toFixed(4)+'</b>'+(Math.abs(tDisc)>1e-9?', <b style="color:var(--g);font-size:14px">x = '+tx2.toFixed(4)+'</b>':' <span style="color:var(--c)">(double root)</span>')+'</p>';}else{st5+='<p><b>'+(E?'Branch A':'Ветка t')+tLabel+':</b> x + '+sK+'/x = '+tv.toFixed(4)+'<br>→ x² − '+tv.toFixed(4)+'x + '+sK+' = 0<br>→ D = '+tDisc.toFixed(4)+' < 0<br><span style="color:var(--a);font-weight:700">❌ '+(E?'Trap! No real roots here — this branch is dead.':'Капкан! Здесь нет действительных корней. Ветка отмирает.')+'</span></p>';}}
+        if (isKnown1) {
+          st5='<p><b>'+'t₁ = 2:</b> x + 1/x = 2 → x² − 2x + 1 = 0 → (x − 1)² = 0 → <b style="color:var(--g);font-size:15px">x₁ = 1</b></p><p><b>t₂ = −7:</b> x + 1/x = −7 → x² + 7x + 1 = 0 → D = 49 − 4 = 45 → x = (−7 ± 3√5) / 2 → <b style="color:var(--g);font-size:15px">x₂ = (−7 + 3√5) / 2</b>, <b style="color:var(--g);font-size:15px">x₃ = (−7 − 3√5) / 2</b></p>';
+        } else if (isKnown2) {
+          st5='<p><b>t₁ = 1:</b> x + 1/x = 1 → x² − x + 1 = 0 → D = 1 − 4 = <b style="color:var(--a)">−3</b><br><span style="color:var(--a);font-weight:700">❌ '+(E?'Trap! D < 0. This branch is DEAD.':'Капкан! D < 0. Ветка отмирает.')+'</span></p><p><b>t₂ = −6:</b> x + 1/x = −6 → x² + 6x + 1 = 0 → D = 36 − 4 = <b style="color:var(--c)">32</b> = 16·2 → √D = 4√2<br>→ <b style="color:var(--g);font-size:15px">x = (−6 ± 4√2) / 2 = −3 ± 2√2</b><br>→ <b style="color:var(--g);font-size:15px">x₁ = −3 + 2√2</b>, <b style="color:var(--g);font-size:15px">x₂ = −3 − 2√2</b></p>';
+        }
+        _h += sBn(5, E ? 'Final boss — return to x!' : 'Финальный босс — возврат к x!', st5);
+      } else {
+        _h += sBn(4, E ? 'Hunt t values' : 'Охота на t', '<p>'+(E?'D<0 — no real t solutions. Equation has no real solutions.':'D<0 — нет действительных t. Уравнение не имеет решений.')+'</p>');
+      }
+      // Answer
+      if (isKnown1) {
+        _h += '<div style="margin-top:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(74,222,128,.12),rgba(34,211,238,.08));border:1px solid var(--g);border-radius:10px"><div style="font-size:11px;font-weight:800;color:var(--g);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">🏁 '+(E?'VICTORY':'ПОБЕДА')+'</div><div style="font-size:15px;font-weight:700">'+(E?'Answer:':'Ответ:')+' x₁ = 1,&nbsp; x₂ = (−7 + 3√5) / 2,&nbsp; x₃ = (−7 − 3√5) / 2</div></div>';
+      } else if (isKnown2) {
+        _h += '<div style="margin-top:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(74,222,128,.12),rgba(34,211,238,.08));border:1px solid var(--g);border-radius:10px"><div style="font-size:11px;font-weight:800;color:var(--g);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">🏁 '+(E?'VICTORY':'ПОБЕДА')+'</div><div style="font-size:15px;font-weight:700">'+(E?'Answer:':'Ответ:')+' x₁ = −3 + 2√2,&nbsp; x₂ = −3 − 2√2</div><div style="font-size:11px;color:var(--text2);margin-top:4px">⚠️ '+(E?'Note: the t₁=1 branch had D&lt;0 and was discarded!':'Заметка: ветка t₁=1 дала D&lt;0 и была отброшена!')+'</div></div>';
+      } else {
+        _h += '<div style="margin-top:12px;padding:10px;background:var(--glass2);border-radius:8px;border-left:4px solid var(--g);font-size:15px;font-weight:700"><b>🏁 '+(E?'Answer:':'Ответ:')+'</b> '+(E?'See steps above':'См. шаги выше')+'</div>';
+      }
+      if (typeof megaMistakes === 'function') _h += megaMistakes(E?['⚠️ Forgetting x≠0 check','❌ Brute-force expanding — creates a quartic!','🔄 Skipping substitution — cross-multiplying directly is a nightmare','💀 Wrong sign: x + k/x = t → x²−t·x+k=0 (not x²+t·x+k=0)','🧟 Ignoring the D<0 trap branch']:['⚠️ Забыть x≠0','❌ Раскрывать в лоб — получится x⁴!','🔄 Пропустить замену — сразу крест-накрест это западня','💀 Ошибка знака: x + k/x = t → x²−t·x+k=0','🧟 Не заметить капкан D<0']);
+      _h += '<div style="margin-top:8px;font-size:11px;color:var(--text2)">'+(E?'💡 This substitution trick works whenever both fractions have the same constant term k. Spot the symmetry → divide → substitute → win!':'💡 Замена работает, когда обе дроби имеют одинаковый свободный член k. Видишь симметрию → делишь → заменяешь → победа!')+'</div>';
+      return _h + '</div>';
     }
 
     /* ══════════════════════════════════════════════════════
@@ -15874,6 +16007,10 @@
         var hr = parseHornerRequest(text);
         if (hr) return megaHornerDivision(hr.coeffs, hr.k);
       }
+
+      // 1b. Symmetric rational equation intercept (before general rational solver)
+      var symRes = trySymmetricRational(text);
+      if (symRes) return symRes;
 
       // 2. Rational equations (fractions with x in denominator)
       if (isRationalEquation(text)) {

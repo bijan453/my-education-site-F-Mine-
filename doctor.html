@@ -167,6 +167,7 @@ function renderHistory(){
   }
 
   for(const m of messages){
+    if (m.role === "system") continue;
     const div = document.createElement("div");
     div.className = "message " + (m.cls || (m.role === "user" ? "user" : "bot"));
     div.textContent = (m.sender || (m.role === "user" ? "Вы" : "Бот")) + ": " + m.content;
@@ -203,7 +204,7 @@ async function sendMessage(){
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: messages.map(m => ({
+        messages: messages.filter(m => m.role !== "system").map(m => ({
           role: m.role,
           content: m.content
         }))
