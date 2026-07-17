@@ -1098,6 +1098,42 @@ app.get('/api/puzzle/solution', (req, res) => {
   }
 });
 
+// POST /api/puzzle/import-ndjson — streaming NDJSON upload (pipe puzzles.json directly)
+app.post('/api/puzzle/import-ndjson', express.raw({ type: '*/*', limit: '2gb' }), (req, res) => {
+  try {
+    const body = req.body.toString('utf8');
+    const lines = body.split('\n');
+    let appended = 0;
+    const fd = fs.openSync(PUZZLE_DB_PATH, 'a');
+    const newEntries = [];
+    try {
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const p = JSON.parse(line);
+          if (p.id && p.fen && !puzzleIdMap.has(p.id)) {
+            const raw = JSON.stringify({ id: p.id, fen: p.fen, moves: p.moves, rating: p.rating || 0, themes: p.themes || '' }) + '\n';
+            const buf = Buffer.from(raw, 'utf8');
+            const offset = fs.statSync(PUZZLE_DB_PATH).size;
+            fs.writeSync(fd, buf, 0, buf.length);
+            newEntries.push({ id: p.id, rating: p.rating || 0, offset, lineLen: buf.length, themes: p.themes || '' });
+            puzzleIdMap.set(p.id, newEntries[newEntries.length - 1]);
+            appended++;
+          }
+        } catch {}
+      }
+    } finally { fs.closeSync(fd); }
+    if (newEntries.length) {
+      puzzleIndex = puzzleIndex.concat(newEntries);
+      puzzleIndex.sort((a, b) => a.rating - b.rating);
+    }
+    console.log(`[import-ndjson] imported ${appended}, total ${puzzleIdMap.size}`);
+    res.json({ ok: true, imported: appended, total: puzzleIdMap.size });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // POST /api/puzzle/import-batch — append NDJSON puzzles
 app.post('/api/puzzle/import-batch', (req, res) => {
   const rows = req.body.puzzles;
