@@ -1010,7 +1010,7 @@ app.get('/api/puzzle/random', (req, res) => {
       for (const m of movesArr) {
         if (!applyPuzzleMove(game, m)) { replayOk = false; break; }
       }
-      if (replayOk && game.in_checkmate() && game.turn() === solverColor) continue;
+      if (replayOk && game.isCheckmate() && game.turn() === solverColor) continue;
 
       return res.json({
         id: p.id, fen: p.fen, rating: p.rating,
@@ -1068,7 +1068,7 @@ app.post('/api/puzzle/move', (req, res) => {
       }
       result.completed = idx >= moves.length;
       // Extra safety: never mark complete if the solver was checkmated
-      if (result.completed && game.in_checkmate() && game.turn() === solverColor) {
+      if (result.completed && game.isCheckmate() && game.turn() === solverColor) {
         result.correct = false;
         result.completed = false;
         delete result.nextOpponentMove;
@@ -1365,7 +1365,7 @@ app.get('/api/puzzle/test', (req, res) => {
       chessOk: true,
       moves: [m1 ? 'ok' : 'fail', m2 ? 'ok' : 'fail', m3 ? 'ok' : 'fail'],
       turn: g.turn(),
-      checkmate: g.in_checkmate(),
+      checkmate: g.isCheckmate(),
       fen: g.fen(),
       indexLen: puzzleIndex.length,
       idMapSize: puzzleIdMap.size,
