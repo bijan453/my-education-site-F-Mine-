@@ -8,6 +8,9 @@ import fs from "fs";
 import { spawn } from "child_process";
 import { fileURLToPath } from 'url';
 import { createRequire } from "module";
+import https from "https";
+import http from "http";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const { Chess } = require("chess.js");
@@ -876,8 +879,16 @@ const DEMO_PUZZLES = [
   '{"id":"demo3","fen":"6k1/5ppp/8/8/8/8/5PPP/6K1 w - - 0 1","moves":"Kg7 Kh7 Kg8","rating":800,"themes":"endgame"}\n',
 ];
 
-function loadPuzzleDb() {
+async function loadPuzzleDb() {
   try {
+    if (!fs.existsSync(PUZZLE_DB_PATH) || fs.statSync(PUZZLE_DB_PATH).size === 0) {
+      console.log('[puzzle-db] puzzles.json not found, downloading...');
+      try {
+        await downloadPuzzles(PUZZLE_DB_PATH);
+      } catch (e) {
+        console.error('[puzzle-db] Download failed:', e.message);
+      }
+    }
     if (fs.existsSync(PUZZLE_DB_PATH)) {
       const stats = fs.statSync(PUZZLE_DB_PATH);
       if (stats.size === 0) throw new Error('Empty file');
@@ -974,7 +985,43 @@ const DIFFICULTY_RANGES = [
   { level: 'hard',        min: 2101, max: 4000  },
 ];
 
-loadPuzzleDb();
+const PUZZLE_DOWNLOAD_URL = 'https://github.com/bijan453/my-education-site-F-Mine-/releases/download/puzzles-v1/puzzles.json';
+
+function downloadPuzzles(targetPath) {
+  return new Promise((resolve, reject) => {
+    console.log('[puzzle-download] Starting download of puzzles.json...');
+    const follow = (url) => {
+      const mod = url.startsWith('https') ? https : http;
+      mod.get(url, { headers: { 'User-Agent': 'puzzle-server' } }, (res) => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          console.log('[puzzle-download] Following redirect...');
+          return follow(res.headers.location);
+        }
+        if (res.statusCode !== 200) {
+          return reject(new Error(`Download failed: HTTP ${res.statusCode}`));
+        }
+        const tmpPath = targetPath + '.tmp';
+        const fd = fs.openSync(tmpPath, 'w');
+        let downloaded = 0;
+        res.on('data', (chunk) => {
+          fs.writeSync(fd, chunk);
+          downloaded += chunk.length;
+          if (downloaded % (50 * 1024 * 1024) < chunk.length) {
+            console.log(`[puzzle-download] ${(downloaded / 1e6).toFixed(0)}MB downloaded...`);
+          }
+        });
+        res.on('end', () => {
+          fs.closeSync(fd);
+          fs.renameSync(tmpPath, targetPath);
+          console.log(`[puzzle-download] Done! ${(downloaded / 1e6).toFixed(0)}MB saved.`);
+          resolve();
+        });
+        res.on('error', reject);
+      }).on('error', reject);
+    };
+    follow(PUZZLE_DOWNLOAD_URL);
+  });
+}
 
 // GET /api/puzzle/random?level=medium&theme=fork&minRating=1200&maxRating=1800
 app.get('/api/puzzle/random', (req, res) => {
@@ -1355,6 +1402,8 @@ Help them solve the puzzle like a coach. Use emojis.`;
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server started on http://localhost:${PORT}`);
+loadPuzzleDb().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server started on http://localhost:${PORT}`);
+  });
 });
