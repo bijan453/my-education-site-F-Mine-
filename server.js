@@ -871,9 +871,9 @@ let puzzleInMemory = new Map(); // id -> parsed puzzle object (for demo/small DB
 let _puzzleFd = null;
 
 const DEMO_PUZZLES = [
-  '{"id":"demo1","fen":"r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R","moves":"d4 exd4 Nxd4","rating":1200,"themes":"fork"}\n',
-  '{"id":"demo2","fen":"r1bqkb1r/pppp1ppp/2n5/4p3/2B1Pn2/5N2/PPPP1PPP/RNBQK2R","moves":"Nxe5 Nxe5 Bb5+","rating":1500,"themes":"pin"}\n',
-  '{"id":"demo3","fen":"6k1/5ppp/8/8/8/8/5PPP/6K1","moves":"Kg7 Kh7 Kg8","rating":800,"themes":"endgame"}\n',
+  '{"id":"demo1","fen":"r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4","moves":"d4 exd4 Nxd4","rating":1200,"themes":"fork"}\n',
+  '{"id":"demo2","fen":"r1bqkb1r/pppp1ppp/2n5/4p3/2B1Pn2/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4","moves":"Nxe5 Nxe5 Bb5+","rating":1500,"themes":"pin"}\n',
+  '{"id":"demo3","fen":"6k1/5ppp/8/8/8/8/5PPP/6K1 w - - 0 1","moves":"Kg7 Kh7 Kg8","rating":800,"themes":"endgame"}\n',
 ];
 
 function loadPuzzleDb() {
