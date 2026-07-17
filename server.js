@@ -985,7 +985,7 @@ const DIFFICULTY_RANGES = [
   { level: 'hard',        min: 2101, max: 4000  },
 ];
 
-const PUZZLE_DOWNLOAD_URL = 'https://github.com/bijan453/my-education-site-F-Mine-/releases/download/puzzles-v1/puzzles.json';
+const PUZZLE_DOWNLOAD_URL = 'https://github.com/bijan453/my-education-site-F-Mine-/releases/download/puzzles-v1/puzzles-subset.json';
 
 function downloadPuzzles(targetPath) {
   return new Promise((resolve, reject) => {
