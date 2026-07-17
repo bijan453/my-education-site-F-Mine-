@@ -1319,6 +1319,16 @@ Help them solve the puzzle like a coach. Use emojis.`;
   }
 });
 
+// TEMP debug endpoint - remove later
+app.get('/api/debug/env', (req, res) => {
+  res.json({
+    hasOpenRouter: !!process.env.OPENROUTER_API_KEY,
+    hasGroq: !!process.env.GROQ_API_KEY,
+    port: process.env.PORT,
+    envKeys: Object.keys(process.env).filter(k => k.includes('SMTP') || k.includes('OPEN') || k.includes('GROQ'))
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}`);
