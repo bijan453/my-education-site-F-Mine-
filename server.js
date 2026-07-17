@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 import { createRequire } from "module";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
-const { Chess } = require("./node_modules/.chess.js-Ukv5rq01/chess.js");
+const { Chess } = require("chess.js");
 
 /** Apply a Lichess UCI move (e2e4 / e7e8q) or SAN string to a Chess instance. */
 function applyPuzzleMove(game, m) {
