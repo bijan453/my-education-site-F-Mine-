@@ -41,7 +41,6 @@ function puzzleSolverColor(fen, moves) {
 }
 
 try { dotenv.config({ path: path.join(__dirname, '.env') }); } catch {}
-console.log('OPENROUTER_API_KEY:', process.env.OPENROUTER_API_KEY ? 'SET (len=' + process.env.OPENROUTER_API_KEY.length + ')' : 'MISSING');
 
 const app = express();
 
@@ -1317,16 +1316,6 @@ Help them solve the puzzle like a coach. Use emojis.`;
       reply: null,
     });
   }
-});
-
-// TEMP debug endpoint - remove later
-app.get('/api/debug/env', (req, res) => {
-  res.json({
-    hasOpenRouter: !!process.env.OPENROUTER_API_KEY,
-    hasGroq: !!process.env.GROQ_API_KEY,
-    port: process.env.PORT,
-    envKeys: Object.keys(process.env).filter(k => k.includes('SMTP') || k.includes('OPEN') || k.includes('GROQ'))
-  });
 });
 
 const PORT = process.env.PORT || 3000;
