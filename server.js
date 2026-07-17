@@ -40,7 +40,8 @@ function puzzleSolverColor(fen, moves) {
   return turn;
 }
 
-dotenv.config({ path: path.join(__dirname, '.env') });
+try { dotenv.config({ path: path.join(__dirname, '.env') }); } catch {}
+console.log('OPENROUTER_API_KEY:', process.env.OPENROUTER_API_KEY ? 'SET (len=' + process.env.OPENROUTER_API_KEY.length + ')' : 'MISSING');
 
 const app = express();
 
