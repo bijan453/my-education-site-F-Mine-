@@ -997,6 +997,7 @@ app.get('/api/puzzle/random', (req, res) => {
     const entryR = entries[Math.floor(Math.random() * entries.length)];
     try {
       const p = readPuzzleLine(entryR);
+      if (!p) continue;
       const movesArr = (p.moves || '').split(/\s+/).filter(Boolean);
       if (!movesArr.length) continue;
 
@@ -1019,7 +1020,7 @@ app.get('/api/puzzle/random', (req, res) => {
         initialIndex: lichess ? 1 : 0,
         totalMoves: movesArr.length
       });
-    } catch(e) { continue; }
+    } catch(e) { console.warn('[puzzle-random] attempt', attempt, 'failed:', e.message); continue; }
   }
   return res.status(500).json({ error: 'Failed to load puzzle' });
 });
