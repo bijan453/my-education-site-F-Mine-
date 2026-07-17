@@ -1354,6 +1354,29 @@ Help them solve the puzzle like a coach. Use emojis.`;
   }
 });
 
+// Temporary diagnostic — remove after fixing puzzles
+app.get('/api/puzzle/test', (req, res) => {
+  try {
+    const g = new Chess('r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4');
+    const m1 = g.move('d4');
+    const m2 = g.move('exd4');
+    const m3 = g.move('Nxd4');
+    res.json({
+      chessOk: true,
+      moves: [m1 ? 'ok' : 'fail', m2 ? 'ok' : 'fail', m3 ? 'ok' : 'fail'],
+      turn: g.turn(),
+      checkmate: g.in_checkmate(),
+      fen: g.fen(),
+      indexLen: puzzleIndex.length,
+      idMapSize: puzzleIdMap.size,
+      inMemSize: puzzleInMemory.size,
+      entries: puzzleIndex.slice(0, 5)
+    });
+  } catch (e) {
+    res.json({ chessOk: false, error: e.message, stack: e.stack });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}`);
