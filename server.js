@@ -867,6 +867,8 @@ const PUZZLE_DB_PATH = path.join(__dirname, 'puzzles.json');
 
 let puzzleIndex = [];       // [{id, rating, offset, lineLen, themes}] sorted by rating
 let puzzleIdMap = new Map(); // id -> entry
+let puzzleInMemory = new Map(); // id -> parsed puzzle object (for demo/small DBs)
+let _puzzleFd = null;
 
 const DEMO_PUZZLES = [
   '{"id":"demo1","fen":"r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R","moves":"d4 exd4 Nxd4","rating":1200,"themes":"fork"}\n',
@@ -919,17 +921,15 @@ function loadPuzzleDb() {
       const mb = (entries.length * 48 / 1024 / 1024).toFixed(1);
       console.log(`Puzzle index built: ${puzzleIndex.length} puzzles, index ~${mb}MB RAM`);
     } else {
-      fs.writeFileSync(PUZZLE_DB_PATH, DEMO_PUZZLES.join(''));
-      let offset = 0;
       for (const line of DEMO_PUZZLES) {
         const p = JSON.parse(line);
-        const entry = { id: p.id, rating: p.rating, offset, lineLen: line.length, themes: p.themes || '' };
+        const entry = { id: p.id, rating: p.rating, offset: 0, lineLen: line.length, themes: p.themes || '' };
         puzzleIndex.push(entry);
         puzzleIdMap.set(p.id, entry);
-        offset += line.length;
+        puzzleInMemory.set(p.id, p);
       }
       puzzleIndex.sort((a, b) => a.rating - b.rating);
-      console.log('Seeded 3 demo puzzles');
+      console.log('Seeded 3 demo puzzles (in-memory)');
     }
   } catch (e) {
     console.error('Puzzle DB load error:', e.message);
@@ -938,9 +938,11 @@ function loadPuzzleDb() {
   }
 }
 
-let _puzzleFd = null;
 function readPuzzleLine(entry) {
-  if (!_puzzleFd) _puzzleFd = fs.openSync(PUZZLE_DB_PATH, 'r');
+  if (puzzleInMemory.has(entry.id)) return puzzleInMemory.get(entry.id);
+  if (!_puzzleFd) {
+    try { _puzzleFd = fs.openSync(PUZZLE_DB_PATH, 'r'); } catch { return null; }
+  }
   const buf = Buffer.alloc(entry.lineLen + 64);
   const bytes = fs.readSync(_puzzleFd, buf, 0, buf.length, entry.offset);
   const str = buf.toString('utf8', 0, bytes);
