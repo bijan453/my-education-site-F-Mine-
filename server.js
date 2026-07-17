@@ -1402,8 +1402,7 @@ Help them solve the puzzle like a coach. Use emojis.`;
 });
 
 const PORT = process.env.PORT || 3000;
-loadPuzzleDb().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server started on http://localhost:${PORT}`);
-  });
+app.listen(PORT, () => {
+  console.log(`Server started on http://localhost:${PORT}`);
+  loadPuzzleDb().catch(e => console.error('[puzzle-db] init error:', e.message));
 });
