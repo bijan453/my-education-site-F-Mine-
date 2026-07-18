@@ -987,6 +987,23 @@ const DIFFICULTY_RANGES = [
 
 const PUZZLE_DOWNLOAD_URL = 'https://github.com/bijan453/my-education-site-F-Mine-/releases/download/puzzles-v1/puzzles-subset.json';
 
+// GET /api/puzzle/stats — diagnostic: check puzzle DB status
+app.get('/api/puzzle/stats', (req, res) => {
+  const themes = {};
+  for (const e of puzzleIndex) {
+    (e.themes || '').split(' ').forEach(t => {
+      if (t) themes[t] = (themes[t] || 0) + 1;
+    });
+  }
+  res.json({
+    indexSize: puzzleIndex.length,
+    idMapSize: puzzleIdMap.size,
+    fileExists: fs.existsSync(PUZZLE_DB_PATH),
+    fileSize: fs.existsSync(PUZZLE_DB_PATH) ? fs.statSync(PUZZLE_DB_PATH).size : 0,
+    topThemes: Object.entries(themes).sort((a, b) => b[1] - a[1]).slice(0, 20)
+  });
+});
+
 function downloadPuzzles(targetPath) {
   return new Promise((resolve, reject) => {
     console.log('[puzzle-download] Starting download of puzzles.json...');
@@ -1037,8 +1054,10 @@ app.get('/api/puzzle/random', (req, res) => {
     maxR = range.max;
   }
 
+  console.log(`[puzzle-random] theme="${theme}" range=${minR}-${maxR} indexSize=${puzzleIndex.length}`);
+
   const entries = findPuzzles(minR, maxR, theme);
-  if (!entries.length) return res.status(404).json({ error: 'No puzzles found' });
+  if (!entries.length) return res.status(404).json({ error: 'No puzzles found', indexSize: puzzleIndex.length, theme, minR, maxR });
 
   for (let attempt = 0; attempt < 10; attempt++) {
     const entryR = entries[Math.floor(Math.random() * entries.length)];
