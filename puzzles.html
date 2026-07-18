@@ -334,8 +334,11 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
   .filters select { min-width: 140px; width: 100%; }
   .filters .range-group { width: 100%; }
   .filters .btn-new { width: 100%; }
-  .board-frame { width: 100%; }
-  .board-wrapper { flex-direction: column; align-items: center; }
+  .board-wrapper { flex-direction: row; align-items: stretch; justify-content: center; overflow: visible; padding-left: 4px; }
+  .board-frame { width: min(540px, calc(100vw - 56px)); }
+  .board-frame > .rank-labels { display: none; }
+  .board-frame > .file-labels { display: none; }
+  .eval-bar { min-height: unset; height: auto; width: 14px; flex-shrink: 0; }
   .coach-actions { flex-wrap: wrap; }
 }
 </style>
