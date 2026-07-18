@@ -679,7 +679,6 @@ header {
   <!-- CHAT LIST -->
   <div id="chatListPanel">
     <div class="chatListHead">
-      <input type="text" placeholder="Поиск чатов..." id="chatListSearch" oninput="filterChatList(this.value)" />
       <button class="newChatBtn" onclick="openNewChatModal()">+ Новый</button>
     </div>
     <div id="chatList">
@@ -1303,17 +1302,22 @@ window.sendMessage = async () => {
 
   await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
 
-  // Update chat last message
-  await updateDoc(doc(db, 'chats', activeChatId), {
-    lastMessage: text || (imgUrl ? '📷 фото' : voiceUrl ? '🎙 голосовое' : ''),
-    lastMessageTime: serverTimestamp(),
-    lastMessageAuthor: currentUser,
-    unread: Object.fromEntries(
-      (await getDoc(doc(db, 'chats', activeChatId))).data().participants
-        .filter(p => p !== currentUser)
-        .map(p => [p, ((await getDoc(doc(db, 'chats', activeChatId))).data().unread?.[p] || 0) + 1])
-    )
-  });
+  // Update chat last message + unread (read doc once)
+  try {
+    const chatSnap = await getDoc(doc(db, 'chats', activeChatId));
+    const chatData = chatSnap.data();
+    const prevUnread = chatData.unread || {};
+    const newUnread = {};
+    (chatData.participants || []).forEach(p => {
+      if (p !== currentUser) newUnread[p] = (prevUnread[p] || 0) + 1;
+    });
+    await updateDoc(doc(db, 'chats', activeChatId), {
+      lastMessage: text || (imgUrl ? '📷 фото' : voiceUrl ? '🎙 голосовое' : ''),
+      lastMessageTime: serverTimestamp(),
+      lastMessageAuthor: currentUser,
+      unread: newUnread
+    });
+  } catch {}
 
   document.getElementById('msgInput').value = '';
   document.getElementById('msgInput').style.height = 'auto';
@@ -1534,8 +1538,8 @@ document.getElementById('feed')?.addEventListener('scroll', checkScroll);
 
 // ── SEARCH ──
 let searchQuery = '';
-window.toggleSearch = () => { const bar = document.getElementById('searchBar'); const open = bar.classList.toggle('open'); if (open) document.getElementById('searchInput').focus(); else { document.getElementById('searchInput').value = ''; handleSearch(''); } };
-window.handleSearch = (val) => { searchQuery = val.trim().toLowerCase(); applySearch(); };
+window.toggleSearch = () => { const bar = document.getElementById('searchBar'); const open = bar.classList.toggle('open'); if (open) { document.getElementById('searchInput').placeholder = activeChatId ? 'Поиск сообщений...' : 'Поиск чатов...'; document.getElementById('searchInput').focus(); } else { document.getElementById('searchInput').value = ''; handleSearch(''); } };
+window.handleSearch = (val) => { searchQuery = val.trim().toLowerCase(); if (activeChatId) applySearch(); else filterChatList(val); };
 function applySearch() {
   if (!searchQuery) { document.querySelectorAll('.msg-row').forEach(el => el.classList.remove('search-match','search-hidden')); document.querySelectorAll('.msg-text').forEach(el => { const id = el.closest('.msg-row')?.id?.replace('msg-',''); const m = allMessages.find(x => x.id === id); if (m?.text) el.innerHTML = renderText(m.text); }); document.getElementById('searchResultsCount').textContent = ''; return; }
   let count = 0;
