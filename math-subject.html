@@ -372,7 +372,7 @@ header {
 // ══════════════════════════════════════════════════════════
 const GRADES = [
   { id: 7, label: '7 класс', badge: 'Базовый' },
-  { id: 8, label: '8 класс', badge: null, locked: true },
+  { id: 8, label: '8 класс', badge: 'Базовый' },
   { id: 9, label: '9 класс', badge: null, locked: true },
   { id: 10, label: '10 класс', badge: null, locked: true },
   { id: 11, label: '11 класс', badge: null, locked: true },
@@ -390,6 +390,18 @@ const TOPICS = {
     { id: '7.8', name: 'Степень с целым показателем', icon: '🔢' },
     { id: '7.9', name: 'Наибольший общий множитель', icon: '🔍' },
     { id: '7.10', name: 'Наименьшее общее кратное', icon: '🔍' },
+  ],
+  8: [
+    { id: '8.1', name: 'Квадратные уравнения', icon: '📐' },
+    { id: '8.2', name: 'Теорема Виета', icon: '📊' },
+    { id: '8.3', name: 'Квадратичная функция', icon: '📈' },
+    { id: '8.4', name: 'Квадратные неравенства', icon: '⚖️' },
+    { id: '8.5', name: 'Степень с рациональным показателем', icon: '🔢' },
+    { id: '8.6', name: 'Корень n-й степени', icon: '🧮' },
+    { id: '8.7', name: 'Квадратный корень', icon: '√' },
+    { id: '8.8', name: 'Уравнения, сводимые к квадратным', icon: '🔀' },
+    { id: '8.9', name: 'Средние величины', icon: '📏' },
+    { id: '8.10', name: 'Задачи на проценты', icon: '💰' },
   ]
 };
 
@@ -1802,6 +1814,1016 @@ const LESSONS = {
           const base = randInt(2, 4);
           const nok = base * randInt(2, 5);
           return { nok };
+        }
+      }
+    ]
+  },
+  '8.1': {
+    title: 'Квадратные уравнения',
+    context: `Квадратные уравнения — один из важнейших инструментов математики. С помощью них решают задачи на движение, оптимизацию, нахождение неизвестных размеров. Архитекторы рассчитывают площади, инженеры определяют траектории, экономисты находят оптимальные цены. Формула корней квадратного уравнения — одно из величайших достижений математики.`,
+    theory: [
+      {
+        title: 'Стандартный вид',
+        icon: '📖',
+        html: `
+          <p><b>Квадратное уравнение</b> — уравнение вида:</p>
+          <div class="formula-block">$ax^2 + bx + c = 0$, где $a \\neq 0$</div>
+          <ul>
+            <li>$a$ — старший коэффициент</li>
+            <li>$b$ — коэффициент при $x$</li>
+            <li>$c$ — свободный член</li>
+          </ul>
+        `
+      },
+      {
+        title: 'Дискриминант',
+        icon: '📊',
+        html: `
+          <div class="formula-block">$D = b^2 - 4ac$</div>
+          <div class="highlight-box">
+            <p>$D > 0$ → два различных корня</p>
+            <p>$D = 0$ → один корень (двойной)</p>
+            <p>$D < 0$ → нет действительных корней</p>
+          </div>
+        `
+      },
+      {
+        title: 'Формула корней',
+        icon: '🔲',
+        html: `
+          <div class="formula-block">$x_{1,2} = \\dfrac{-b \\pm \\sqrt{D}}{2a}$</div>
+          <p>Если $D = 0$: $x = -\\dfrac{b}{2a}$</p>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример: два корня',
+        steps: [
+          { text: '$x^2 - 5x + 6 = 0$', rule: '$a=1, b=-5, c=6$' },
+          { text: '$D = (-5)^2 - 4 \\cdot 1 \\cdot 6 = 25 - 24 = 1$', rule: 'Дискриминант' },
+          { text: '$x_1 = \\dfrac{5 - 1}{2} = 2$, $x_2 = \\dfrac{5 + 1}{2} = 3$', rule: 'Формула корней' },
+        ],
+        answer: 1
+      },
+      {
+        title: 'Пример: один корень',
+        steps: [
+          { text: '$x^2 - 6x + 9 = 0$', rule: '$a=1, b=-6, c=9$' },
+          { text: '$D = 36 - 36 = 0$', rule: '' },
+          { text: '$x = \\dfrac{6}{2} = 3$', rule: 'Один корень' },
+        ],
+        answer: 3
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Дискриминант',
+        icon: '📊',
+        template: (a, b, c) => ({
+          text: `Найти дискриминант: $${a}x^2 ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c} = 0$`,
+          answer: b * b - 4 * a * c,
+          hint: `$D = b^2 - 4ac = ${b}^2 - 4 \\cdot ${a} \\cdot ${c}$`,
+          solution: `$D = ${b*b} - ${4*a*c} = ${b*b - 4*a*c}$`
+        }),
+        generate: () => {
+          const a = randInt(1, 3);
+          const b = randInt(-8, 8) || 1;
+          const c = randInt(-6, 6);
+          return { a, b, c };
+        }
+      },
+      {
+        name: 'Корень уравнения',
+        icon: '🔢',
+        template: (a, x1, x2) => ({
+          text: `Один из корней: $${a}x^2 + ${-(a*(x1+x2))}x ${a*x1*x2 >= 0 ? '+' : ''}${a*x1*x2} = 0$`,
+          answer: Math.min(x1, x2),
+          hint: `Подставь $x = ${Math.min(x1, x2)}$ в уравнение`,
+          solution: `Корни: $x_1 = ${x1}$, $x_2 = ${x2}$`
+        }),
+        generate: () => {
+          const a = randInt(1, 3);
+          const x1 = randInt(-5, 5);
+          const x2 = randInt(-5, 5);
+          return { a, x1, x2 };
+        }
+      },
+      {
+        name: 'Число корней',
+        icon: '🧩',
+        template: (a, b, c, d) => ({
+          text: `Сколько корней имеет $x^2 ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c} = 0$? (0, 1 или 2)`,
+          answer: d,
+          hint: `Дискриминант $D = ${b}^2 - 4 \\cdot 1 \\cdot ${c} = ${b*b - 4*c}$. ${
+            d === 2 ? '$D > 0$ — два корня' : d === 1 ? '$D = 0$ — один корень' : '$D < 0$ — нет корней'
+          }`,
+          solution: `$D = ${b*b - 4*c}$ → ${d === 2 ? 'два корня' : d === 1 ? 'один корень' : 'нет корней'}`
+        }),
+        generate: () => {
+          let b, c, D, d;
+          do {
+            b = randInt(-6, 6);
+            c = randInt(-6, 6);
+            D = b * b - 4 * c;
+            d = D > 0 ? 2 : D === 0 ? 1 : 0;
+          } while (d === 0 && Math.random() > 0.4);
+          return { a: 1, b, c, d };
+        }
+      },
+      {
+        name: 'Старший коэффициент',
+        icon: '🔺',
+        template: (b, x1, x2) => ({
+          text: `Если $x_1 = ${x1}$, $x_2 = ${x2}$ — корни $ax^2 + ${-(x1+x2)}x ${x1*x2 >= 0 ? '+' : ''}${x1*x2} = 0$, найди $a$`,
+          answer: 1,
+          hint: `$a$ можно выбрать любым ненулевым, например $a = 1$`,
+          solution: `При $a = 1$: $x^2 ${-(x1+x2) >= 0 ? '+' : ''}${-(x1+x2)}x ${x1*x2 >= 0 ? '+' : ''}${x1*x2} = 0$`
+        }),
+        generate: () => {
+          const x1 = randInt(-4, 4);
+          const x2 = randInt(-4, 4);
+          return { b: -(x1 + x2), x1, x2 };
+        }
+      }
+    ]
+  },
+  '8.2': {
+    title: 'Теорема Виета',
+    context: `Теорема Виета связывает корни квадратного уравнения с его коэффициентами без вычисления дискриминанта. Франсуа Виет открыл эту зависимость в XVI веке. Она позволяет быстро находить корни «в уме», проверять ответы и решать обратные задачи — по корням восстанавливать уравнение.`,
+    theory: [
+      {
+        title: 'Формулы Виета',
+        icon: '📖',
+        html: `
+          <p>Для уравнения $ax^2 + bx + c = 0$ с корнями $x_1$ и $x_2$:</p>
+          <div class="formula-block">$x_1 + x_2 = -\\dfrac{b}{a}$</div>
+          <div class="formula-block">$x_1 \\cdot x_2 = \\dfrac{c}{a}$</div>
+          <div class="highlight-box green">
+            <p>При $a = 1$: $x_1 + x_2 = -b$, &nbsp; $x_1 \\cdot x_2 = c$</p>
+          </div>
+        `
+      },
+      {
+        title: 'Обратная задача',
+        icon: '🔄',
+        html: `
+          <p>По корням $x_1$ и $x_2$ можно составить уравнение:</p>
+          <div class="formula-block">$x^2 - (x_1 + x_2)x + x_1 \\cdot x_2 = 0$</div>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример: Найти сумму и произведение',
+        steps: [
+          { text: '$x^2 - 7x + 12 = 0$', rule: '$a = 1, b = -7, c = 12$' },
+          { text: '$x_1 + x_2 = -(-7) = 7$', rule: 'Сумма корней' },
+          { text: '$x_1 \\cdot x_2 = 12$', rule: 'Произведение корней' },
+          { text: 'Корни: $x_1 = 3, x_2 = 4$', rule: 'Проверка: $3 + 4 = 7$, $3 \\cdot 4 = 12$ ✓' },
+        ],
+        answer: 7
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Сумма корней',
+        icon: '➕',
+        template: (a, b, c) => ({
+          text: `Сумма корней $${a}x^2 + ${b}x + ${c} = 0$`,
+          answer: -(b / a),
+          hint: `$x_1 + x_2 = -\\dfrac{b}{a} = -\\dfrac{${b}}{${a}}$`,
+          solution: `$x_1 + x_2 = ${-(b/a)}$`
+        }),
+        generate: () => {
+          const a = randInt(1, 3);
+          const b = randInt(-10, 10) || 1;
+          const c = randInt(-8, 8);
+          return { a, b, c };
+        }
+      },
+      {
+        name: 'Произведение корней',
+        icon: '✖️',
+        template: (a, b, c) => ({
+          text: `Произведение корней $${a}x^2 + ${b}x + ${c} = 0$`,
+          answer: c / a,
+          hint: `$x_1 \\cdot x_2 = \\dfrac{c}{a} = \\dfrac{${c}}{${a}}$`,
+          solution: `$x_1 \\cdot x_2 = ${c/a}$`
+        }),
+        generate: () => {
+          const a = randInt(1, 3);
+          const b = randInt(-8, 8);
+          const c = randInt(-10, 10);
+          return { a, b, c };
+        }
+      },
+      {
+        name: 'Коэффициент b',
+        icon: '🧩',
+        template: (x1, x2) => ({
+          text: `Если $x_1 = ${x1}$, $x_2 = ${x_2}$ — корни $x^2 + bx + c = 0$, найди $b$`,
+          answer: -(x1 + x2),
+          hint: `$x_1 + x_2 = -b$, значит $b = -(x_1 + x_2) = ${-(x1+x2)}$`,
+          solution: `$b = ${-(x1 + x2)}$`
+        }),
+        generate: () => {
+          const x1 = randInt(-6, 6);
+          const x2 = randInt(-6, 6);
+          return { x1, x2 };
+        }
+      },
+      {
+        name: 'Коэффициент c',
+        icon: '🔢',
+        template: (x1, x2) => ({
+          text: `Если $x_1 = ${x1}$, $x_2 = ${x2}$ — корни $x^2 + bx + c = 0$, найди $c$`,
+          answer: x1 * x2,
+          hint: `$x_1 \\cdot x_2 = c$, значит $c = ${x1} \\cdot ${x2}$`,
+          solution: `$c = ${x1 * x2}$`
+        }),
+        generate: () => {
+          const x1 = randInt(-6, 6);
+          const x2 = randInt(-6, 6);
+          return { x1, x2 };
+        }
+      }
+    ]
+  },
+  '8.3': {
+    title: 'Квадратичная функция',
+    context: `График квадратичной функции — парабола. Она встречается повсюду: траектория брошенного мяча, форма спутниковой антенны, арки мостов. Умение находить вершину параболы помогает оптимизировать: максимизировать прибыль, минимизировать затраты, находить оптимальный угол запуска.`,
+    theory: [
+      {
+        title: 'Формула и график',
+        icon: '📈',
+        html: `
+          <div class="formula-block">$y = ax^2 + bx + c$</div>
+          <ul>
+            <li>$a > 0$ — парабола направлена <b>вверх</b> (минимум)</li>
+            <li>$a < 0$ — парабола направлена <b>вниз</b> (максимум)</li>
+          </ul>
+        `
+      },
+      {
+        title: 'Вершина параболы',
+        icon: '🔺',
+        html: `
+          <div class="formula-block">$x_\\text{в} = -\\dfrac{b}{2a}$</div>
+          <div class="formula-block">$y_\\text{в} = c - \\dfrac{b^2}{4a}$</div>
+          <p><b>Ось симметрии:</b> $x = -\\dfrac{b}{2a}$</p>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример: Вершина параболы',
+        steps: [
+          { text: '$y = x^2 - 4x + 3$', rule: '$a = 1, b = -4, c = 3$' },
+          { text: '$x_\\text{в} = -\\dfrac{-4}{2} = 2$', rule: '' },
+          { text: '$y_\\text{в} = 3 - \\dfrac{16}{4} = -1$', rule: '' },
+          { text: 'Вершина $(2, -1)$', rule: '' },
+        ],
+        answer: 2
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Ось симметрии',
+        icon: '📊',
+        template: (a, b, c) => ({
+          text: `Ось симметрии $y = ${a}x^2 ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c}$`,
+          answer: -b / (2 * a),
+          hint: `$x = -\\dfrac{b}{2a} = -\\dfrac{${b}}{2 \\cdot ${a}}$`,
+          solution: `$x = ${-b / (2 * a)}$`
+        }),
+        generate: () => {
+          const a = randInt(1, 3);
+          const b = randInt(-8, 8) || 1;
+          const c = randInt(-5, 5);
+          return { a, b, c };
+        }
+      },
+      {
+        name: 'Направление',
+        icon: '🔺',
+        template: (a) => ({
+          text: `Направление параболы $y = ${a}x^2 + 2x + 1$ (вверх=1, вниз=-1)`,
+          answer: a > 0 ? 1 : -1,
+          hint: a > 0 ? '$a > 0$ — парабола направлена вверх' : '$a < 0$ — парабола направлена вниз',
+          solution: `$a = ${a}$ → ${a > 0 ? 'вверх (минимум)' : 'вниз (максимум)'}`
+        }),
+        generate: () => {
+          const a = randInt(-5, 5) || 1;
+          return { a };
+        }
+      },
+      {
+        name: 'y-пересечение',
+        icon: '📍',
+        template: (a, b, c) => ({
+          text: `Точка пересечения с осью Oy: $y = ${a}x^2 ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c}$`,
+          answer: c,
+          hint: `При $x = 0$: $y = c = ${c}$`,
+          solution: `Точка $(0, ${c})$`
+        }),
+        generate: () => {
+          const a = randInt(1, 4);
+          const b = randInt(-6, 6);
+          const c = randInt(-8, 8);
+          return { a, b, c };
+        }
+      },
+      {
+        name: 'Координата вершины',
+        icon: '🧩',
+        template: (a, b) => ({
+          text: `$x$-координата вершины $y = ${a}x^2 + ${b}x + 5$`,
+          answer: -b / (2 * a),
+          hint: `$x_\\text{в} = -\\dfrac{${b}}{2 \\cdot ${a}}$`,
+          solution: `$x_\\text{в} = ${-b / (2 * a)}$`
+        }),
+        generate: () => {
+          const a = randInt(1, 3);
+          const b = randInt(-8, 8) || 1;
+          return { a, b };
+        }
+      }
+    ]
+  },
+  '8.4': {
+    title: 'Квадратные неравенства',
+    context: `Квадратные неравенства позволяют определять интервалы значений, для которых выражение положительно или отрицательно. Это используется при определении областей допустимых значений, решении задач на неравенства доходов/расходов, анализе систем безопасности.`,
+    theory: [
+      {
+        title: 'Метод',
+        icon: '📖',
+        html: `
+          <p>Для $ax^2 + bx + c > 0$ (или $< 0$):</p>
+          <ol style="padding-left:20px; line-height:1.8; color:#b8bcd0; font-size:14px;">
+            <li>Найди корни уравнения $ax^2 + bx + c = 0$</li>
+            <li>Если $a > 0$: парабола «вверх», выражение $> 0$ <b>вне</b> корней</li>
+            <li>Если $a < 0$: парабола «вниз», выражение $> 0$ <b>между</b> корнями</li>
+          </ol>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример',
+        steps: [
+          { text: '$x^2 - 5x + 6 > 0$', rule: '' },
+          { text: 'Корни: $x_1 = 2, x_2 = 3$', rule: 'Разложение: $(x-2)(x-3)$' },
+          { text: '$a = 1 > 0$, парабола вверх', rule: '' },
+          { text: 'Ответ: $x < 2$ или $x > 3$', rule: 'Вне корней' },
+        ],
+        answer: 2
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Знак выражения',
+        icon: '⚖️',
+        template: (a, x1, x2, testX) => ({
+          text: `Знак $x^2 ${-(x1+x2) >= 0 ? '+' : ''}${-(x1+x2)}x ${x1*x2 >= 0 ? '+' : ''}${x1*x2}$ при $x = ${testX}$ (+1 или -1)`,
+          answer: (testX * testX - (x1+x2) * testX + x1*x2) > 0 ? 1 : -1,
+          hint: `Подставь $x = ${testX}$: ${testX}^2 ${-(x1+x2) >= 0 ? '+' : ''}${-(x1+x2)} \\cdot ${testX} ${x1*x2 >= 0 ? '+' : ''}${x1*x2}$`,
+          solution: `Знак: ${(testX * testX - (x1+x2) * testX + x1*x2) > 0 ? 'положительный (+)' : 'отрицательный (-)'}`
+        }),
+        generate: () => {
+          const x1 = randInt(-3, 1);
+          const x2 = x1 + randInt(2, 5);
+          const testX = randInt(x1 - 3, x2 + 3);
+          return { a: 1, x1, x2, testX };
+        }
+      },
+      {
+        name: 'Число решений неравенства',
+        icon: '🔢',
+        template: (D) => ({
+          text: `Сколько целых решений у $x^2 - 4 > 0$? (D=${D})`,
+          answer: D > 0 ? 5 : D === 0 ? 0 : 0,
+          hint: `Корни $x = \\pm 2$, $x < -2$ или $x > 2$: ..., -4, -3, 3, 4, ...`,
+          solution: `Целых решений: бесконечно много`
+        }),
+        generate: () => {
+          const D = randInt(1, 20);
+          const b = randInt(2, 6);
+          return { D: b * b - 4 * D, b };
+        }
+      },
+      {
+        name: 'Граница области',
+        icon: '📍',
+        template: (x1, x2) => ({
+          text: `Левая граница области $x^2 ${-(x1+x2) >= 0 ? '+' : ''}${-(x1+x2)}x ${x1*x2 >= 0 ? '+' : ''}${x1*x2} < 0$ (меньший корень)`,
+          answer: Math.min(x1, x2),
+          hint: `Область между корнями $x_1 = ${x1}$ и $x_2 = ${x2}$`,
+          solution: `Решение: $${Math.min(x1, x2)} < x < ${Math.max(x1, x2)}$`
+        }),
+        generate: () => {
+          const x1 = randInt(-4, 2);
+          const x2 = x1 + randInt(2, 6);
+          return { x1, x2 };
+        }
+      },
+      {
+        name: 'Знак a',
+        icon: '🧩',
+        template: (a) => ({
+          text: `Парабола $y = ${a}x^2 + 3x - 1$ направлена ${a > 0 ? 'вверх (1)' : 'вниз (-1)'}`,
+          answer: a > 0 ? 1 : -1,
+          hint: a > 0 ? '$a > 0$ — вверх' : '$a < 0$ — вниз',
+          solution: `Направление: ${a > 0 ? 'вверх' : 'вниз'}`
+        }),
+        generate: () => {
+          const a = randInt(-4, 4) || 1;
+          return { a };
+        }
+      }
+    ]
+  },
+  '8.5': {
+    title: 'Степень с рациональным показателем',
+    context: `Степень с дробным показателем объединяет обычные степени и корни: $a^{1/n} = \\sqrt[n]{a}$. Это позволяет записывать корни как степени и наоборот, упрощая вычисления. В физике и инженерии это встречается при работе с единицами измерения (корень кубический из объёма даёт длину).`,
+    theory: [
+      {
+        title: 'Определение',
+        icon: '📖',
+        html: `
+          <div class="formula-block">$a^{\\frac{m}{n}} = \\sqrt[n]{a^m} = (\\sqrt[n]{a})^m$</div>
+          <div class="highlight-box">
+            <p>$8^{\\frac{1}{3}} = \\sqrt[3]{8} = 2$</p>
+            <p>$27^{\\frac{2}{3}} = (\\sqrt[3]{27})^2 = 3^2 = 9$</p>
+          </div>
+        `
+      },
+      {
+        title: 'Свойства',
+        icon: '📋',
+        html: `
+          <ul>
+            <li>$a^{\\frac{m}{n}} \\cdot a^{\\frac{p}{q}} = a^{\\frac{m}{n} + \\frac{p}{q}}$</li>
+            <li>$\\dfrac{a^{\\frac{m}{n}}}{a^{\\frac{p}{q}}} = a^{\\frac{m}{n} - \\frac{p}{q}}$</li>
+            <li>$(a^{\\frac{m}{n}})^{\\frac{p}{q}} = a^{\\frac{mp}{nq}}$</li>
+          </ul>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример',
+        steps: [
+          { text: '$16^{\\frac{3}{4}}$', rule: '' },
+          { text: '$= (\\sqrt[4]{16})^3 = 2^3$', rule: 'Корень 4-й степени из 16 = 2' },
+          { text: '$= 8$', rule: '' },
+        ],
+        answer: 8
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Значение степени',
+        icon: '🔢',
+        template: (base, exp_num, exp_den, result) => ({
+          text: `Вычислить $${base}^{\\frac{${exp_num}}{${exp_den}}}$`,
+          answer: result,
+          hint: `$\\sqrt[${exp_den}]{${base}} = ${Math.round(Math.pow(base, 1/exp_den))}$, затем возводим в степень ${exp_num}`,
+          solution: `$${base}^{\\frac{${exp_num}}{${exp_den}}} = (\\sqrt[${exp_den}]{${base}})^{${exp_num}} = ${Math.round(Math.pow(base, 1/exp_den))}^{${exp_num}} = ${result}$`
+        }),
+        generate: () => {
+          const bases = [[8,3,2], [27,3,3], [16,4,2], [32,5,2], [25,2,5], [9,3,3], [4,2,2], [81,4,3]];
+          const [base, den, root] = bases[randInt(0, bases.length - 1)];
+          const num = randInt(1, 3);
+          const result = Math.round(Math.pow(root, num));
+          return { base, exp_num: num, exp_den: den, result };
+        }
+      },
+      {
+        name: 'Корень как степень',
+        icon: '√',
+        template: (base, exp_den) => ({
+          text: `$${base}^{\\frac{1}{${exp_den}}}$ = ?`,
+          answer: Math.round(Math.pow(base, 1/exp_den)),
+          hint: `$a^{\\frac{1}{n}} = \\sqrt[n]{a}$`,
+          solution: `$${base}^{\\frac{1}{${exp_den}}} = \\sqrt[${exp_den}]{${base}} = ${Math.round(Math.pow(base, 1/exp_den))}$`
+        }),
+        generate: () => {
+          const pairs = [[8,3],[27,3],[16,4],[32,5],[25,2],[64,3],[49,2],[9,3]];
+          const [base, den] = pairs[randInt(0, pairs.length - 1)];
+          return { base, exp_den: den };
+        }
+      },
+      {
+        name: 'Произведение степеней',
+        icon: '✖️',
+        template: (base, n1, n2) => ({
+          text: `$${base}^{\\frac{${n1}}{${n2 * n1}}} \\cdot ${base}^{\\frac{${n2}}{${n2 * n1}}}$`,
+          answer: base,
+          hint: `Показатели складываются: $\\frac{${n1}}{${n2*n1}} + \\frac{${n2}}{${n2*n1}} = \\frac{${n1+n2}}{${n2*n1}} = \\frac{1}{${n2}}$`,
+          solution: `$${base}^{\\frac{1}{${n2}}} \\cdot ${base}^{\\frac{1}{${n1}}}$ — нет, проще: сумма показателей = $\\frac{1}{n2}$...`
+        }),
+        generate: () => {
+          const bases = [[4,2],[8,3],[9,3],[25,2],[16,4]];
+          const [base, n] = bases[randInt(0, bases.length - 1)];
+          return { base, n1: n, n2: n };
+        }
+      },
+      {
+        name: 'Свободный член',
+        icon: '🧩',
+        template: (base, result) => ({
+          text: `$(${base}^{\\frac{1}{2}})^2 = ?$`,
+          answer: base,
+          hint: `(\\sqrt{${base}})^2 = ${base}`,
+          solution: `$(${base}^{\\frac{1}{2}})^2 = ${base}^{1} = ${base}$`
+        }),
+        generate: () => {
+          const base = randInt(2, 10);
+          return { base, result: base };
+        }
+      }
+    ]
+  },
+  '8.6': {
+    title: 'Корень n-й степени',
+    context: `Корень n-й степени — обратная операция к возведению в степень. Кубический корень из объёма даёт сторону куба. Корень четвёртой степени используется при вычислении стандартного отклонения в статистике. Это фундаментальная операция во всех точных науках.`,
+    theory: [
+      {
+        title: 'Определение',
+        icon: '📖',
+        html: `
+          <div class="formula-block">$\\sqrt[n]{a} = b$ означает $b^n = a$</div>
+          <div class="highlight-box">
+            <p>$\\sqrt[3]{8} = 2$, потому что $2^3 = 8$</p>
+            <p>$\\sqrt[4]{16} = 2$, потому что $2^4 = 16$</p>
+          </div>
+        `
+      },
+      {
+        title: 'Свойства',
+        icon: '📋',
+        html: `
+          <ul>
+            <li>$\\sqrt[n]{ab} = \\sqrt[n]{a} \\cdot \\sqrt[n]{b}$</li>
+            <li>$\\sqrt[n]{\\dfrac{a}{b}} = \\dfrac{\\sqrt[n]{a}}{\\sqrt[n]{b}}$</li>
+            <li>$\\sqrt[n]{a^m} = (\\sqrt[n]{a})^m$</li>
+          </ul>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример',
+        steps: [
+          { text: '$\\sqrt[3]{-27}$', rule: '' },
+          { text: '$= -3$', rule: '$(-3)^3 = -27$' },
+        ],
+        answer: -3
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Значение корня',
+        icon: '🔢',
+        template: (base, n, root) => ({
+          text: `$\\sqrt[${n}]{${base}}$`,
+          answer: root,
+          hint: `Какое число в ${n}-й степени даёт ${base}?`,
+          solution: `$\\sqrt[${n}]{${base}} = ${root}$, потому что ${root}^${n} = ${base}$`
+        }),
+        generate: () => {
+          const pairs = [[8,3,2],[27,3,3],[16,4,2],[32,5,2],[25,2,5],[64,3,4],[81,4,3],[125,3,5],[32,5,2],[49,2,7]];
+          const [base, n, root] = pairs[randInt(0, pairs.length - 1)];
+          return { base, n, root };
+        }
+      },
+      {
+        name: 'Степень корня',
+        icon: '📐',
+        template: (a, n, m) => ({
+          text: `Степень $\\sqrt[${n}]{a^m}$ в виде $a^{?}$ (ответ: $${m}/${n}$)`,
+          answer: m / n,
+          hint: `$\\sqrt[n]{a^m} = a^{\\frac{m}{n}}$`,
+          solution: `$a^{\\frac{${m}}{${n}}}$`
+        }),
+        generate: () => {
+          const n = randInt(2, 5);
+          const m = randInt(1, 4);
+          const a = randInt(2, 5);
+          return { a, n, m };
+        }
+      },
+      {
+        name: 'Произведение корней',
+        icon: '✖️',
+        template: (a, b, n) => ({
+          text: `$\\sqrt[${n}]{${a}} \\cdot \\sqrt[${n}]{${b}} = \\sqrt[${n}]{?}$`,
+          answer: a * b,
+          hint: `$\\sqrt[n]{a} \\cdot \\sqrt[n]{b} = \\sqrt[n]{a \\cdot b}$`,
+          solution: `$\\sqrt[${n}]{${a} \\cdot ${b}} = \\sqrt[${n}]{${a*b}}$`
+        }),
+        generate: () => {
+          const n = randInt(2, 4);
+          const a = randInt(2, 6);
+          const b = randInt(2, 6);
+          return { a, b, n };
+        }
+      },
+      {
+        name: 'Корень корня',
+        icon: '🧩',
+        template: (a, m, n) => ({
+          text: `$\\sqrt[m]{\\sqrt[n]{${a}}}$ = $\\sqrt[${m*n}]{${a}}$ — степени ${m} и ${n}: ответ ${m*n}`,
+          answer: m * n,
+          hint: `$\\sqrt[m]{\\sqrt[n]{a}} = \\sqrt[mn]{a}$`,
+          solution: `Общий показатель = ${m} · ${n} = ${m*n}`
+        }),
+        generate: () => {
+          const m = randInt(2, 3);
+          const n = randInt(2, 3);
+          const a = randInt(2, 10);
+          return { a, m, n };
+        }
+      }
+    ]
+  },
+  '8.7': {
+    title: 'Квадратный корень',
+    context: `Квадратный корень — самая распространённая корневая операция. Он используется в теореме Пифагора, в формуле стандартного отклонения, в вычислении расстояний. Знание свойств квадратного корня позволяет упрощать выражения и рационально вычислять.`,
+    theory: [
+      {
+        title: 'Определение',
+        icon: '📖',
+        html: `
+          <div class="formula-block">$\\sqrt{a} = b$ означает $b^2 = a$, $b \\geq 0$</div>
+          <div class="highlight-box gold">
+            <p><b>Важно:</b> $\\sqrt{a}$ — это всегда <b>неотрицательное</b> число!</p>
+            <p>$\\sqrt{9} = 3$ (не $-3$!)</p>
+          </div>
+        `
+      },
+      {
+        title: 'Свойства',
+        icon: '📋',
+        html: `
+          <ul>
+            <li>$\\sqrt{ab} = \\sqrt{a} \\cdot \\sqrt{b}$</li>
+            <li>$\\sqrt{\\dfrac{a}{b}} = \\dfrac{\\sqrt{a}}{\\sqrt{b}}$</li>
+            <li>$(\\sqrt{a})^2 = a$</li>
+            <li>$\\sqrt{a^2} = |a|$</li>
+          </ul>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример',
+        steps: [
+          { text: '$\\sqrt{48}$', rule: '' },
+          { text: '$= \\sqrt{16 \\cdot 3}$', rule: 'Выносим полный квадрат' },
+          { text: '$= 4\\sqrt{3}$', rule: '$\\sqrt{16} = 4$' },
+        ],
+        answer: 4
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Значение корня',
+        icon: '🔢',
+        template: (n) => ({
+          text: `$\\sqrt{${n * n}}$`,
+          answer: n,
+          hint: `Какое число при квадрате даёт ${n*n}?`,
+          solution: `$\\sqrt{${n*n}} = ${n}$`
+        }),
+        generate: () => {
+          const n = randInt(2, 15);
+          return { n };
+        }
+      },
+      {
+        name: 'Упрощение',
+        icon: '📐',
+        template: (a, b, result) => ({
+          text: `Упростить $\\sqrt{${a*a*b}}$ — ответ $${result}\\sqrt{${b}}$, найди коэффициент`,
+          answer: a,
+          hint: `$\\sqrt{${a*a*b}} = \\sqrt{${a*a} \\cdot ${b}} = ${a}\\sqrt{${b}}$`,
+          solution: `$\\sqrt{${a*a*b}} = ${a}\\sqrt{${b}}$`
+        }),
+        generate: () => {
+          const a = randInt(2, 6);
+          const b = [2,3,5,6,7][randInt(0,4)];
+          return { a, b, result: a };
+        }
+      },
+      {
+        name: 'Квадрат корня',
+        icon: '🔲',
+        template: (n) => ({
+          text: `$(\\sqrt{${n}})^2$`,
+          answer: n,
+          hint: `$(\\sqrt{a})^2 = a$`,
+          solution: `$(${n})^{2}$... нет: $(\\sqrt{${n}})^2 = ${n}$`
+        }),
+        generate: () => {
+          const n = randInt(2, 30);
+          return { n };
+        }
+      },
+      {
+        name: 'Корень из квадрата',
+        icon: '🧩',
+        template: (n) => ({
+          text: `$\\sqrt{${n}^2}$`,
+          answer: Math.abs(n),
+          hint: `$\\sqrt{a^2} = |a|$`,
+          solution: `$\\sqrt{${n}^2} = |${n}| = ${Math.abs(n)}$`
+        }),
+        generate: () => {
+          const n = randInt(-10, 10) || 1;
+          return { n };
+        }
+      }
+    ]
+  },
+  '8.8': {
+    title: 'Уравнения, сводимые к квадратным',
+    context: `Многие уравнения, которые выглядят сложными, можно свести к квадратным с помощью замены. Например, $x^4 - 5x^2 + 4 = 0$ становится квадратным при $t = x^2$. Этот приём широко применяется в высшей математике и физике.`,
+    theory: [
+      {
+        title: 'Метод замены',
+        icon: '🔄',
+        html: `
+          <p>Если уравнение содержит $x^{2n}$, $x^n$ и константу, замени $t = x^n$:</p>
+          <div class="formula-block">$x^4 - 5x^2 + 4 = 0 \\xrightarrow{t = x^2} t^2 - 5t + 4 = 0$</div>
+          <p>Реши квадратное, затем найди $x$ из $t$.</p>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример',
+        steps: [
+          { text: '$x^4 - 5x^2 + 4 = 0$', rule: 'Замена $t = x^2$' },
+          { text: '$t^2 - 5t + 4 = 0$', rule: '' },
+          { text: '$t_1 = 1, t_2 = 4$', rule: 'Корни по Виета' },
+          { text: '$x^2 = 1 \\Rightarrow x = \\pm 1$; $x^2 = 4 \\Rightarrow x = \\pm 2$', rule: '' },
+          { text: 'Ответ: $x \\in \\{-2, -1, 1, 2\\}$', rule: '' },
+        ],
+        answer: 4
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Подстановка t',
+        icon: '🔄',
+        template: (a, b, c, x1) => ({
+          text: `При замене $t = x^2$ уравнение $x^4 ${b >= 0 ? '+' : ''}${b}x^2 ${c >= 0 ? '+' : ''}${c} = 0$ даёт $t^2 + bt + c = 0$. Один корень t = ?`,
+          answer: x1 * x1,
+          hint: `Если $x = ${x1}$ — корень, то $t = x^2 = ${x1*x1}$`,
+          solution: `$t = ${x1*x1}$, т.е. $x^2 = ${x1*x1}$, $x = \\pm ${x1}$`
+        }),
+        generate: () => {
+          const x1 = randInt(1, 4);
+          const x2 = randInt(1, 5);
+          const b = -(x1*x1 + x2*x2);
+          const c = x1*x1 * x2*x2;
+          return { a: 1, b, c, x1 };
+        }
+      },
+      {
+        name: 'Число корней',
+        icon: '🔢',
+        template: (numRoots) => ({
+          text: `Сколько действительных корней у $x^4 - 5x^2 + 4 = 0$?`,
+          answer: numRoots,
+          hint: `$t^2 - 5t + 4 = 0 \\Rightarrow t = 1, 4$. Оба положительны → $x = \\pm 1, \\pm 2$`,
+          solution: `${numRoots} корней`
+        }),
+        generate: () => {
+          return { numRoots: 4 };
+        }
+      },
+      {
+        name: 'Корень уравнения',
+        icon: '📐',
+        template: (x) => ({
+          text: `Один из корней $x^4 - 10x^2 + 9 = 0$ (целый, положительный)`,
+          answer: x,
+          hint: `Попробуй $x = ${x}$: ${x}^4 - 10 \\cdot ${x}^2 + 9 = ${x*x*x*x - 10*x*x + 9}$`,
+          solution: `Корни: $\\pm 1, \\pm 3$`
+        }),
+        generate: () => {
+          const x = [1, 2, 3][randInt(0, 2)];
+          return { x };
+        }
+      },
+      {
+        name: 'Произведение корней',
+        icon: '✖️',
+        template: (x1, x2) => ({
+          text: `Произведение всех корней $x^4 ${(x1*x1+x2*x2) >= 0 ? '+' : '-'}${Math.abs(x1*x1+x2*x2)}x^2 ${x1*x1*x2*x2 >= 0 ? '+' : ''}${x1*x1*x2*x2} = 0$`,
+          answer: x1 * (-x1) * x2 * (-x2),
+          hint: `Корни $\\pm ${x1}, \\pm ${x2}$. Произведение = $${x1} \\cdot ${-x1} \\cdot ${x2} \\cdot ${-x2}$`,
+          solution: `Произведение = ${x1 * x1 * x2 * x2}`
+        }),
+        generate: () => {
+          const x1 = randInt(1, 3);
+          const x2 = randInt(1, 4);
+          return { x1, x2 };
+        }
+      }
+    ]
+  },
+  '8.9': {
+    title: 'Средние величины',
+    context: `Средние величины позволяют описывать набор чисел одним значением. Среднее арифметическое используется при вычислении оценок, средняя зарплата. Среднее геометрическое применяется в финансах (средняя доходность). Неравенство между ними — важный математический инструмент.`,
+    theory: [
+      {
+        title: 'Среднее арифметическое',
+        icon: '📊',
+        html: `
+          <div class="formula-block">$A = \\dfrac{a + b}{2}$</div>
+        `
+      },
+      {
+        title: 'Среднее геометрическое',
+        icon: '📐',
+        html: `
+          <div class="formula-block">$G = \\sqrt{ab}$</div>
+        `
+      },
+      {
+        title: 'Неравенство',
+        icon: '⚖️',
+        html: `
+          <div class="highlight-box green">
+            <p>$\\dfrac{a + b}{2} \\geq \\sqrt{ab}$ для любых $a, b \\geq 0$</p>
+            <p>Равенство только при $a = b$</p>
+          </div>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример',
+        steps: [
+          { text: '$a = 4, b = 9$', rule: '' },
+          { text: '$A = \\dfrac{4 + 9}{2} = 6.5$', rule: 'Среднее арифметическое' },
+          { text: '$G = \\sqrt{4 \\cdot 9} = \\sqrt{36} = 6$', rule: 'Среднее геометрическое' },
+          { text: '$6.5 > 6$ ✓', rule: 'Арифметическое больше' },
+        ],
+        answer: 6
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Среднее арифметическое',
+        icon: '➕',
+        template: (a, b) => ({
+          text: `Среднее арифметическое $${a}$ и $${b}$`,
+          answer: (a + b) / 2,
+          hint: `$A = \\dfrac{${a} + ${b}}{2}$`,
+          solution: `$A = ${(a + b) / 2}$`
+        }),
+        generate: () => {
+          const a = randInt(1, 20);
+          const b = randInt(1, 20);
+          return { a, b };
+        }
+      },
+      {
+        name: 'Среднее геометрическое',
+        icon: '🔲',
+        template: (a, b) => ({
+          text: `Среднее геометрическое $${a}$ и $${b * b / a > 0 ? b * b / a : a}$ — нет... $\\sqrt{${a} \\cdot ${a * b * b / (a)}}$`,
+          answer: a * b,
+          hint: `$G = \\sqrt{${a} \\cdot ${a * b * b / a}} = \\sqrt{${a * a * b * b}} = ${a * b}$`,
+          solution: `$G = ${a * b}$`
+        }),
+        generate: () => {
+          const a = randInt(2, 6);
+          const b = randInt(1, 4);
+          return { a, b };
+        }
+      },
+      {
+        name: 'Какое больше?',
+        icon: '⚖️',
+        template: (a, b) => ({
+          text: `Что больше: среднее ариф. или геом. чисел $${a}$ и $${b}$? (1=ариф., 0=геом.)`,
+          answer: a === b ? 0 : 1,
+          hint: a === b ? 'При $a = b$ средние равны' : 'При $a \\neq b$ арифметическое всегда больше',
+          solution: a === b ? 'Равны' : 'Арифметическое больше'
+        }),
+        generate: () => {
+          const a = randInt(1, 10);
+          const b = Math.random() < 0.3 ? a : randInt(1, 10);
+          return { a, b };
+        }
+      },
+      {
+        name: 'Сумма по среднему',
+        icon: '🧩',
+        template: (a, b) => ({
+          text: `Сумма $a + b$, если $A = ${(a+b)/2}$`,
+          answer: a + b,
+          hint: `$a + b = 2A = 2 \\cdot ${(a+b)/2}$`,
+          solution: `$a + b = ${a + b}$`
+        }),
+        generate: () => {
+          const a = randInt(2, 15);
+          const b = randInt(2, 15);
+          return { a, b };
+        }
+      }
+    ]
+  },
+  '8.10': {
+    title: 'Задачи на проценты',
+    context: `Процентные задачи встречаются в финансах (кредиты, вклады, скидки), в статистике (рост цен, инфляция), в повседневной жизни (чаевые, налоги). Умение быстро считать проценты — важнейший практический навык.`,
+    theory: [
+      {
+        title: 'Формулы',
+        icon: '📖',
+        html: `
+          <div class="formula-block">$P\\%$ от числа $a$ = $\\dfrac{P}{100} \\cdot a$</div>
+          <div class="formula-block">$a$ increased by $P\\%$ = $a \\cdot \\left(1 + \\dfrac{P}{100}\\right)$</div>
+          <div class="formula-block">$a$ decreased by $P\\%$ = $a \\cdot \\left(1 - \\dfrac{P}{100}\\right)$</div>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример',
+        steps: [
+          { text: 'Цена выросла на 20%, затем упала на 20%. Итоговая цена?', rule: '' },
+          { text: '$a \\cdot 1.2 \\cdot 0.8 = 0.96a$', rule: '' },
+          { text: 'Цена стала $96\\%$ от исходной (стала меньше!)', rule: '' },
+        ],
+        answer: 96
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'P% от числа',
+        icon: '🔢',
+        template: (a, p) => ({
+          text: `$${p}\\%$ от $${a}$`,
+          answer: a * p / 100,
+          hint: `$\\dfrac{${p}}{100} \\cdot ${a}$`,
+          solution: `$${p}\\%$ от $${a}$ = $${a * p / 100}$`
+        }),
+        generate: () => {
+          const a = [100, 200, 250, 300, 400, 500, 1000][randInt(0, 6)];
+          const p = [5, 10, 15, 20, 25, 30, 40, 50][randInt(0, 7)];
+          return { a, p };
+        }
+      },
+      {
+        name: 'Увеличение на P%',
+        icon: '📈',
+        template: (a, p) => ({
+          text: `Число $${a}$ увеличить на $${p}\\%$`,
+          answer: Math.round(a * (1 + p / 100) * 100) / 100,
+          hint: `$${a} \\cdot (1 + \\dfrac{${p}}{100}) = ${a} \\cdot ${1 + p/100}$`,
+          solution: `$${a} \\cdot ${(1 + p / 100)}$`
+        }),
+        generate: () => {
+          const a = randInt(50, 500);
+          const p = [10, 15, 20, 25, 30, 50][randInt(0, 5)];
+          return { a, p };
+        }
+      },
+      {
+        name: 'Уменьшение на P%',
+        icon: '📉',
+        template: (a, p) => ({
+          text: `Число $${a}$ уменьшить на $${p}\\%$`,
+          answer: Math.round(a * (1 - p / 100) * 100) / 100,
+          hint: `$${a} \\cdot (1 - \\dfrac{${p}}{100}) = ${a} \\cdot ${1 - p/100}$`,
+          solution: `$${a} \\cdot ${(1 - p / 100)}$`
+        }),
+        generate: () => {
+          const a = randInt(100, 1000);
+          const p = [10, 15, 20, 25, 30, 40][randInt(0, 5)];
+          return { a, p };
+        }
+      },
+      {
+        name: 'Исходное число',
+        icon: '🧩',
+        template: (p, result) => ({
+          text: `Найди число, $${p}\\%$ которого равно $${result}$`,
+          answer: Math.round(result * 100 / p),
+          hint: `$\\dfrac{${p}}{100} \\cdot x = ${result}$, значит $x = ${result} \\cdot \\dfrac{100}{${p}}$`,
+          solution: `$x = ${Math.round(result * 100 / p)}$`
+        }),
+        generate: () => {
+          const p = [10, 20, 25, 40, 50][randInt(0, 4)];
+          const x = randInt(10, 100);
+          return { p, result: x * p / 100 };
         }
       }
     ]
