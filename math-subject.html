@@ -3,299 +3,897 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Алгебра и Начала Анализа - Обучение</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+<title>F-Mine | Алгебра</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Outfit', sans-serif;
-    color: #333;
-    background: #f8f9fc;
-    line-height: 1.6;
-  }
-  header {
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .logo { font-weight: 800; font-size: 24px; color: #1e0a3c; cursor: pointer;}
-  .logo-dot { color: #5c24e0; }
-  
-  .container {
-    max-width: 1100px;
-    margin: 40px auto;
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 50px;
-    padding: 0 20px;
-  }
+:root {
+  --bg: #08090f;
+  --surface: #0e1019;
+  --surface2: #151722;
+  --surface3: #1c1e2e;
+  --border: rgba(255,255,255,.06);
+  --border2: rgba(255,255,255,.1);
+  --indigo: #6366f1;
+  --indigo2: #4f46e5;
+  --text: #dde0f5;
+  --muted: #5a5a7a;
+  --danger: #f43f5e;
+  --green: #34d399;
+  --cyan: #22d3ee;
+  --gold: #fbbf24;
+  --radius: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E"); pointer-events:none; z-index:0; }
 
-  /* Main Column */
-  .main-col h1 {
-    font-size: 38px;
-    color: #240d45;
-    margin-bottom: 25px;
-    font-weight: 800;
-  }
+/* ── HEADER ── */
+header {
+  position:sticky; top:0; z-index:100;
+  background:rgba(8,9,15,.9); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px; height:54px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo { font-weight:800; font-size:20px; letter-spacing:-.5px; }
+.logo-f { background:linear-gradient(135deg,var(--indigo),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.logo-rest { color:var(--text); }
+.header-nav { display:flex; gap:8px; align-items:center; }
+.nav-btn {
+  background:var(--surface2); border:1px solid var(--border); border-radius:8px;
+  padding:6px 14px; font-size:12px; font-weight:600; color:var(--muted);
+  cursor:pointer; font-family:inherit; transition:all .15s;
+}
+.nav-btn:hover { border-color:var(--indigo); color:var(--indigo); }
+.nav-btn.active { background:var(--indigo); color:white; border-color:var(--indigo); }
 
-  .hero-block {
-    position: relative;
-    margin-bottom: 30px;
-    padding-top: 20px;
-    padding-left: 20px;
-  }
-  
-  .hero-bg {
-    position: absolute;
-    top: 0; left: 0; right: 20%; bottom: 15%;
-    background: #4812a3; /* Deep purple */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
-    z-index: 1;
-  }
-  .hero-bg::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 100%; width: 40%; height: 100%;
-    background: #eebbfa;
-  }
+/* ── VIEWS ── */
+.view { display:none; position:relative; z-index:1; min-height:calc(100vh - 54px); }
+.view.active { display:block; }
 
-  .hero-img {
-    width: 100%;
-    height: 350px;
-    object-fit: cover;
-    position: relative;
-    z-index: 2;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  }
+/* ── GRADE SELECTOR ── */
+#gradeView { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; }
+.grade-title { font-size:36px; font-weight:800; margin-bottom:8px; text-align:center; }
+.grade-sub { color:var(--muted); font-size:15px; margin-bottom:40px; text-align:center; }
+.grade-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; max-width:600px; width:100%; }
+.grade-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:28px 16px; text-align:center; cursor:pointer; transition:all .2s;
+  position:relative; overflow:hidden;
+}
+.grade-card:hover { border-color:var(--indigo); transform:translateY(-3px); box-shadow:0 8px 30px rgba(99,102,241,.15); }
+.grade-card .grade-num { font-size:42px; font-weight:800; background:linear-gradient(135deg,var(--indigo),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.grade-card .grade-label { font-size:13px; color:var(--muted); margin-top:4px; }
+.grade-card .grade-badge { position:absolute; top:10px; right:10px; background:var(--indigo); color:white; font-size:9px; font-weight:700; padding:2px 7px; border-radius:8px; }
+.grade-card.locked { opacity:.4; cursor:not-allowed; }
+.grade-card.locked:hover { transform:none; box-shadow:none; border-color:var(--border); }
 
-  .intro-text {
-    font-size: 15px;
-    margin-bottom: 40px;
-  }
-  .intro-text p { margin-bottom: 12px; }
-  
-  .lessons-heading {
-    font-size: 26px;
-    color: #240d45;
-    margin-bottom: 25px;
-    font-weight: 800;
-  }
+/* ── TOPIC MENU ── */
+#topicView { padding:30px 24px; max-width:900px; margin:0 auto; }
+.topic-head { margin-bottom:28px; }
+.topic-head h1 { font-size:28px; font-weight:800; margin-bottom:4px; }
+.topic-head p { color:var(--muted); font-size:14px; }
+.topic-progress-bar { height:4px; background:var(--surface3); border-radius:4px; margin-top:14px; overflow:hidden; }
+.topic-progress-fill { height:100%; background:linear-gradient(90deg,var(--indigo),var(--cyan)); border-radius:4px; transition:width .4s; }
+.topic-list { display:flex; flex-direction:column; gap:10px; }
+.topic-card {
+  display:flex; align-items:center; gap:14px;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px 18px; cursor:pointer; transition:all .18s;
+}
+.topic-card:hover { border-color:var(--indigo); background:rgba(99,102,241,.04); }
+.topic-card.done { border-color:rgba(52,211,153,.3); }
+.topic-num {
+  width:38px; height:38px; border-radius:10px; flex-shrink:0;
+  background:var(--surface3); display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:var(--muted);
+}
+.topic-card.done .topic-num { background:rgba(52,211,153,.12); color:var(--green); }
+.topic-card:hover .topic-num { background:rgba(99,102,241,.12); color:var(--indigo); }
+.topic-info { flex:1; min-width:0; }
+.topic-name { font-size:14px; font-weight:600; }
+.topic-desc { font-size:12px; color:var(--muted); margin-top:2px; }
+.topic-arrow { color:var(--muted); font-size:16px; flex-shrink:0; }
 
-  .lesson-card {
-    display: flex;
-    gap: 20px;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    margin-bottom: 25px;
-    transition: transform 0.2s;
-  }
-  .lesson-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
-  
-  .lesson-card-img {
-    width: 200px;
-    height: 140px;
-    flex-shrink: 0;
-    position: relative;
-  }
-  .lesson-card-img img { width: 100%; height: 100%; object-fit: cover; }
-  .fav-icon {
-    position: absolute; top: 10px; left: 10px;
-    background: rgba(255,255,255,0.8);
-    width: 25px; height: 25px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: #888;
-  }
-  
-  .lesson-card-info {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
-  .lesson-title {
-    font-size: 20px;
-    color: #4812a3;
-    font-weight: 700;
-    text-decoration: underline;
-    text-decoration-color: rgba(72,18,163,0.3);
-    text-decoration-thickness: 2px;
-    margin-bottom: 8px;
-    cursor: pointer;
-  }
-  .lesson-title:hover { text-decoration-color: #4812a3; }
-  .lesson-desc { font-size: 14px; margin-bottom: 12px; }
-  .lesson-meta { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #666; font-weight: 600; }
+/* ── LESSON VIEW ── */
+#lessonView { display:flex; height:calc(100vh - 54px); }
+.lesson-back {
+  position:fixed; top:64px; left:16px; z-index:50;
+  background:var(--surface2); border:1px solid var(--border); border-radius:8px;
+  padding:6px 12px; font-size:12px; color:var(--muted); cursor:pointer;
+  font-family:inherit; display:none;
+}
+#lessonView.active ~ .lesson-back { display:block; }
 
-  /* Sidebar */
-  .sidebar {
-    padding-top: 10px;
-  }
-  .side-nav {
-    margin-bottom: 40px;
-  }
-  .side-nav ul { list-style: none; }
-  .side-nav li {
-    margin-bottom: 15px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    color: #333;
-    transition: 0.2s;
-  }
-  .side-nav li:before {
-    content: '✓';
-    color: #4812a3;
-    font-weight: bold;
-  }
-  .side-nav li.active { color: #16a34a; font-weight: 600; }
-  .side-nav li:hover:not(.active) { color: #4812a3; }
+.lesson-theory {
+  flex:1; overflow-y:auto; padding:28px 32px 120px;
+  border-right:1px solid var(--border);
+}
+.lesson-practice {
+  width:380px; flex-shrink:0; overflow-y:auto; padding:24px 20px 120px;
+  background:var(--surface);
+}
 
-  .promo-banner {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    height: 180px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  .promo-banner:hover { transform: scale(1.02); }
-  .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
-  .promo-overlay {
-    position: absolute; top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.6);
-    display: flex; flex-direction: column; justify-content: center;
-    padding: 20px; color: white;
-  }
-  .promo-text { font-size: 14px; font-weight: 600; margin-bottom: 10px; line-height: 1.4;}
-  .promo-link { color: #cbd5e1; font-size: 13px; font-weight: 700; }
+.theory-section { margin-bottom:28px; }
+.theory-section h2 {
+  font-size:18px; font-weight:700; margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+.theory-section h2 .section-icon { font-size:20px; }
+.theory-section h3 { font-size:15px; font-weight:600; margin:16px 0 8px; color:var(--indigo); }
+.theory-section p, .theory-section li { font-size:14px; line-height:1.7; color:#b8bcd0; }
+.theory-section ul { padding-left:20px; margin:8px 0; }
+.theory-section li { margin-bottom:4px; }
+.theory-section .highlight-box {
+  background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.15);
+  border-radius:10px; padding:14px 18px; margin:12px 0;
+}
+.theory-section .highlight-box.green { background:rgba(52,211,153,.06); border-color:rgba(52,211,153,.15); }
+.theory-section .highlight-box.gold { background:rgba(251,191,36,.06); border-color:rgba(251,191,36,.15); }
+.formula-block {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:14px 18px; margin:10px 0;
+  text-align:center; font-size:18px; overflow-x:auto;
+}
+.example-block {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:16px 18px; margin:12px 0;
+}
+.example-block .step {
+  display:flex; gap:10px; margin-bottom:10px; font-size:13px; line-height:1.7;
+}
+.example-block .step-num {
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  background:var(--indigo); color:white; font-size:11px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; margin-top:2px;
+}
+.example-block .step-rule { color:var(--gold); font-size:11px; font-weight:600; display:block; margin-top:2px; }
 
-  .side-group { margin-bottom: 30px; }
-  .side-group h4 { font-size: 16px; color: #240d45; margin-bottom: 15px; font-weight: 700; }
-  
-  @media(max-width: 900px) {
-    .container { grid-template-columns: 1fr; }
-    .hero-bg { right: 0; bottom: 0; }
-    .hero-bg::after { display: none; }
-  }
-  @media(max-width: 600px) {
-    .lesson-card { flex-direction: column; }
-    .lesson-card-img { width: 100%; height: 180px; }
-  }
+.context-box {
+  background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(34,211,238,.06));
+  border:1px solid rgba(99,102,241,.15); border-radius:var(--radius);
+  padding:18px 20px; margin-bottom:24px;
+}
+.context-box h3 { font-size:13px; font-weight:700; color:var(--cyan); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+.context-box p { font-size:14px; line-height:1.7; color:#b8bcd0; }
+
+/* ── PRACTICE PANEL ── */
+.practice-head { margin-bottom:16px; }
+.practice-head h2 { font-size:18px; font-weight:700; margin-bottom:4px; }
+.practice-head p { font-size:12px; color:var(--muted); }
+.practice-stats { display:flex; gap:8px; margin-bottom:16px; }
+.stat-chip {
+  flex:1; background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:10px; text-align:center;
+}
+.stat-chip .stat-val { font-size:20px; font-weight:800; }
+.stat-chip .stat-label { font-size:10px; color:var(--muted); margin-top:2px; }
+.stat-chip.correct .stat-val { color:var(--green); }
+.stat-chip.wrong .stat-val { color:var(--danger); }
+
+.task-card {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px; margin-bottom:14px;
+}
+.task-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; }
+.task-formula {
+  font-size:20px; text-align:center; padding:14px;
+  background:var(--surface3); border-radius:10px; margin-bottom:14px;
+  font-family:'JetBrains Mono',monospace; min-height:50px;
+  display:flex; align-items:center; justify-content:center;
+}
+.task-input-row { display:flex; gap:8px; }
+.task-input {
+  flex:1; background:var(--surface3); border:1px solid var(--border);
+  border-radius:9px; padding:10px 14px; color:var(--text);
+  font-family:'JetBrains Mono',monospace; font-size:16px; outline:none;
+  text-align:center; transition:border-color .15s;
+}
+.task-input:focus { border-color:var(--indigo); }
+.task-input.correct { border-color:var(--green); background:rgba(52,211,153,.06); }
+.task-input.wrong { border-color:var(--danger); background:rgba(244,63,94,.06); }
+.check-btn {
+  background:var(--indigo); color:white; border:none;
+  border-radius:9px; padding:10px 20px; font-size:13px; font-weight:700;
+  cursor:pointer; font-family:inherit; transition:all .15s; white-space:nowrap;
+}
+.check-btn:hover { background:var(--indigo2); }
+.check-btn:disabled { opacity:.4; cursor:not-allowed; }
+.next-btn {
+  width:100%; background:var(--surface3); border:1px solid var(--border);
+  border-radius:9px; padding:10px; font-size:13px; font-weight:600;
+  color:var(--text); cursor:pointer; font-family:inherit; transition:all .15s;
+  margin-top:8px; display:none;
+}
+.next-btn:hover { border-color:var(--indigo); color:var(--indigo); }
+.task-feedback {
+  margin-top:10px; padding:10px 14px; border-radius:8px;
+  font-size:13px; line-height:1.6; display:none;
+}
+.task-feedback.correct { display:block; background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.2); color:var(--green); }
+.task-feedback.wrong { display:block; background:rgba(244,63,94,.08); border:1px solid rgba(244,63,94,.2); color:var(--danger); }
+.task-solution { margin-top:8px; font-size:12px; color:var(--muted); line-height:1.6; }
+
+.task-type-tabs { display:flex; gap:4px; margin-bottom:14px; flex-wrap:wrap; }
+.task-type-tab {
+  padding:6px 12px; border-radius:8px; font-size:11px; font-weight:600;
+  background:var(--surface3); border:1px solid var(--border);
+  color:var(--muted); cursor:pointer; font-family:inherit; transition:all .12s;
+}
+.task-type-tab.active { background:var(--indigo); color:white; border-color:var(--indigo); }
+.task-type-tab:hover:not(.active) { border-color:var(--indigo); color:var(--indigo); }
+
+.hint-btn {
+  background:none; border:1px solid var(--border); border-radius:8px;
+  padding:6px 12px; font-size:11px; color:var(--gold); cursor:pointer;
+  font-family:inherit; margin-top:8px; display:none; transition:all .12s;
+}
+.hint-btn:hover { border-color:var(--gold); }
+.hint-text { display:none; margin-top:8px; padding:10px; background:rgba(251,191,36,.06); border:1px solid rgba(251,191,36,.15); border-radius:8px; font-size:12px; color:var(--gold); line-height:1.6; }
+
+/* ── AI CHAT WIDGET ── */
+.ai-fab {
+  position:fixed; bottom:24px; right:24px; z-index:200;
+  width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(135deg,var(--indigo),var(--cyan));
+  border:none; color:white; font-size:22px; cursor:pointer;
+  box-shadow:0 4px 20px rgba(99,102,241,.4);
+  transition:transform .2s, box-shadow .2s;
+  display:none; align-items:center; justify-content:center;
+}
+.ai-fab:hover { transform:scale(1.08); box-shadow:0 6px 28px rgba(99,102,241,.55); }
+#lessonView.active ~ .ai-fab { display:flex; }
+
+.ai-panel {
+  display:none; position:fixed; bottom:88px; right:24px; z-index:199;
+  width:min(380px, calc(100vw - 40px)); height:460px;
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:var(--radius); flex-direction:column;
+  box-shadow:0 12px 50px rgba(0,0,0,.6);
+  animation:slideUp .2s ease;
+}
+.ai-panel.open { display:flex; }
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.ai-head {
+  padding:12px 16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+}
+.ai-head-dot { width:8px; height:8px; border-radius:50%; background:var(--green); }
+.ai-head span { font-size:13px; font-weight:600; flex:1; }
+.ai-close { background:none; border:none; color:var(--muted); font-size:16px; cursor:pointer; }
+.ai-messages { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; }
+.ai-msg { max-width:85%; padding:10px 14px; border-radius:12px; font-size:13px; line-height:1.6; }
+.ai-msg.user { align-self:flex-end; background:var(--indigo); color:white; border-bottom-right-radius:4px; }
+.ai-msg.bot { align-self:flex-start; background:var(--surface2); border:1px solid var(--border); color:var(--text); border-bottom-left-radius:4px; }
+.ai-msg.bot .katex { font-size:14px; }
+.ai-typing { display:flex; gap:4px; padding:10px 14px; }
+.ai-typing span { width:6px; height:6px; background:var(--muted); border-radius:50%; animation:aiDot 1.2s infinite; }
+.ai-typing span:nth-child(2){animation-delay:.2s}
+.ai-typing span:nth-child(3){animation-delay:.4s}
+@keyframes aiDot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+
+.ai-input-row { padding:10px 12px; border-top:1px solid var(--border); display:flex; gap:8px; flex-shrink:0; }
+.ai-input {
+  flex:1; background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:9px 13px; color:var(--text);
+  font-family:inherit; font-size:13px; outline:none;
+}
+.ai-input:focus { border-color:var(--indigo); }
+.ai-send {
+  background:var(--indigo); color:white; border:none; border-radius:10px;
+  width:38px; height:38px; font-size:15px; cursor:pointer; flex-shrink:0;
+}
+.ai-send:disabled { opacity:.4; }
+.ai-quick-btns { display:flex; gap:4px; padding:0 12px 8px; flex-wrap:wrap; }
+.ai-quick-btn {
+  background:var(--surface3); border:1px solid var(--border); border-radius:8px;
+  padding:5px 10px; font-size:10px; color:var(--muted); cursor:pointer;
+  font-family:inherit; transition:all .12s;
+}
+.ai-quick-btn:hover { border-color:var(--indigo); color:var(--indigo); }
+
+/* ── TOAST ── */
+#toast {
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+  background:var(--surface2); border:1px solid var(--border2);
+  border-radius:24px; padding:8px 18px; font-size:12px; font-weight:600; color:var(--text);
+  opacity:0; pointer-events:none; transition:opacity .2s, bottom .2s;
+  z-index:300; white-space:nowrap; box-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+#toast.show { opacity:1; bottom:100px; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px) {
+  #lessonView { flex-direction:column; }
+  .lesson-theory { border-right:none; border-bottom:1px solid var(--border); max-height:none; padding-bottom:20px; }
+  .lesson-practice { width:100%; padding-bottom:20px; }
+  .ai-panel { width:calc(100vw - 32px); right:16px; bottom:80px; height:380px; }
+}
+
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--surface3); border-radius:4px; }
+
+.katex { font-size:inherit; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo" onclick="window.location.href='lobby.html'">F<span class="logo-dot">.</span>MINE</div>
-  <div>
-    <button onclick="window.location.href='lobby.html'" style="padding:8px 16px; background:#f0f0f5; border:none; border-radius:8px; cursor:pointer; font-weight:600; color:#4812a3;">⬅ Назад в лобби</button>
-  </div>
+  <div class="logo" onclick="showGrades()"><span class="logo-f">F</span><span class="logo-rest">-Mine Math</span></div>
+  <div class="header-nav" id="headerNav"></div>
 </header>
 
-<div class="container">
-  <div class="main-col">
-    <h1>Алгебра и Начала Анализа</h1>
-    
-    <div class="hero-block">
-      <div class="hero-bg"></div>
-      <img src="https://images.unsplash.com/photo-1632516643771-68bc865b4c10?auto=format&fit=crop&w=800&q=80" class="hero-img" alt="Hero">
-    </div>
+<!-- GRADE SELECTOR -->
+<div id="gradeView" class="view active">
+  <div class="grade-title">Алгебра</div>
+  <div class="grade-sub">Выбери свой класс, чтобы начать</div>
+  <div class="grade-grid" id="gradeGrid"></div>
+</div>
 
-    <div class="intro-text">
-      <p>Готовишься к экзаменам или просто хочешь подтянуть оценки по математике?</p>
-      <p>В этом разделе вы можете улучшить свои навыки с помощью понятных уроков, пройти теорию и затем проверить себя на интерактивных задачах.</p>
-      <p>Выберите нужную тему и начните свое обучение прямо сейчас!</p>
-    </div>
+<!-- TOPIC MENU -->
+<div id="topicView" class="view"></div>
 
-    <h2 class="lessons-heading">Выберите тему</h2>
-    <div class="lessons-list">
-      
-    <div class="lesson-card">
-      <div class="lesson-card-img">
-        <div class="fav-icon">♡</div>
-        <img src="${l.img}" alt="${l.title}">
-      </div>
-      <div class="lesson-card-info">
-        <div class="lesson-title" onclick="jumpToBot()">${l.title}</div>
-        <div class="lesson-desc">${l.desc}</div>
-        <div class="lesson-meta">💬 ${l.comments}</div>
-      </div>
-    </div>
-  
-    <div class="lesson-card">
-      <div class="lesson-card-img">
-        <div class="fav-icon">♡</div>
-        <img src="${l.img}" alt="${l.title}">
-      </div>
-      <div class="lesson-card-info">
-        <div class="lesson-title" onclick="jumpToBot()">${l.title}</div>
-        <div class="lesson-desc">${l.desc}</div>
-        <div class="lesson-meta">💬 ${l.comments}</div>
-      </div>
-    </div>
-  
-    </div>
+<!-- LESSON VIEW -->
+<div id="lessonView" class="view"></div>
+
+<button class="lesson-back" id="lessonBack" onclick="goBack()">← Назад</button>
+
+<!-- AI CHAT -->
+<button class="ai-fab" id="aiFab" onclick="toggleAi()">🤖</button>
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-head">
+    <div class="ai-head-dot"></div>
+    <span>F-Mine AI Помощник</span>
+    <button class="ai-close" onclick="toggleAi()">✕</button>
   </div>
-
-  <div class="sidebar">
-    <div class="side-nav">
-      <ul>
-        <li>A1-A2 Начальный</li>
-        <li class="active">Алгебра 10-11 класс</li>
-        <li>C1 Продвинутый</li>
-        <li>Справочник</li>
-      </ul>
-    </div>
-
-    <div class="promo-banner" onclick="window.location.href='chat-math.html'">
-      <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=600&q=80" alt="Promo">
-      <div class="promo-overlay">
-        <div class="promo-text">Наш ИИ-репетитор по математике поможет тебе разобраться в любой сложной теме 1 на 1.</div>
-        <div class="promo-link">Попробовать ИИ-Уроки →</div>
-      </div>
-    </div>
-
-    <div class="side-group">
-      <h4>Другие предметы</h4>
-      <div class="side-nav">
-        <ul>
-          <li onclick="window.location.href='math-subject.html'">Математика</li>
-          <li onclick="window.location.href='physics-subject.html'">Физика</li>
-          <li onclick="window.location.href='history-subject.html'">История</li>
-          <li onclick="window.location.href='biology-subject.html'">Биология</li>
-        </ul>
-      </div>
-    </div>
-    
-    <div class="side-group">
-      <h4>Помощь</h4>
-      <div class="side-nav">
-        <ul>
-          <li>FAQ / Частые вопросы</li>
-          <li>Правила сервиса</li>
-        </ul>
-      </div>
-    </div>
+  <div class="ai-messages" id="aiMessages">
+    <div class="ai-msg bot">Привет! Я помогу с задачами по алгебре. Спроси что угодно 🧠</div>
+  </div>
+  <div class="ai-quick-btns" id="aiQuickBtns">
+    <button class="ai-quick-btn" onclick="askAi('Объясни последний пример')">💡 Объясни пример</button>
+    <button class="ai-quick-btn" onclick="askAi('Дай подсказку к текущей задаче')">🎯 Подсказка</button>
+    <button class="ai-quick-btn" onclick="askAi('Покажи ещё один пример')">📝 Ещё пример</button>
+  </div>
+  <div class="ai-input-row">
+    <input class="ai-input" id="aiInput" placeholder="Задай вопрос..." onkeydown="if(event.key==='Enter')sendAi()" />
+    <button class="ai-send" onclick="sendAi()">→</button>
   </div>
 </div>
 
+<div id="toast"></div>
+
 <script>
-  function jumpToBot() {
-    window.location.href = 'chat-math.html';
+// ══════════════════════════════════════════════════════════
+// DATA: GRADES & TOPICS
+// ══════════════════════════════════════════════════════════
+const GRADES = [
+  { id: 7, label: '7 класс', badge: 'Базовый' },
+  { id: 8, label: '8 класс', badge: null, locked: true },
+  { id: 9, label: '9 класс', badge: null, locked: true },
+  { id: 10, label: '10 класс', badge: null, locked: true },
+  { id: 11, label: '11 класс', badge: null, locked: true },
+];
+
+const TOPICS = {
+  7: [
+    { id: '7.1', name: 'Свойства степени с натуральным показателем', icon: '📐' },
+    { id: '7.2', name: 'Одночлены и многочлены', icon: '🧩' },
+    { id: '7.3', name: 'Сложение и вычитание многочленов', icon: '➕' },
+    { id: '7.4', name: 'Умножение одночлена на многочлен', icon: '✖️' },
+    { id: '7.5', name: 'Формулы сокращённого умножения', icon: '🔲' },
+    { id: '7.6', name: 'Разложение многочлена на множители', icon: '🔀' },
+    { id: '7.7', name: 'Деление многочлена на одночлен и на многочлен', icon: '➗' },
+    { id: '7.8', name: 'Степень с целым показателем', icon: '🔢' },
+    { id: '7.9', name: 'Наибольший общий множитель', icon: '🔍' },
+    { id: '7.10', name: 'Наименьшее общее кратное', icon: '🔍' },
+  ]
+};
+
+// ══════════════════════════════════════════════════════════
+// DATA: LESSON CONTENT — 7.1 Свойства степени
+// ══════════════════════════════════════════════════════════
+const LESSONS = {
+  '7.1': {
+    title: 'Свойства степени с натуральным показателем',
+    context: `Степень — это один из самых мощных инструментов математики. Когда учёные говорят, что в одном микрограмме миллиард миллиардов атомов, они используют степени. Компьютерная память измеряется в $2^{10}$, $2^{20}$, $2^{30}$ байтах. Даже размер Вселенной описывается степенями: $10^{26}$ метров. Без понимания степеней невозможно двигаться дальше в алгебре, тригонометрии и анализе.`,
+    theory: [
+      {
+        title: 'Определение степени',
+        icon: '📖',
+        html: `
+          <p><b>Степень числа $a$ с натуральным показателем $n$</b> — это произведение $n$ одинаковых множителей $a$:</p>
+          <div class="formula-block" id="formula-def"></div>
+          <p>Число $a$ называется <b>основанием</b> степени, $n$ — <b>показателем</b> степени.</p>
+          <div class="highlight-box">
+            <p><b>Важно:</b> $a^1 = a$ для любого числа $a$. Степень с показателем 1 — это просто само число.</p>
+          </div>
+        `
+      },
+      {
+        title: 'Свойство 1: Произведение степеней',
+        icon: '1️⃣',
+        html: `
+          <p>При умножении степеней с <b>одинаковым основанием</b> показатели <b>складываются</b>:</p>
+          <div class="formula-block" id="formula-mult"></div>
+          <p><b>Почему так?</b> Разложим по определению:</p>
+          <div class="formula-block" id="formula-mult-expand"></div>
+          <p>Мы получили $n + m$ одинаковых множителей $a$, то есть $a^{n+m}$.</p>
+          <h3>Пример:</h3>
+          <div class="formula-block" id="formula-mult-ex"></div>
+        `
+      },
+      {
+        title: 'Свойство 2: Частное степеней',
+        icon: '2️⃣',
+        html: `
+          <p>При делении степеней с <b>одинаковым основанием</b> показатели <b>вычитаются</b>:</p>
+          <div class="formula-block" id="formula-div"></div>
+          <p><b>Почему так?</b> Запишем числитель и знаменатель:</p>
+          <div class="formula-block" id="formula-div-expand"></div>
+          <p>$n$ множителей $a$ в числителе «сокращаются» с $m$ множителями в знаменателе. Если $n > m$, остаётся $n - m$ множителей. Если $n = m$, получаем $a^0 = 1$.</p>
+          <div class="highlight-box gold">
+            <p><b>Следствие:</b> $a^0 = 1$ для любого $a \neq 0$.</p>
+          </div>
+        `
+      },
+      {
+        title: 'Свойство 3: Степень степени',
+        icon: '3️⃣',
+        html: `
+          <p>При возведении степени в степень показатели <b>перемножаются</b>:</p>
+          <div class="formula-block" id="formula-pow"></div>
+          <p><b>Почему так?</b> $(a^n)^m$ означает $m$ раз взять произведение $n$ одинаковых множителей $a$. Итого $n \cdot m$ множителей $a$.</p>
+          <h3>Пример:</h3>
+          <div class="formula-block" id="formula-pow-ex"></div>
+        `
+      },
+      {
+        title: 'Свойство 4: Произведение степеней с разными основаниями',
+        icon: '4️⃣',
+        html: `
+          <p>При умножении степеней с <b>разными основаниями</b>, но <b>одинаковыми показателями</b> основания перемножаются:</p>
+          <div class="formula-block" id="formula-diff-base"></div>
+          <p><b>Почему так?</b> Группируем множители по основаниям:</p>
+          <div class="formula-block" id="formula-diff-expand"></div>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: 'Пример 1 (простой)',
+        steps: [
+          { text: 'Вычислить $2^3 \\cdot 2^5$', rule: 'Дано' },
+          { text: '$= 2^{3+5}$', rule: 'Свойство произведения: показатели складываются' },
+          { text: '$= 2^8 = 256$', rule: 'Вычисляем степень' },
+        ],
+        answer: 256
+      },
+      {
+        title: 'Пример 2 (средний)',
+        steps: [
+          { text: 'Вычислить $\\dfrac{5^7}{5^4}$', rule: 'Дано' },
+          { text: '$= 5^{7-4}$', rule: 'Свойство частного: показатели вычитаются' },
+          { text: '$= 5^3 = 125$', rule: 'Вычисляем степень' },
+        ],
+        answer: 125
+      },
+      {
+        title: 'Пример 3 (академический)',
+        steps: [
+          { text: 'Вычислить $\\dfrac{(3^2)^4 \\cdot 3^3}{3^5}$', rule: 'Дано' },
+          { text: '$= \\dfrac{3^{2 \\cdot 4} \\cdot 3^3}{3^5}$', rule: 'Свойство степени степени: $(a^n)^m = a^{n \\cdot m}$' },
+          { text: '$= \\dfrac{3^8 \\cdot 3^3}{3^5}$', rule: 'Вычисляем $2 \\cdot 4 = 8$' },
+          { text: '$= \\dfrac{3^{8+3}}{3^5} = \\dfrac{3^{11}}{3^5}$', rule: 'Произведение степеней: показатели складываются' },
+          { text: '$= 3^{11-5} = 3^6$', rule: 'Частное степеней: показатели вычитаются' },
+          { text: '$= 729$', rule: 'Вычисляем $3^6 = 729$' },
+        ],
+        answer: 729
+      }
+    ],
+    taskTypes: [
+      {
+        name: 'Произведение',
+        icon: '✖️',
+        template: (a, b, n, m) => ({
+          text: `Вычислить $${a}^{${n}} \\cdot ${a}^{${m}}$`,
+          answer: Math.pow(a, n + m),
+          hint: `Сложение показателей: ${n} + ${m} = ${n + m}, затем $${a}^{${n + m}}$`,
+          solution: `$${a}^{${n}} \\cdot ${a}^{${m}} = ${a}^{${n + m}} = ${Math.pow(a, n + m)}$`
+        }),
+        generate: () => {
+          const a = randInt(2, 9);
+          const n = randInt(2, 6);
+          const m = randInt(2, 6);
+          return { a, b: a, n, m };
+        }
+      },
+      {
+        name: 'Частное',
+        icon: '➗',
+        template: (a, n, m) => ({
+          text: `Вычислить $\\dfrac{${a}^{${n}}}{${a}^{${m}}}$`,
+          answer: Math.pow(a, n - m),
+          hint: `Вычитание показателей: ${n} - ${m} = ${n - m}, затем $${a}^{${n - m}}$`,
+          solution: `$\\dfrac{${a}^{${n}}}{${a}^{${m}}} = ${a}^{${n - m}} = ${Math.pow(a, n - m)}$`
+        }),
+        generate: () => {
+          const a = randInt(2, 9);
+          const n = randInt(3, 8);
+          const m = randInt(1, n - 1);
+          return { a, n, m };
+        }
+      },
+      {
+        name: 'Степень степени',
+        icon: '🔢',
+        template: (a, n, m) => ({
+          text: `Вычислить $(${a}^{${n}})^{${m}}$`,
+          answer: Math.pow(a, n * m),
+          hint: `Перемножаем показатели: ${n} · ${m} = ${n * m}, затем $${a}^{${n * m}}$`,
+          solution: `$(${a}^{${n}})^{${m}} = ${a}^{${n} \\cdot ${m}} = ${a}^{${n * m}} = ${Math.pow(a, n * m)}$`
+        }),
+        generate: () => {
+          const a = randInt(2, 5);
+          const n = randInt(2, 4);
+          const m = randInt(2, 3);
+          return { a, n, m };
+        }
+      },
+      {
+        name: 'Смешанные',
+        icon: '🧩',
+        template: (a, n, m, k) => ({
+          text: `Вычислить $\\dfrac{${a}^{${n}} \\cdot ${a}^{${m}}}{${a}^{${k}}}$`,
+          answer: Math.pow(a, n + m - k),
+          hint: `Сначала ${n} + ${m} = ${n + m} (произведение), потом ${n + m} − ${k} = ${n + m - k} (частное)`,
+          solution: `$\\dfrac{${a}^{${n}} \\cdot ${a}^{${m}}}{${a}^{${k}}} = ${a}^{${n}+${m}-${k}} = ${a}^{${n + m - k}} = ${Math.pow(a, n + m - k)}$`
+        }),
+        generate: () => {
+          const a = randInt(2, 6);
+          const n = randInt(3, 7);
+          const m = randInt(2, 5);
+          const k = randInt(1, n + m - 1);
+          return { a, n, m, k };
+        }
+      }
+    ]
   }
+};
+
+// ══════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+
+function renderKatex(el) {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(el, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      throwOnError: false
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let currentGrade = null;
+let currentTopic = null;
+let currentTaskType = 0;
+let stats = { correct: 0, wrong: 0, streak: 0 };
+let currentTask = null;
+let aiOpen = false;
+let aiHistory = [];
+
+// ══════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showGrades() {
+  currentGrade = null; currentTopic = null;
+  document.getElementById('lessonBack').style.display = 'none';
+  document.getElementById('aiFab').style.display = 'none';
+  document.getElementById('aiPanel').classList.remove('open');
+  document.getElementById('headerNav').innerHTML = '';
+  showView('gradeView');
+}
+
+function showTopics(gradeId) {
+  currentGrade = gradeId;
+  const topics = TOPICS[gradeId] || [];
+  const completed = JSON.parse(localStorage.getItem('fmine_math_topics') || '[]');
+  const doneCount = topics.filter(t => completed.includes(t.id)).length;
+  const pct = topics.length ? Math.round(doneCount / topics.length * 100) : 0;
+
+  document.getElementById('topicView').innerHTML = `
+    <div class="topic-head">
+      <h1>${gradeId} класс — Алгебра</h1>
+      <p>${topics.length} тем · Выполнено: ${doneCount}/${topics.length}</p>
+      <div class="topic-progress-bar"><div class="topic-progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="topic-list">
+      ${topics.map((t, i) => `
+        <div class="topic-card ${completed.includes(t.id) ? 'done' : ''}" onclick="openLesson('${t.id}')">
+          <div class="topic-num">${completed.includes(t.id) ? '✓' : i + 1}</div>
+          <div class="topic-info"><div class="topic-name">${t.icon} ${t.name}</div></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  showView('topicView');
+  document.getElementById('headerNav').innerHTML = `<button class="nav-btn" onclick="showGrades()">← Классы</button>`;
+}
+
+function openLesson(topicId) {
+  currentTopic = topicId;
+  const lesson = LESSONS[topicId];
+  if (!lesson) { showToast('⚠️ Тема в разработке'); return; }
+
+  stats = { correct: 0, wrong: 0, streak: 0 };
+  renderLesson(lesson);
+  showView('lessonView');
+  document.getElementById('lessonBack').style.display = '';
+  document.getElementById('aiFab').style.display = 'flex';
+  document.getElementById('headerNav').innerHTML = `
+    <button class="nav-btn" onclick="showTopics(${currentGrade})">← Темы</button>
+    <button class="nav-btn active">${TOPICS[currentGrade]?.find(t => t.id === topicId)?.icon || '📐'} ${lesson.title.slice(0, 30)}...</button>
+  `;
+}
+
+function goBack() {
+  if (currentTopic) { showTopics(currentGrade); }
+  else { showGrades(); }
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDER LESSON
+// ══════════════════════════════════════════════════════════
+function renderLesson(lesson) {
+  const el = document.getElementById('lessonView');
+
+  // Theory
+  let theoryHtml = `
+    <div class="context-box">
+      <h3>🌍 Контекст</h3>
+      <p>${lesson.context}</p>
+    </div>
+  `;
+
+  lesson.theory.forEach(section => {
+    theoryHtml += `
+      <div class="theory-section">
+        <h2><span class="section-icon">${section.icon}</span> ${section.title}</h2>
+        ${section.html}
+      </div>
+    `;
+  });
+
+  // Examples
+  theoryHtml += `<div class="theory-section"><h2><span class="section-icon">📝</span> Разбор примеров</h2>`;
+  lesson.examples.forEach((ex, i) => {
+    theoryHtml += `<div class="example-block"><h3>${ex.title}</h3>`;
+    ex.steps.forEach((step, j) => {
+      theoryHtml += `<div class="step"><div class="step-num">${j + 1}</div><div>${step.text}<span class="step-rule">${step.rule}</span></div></div>`;
+    });
+    theoryHtml += `</div>`;
+  });
+  theoryHtml += `</div>`;
+
+  // Practice
+  let practiceHtml = `
+    <div class="practice-head">
+      <h2>🎯 Практика</h2>
+      <p>Решай задачи и проверяй ответ</p>
+    </div>
+    <div class="practice-stats">
+      <div class="stat-chip correct"><div class="stat-val" id="statCorrect">0</div><div class="stat-label">Верно</div></div>
+      <div class="stat-chip wrong"><div class="stat-val" id="statWrong">0</div><div class="stat-label">Ошибки</div></div>
+      <div class="stat-chip"><div class="stat-val" id="statStreak">0</div><div class="stat-label">Серия</div></div>
+    </div>
+    <div class="task-type-tabs" id="taskTypeTabs">
+      ${lesson.taskTypes.map((tt, i) => `<button class="task-type-tab ${i === 0 ? 'active' : ''}" onclick="switchTaskType(${i})">${tt.icon} ${tt.name}</button>`).join('')}
+    </div>
+    <div id="taskArea"></div>
+  `;
+
+  el.innerHTML = `<div class="lesson-theory">${theoryHtml}</div><div class="lesson-practice">${practiceHtml}</div>`;
+
+  // Render KaTeX
+  setTimeout(() => {
+    renderKatex(el);
+    generateTask();
+  }, 100);
+}
+
+// ══════════════════════════════════════════════════════════
+// TASK GENERATOR
+// ══════════════════════════════════════════════════════════
+function switchTaskType(idx) {
+  currentTaskType = idx;
+  document.querySelectorAll('.task-type-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  generateTask();
+}
+
+function generateTask() {
+  const lesson = LESSONS[currentTopic];
+  if (!lesson) return;
+  const tt = lesson.taskTypes[currentTaskType];
+  const params = tt.generate();
+  currentTask = { ...tt.template(...Object.values(params)), typeIdx: currentTaskType };
+
+  const area = document.getElementById('taskArea');
+  area.innerHTML = `
+    <div class="task-card">
+      <div class="task-label">Задача</div>
+      <div class="task-formula" id="taskFormula">${currentTask.text}</div>
+      <div class="task-input-row">
+        <input class="task-input" id="taskInput" type="text" placeholder="Ответ..." onkeydown="if(event.key==='Enter')checkAnswer()" autofocus />
+        <button class="check-btn" id="checkBtn" onclick="checkAnswer()">Проверить</button>
+      </div>
+      <button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Подсказка</button>
+      <div class="hint-text" id="hintText"></div>
+      <div class="task-feedback" id="taskFeedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="generateTask()">Следующая задача →</button>
+    </div>
+  `;
+  setTimeout(() => { renderKatex(area); document.getElementById('taskInput')?.focus(); }, 50);
+}
+
+function checkAnswer() {
+  const input = document.getElementById('taskInput');
+  const val = input.value.trim().replace(/\s/g, '');
+  if (!val) return;
+
+  const correct = String(currentTask.answer);
+  const isCorrect = val === correct;
+
+  input.classList.remove('correct', 'wrong');
+  input.classList.add(isCorrect ? 'correct' : 'wrong');
+  input.disabled = true;
+  document.getElementById('checkBtn').disabled = true;
+
+  const fb = document.getElementById('taskFeedback');
+  if (isCorrect) {
+    stats.correct++;
+    stats.streak++;
+    fb.className = 'task-feedback correct';
+    fb.innerHTML = `✅ Верно! ${stats.streak > 2 ? `🔥 Серия: ${stats.streak}` : ''}`;
+  } else {
+    stats.wrong++;
+    stats.streak = 0;
+    fb.className = 'task-feedback wrong';
+    fb.innerHTML = `❌ Неверно. Правильный ответ: <b>${currentTask.answer}</b><div class="task-solution">${currentTask.solution}</div>`;
+  }
+
+  document.getElementById('statCorrect').textContent = stats.correct;
+  document.getElementById('statWrong').textContent = stats.wrong;
+  document.getElementById('statStreak').textContent = stats.streak;
+  document.getElementById('nextBtn').style.display = '';
+  document.getElementById('hintBtn').style.display = 'none';
+}
+
+function showHint() {
+  const ht = document.getElementById('hintText');
+  ht.style.display = 'block';
+  ht.textContent = '💡 ' + currentTask.hint;
+}
+
+// ══════════════════════════════════════════════════════════
+// AI CHAT
+// ══════════════════════════════════════════════════════════
+function toggleAi() {
+  aiOpen = !aiOpen;
+  document.getElementById('aiPanel').classList.toggle('open', aiOpen);
+  if (aiOpen) document.getElementById('aiInput').focus();
+}
+
+async function askAi(text) {
+  addAiMsg(text, 'user');
+  showAiTyping();
+  try {
+    const lesson = LESSONS[currentTopic];
+    const context = lesson ? `Текущая тема: ${lesson.title}. Текущая задача: ${currentTask?.text || 'нет задачи'}. Ответ: ${currentTask?.answer || '?'}` : 'Общий вопрос по алгебре 7 класса';
+    const resp = await fetch('https://my-education-site-f-mine-production.up.railway.app/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [
+          { role: 'system', content: `Ты — репетитор по алгебре для 7 класса. Отвечай кратко и по делу. Используй LaTeX для формул ($...$). Контекст: ${context}` },
+          ...aiHistory.slice(-6),
+          { role: 'user', content: text }
+        ]
+      })
+    });
+    const data = await resp.json();
+    removeAiTyping();
+    addAiMsg(data.reply || data.error || 'Не могу ответить', 'bot');
+    aiHistory.push({ role: 'user', content: text });
+    aiHistory.push({ role: 'assistant', content: data.reply || '' });
+  } catch (e) {
+    removeAiTyping();
+    addAiMsg('❌ Ошибка соединения с AI', 'bot');
+  }
+}
+
+function sendAi() {
+  const input = document.getElementById('aiInput');
+  const val = input.value.trim();
+  if (!val) return;
+  input.value = '';
+  askAi(val);
+}
+
+function addAiMsg(text, role) {
+  const container = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  div.className = `ai-msg ${role}`;
+  div.innerHTML = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  setTimeout(() => renderKatex(div), 50);
+}
+
+function showAiTyping() {
+  const container = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  div.className = 'ai-typing';
+  div.id = 'aiTyping';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeAiTyping() {
+  document.getElementById('aiTyping')?.remove();
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Render grade cards
+  const grid = document.getElementById('gradeGrid');
+  grid.innerHTML = GRADES.map(g => `
+    <div class="grade-card ${g.locked ? 'locked' : ''}" onclick="${g.locked ? '' : `showTopics(${g.id})`}">
+      ${g.badge ? `<div class="grade-badge">${g.badge}</div>` : ''}
+      <div class="grade-num">${g.id}</div>
+      <div class="grade-label">${g.label}</div>
+    </div>
+  `).join('');
+
+  // Fill formulas after KaTeX loads
+  const checkKatex = setInterval(() => {
+    if (typeof katex !== 'undefined') {
+      clearInterval(checkKatex);
+      fillFormulas();
+    }
+  }, 100);
+});
+
+function fillFormulas() {
+  const f = (id, tex) => { const el = document.getElementById(id); if (el) katex.render(tex, el, { displayMode: true, throwOnError: false }); };
+  f('formula-def', 'a^n = \\underbrace{a \\cdot a \\cdot \\ldots \\cdot a}_{n \\text{ раз}}');
+  f('formula-mult', 'a^n \\cdot a^m = a^{n+m}');
+  f('formula-mult-expand', 'a^n \\cdot a^m = \\underbrace{a \\cdot a \\cdot \\ldots \\cdot a}_{n} \\cdot \\underbrace{a \\cdot a \\cdot \\ldots \\cdot a}_{m} = \\underbrace{a \\cdot a \\cdot \\ldots \\cdot a}_{n+m} = a^{n+m}');
+  f('formula-div', '\\dfrac{a^n}{a^m} = a^{n-m} \\quad (a \\neq 0)');
+  f('formula-div-expand', '\\dfrac{a^n}{a^m} = \\dfrac{\\overbrace{a \\cdot a \\cdot \\ldots \\cdot a}^{n}}{\\underbrace{a \\cdot a \\cdot \\ldots \\cdot a}_{m}}');
+  f('formula-pow', '(a^n)^m = a^{n \\cdot m}');
+  f('formula-pow-ex', '(2^3)^4 = 2^{3 \\cdot 4} = 2^{12} = 4096');
+  f('formula-diff-base', 'a^n \\cdot b^n = (a \\cdot b)^n');
+  f('formula-diff-expand', 'a^n \\cdot b^n = \\underbrace{(a \\cdot a \\cdot \\ldots \\cdot a)}_{n} \\cdot \\underbrace{(b \\cdot b \\cdot \\ldots \\cdot b)}_{n} = \\underbrace{(a \\cdot b) \\cdot (a \\cdot b) \\cdot \\ldots \\cdot (a \\cdot b)}_{n} = (ab)^n');
+}
 </script>
 </body>
 </html>
