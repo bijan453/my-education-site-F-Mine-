@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>F-Mine | Персональный тренер</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #13131A;
+  --bg2: rgba(30, 30, 42, 0.7);
+  --bg3: rgba(40, 40, 55, 0.7);
+  --surface: rgba(34, 34, 48, 0.65);
+  --surface2: rgba(44, 44, 60, 0.65);
+  --surface3: rgba(54, 54, 75, 0.65);
+  --border: rgba(255, 255, 255, 0.06);
+  --border2: rgba(255, 255, 255, 0.1);
+  --text: #F0F0F5;
+  --text2: #A0A0B8;
+  --text3: #686880;
+  --purple: #6E56CF;
+  --purple-dim: rgba(110, 86, 207, 0.15);
+  --emerald: #10B981;
+  --rose: #F43F5E;
+  --gold: #F59E0B;
+  --r: 12px;
+  --ease: 0.25s ease;
+  --blur: blur(16px);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(circle at 80% 20%, rgba(110, 86, 207, 0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 10% 90%, rgba(110, 86, 207, 0.05) 0%, transparent 30%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 32px;
+  background: var(--bg2); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+header h1 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: #fff; }
+header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
+.header-right { display: flex; gap: 10px; align-items: center; }
+.header-right a {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: 20px; color: var(--text2);
+  text-decoration: none; font-size: 12px; font-weight: 600; transition: var(--ease);
+}
+.header-right a:hover { background: var(--surface2); color: #fff; }
+
+.container { max-width: 960px; margin: 24px auto; padding: 0 32px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 18px 14px; text-align: center;
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.stat-card .num { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.stat-card .lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.stat-card.purple .num { color: var(--purple); }
+.stat-card.green .num { color: var(--emerald); }
+.stat-card.gold .num { color: var(--gold); }
+.stat-card.rose .num { color: var(--rose); }
+
+.section { margin-bottom: 24px; }
+.section-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text3); margin-bottom: 12px;
+}
+
+.theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.theme-col h4 { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+.theme-col.weak h4 { color: var(--rose); }
+.theme-col.strong h4 { color: var(--emerald); }
+.theme-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; margin-bottom: 6px;
+}
+.theme-bar .name { font-size: 13px; font-weight: 500; color: var(--text); min-width: 100px; }
+.theme-bar .bar-track { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.theme-bar .bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.theme-bar .bar-fill.green { background: var(--emerald); }
+.theme-bar .bar-fill.rose { background: var(--rose); }
+.theme-bar .pct { font-size: 12px; font-weight: 600; color: var(--text2); min-width: 36px; text-align: right; }
+.theme-bar .count { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+
+.ai-section {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 24px; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.ai-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.ai-avatar {
+  width: 40px; height: 40px; border-radius: 10px; background: var(--purple);
+  display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+}
+.ai-header-text h3 { font-size: 16px; font-weight: 600; color: var(--text); }
+.ai-header-text p { font-size: 12px; color: var(--text2); }
+
+.ai-btn {
+  width: 100%; padding: 14px; border: none; border-radius: var(--r);
+  font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  background: var(--purple); color: #fff; transition: var(--ease);
+  box-shadow: 0 4px 12px rgba(110, 86, 207, 0.25);
+}
+.ai-btn:hover:not(:disabled) { background: #7C66DC; transform: translateY(-1px); }
+.ai-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.ai-result {
+  margin-top: 16px; padding: 20px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r);
+  font-size: 14px; line-height: 1.7; color: var(--text);
+  white-space: pre-wrap; display: none;
+}
+.ai-result.show { display: block; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.empty-state {
+  text-align: center; padding: 40px 20px; color: var(--text3);
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+.empty-state h3 { font-size: 18px; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
+.empty-state p { font-size: 14px; line-height: 1.5; }
+.empty-state a { color: var(--purple); text-decoration: none; font-weight: 600; }
+.empty-state a:hover { text-decoration: underline; }
+
+@media(max-width: 700px) {
+  .container { padding: 0 16px; }
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+  .theme-grid { grid-template-columns: 1fr; }
+  header { flex-direction: column; gap: 8px; padding: 12px 16px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="rook">♖</span> F-MINE <span style="font-weight:400;color:var(--text3)">Персональный тренер</span></h1>
+  <div class="header-right">
+    <a href="puzzles.html">← Тренажёр</a>
+    <a href="puzzle-history.html">📋 История</a>
+  </div>
+</header>
+
+<div class="container">
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <div class="icon">📊</div>
+    <h3>Недостаточно данных</h3>
+    <p>Решите хотя бы 3 задачи, чтобы персональный тренер мог проанализировать ваш прогресс.<br><a href="puzzles.html">→ Перейти к тренажёру</a></p>
+  </div>
+
+  <div id="mainContent">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="num" id="sTotal">0</div><div class="lbl">Всего</div></div>
+      <div class="stat-card green"><div class="num" id="sSolved">0</div><div class="lbl">Решено</div></div>
+      <div class="stat-card purple"><div class="num" id="sAccuracy">0%</div><div class="lbl">Точность</div></div>
+      <div class="stat-card gold"><div class="num" id="sAvgTime">0:00</div><div class="lbl">Ср. время</div></div>
+      <div class="stat-card rose"><div class="num" id="sFailed">0</div><div class="lbl">Ошибки</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Анализ по темам</div>
+      <div class="theme-grid">
+        <div class="theme-col weak">
+          <h4>Слабые темы</h4>
+          <div id="weakThemes"></div>
+        </div>
+        <div class="theme-col strong">
+          <h4>Сильные темы</h4>
+          <div id="strongThemes"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">AI Тренер</div>
+      <div class="ai-section">
+        <div class="ai-header">
+          <div class="ai-avatar">🤖</div>
+          <div class="ai-header-text">
+            <h3>Персональный план обучения</h3>
+            <p>AI проанализирует вашу историю и составит индивидуальный план</p>
+          </div>
+        </div>
+        <button class="ai-btn" id="btnAnalyze">🧠 Получить персональный план</button>
+        <div class="ai-result" id="aiResult"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API_BASE = IS_LOCAL ? 'http://localhost:3000' : 'https://my-education-site-f-mine-production.up.railway.app';
+
+const history = JSON.parse(localStorage.getItem('fmine_history') || '[]');
+const rating = parseInt(localStorage.getItem('fmine_rating') || '1200');
+const lang = localStorage.getItem('fmine_lang') === 'en' ? 'en' : 'ru';
+
+function formatTime(sec) {
+  if (!sec && sec !== 0) return '—';
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function renderStats() {
+  if (history.length < 3) {
+    document.getElementById('emptyState').style.display = '';
+    document.getElementById('mainContent').style.display = 'none';
+    return;
+  }
+
+  const total = history.length;
+  const solved = history.filter(h => h.solved).length;
+  const failed = history.filter(h => !h.solved && !h.solutionViewed).length;
+  const acc = Math.round((solved / total) * 100);
+  const avgTime = Math.round(history.reduce((s, h) => s + (h.time || 0), 0) / total);
+
+  document.getElementById('sTotal').textContent = total;
+  document.getElementById('sSolved').textContent = solved;
+  document.getElementById('sAccuracy').textContent = acc + '%';
+  document.getElementById('sAvgTime').textContent = formatTime(avgTime);
+  document.getElementById('sFailed').textContent = failed;
+
+  // Theme analysis
+  const themeStats = {};
+  for (const h of history) {
+    const themes = (h.themes || '').split(',').map(t => t.trim()).filter(Boolean);
+    for (const th of themes) {
+      if (!themeStats[th]) themeStats[th] = { total: 0, solved: 0 };
+      themeStats[th].total++;
+      if (h.solved) themeStats[th].solved++;
+    }
+  }
+
+  const themes = Object.entries(themeStats)
+    .map(([name, s]) => ({ name, ...s, pct: Math.round((s.solved / s.total) * 100) }))
+    .filter(t => t.total >= 1);
+
+  const weak = themes.filter(t => t.pct < 70).sort((a, b) => a.pct - b.pct).slice(0, 6);
+  const strong = themes.filter(t => t.pct >= 70).sort((a, b) => b.pct - a.pct).slice(0, 6);
+
+  const weakEl = document.getElementById('weakThemes');
+  const strongEl = document.getElementById('strongThemes');
+
+  if (!weak.length) {
+    weakEl.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:10px;">Нет слабых тем</div>';
+  } else {
+    weakEl.innerHTML = weak.map(t =>
+      '<div class="theme-bar"><span class="name">' + t.name + '</span>'
+      + '<div class="bar-track"><div class="bar-fill rose" style="width:' + t.pct + '%"></div></div>'
+      + '<span class="pct">' + t.pct + '%</span>'
+      + '<span class="count">' + t.solved + '/' + t.total + '</span></div>'
+    ).join('');
+  }
+
+  if (!strong.length) {
+    strongEl.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:10px;">Решите больше задач</div>';
+  } else {
+    strongEl.innerHTML = strong.map(t =>
+      '<div class="theme-bar"><span class="name">' + t.name + '</span>'
+      + '<div class="bar-track"><div class="bar-fill green" style="width:' + t.pct + '%"></div></div>'
+      + '<span class="pct">' + t.pct + '%</span>'
+      + '<span class="count">' + t.solved + '/' + t.total + '</span></div>'
+    ).join('');
+  }
+}
+
+document.getElementById('btnAnalyze').onclick = async () => {
+  const btn = document.getElementById('btnAnalyze');
+  const result = document.getElementById('aiResult');
+  btn.disabled = true;
+  btn.textContent = lang === 'ru' ? '🧠 Анализирую...' : '🧠 Analyzing...';
+  result.className = 'ai-result show';
+  result.textContent = lang === 'ru' ? 'Загружаю данные...' : 'Loading data...';
+
+  try {
+    const r = await fetch(API_BASE + '/api/trainer/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ history: history.slice(0, 100), rating, lang })
+    });
+    const data = await r.json();
+    if (data.ok && data.reply) {
+      result.textContent = data.reply;
+    } else {
+      result.textContent = lang === 'ru' ? 'Ошибка: AI недоступен' : 'Error: AI unavailable';
+    }
+  } catch(e) {
+    result.textContent = lang === 'ru' ? 'Ошибка подключения к серверу' : 'Server connection error';
+  }
+
+  btn.disabled = false;
+  btn.textContent = lang === 'ru' ? '🧠 Получить персональный план' : '🧠 Get personal plan';
+};
+
+renderStats();
+</script>
+</body>
+</html>

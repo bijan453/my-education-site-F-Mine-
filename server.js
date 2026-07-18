@@ -1401,6 +1401,122 @@ Help them solve the puzzle like a coach. Use emojis.`;
   }
 });
 
+// POST /api/puzzle/analyze — AI position analysis
+app.post('/api/puzzle/analyze', async (req, res) => {
+  try {
+    const { fen, themes, lang } = req.body || {};
+    if (!fen) return res.status(400).json({ ok: false, error: 'FEN required' });
+
+    const isRu = lang === 'ru';
+    const system = `You are a chess position analyst. Explain the position clearly and concisely.
+Cover: material balance, king safety, key tactical ideas, and candidate moves.
+${isRu ? 'Отвечай на русском.' : 'Answer in English.'}
+Use bullet points. Keep under 120 words. Use chess notation.`;
+
+    const userMsg = `Analyze this position:
+FEN: ${fen}
+${themes ? 'Themes: ' + themes : ''}
+
+What are the key features? What should the player look for? Suggest 2-3 candidate moves with brief reasoning.`;
+
+    const result = await callOpenRouterCascade([
+      { role: 'system', content: system },
+      { role: 'user', content: userMsg },
+    ], { temperature: 0.4, max_tokens: 400 });
+
+    res.json({ ok: true, reply: cleanCoachReply(result.text), model: result.model });
+  } catch (e) {
+    console.error('Analyze error:', e.message);
+    res.status(502).json({ ok: false, error: e.message });
+  }
+});
+
+// POST /api/trainer/analyze — Personal trainer: analyze user history and give recommendations
+app.post('/api/trainer/analyze', async (req, res) => {
+  try {
+    const { history, rating, lang } = req.body || {};
+    if (!history || !Array.isArray(history) || !history.length) {
+      return res.status(400).json({ ok: false, error: 'History array required' });
+    }
+
+    const isRu = lang === 'ru';
+
+    // Compute stats server-side
+    const total = history.length;
+    const solved = history.filter(h => h.solved).length;
+    const failed = history.filter(h => !h.solved && !h.solutionViewed).length;
+    const viewed = history.filter(h => h.solutionViewed).length;
+    const avgTime = Math.round(history.reduce((s, h) => s + (h.time || 0), 0) / total);
+    const bestTime = Math.min(...history.filter(h => h.solved && h.time > 0).map(h => h.time).concat([Infinity]));
+    const accuracy = Math.round((solved / total) * 100);
+
+    // Theme breakdown
+    const themeStats = {};
+    for (const h of history) {
+      const themes = (h.themes || '').split(',').map(t => t.trim()).filter(Boolean);
+      for (const th of themes) {
+        if (!themeStats[th]) themeStats[th] = { total: 0, solved: 0 };
+        themeStats[th].total++;
+        if (h.solved) themeStats[th].solved++;
+      }
+    }
+
+    const weakThemes = Object.entries(themeStats)
+      .filter(([_, s]) => s.total >= 2 && (s.solved / s.total) < 0.6)
+      .sort((a, b) => (a[1].solved / a[1].total) - (b[1].solved / b[1].total))
+      .slice(0, 5)
+      .map(([theme, s]) => `${theme}: ${s.solved}/${s.total} (${Math.round(s.solved / s.total * 100)}%)`);
+
+    const strongThemes = Object.entries(themeStats)
+      .filter(([_, s]) => s.total >= 2 && (s.solved / s.total) >= 0.7)
+      .sort((a, b) => (b[1].solved / b[1].total) - (a[1].solved / a[1].total))
+      .slice(0, 5)
+      .map(([theme, s]) => `${theme}: ${s.solved}/${s.total} (${Math.round(s.solved / s.total * 100)}%)`);
+
+    const system = `You are a personal chess training coach. Analyze the player's puzzle history and give personalized recommendations.
+${isRu ? 'Отвечай на русском. Будь дружелюбным и мотивирующим.' : 'Answer in English. Be friendly and motivating.'}
+Structure your response with:
+1. Overall assessment (1-2 sentences)
+2. Weak areas to focus on
+3. Strengths to maintain
+4. Specific training plan for the next week
+5. Recommended rating range for puzzles
+Keep under 200 words. Use emojis.`;
+
+    const userMsg = `Player stats:
+- Current rating: ${rating || 'unknown'}
+- Total puzzles: ${total}
+- Solved: ${solved} (${accuracy}% accuracy)
+- Failed: ${failed}
+- Viewed solution: ${viewed}
+- Average solve time: ${avgTime}s
+- Best solve time: ${bestTime === Infinity ? 'N/A' : bestTime + 's'}
+
+Weak themes (low accuracy):
+${weakThemes.length ? weakThemes.join('\n') : 'No data yet'}
+
+Strong themes (high accuracy):
+${strongThemes.length ? strongThemes.join('\n') : 'No data yet'}
+
+Give me a personalized training plan.`;
+
+    const result = await callOpenRouterCascade([
+      { role: 'system', content: system },
+      { role: 'user', content: userMsg },
+    ], { temperature: 0.5, max_tokens: 600 });
+
+    res.json({
+      ok: true,
+      reply: cleanCoachReply(result.text),
+      model: result.model,
+      stats: { total, solved, failed, viewed, accuracy, avgTime, bestTime: bestTime === Infinity ? 0 : bestTime, weakThemes, strongThemes, themeStats }
+    });
+  } catch (e) {
+    console.error('Trainer analyze error:', e.message);
+    res.status(502).json({ ok: false, error: e.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}`);

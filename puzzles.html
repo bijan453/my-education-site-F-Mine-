@@ -203,6 +203,8 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
 .actions .hint-btn { background: var(--surface); color: var(--text2); border: 1px solid var(--border); }
 .actions .hint-btn:hover:not(:disabled) { background: var(--surface2); color: var(--text); border-color: var(--border2); }
 .actions button:disabled { opacity: 0.3; cursor: not-allowed; }
+.analyze-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 16px; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
+.analyze-panel .coach-msg { font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; }
 
 /* ---- RIGHT COLUMN ---- */
 .col-right .section-title {
@@ -354,6 +356,7 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
     <button id="langToggle" onclick="toggleLang()">EN</button>
     <button id="soundToggle" onclick="toggleSound()" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;transition:var(--ease);">🔊</button>
     <a href="puzzle-history.html" id="historyLink" style="background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;transition:var(--ease);">📋 История</a>
+    <a href="personal-trainer.html" style="background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;transition:var(--ease);">🎯 Тренер</a>
   </div>
 </header>
 
@@ -419,7 +422,11 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
       <button id="btnNew2">Новая задача</button>
       <button id="btnHint" class="hint-btn" disabled>💡 Идея</button>
       <button id="btnSolution" class="hint-btn" disabled>👁 Решение</button>
+      <button id="btnAnalyze" class="hint-btn" disabled style="flex:0.6;">🔍</button>
       <button id="btnShare" class="hint-btn" disabled style="flex:0.6;">🔗</button>
+    </div>
+    <div class="analyze-panel" id="analyzePanel" style="display:none;margin-top:10px;">
+      <div class="coach-msg bot" id="analyzeContent"></div>
     </div>
   </div>
 
@@ -1110,9 +1117,11 @@ async function newPuzzle(sharedId) {
   $('btnHint').disabled = true;
   $('btnSolution').disabled = true;
   $('btnShare').disabled = true;
+  $('btnAnalyze').disabled = true;
   $('btnSoftIdea').disabled = true;
   $('btnSoftPiece').disabled = true;
   $('btnSoftSquare').disabled = true;
+  $('analyzePanel').style.display = 'none';
   // Clear coach log
   const coachLog = $('coachLog');
   if (coachLog) coachLog.innerHTML = '';
@@ -1162,6 +1171,7 @@ async function newPuzzle(sharedId) {
     $('btnHint').disabled = false;
     $('btnSolution').disabled = false;
     $('btnShare').disabled = false;
+    $('btnAnalyze').disabled = false;
     $('btnSoftIdea').disabled = false;
     $('btnSoftPiece').disabled = false;
     $('btnSoftSquare').disabled = false;
@@ -1200,6 +1210,33 @@ function sharePuzzle() {
   } else {
     prompt(lang === 'ru' ? 'Скопируйте ссылку:' : 'Copy the link:', url);
   }
+}
+
+// ---- AI ANALYZE ----
+async function analyzePuzzle() {
+  if (!puzzleId || !game) return;
+  $('btnAnalyze').disabled = true;
+  const panel = $('analyzePanel');
+  const content = $('analyzeContent');
+  panel.style.display = 'block';
+  content.textContent = lang === 'ru' ? '🧠 Анализирую позицию...' : '🧠 Analyzing position...';
+
+  try {
+    const r = await fetch(API_BASE + '/api/puzzle/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fen: game.fen(), themes: puzzleThemes, lang: lang })
+    });
+    const data = await r.json();
+    if (data.ok && data.reply) {
+      content.textContent = data.reply;
+    } else {
+      content.textContent = t('coachError');
+    }
+  } catch(e) {
+    content.textContent = t('coachError');
+  }
+  $('btnAnalyze').disabled = false;
 }
 
 // ---- HINT & SOLUTION ----
@@ -1559,6 +1596,7 @@ $('btnNew2').onclick = newPuzzle;
 $('btnHint').onclick = showHint;
 $('btnSolution').onclick = showSolution;
 $('btnShare').onclick = sharePuzzle;
+$('btnAnalyze').onclick = analyzePuzzle;
 $('modeNormal').onclick = () => setMode('normal');
 $('modeRush').onclick = () => setMode('rush');
 $('themeSelect').onchange = () => {};
