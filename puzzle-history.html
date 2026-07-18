@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>F-Mine | История задач</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #13131A;
+  --bg2: rgba(30, 30, 42, 0.7);
+  --bg3: rgba(40, 40, 55, 0.7);
+  --surface: rgba(34, 34, 48, 0.65);
+  --surface2: rgba(44, 44, 60, 0.65);
+  --surface3: rgba(54, 54, 75, 0.65);
+  --border: rgba(255, 255, 255, 0.06);
+  --border2: rgba(255, 255, 255, 0.1);
+  --text: #F0F0F5;
+  --text2: #A0A0B8;
+  --text3: #686880;
+  --purple: #6E56CF;
+  --purple-dim: rgba(110, 86, 207, 0.15);
+  --emerald: #10B981;
+  --rose: #F43F5E;
+  --gold: #F59E0B;
+  --r: 12px;
+  --ease: 0.25s ease;
+  --blur: blur(16px);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(circle at 80% 20%, rgba(110, 86, 207, 0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 10% 90%, rgba(110, 86, 207, 0.05) 0%, transparent 30%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 32px;
+  background: var(--bg2);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+header h1 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: #fff; }
+header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
+.header-right { display: flex; gap: 10px; align-items: center; }
+.header-right a {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: 20px; color: var(--text2);
+  text-decoration: none; font-size: 12px; font-weight: 600; transition: var(--ease);
+}
+.header-right a:hover { background: var(--surface2); color: #fff; }
+
+.container { max-width: 960px; margin: 24px auto; padding: 0 32px; }
+
+.stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 18px 14px; text-align: center;
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.stat-card .num { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.stat-card .lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.stat-card.accent .num { color: var(--purple); }
+.stat-card.gold .num { color: var(--gold); }
+.stat-card.green .num { color: var(--emerald); }
+
+.controls { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.controls select, .controls input {
+  font-family: inherit; font-size: 13px; font-weight: 500; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; outline: none; transition: var(--ease);
+}
+.controls select { cursor: pointer; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23686880'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+}
+.controls select:focus, .controls input:focus { border-color: var(--purple); }
+.controls .search { flex: 1; min-width: 180px; }
+.controls .btn-clear {
+  padding: 10px 16px; border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px;
+  background: rgba(244, 63, 94, 0.08); color: var(--rose); font-family: inherit;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--ease);
+}
+.controls .btn-clear:hover { background: rgba(244, 63, 94, 0.15); }
+
+.history-list { display: flex; flex-direction: column; gap: 6px; }
+.history-item {
+  display: grid; grid-template-columns: auto 1fr auto auto auto auto;
+  align-items: center; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 12px 18px; transition: var(--ease);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.history-item:hover { background: var(--surface2); border-color: var(--border2); }
+
+.hi-status {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.hi-status.solved { background: var(--emerald); box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
+.hi-status.failed { background: var(--rose); box-shadow: 0 0 6px rgba(244, 63, 94, 0.4); }
+.hi-status.viewed { background: var(--gold); box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+
+.hi-main { min-width: 0; }
+.hi-themes { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hi-date { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
+
+.hi-rating {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 16px;
+  padding: 4px 10px; font-size: 12px; font-weight: 600; color: var(--text2);
+  white-space: nowrap;
+}
+.hi-time {
+  font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace;
+  color: var(--gold); white-space: nowrap;
+}
+.hi-mode {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+}
+.hi-mode.normal { background: var(--purple-dim); color: var(--purple); }
+.hi-mode.rush { background: rgba(245, 158, 11, 0.1); color: var(--gold); }
+.hi-mode.daily { background: rgba(16, 185, 129, 0.1); color: var(--emerald); }
+
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--text3);
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+.empty-state h3 { font-size: 18px; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
+.empty-state p { font-size: 14px; line-height: 1.5; }
+.empty-state a { color: var(--purple); text-decoration: none; font-weight: 600; }
+.empty-state a:hover { text-decoration: underline; }
+
+@media(max-width: 700px) {
+  .container { padding: 0 16px; }
+  .stats-row { grid-template-columns: repeat(3, 1fr); }
+  .history-item { grid-template-columns: auto 1fr auto; gap: 10px; padding: 10px 14px; }
+  .hi-rating, .hi-mode { display: none; }
+  header { flex-direction: column; gap: 8px; padding: 12px 16px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="rook">♖</span> F-MINE <span style="font-weight:400;color:var(--text3)">История задач</span></h1>
+  <div class="header-right">
+    <a href="puzzles.html">← Тренажёр</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card"><div class="num" id="sTotal">0</div><div class="lbl">Всего</div></div>
+    <div class="stat-card green"><div class="num" id="sSolved">0</div><div class="lbl">Решено</div></div>
+    <div class="stat-card accent"><div class="num" id="sAccuracy">0%</div><div class="lbl">Точность</div></div>
+    <div class="stat-card gold"><div class="num" id="sAvgTime">0:00</div><div class="lbl">Ср. время</div></div>
+    <div class="stat-card gold"><div class="num" id="sBestTime">—</div><div class="lbl">Лучшее</div></div>
+  </div>
+
+  <div class="controls">
+    <select id="filterStatus">
+      <option value="">Все статусы</option>
+      <option value="solved">Решено</option>
+      <option value="failed">Ошибки</option>
+      <option value="viewed">Просмотр решения</option>
+    </select>
+    <select id="filterMode">
+      <option value="">Все режимы</option>
+      <option value="normal">Обычный</option>
+      <option value="rush">Rush</option>
+      <option value="daily">Дейли</option>
+    </select>
+    <select id="sortBy">
+      <option value="newest">Сначала новые</option>
+      <option value="oldest">Сначала старые</option>
+      <option value="fastest">Быстрее</option>
+      <option value="slowest">Медленнее</option>
+      <option value="rating-high">Высокий рейтинг</option>
+      <option value="rating-low">Низкий рейтинг</option>
+    </select>
+    <input type="text" class="search" id="searchThemes" placeholder="Поиск по теме...">
+    <button class="btn-clear" id="btnClear">Очистить</button>
+  </div>
+
+  <div class="history-list" id="historyList"></div>
+</div>
+
+<script>
+const HISTORY_KEY = 'fmine_history';
+let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+function formatTime(sec) {
+  if (!sec && sec !== 0) return '—';
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  const day = String(d.getDate()).padStart(2, '0');
+  const mon = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  const h = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  return day + '.' + mon + '.' + year + ' ' + h + ':' + min;
+}
+
+function getStatus(entry) {
+  if (entry.solutionViewed) return 'viewed';
+  if (entry.solved) return 'solved';
+  return 'failed';
+}
+
+function renderStats() {
+  const h = history;
+  const solved = h.filter(e => e.solved).length;
+  const total = h.length;
+  const acc = total ? Math.round((solved / total) * 100) : 0;
+  const times = h.filter(e => e.solved && e.time > 0).map(e => e.time);
+  const avg = times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
+  const best = times.length ? Math.min(...times) : 0;
+
+  document.getElementById('sTotal').textContent = total;
+  document.getElementById('sSolved').textContent = solved;
+  document.getElementById('sAccuracy').textContent = acc + '%';
+  document.getElementById('sAvgTime').textContent = formatTime(avg);
+  document.getElementById('sBestTime').textContent = best ? formatTime(best) : '—';
+}
+
+function renderList() {
+  const filterStatus = document.getElementById('filterStatus').value;
+  const filterMode = document.getElementById('filterMode').value;
+  const sortBy = document.getElementById('sortBy').value;
+  const search = document.getElementById('searchThemes').value.toLowerCase();
+
+  let filtered = history.filter(e => {
+    if (filterStatus) {
+      const st = getStatus(e);
+      if (st !== filterStatus) return false;
+    }
+    if (filterMode && e.mode !== filterMode) return false;
+    if (search && !(e.themes || '').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  if (sortBy === 'newest') filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+  else if (sortBy === 'oldest') filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+  else if (sortBy === 'fastest') filtered.sort((a, b) => (a.time || 9999) - (b.time || 9999));
+  else if (sortBy === 'slowest') filtered.sort((a, b) => (b.time || 0) - (a.time || 0));
+  else if (sortBy === 'rating-high') filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  else if (sortBy === 'rating-low') filtered.sort((a, b) => (a.rating || 9999) - (b.rating || 9999));
+
+  const list = document.getElementById('historyList');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><h3>Нет записей</h3><p>Начните решать задачи, и история появится здесь.<br><a href="puzzles.html">→ Перейти к тренажёру</a></p></div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(e => {
+    const status = getStatus(e);
+    const statusLabel = status === 'solved' ? '✓' : status === 'viewed' ? '👁' : '✗';
+    const themes = e.themes || '—';
+    return '<div class="history-item">'
+      + '<div class="hi-status ' + status + '"></div>'
+      + '<div class="hi-main"><div class="hi-themes">' + statusLabel + ' ' + themes + '</div>'
+      + '<div class="hi-date">' + formatDate(e.date) + '</div></div>'
+      + '<div class="hi-rating">ELO ' + (e.rating || '—') + '</div>'
+      + '<div class="hi-time">' + formatTime(e.time) + '</div>'
+      + '<div class="hi-mode ' + (e.mode || 'normal') + '">' + (e.mode || 'normal') + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+document.getElementById('filterStatus').onchange = renderList;
+document.getElementById('filterMode').onchange = renderList;
+document.getElementById('sortBy').onchange = renderList;
+document.getElementById('searchThemes').oninput = renderList;
+document.getElementById('btnClear').onclick = () => {
+  if (confirm('Очистить всю историю? Это нельзя отменить.')) {
+    history = [];
+    localStorage.removeItem(HISTORY_KEY);
+    renderStats();
+    renderList();
+  }
+};
+
+renderStats();
+renderList();
+</script>
+</body>
+</html>

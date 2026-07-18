@@ -170,6 +170,7 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
 /* Puzzle info below board */
 .puzzle-info { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: 11px; color: var(--text2); font-weight: 500; }
 .puzzle-info span { background: var(--surface); border: 1px solid var(--border); padding: 4px 10px; border-radius: 16px; }
+#timerDisplay { color: var(--gold); font-variant-numeric: tabular-nums; }
 
 /* Status Bar */
 .status {
@@ -351,6 +352,7 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
     <span class="streak" id="streakDisplay">🔥 0</span>
     <span class="lives" id="livesDisplay" style="display:none">❤️ 3</span>
     <button id="langToggle" onclick="toggleLang()">EN</button>
+    <a href="puzzle-history.html" id="historyLink" style="background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;transition:var(--ease);">📋 История</a>
   </div>
 </header>
 
@@ -401,6 +403,7 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
       <span id="themeDisplay">—</span>
       <span id="ratingDisplay">—</span>
       <span id="movesDisplay">Ход 0</span>
+      <span id="timerDisplay">⏱ 0:00</span>
     </div>
 
     <div class="status" id="statusDisplay">Нажмите «Новая задача»</div>
@@ -512,6 +515,9 @@ let rushScore = 0;
 let solvedThisRush = false;
 let hintUsed = false;
 let solved = false;
+let timerInterval = null;
+let timerStart = 0;
+let timerElapsed = 0;
 
 const $ = id => document.getElementById(id);
 const SYM = { w:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}, b:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'} };
@@ -542,6 +548,31 @@ function sndCorrect() { synthTone(520, 'sine', 0.12); synthTone(660, 'sine', 0.1
 function sndIncorrect() { synthTone(200, 'square', 0.15); synthTone(160, 'square', 0.2, 0.05); }
 function sndSolved() { synthTone(523, 'sine', 0.2); synthTone(659, 'sine', 0.2, 0.12); synthTone(784, 'sine', 0.35, 0.24); }
 function sndGameOver() { synthTone(440, 'sine', 0.25); synthTone(349, 'sine', 0.25, 0.1); synthTone(261, 'sine', 0.4, 0.2); }
+
+// ---- TIMER ----
+function startTimer() {
+  stopTimer();
+  timerStart = Date.now();
+  timerElapsed = 0;
+  $('timerDisplay').textContent = '⏱ 0:00';
+  timerInterval = setInterval(() => {
+    timerElapsed = Math.floor((Date.now() - timerStart) / 1000);
+    const m = Math.floor(timerElapsed / 60);
+    const s = timerElapsed % 60;
+    $('timerDisplay').textContent = '⏱ ' + m + ':' + String(s).padStart(2, '0');
+  }, 200);
+}
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+function getTimerSeconds() {
+  return timerElapsed;
+}
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
 
 // ---- PIECE MOVE ANIMATION ----
 function animateMove(fromSq, toSq, cb) {
@@ -607,6 +638,7 @@ const T = {
     coachPlaceholder:'Спроси тренера...', coachThinking:'🧠 Думаю...', coachError:'😅 Тренер сейчас недоступен',
     greetingFixed:'hello! I am your AI trener i can help you with puzzels',
     dailyTag:'Задание дня', dailyDone:'✅ Решено сегодня!', dailyStart:'🎯 Начать',
+    history:'📋 История',
   },
   en:{
     title:'F-Mine | Chess Trainer', headerTitle:'<span class="rook">♖</span> F-MINE <span style="font-weight:400;color:var(--text3)">Chess Trainer</span>',
@@ -633,6 +665,7 @@ const T = {
     softIdea:'🎯 Idea', softPiece:'♟️ Piece', softSquare:'📍 Where',
     coachPlaceholder:'Ask the trainer...', coachThinking:'🧠 Thinking...', coachError:'😅 Trainer is unavailable',
     greetingFixed:'hello! I am your AI trener i can help you with puzzels',
+    history:'📋 History',
   }
 };
 const t = key => (T[lang] ? T[lang][key] : null) || key;
@@ -666,6 +699,7 @@ function applyLang() {
     const v = o.value;
     o.textContent = v ? t(v) : t('allThemes');
   });
+  if ($('historyLink')) $('historyLink').textContent = t('history');
 }
 function toggleLang() {
   lang = lang === 'ru' ? 'en' : 'ru';
@@ -685,6 +719,22 @@ function calcAccuracy() {
   const ids = Object.keys(puzzleAttempts);
   if (!ids.length) return 0;
   return Math.round((ids.filter(id => puzzleAttempts[id].success).length / ids.length) * 100);
+}
+
+// ---- PUZZLE HISTORY ----
+let puzzleHistory = JSON.parse(localStorage.getItem('fmine_history') || '[]');
+function savePuzzleHistory(entry) {
+  puzzleHistory.unshift(entry);
+  if (puzzleHistory.length > 200) puzzleHistory = puzzleHistory.slice(0, 200);
+  localStorage.setItem('fmine_history', JSON.stringify(puzzleHistory));
+}
+function getHistoryStats() {
+  const h = puzzleHistory;
+  const solved = h.filter(e => e.solved).length;
+  const total = h.length;
+  const avgTime = total ? Math.round(h.reduce((s, e) => s + (e.time || 0), 0) / total) : 0;
+  const bestTime = h.length ? Math.min(...h.filter(e => e.solved).map(e => e.time).concat([Infinity])) : 0;
+  return { total, solved, accuracy: total ? Math.round((solved / total) * 100) : 0, avgTime, bestTime: bestTime === Infinity ? 0 : bestTime };
 }
 
 function saveState() {
@@ -942,11 +992,26 @@ async function onSolved(opts) {
   opts = opts || {};
   if (solved) return;
   solved = true;
+  stopTimer();
+  const solveTime = getTimerSeconds();
   if (!incorrectAttempt && !opts.fromSolution) { totalSolved++; streak++; }
   totalAttempts++;
   solvedThisRush = true;
   if (mode === 'rush' && !opts.fromSolution) rushScore++;
   recordAttempt(!opts.fromSolution);
+
+  // Save to history
+  savePuzzleHistory({
+    id: puzzleId,
+    rating: puzzleRating,
+    themes: puzzleThemes,
+    solved: !opts.fromSolution && !incorrectAttempt,
+    solutionViewed: !!opts.fromSolution,
+    hadMistake: incorrectAttempt,
+    time: solveTime,
+    date: new Date().toISOString(),
+    mode: mode
+  });
 
   // Only update ELO on a clean solve (no prior mistake / solution peek)
   if (!incorrectAttempt && !opts.fromSolution) {
@@ -1082,6 +1147,7 @@ async function newPuzzle() {
     softHintStep = 0;
 
     updateEvalBar(0);
+    startTimer();
     renderBoard();
     updateUI();
 
