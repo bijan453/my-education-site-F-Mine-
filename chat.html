@@ -902,8 +902,12 @@ async function loadAllUsers() {
   try {
     const snap = await getDocs(collection(db, 'users'));
     allUsernames = snap.docs.map(d => d.id).filter(u => u !== currentUser);
+    console.log('[chat] Loaded users:', allUsernames);
     await loadAllProfiles(allUsernames);
-  } catch { allUsernames = []; }
+  } catch (e) {
+    console.error('[chat] Failed to load users:', e);
+    allUsernames = [];
+  }
 }
 
 // ── PRESENCE ──
@@ -1609,41 +1613,51 @@ function updateCreateBtn() {
 document.getElementById('groupNameInput')?.addEventListener('input', updateCreateBtn);
 
 window.createNewChat = async () => {
-  if (newChatType === 'dm') {
-    // Check if DM already exists
-    const existing = chats.find(c => c.type === 'dm' && c.participants.includes(selectedDmUser) && c.participants.includes(currentUser));
-    if (existing) { closeNewChatModal(); openChat(existing.id); return; }
+  try {
+    console.log('[chat] createNewChat called, type:', newChatType, 'user:', currentUser);
+    if (newChatType === 'dm') {
+      if (!selectedDmUser) { showToast('Выберите пользователя'); return; }
+      const existing = chats.find(c => c.type === 'dm' && c.participants.includes(selectedDmUser) && c.participants.includes(currentUser));
+      if (existing) { closeNewChatModal(); openChat(existing.id); return; }
 
-    const chatRef = await addDoc(collection(db, 'chats'), {
-      type: 'dm',
-      participants: [currentUser, selectedDmUser],
-      name: null,
-      createdBy: currentUser,
-      createdAt: serverTimestamp(),
-      lastMessage: null,
-      lastMessageTime: null,
-      lastMessageAuthor: null,
-      unread: {}
-    });
-    closeNewChatModal();
-    openChat(chatRef.id);
-  } else {
-    const name = document.getElementById('groupNameInput').value.trim();
-    if (!name || selectedGroupUsers.size < 1) return;
-    const participants = [currentUser, ...selectedGroupUsers];
-    const chatRef = await addDoc(collection(db, 'chats'), {
-      type: 'group',
-      participants,
-      name,
-      createdBy: currentUser,
-      createdAt: serverTimestamp(),
-      lastMessage: null,
-      lastMessageTime: null,
-      lastMessageAuthor: null,
-      unread: {}
-    });
-    closeNewChatModal();
-    openChat(chatRef.id);
+      console.log('[chat] Creating DM with', selectedDmUser);
+      const chatRef = await addDoc(collection(db, 'chats'), {
+        type: 'dm',
+        participants: [currentUser, selectedDmUser],
+        name: null,
+        createdBy: currentUser,
+        createdAt: serverTimestamp(),
+        lastMessage: null,
+        lastMessageTime: null,
+        lastMessageAuthor: null,
+        unread: {}
+      });
+      console.log('[chat] DM created:', chatRef.id);
+      closeNewChatModal();
+      openChat(chatRef.id);
+    } else {
+      const name = document.getElementById('groupNameInput').value.trim();
+      if (!name || selectedGroupUsers.size < 1) { showToast('Заполните название и выберите участников'); return; }
+      const participants = [currentUser, ...selectedGroupUsers];
+      console.log('[chat] Creating group:', name, participants);
+      const chatRef = await addDoc(collection(db, 'chats'), {
+        type: 'group',
+        participants,
+        name,
+        createdBy: currentUser,
+        createdAt: serverTimestamp(),
+        lastMessage: null,
+        lastMessageTime: null,
+        lastMessageAuthor: null,
+        unread: {}
+      });
+      console.log('[chat] Group created:', chatRef.id);
+      closeNewChatModal();
+      openChat(chatRef.id);
+    }
+  } catch (e) {
+    console.error('[chat] Create chat error:', e);
+    showToast('❌ Ошибка: ' + (e.message || e));
   }
 };
 
