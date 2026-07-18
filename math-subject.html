@@ -1841,8 +1841,13 @@ let aiHistory = [];
 // NAVIGATION
 // ══════════════════════════════════════════════════════════
 function showView(id) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.view').forEach(v => {
+    v.classList.remove('active');
+    v.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  target.classList.add('active');
+  target.style.display = '';
 }
 
 function showGrades() {
