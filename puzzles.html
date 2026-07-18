@@ -352,6 +352,7 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
     <span class="streak" id="streakDisplay">🔥 0</span>
     <span class="lives" id="livesDisplay" style="display:none">❤️ 3</span>
     <button id="langToggle" onclick="toggleLang()">EN</button>
+    <button id="soundToggle" onclick="toggleSound()" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;transition:var(--ease);">🔊</button>
     <a href="puzzle-history.html" id="historyLink" style="background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;transition:var(--ease);">📋 История</a>
   </div>
 </header>
@@ -418,6 +419,7 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
       <button id="btnNew2">Новая задача</button>
       <button id="btnHint" class="hint-btn" disabled>💡 Идея</button>
       <button id="btnSolution" class="hint-btn" disabled>👁 Решение</button>
+      <button id="btnShare" class="hint-btn" disabled style="flex:0.6;">🔗</button>
     </div>
   </div>
 
@@ -518,6 +520,7 @@ let solved = false;
 let timerInterval = null;
 let timerStart = 0;
 let timerElapsed = 0;
+let soundEnabled = localStorage.getItem('fmine_sound') !== 'off';
 
 const $ = id => document.getElementById(id);
 const SYM = { w:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}, b:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'} };
@@ -528,6 +531,7 @@ function initAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 }
 function synthTone(freq, type, dur, delay) {
+  if (!soundEnabled) return;
   try {
     initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -706,6 +710,16 @@ function toggleLang() {
   localStorage.setItem('fmine_lang', lang);
   applyLang();
   $('langToggle').textContent = lang === 'ru' ? 'EN' : 'RU';
+}
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('fmine_sound', soundEnabled ? 'on' : 'off');
+  $('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+  $('soundToggle').style.color = soundEnabled ? 'var(--text2)' : 'var(--rose)';
+}
+function updateSoundIcon() {
+  $('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+  $('soundToggle').style.color = soundEnabled ? 'var(--text2)' : 'var(--rose)';
 }
 
 // ---- PER-PUZZLE ATTEMPT TRACKING ----
@@ -1085,7 +1099,7 @@ function onIncorrect(from, to) {
 }
 
 // ---- NEW PUZZLE ----
-async function newPuzzle() {
+async function newPuzzle(sharedId) {
   solved = false; moving = false; selSq = null; possMoves = [];
   lastFrom = null; lastTo = null;
   hintUsed = false;
@@ -1095,6 +1109,7 @@ async function newPuzzle() {
   $('btnNew2').disabled = true;
   $('btnHint').disabled = true;
   $('btnSolution').disabled = true;
+  $('btnShare').disabled = true;
   $('btnSoftIdea').disabled = true;
   $('btnSoftPiece').disabled = true;
   $('btnSoftSquare').disabled = true;
@@ -1107,8 +1122,13 @@ async function newPuzzle() {
   const maxR = parseInt($('maxRating').value) || 2400;
 
   try {
-    let url = API_BASE + '/api/puzzle/random?minRating=' + minR + '&maxRating=' + maxR;
-    if (theme) url += '&theme=' + encodeURIComponent(theme);
+    let url;
+    if (sharedId) {
+      url = API_BASE + '/api/puzzle/' + encodeURIComponent(sharedId);
+    } else {
+      url = API_BASE + '/api/puzzle/random?minRating=' + minR + '&maxRating=' + maxR;
+      if (theme) url += '&theme=' + encodeURIComponent(theme);
+    }
 
     const r = await fetch(url);
     if (!r.ok) { $('statusDisplay').textContent = t('noFilter'); $('btnNew').disabled = false; $('btnNew2').disabled = false; return; }
@@ -1141,6 +1161,7 @@ async function newPuzzle() {
     $('statusDisplay').textContent = t('yourTurn');
     $('btnHint').disabled = false;
     $('btnSolution').disabled = false;
+    $('btnShare').disabled = false;
     $('btnSoftIdea').disabled = false;
     $('btnSoftPiece').disabled = false;
     $('btnSoftSquare').disabled = false;
@@ -1164,6 +1185,21 @@ async function newPuzzle() {
   }
   $('btnNew').disabled = false;
   $('btnNew2').disabled = false;
+}
+
+// ---- SHARE PUZZLE ----
+function sharePuzzle() {
+  if (!puzzleId) return;
+  const url = window.location.origin + window.location.pathname + '?puzzle=' + puzzleId;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast(lang === 'ru' ? '🔗 Ссылка скопирована!' : '🔗 Link copied!', 2000);
+    }).catch(() => {
+      prompt(lang === 'ru' ? 'Скопируйте ссылку:' : 'Copy the link:', url);
+    });
+  } else {
+    prompt(lang === 'ru' ? 'Скопируйте ссылку:' : 'Copy the link:', url);
+  }
 }
 
 // ---- HINT & SOLUTION ----
@@ -1522,6 +1558,7 @@ $('btnNew').onclick = newPuzzle;
 $('btnNew2').onclick = newPuzzle;
 $('btnHint').onclick = showHint;
 $('btnSolution').onclick = showSolution;
+$('btnShare').onclick = sharePuzzle;
 $('modeNormal').onclick = () => setMode('normal');
 $('modeRush').onclick = () => setMode('rush');
 $('themeSelect').onchange = () => {};
@@ -1531,9 +1568,11 @@ $('maxRating').onchange = () => {};
 $('btnDaily').onclick = startDailyPuzzle;
 $('langToggle').textContent = lang === 'ru' ? 'EN' : 'RU';
 applyLang();
+updateSoundIcon();
 updateUI();
 updateDailyCard();
-newPuzzle();
+const urlPuzzle = new URLSearchParams(window.location.search).get('puzzle');
+if (urlPuzzle) { newPuzzle(urlPuzzle); } else { newPuzzle(); }
 </script>
 </body>
 </html>
