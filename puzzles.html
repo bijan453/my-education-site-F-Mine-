@@ -1599,8 +1599,8 @@ async function onSolvedWrapper(opts) {
 onSolved = onSolvedWrapper;
 
 // ---- INIT ----
-$('btnNew').onclick = newPuzzle;
-$('btnNew2').onclick = newPuzzle;
+$('btnNew').onclick = () => newPuzzle();
+$('btnNew2').onclick = () => newPuzzle();
 $('btnHint').onclick = showHint;
 $('btnSolution').onclick = showSolution;
 $('btnShare').onclick = sharePuzzle;
