@@ -535,8 +535,13 @@ const SYM = { w:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}, b:{k:'♚',q:
 // ---- SOUND ENGINE ----
 let audioCtx = null;
 function initAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
 }
+document.addEventListener('click', () => { initAudio(); }, { once: true });
+document.addEventListener('touchstart', () => { initAudio(); }, { once: true });
 function synthTone(freq, type, dur, delay) {
   if (!soundEnabled) return;
   try {
@@ -546,7 +551,7 @@ function synthTone(freq, type, dur, delay) {
     const gain = audioCtx.createGain();
     osc.type = type;
     osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (delay||0));
-    gain.gain.setValueAtTime(0.12, audioCtx.currentTime + (delay||0));
+    gain.gain.setValueAtTime(0.25, audioCtx.currentTime + (delay||0));
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (delay||0) + dur);
     osc.connect(gain); gain.connect(audioCtx.destination);
     osc.start(audioCtx.currentTime + (delay||0));
