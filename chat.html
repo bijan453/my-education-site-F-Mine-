@@ -161,14 +161,25 @@ header {
 }
 
 /* ── BUBBLE MESSAGES ── */
-#feed { display:flex; flex-direction:column; gap:4px; }
+#feed { display:flex; flex-direction:column; gap:2px; }
 
 .msg-row {
   display:flex; align-items:flex-end; gap:7px;
   animation:fadeUp .22s ease;
   position:relative;
+  padding:1px 0;
+  transition:background .15s;
 }
+.msg-row:hover { background:rgba(255,255,255,.02); border-radius:12px; }
 .msg-row.own { flex-direction:row-reverse; }
+
+.msg-row.grouped { padding-top:0; }
+.msg-row.grouped .bubble { border-top-left-radius:8px; }
+.msg-row.grouped.own .bubble { border-top-right-radius:8px; }
+
+.avatar-placeholder {
+  width:30px; height:0; flex-shrink:0;
+}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
@@ -178,15 +189,18 @@ header {
   display:flex; align-items:center; justify-content:center;
   font-size:12px; font-weight:700; flex-shrink:0; color:white;
   text-transform:uppercase; margin-bottom:2px;
+  overflow:hidden;
 }
 .avatar.admin-avatar { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#000; }
+.avatar.has-photo { background:transparent; }
 
 .bubble {
   max-width:73%; border-radius:16px;
   padding:9px 13px 8px;
   position:relative; word-break:break-word;
-  transition:border-color .15s;
+  transition:border-color .15s, box-shadow .15s;
 }
+.bubble:hover { box-shadow:0 2px 8px rgba(0,0,0,.15); }
 .bubble.other {
   background:var(--surface);
   border:1px solid var(--border);
@@ -196,6 +210,20 @@ header {
   background:var(--own-bg);
   border:1px solid var(--own-border);
   border-bottom-right-radius:4px;
+}
+
+/* Grouped messages - Telegram style */
+.msg-row.grouped .bubble {
+  border-top-left-radius:8px;
+}
+.msg-row.grouped.own .bubble {
+  border-top-right-radius:8px;
+}
+.msg-row:not(.grouped) .bubble {
+  border-top-left-radius:16px;
+}
+.msg-row:not(.grouped).own .bubble {
+  border-top-right-radius:16px;
 }
 .bubble.admin-bubble {
   border-color:rgba(251,191,36,.2);
@@ -272,11 +300,14 @@ header {
 /* voice in feed */
 .voice-msg {
   display:flex; align-items:center; gap:8px; margin-top:8px;
-  background:rgba(34,211,238,.05); border:1px solid rgba(34,211,238,.12);
+  background:rgba(34,211,238,.06); border:1px solid rgba(34,211,238,.15);
   border-radius:11px; padding:8px 11px;
+  transition:background .15s;
 }
+.voice-msg:hover { background:rgba(34,211,238,.1); }
 .voice-msg audio { height:32px; flex:1; min-width:0; accent-color:var(--cyan); }
-.voice-icon { font-size:16px; flex-shrink:0; }
+.voice-icon { font-size:16px; flex-shrink:0; animation:voicePulse 2s ease-in-out infinite; }
+@keyframes voicePulse { 0%,100%{opacity:1}50%{opacity:.6} }
 
 /* edit mode */
 .edit-area-wrap { margin-top:6px; display:none; }
@@ -748,6 +779,7 @@ let allMessages = [], pinnedMsgId = null;
 let lightboxCurrentUrl = null, presenceRef = null;
 let mediaRecorder = null, audioChunks = [], isRecording = false, recordTimer = null;
 let lastSentTime = 0, cooldownIv = null;
+let userProfiles = {}; // Cache user profiles {username: {photoURL, displayName}}
 const MAX_CHARS = 1000, COOLDOWN = 10000;
 const REACTIONS = ['🔥','❤️','😂','👍','😮','💯'];
 const COMPOSE_EMOJIS = ['😀','😂','🔥','❤️','👍','😎','🥳','😢','💯','🎉','😍','🤔','💀','🙏','🤣','😅','👏','🫡','💪','🚀','✨','🎮','🤩','😤','👋','🫶','🥰','😮','🤯','🧠','👑','💎','🌙','⭐','🎯','💬','🤝','👀','🫠','😈'];
@@ -766,6 +798,31 @@ window.doLogout = () => {
   localStorage.removeItem('currentUser'); localStorage.removeItem('fmine_user');
   clearPresence(); window.location.href = 'index.html';
 };
+
+// ── USER PROFILES ──
+async function loadUserProfile(username) {
+  if (userProfiles[username]) return userProfiles[username];
+  try {
+    const userDoc = await getDoc(doc(db, 'users', username));
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      userProfiles[username] = {
+        photoURL: data.photoURL || data.profile?.avatar || null,
+        displayName: data.displayName || data.profile?.nickname || username
+      };
+    } else {
+      userProfiles[username] = { photoURL: null, displayName: username };
+    }
+  } catch (e) {
+    userProfiles[username] = { photoURL: null, displayName: username };
+  }
+  return userProfiles[username];
+}
+
+async function loadAllProfiles(usernames) {
+  const unique = [...new Set(usernames.filter(u => u && !userProfiles[u]))];
+  await Promise.all(unique.map(u => loadUserProfile(u)));
+}
 
 // ── PRESENCE ──
 async function initPresence() {
@@ -888,40 +945,68 @@ function startFeed() {
     const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     const wasAtBottom = isAtBottom, prevCount = allMessages.length;
     allMessages = msgs;
-    renderFeed(msgs);
-    if (searchQuery) applySearch();
-    if (firstLoad) { scrollToBottom(false); firstLoad = false; }
-    else if (wasAtBottom) scrollToBottom(true);
-    else if (msgs.length > prevCount) {
-      unreadCount += msgs.length - prevCount;
-      const badge = document.getElementById('unreadBadge');
-      badge.textContent = `+${unreadCount} новых`; badge.classList.add('show');
+
+    // Load all profiles on first load
+    if (firstLoad) {
+      const usernames = msgs.map(m => m.author).filter(Boolean);
+      loadAllProfiles(usernames).then(() => {
+        renderFeed(msgs);
+        if (searchQuery) applySearch();
+        scrollToBottom(false);
+        firstLoad = false;
+      });
+    } else {
+      renderFeed(msgs);
+      if (searchQuery) applySearch();
+      if (wasAtBottom) scrollToBottom(true);
+      else if (msgs.length > prevCount) {
+        unreadCount += msgs.length - prevCount;
+        const badge = document.getElementById('unreadBadge');
+        badge.textContent = `+${unreadCount} новых`; badge.classList.add('show');
+      }
     }
   });
 }
 function renderFeed(msgs) {
   const feed = document.getElementById('feed');
   if (!msgs.length) { feed.innerHTML = '<div class="empty"><div class="icon">💬</div><p>Пока нет сообщений</p></div>'; return; }
-  let html = '', lastDateLabel = null;
-  msgs.forEach(m => {
-    const dateLabel = formatDateDivider(m.ts);
-    if (dateLabel && dateLabel !== lastDateLabel) {
-      html += `<div class="date-divider"><span>${escHtml(dateLabel)}</span></div>`;
-      lastDateLabel = dateLabel;
-    }
-    html += buildCard(m);
+
+  // Load all user profiles first
+  const usernames = msgs.map(m => m.author).filter(Boolean);
+  loadAllProfiles(usernames).then(() => {
+    let html = '', lastDateLabel = null, lastAuthor = null, lastTime = null;
+
+    msgs.forEach((m, idx) => {
+      const dateLabel = formatDateDivider(m.ts);
+      if (dateLabel && dateLabel !== lastDateLabel) {
+        html += `<div class="date-divider"><span>${escHtml(dateLabel)}</span></div>`;
+        lastDateLabel = dateLabel;
+        lastAuthor = null; // Reset grouping on new date
+      }
+
+      // Message grouping: check if same author within 2 minutes
+      const msgTime = m.ts ? new Date(m.ts.seconds * 1000).getTime() : 0;
+      const timeDiff = lastTime ? msgTime - lastTime : Infinity;
+      const isGrouped = m.author === lastAuthor && timeDiff < 120000 && timeDiff >= 0;
+
+      html += buildCard(m, isGrouped);
+      lastAuthor = m.author;
+      lastTime = msgTime;
+    });
+
+    feed.innerHTML = html;
   });
-  feed.innerHTML = html;
 }
 
 function renderText(text) {
   return escHtml(text).replace(/@(\w+)/g, '<span class="mention" onclick="scrollToUserMsg(\'$1\')">@$1</span>');
 }
 
-function buildCard(m) {
+function buildCard(m, isGrouped = false) {
   const admin = m.author === 'admin123';
   const isOwn = m.author === currentUser;
   const isBanned = bannedUsers.has(m.author);
+  const profile = userProfiles[m.author] || { photoURL: null, displayName: m.author };
   const initials = (m.author || '?')[0].toUpperCase();
   const time = m.ts ? new Date(m.ts.seconds*1000).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}) : '';
   const isPinned = m.id === pinnedMsgId;
@@ -1013,16 +1098,23 @@ function buildCard(m) {
   const bubbleInner = `${replyHtml}${m.text?`<div class="msg-text" id="msgText-${m.id}">${renderText(m.text)}</div>`:''}${editAreaHtml}${mediaHtml}${footerHTML}`;
 
   if (isOwn) {
-    return `<div class="msg-row own" id="msg-${m.id}">
+    return `<div class="msg-row own ${isGrouped ? 'grouped' : ''}" id="msg-${m.id}">
       <div class="bubble own ${isPinned?'pinned-card':''}">${bubbleInner}</div>
     </div>`;
   }
-  return `<div class="msg-row other" id="msg-${m.id}">
-    <div class="avatar ${admin?'admin-avatar':''}">${admin?'👑':initials}</div>
+
+  // Avatar with photoURL or fallback to initials
+  const avatarContent = profile.photoURL
+    ? `<img src="${escHtml(profile.photoURL)}" alt="${escHtml(m.author)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`
+    : (admin ? '👑' : initials);
+  const avatarClass = `avatar ${admin ? 'admin-avatar' : ''} ${profile.photoURL ? 'has-photo' : ''}`;
+
+  return `<div class="msg-row other ${isGrouped ? 'grouped' : ''}" id="msg-${m.id}">
+    ${isGrouped ? '<div class="avatar-placeholder"></div>' : `<div class="${avatarClass}">${avatarContent}</div>`}
     <div class="bubble other ${admin?'admin-bubble':''} ${isPinned?'pinned-card':''}">
-      <div class="bubble-author">
-        ${admin?'<span class="admin-tag">ADMIN</span>':''}${escHtml(m.author)}${isBanned?' <span style="color:var(--danger);font-size:10px">🚫</span>':''}
-      </div>
+      ${!isGrouped ? `<div class="bubble-author">
+        ${admin?'<span class="admin-tag">ADMIN</span>':''}${escHtml(profile.displayName || m.author)}${isBanned?' <span style="color:var(--danger);font-size:10px">🚫</span>':''}
+      </div>` : ''}
       ${bubbleInner}
     </div>
   </div>`;
