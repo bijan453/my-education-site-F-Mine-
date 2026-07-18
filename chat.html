@@ -627,6 +627,128 @@ header {
 ::-webkit-scrollbar { width:3px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--surface2); border-radius:3px; }
+
+/* ── SWIPE TO REPLY ── */
+.msg-row { touch-action:pan-y; user-select:none; -webkit-user-select:none; }
+.msg-row.swiping { transition:none; }
+.msg-row .swipe-hint {
+  position:absolute; left:-40px; top:50%; transform:translateY(-50%);
+  font-size:18px; opacity:0; transition:opacity .15s; pointer-events:none;
+}
+.msg-row.own .swipe-hint { left:auto; right:-40px; }
+.msg-row.swiping .swipe-hint { opacity:1; }
+
+/* ── CONTEXT MENU ── */
+#contextMenu {
+  display:none; position:fixed; z-index:600;
+  background:var(--surface2); border:1px solid var(--border2);
+  border-radius:13px; box-shadow:0 8px 35px rgba(0,0,0,.65);
+  padding:5px; min-width:180px; animation:ctxPop .15s ease;
+}
+#contextMenu.open { display:block; }
+@keyframes ctxPop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.ctx-item {
+  display:flex; align-items:center; gap:9px; padding:9px 13px;
+  border:none; background:none; color:var(--text); font-size:13px;
+  font-family:inherit; cursor:pointer; border-radius:8px; width:100%; text-align:left;
+  transition:background .12s;
+}
+.ctx-item:hover { background:rgba(99,102,241,.1); }
+.ctx-item.danger { color:var(--danger); }
+.ctx-item.danger:hover { background:rgba(244,63,94,.1); }
+.ctx-icon { font-size:15px; flex-shrink:0; width:20px; text-align:center; }
+.ctx-sep { height:1px; background:var(--border); margin:3px 8px; }
+
+/* ── ONLINE SIDEBAR ── */
+#onlineSidebar {
+  display:none; position:fixed; top:0; right:0; bottom:0; z-index:400;
+  width:min(300px,85vw);
+}
+#onlineSidebar.open { display:block; }
+#onlineOverlay {
+  display:none; position:fixed; inset:0; z-index:399;
+  background:rgba(0,0,0,.5); backdrop-filter:blur(4px);
+}
+#onlineOverlay.open { display:block; }
+#onlinePanel {
+  position:absolute; top:0; right:0; bottom:0; width:100%;
+  background:var(--surface); border-left:1px solid var(--border2);
+  display:flex; flex-direction:column; animation:slideLeft .22s ease;
+}
+@keyframes slideLeft{from{transform:translateX(100%)}to{transform:translateX(0)}}
+#onlinePanelHead {
+  padding:14px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+#onlinePanelHead h3 { font-size:14px; font-weight:700; margin:0; }
+#onlinePanelClose { background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; }
+#onlinePanelClose:hover { color:var(--danger); }
+#onlineList { flex:1; overflow-y:auto; padding:8px; }
+.online-user {
+  display:flex; align-items:center; gap:10px; padding:9px 10px;
+  border-radius:10px; transition:background .12s; cursor:default;
+}
+.online-user:hover { background:rgba(255,255,255,.04); }
+.online-avatar {
+  width:34px; height:34px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,var(--indigo),var(--gold));
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; color:white; text-transform:uppercase;
+  overflow:hidden; position:relative;
+}
+.online-avatar img { width:100%; height:100%; border-radius:50%; object-fit:cover; }
+.online-dot {
+  position:absolute; bottom:0; right:0; width:10px; height:10px;
+  background:var(--green); border:2px solid var(--surface); border-radius:50%;
+}
+.online-name { font-size:13px; font-weight:600; color:var(--text); }
+.online-time { font-size:10px; color:var(--muted); }
+#onlineEmpty { text-align:center; padding:30px; color:var(--muted); font-size:12px; }
+
+/* ── GIF PANEL ── */
+#gifPanel {
+  display:none; background:var(--surface2); border:1px solid var(--border);
+  border-radius:11px; overflow:hidden; margin-bottom:6px;
+}
+#gifPanel.open { display:block; }
+#gifSearchRow {
+  display:flex; gap:6px; padding:8px; border-bottom:1px solid var(--border);
+}
+#gifSearchInput {
+  flex:1; background:var(--surface3); border:1px solid var(--border);
+  border-radius:8px; padding:7px 10px; color:var(--text); font-size:13px;
+  font-family:inherit; outline:none;
+}
+#gifSearchInput:focus { border-color:var(--indigo); }
+#gifGrid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:3px;
+  max-height:260px; overflow-y:auto; padding:5px;
+}
+#gifGrid::-webkit-scrollbar { width:4px; }
+#gifGrid::-webkit-scrollbar-thumb { background:var(--surface3); border-radius:4px; }
+.gif-item {
+  border-radius:7px; overflow:hidden; cursor:pointer;
+  aspect-ratio:1; background:var(--surface3);
+  transition:transform .12s, box-shadow .12s;
+}
+.gif-item:hover { transform:scale(1.04); box-shadow:0 2px 10px rgba(0,0,0,.4); z-index:1; }
+.gif-item img { width:100%; height:100%; object-fit:cover; display:block; }
+#gifLoading { text-align:center; padding:18px; color:var(--muted); font-size:12px; }
+#gifEmpty { text-align:center; padding:18px; color:var(--muted); font-size:12px; }
+
+/* ── TRANSLATE BUTTON ── */
+.translate-btn {
+  background:none; border:1px solid var(--border); border-radius:7px;
+  padding:2px 7px; font-size:10px; cursor:pointer; color:var(--muted);
+  transition:all .15s; font-family:inherit; margin-top:4px; display:inline-flex; align-items:center; gap:3px;
+}
+.translate-btn:hover { border-color:var(--indigo); color:var(--indigo); }
+.translate-btn.loading { opacity:.5; pointer-events:none; }
+.translate-result {
+  margin-top:5px; padding:6px 9px; border-radius:8px;
+  background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.12);
+  font-size:12px; line-height:1.5; color:var(--text); font-style:italic;
+}
 </style>
 </head>
 <body>
@@ -634,7 +756,7 @@ header {
 <header>
   <div class="logo">F-Mine</div>
   <div class="header-center">
-    <div id="onlineBadge"><span id="onlineCount">0</span> online</div>
+    <div id="onlineBadge" onclick="openOnlineSidebar()" style="cursor:pointer"><span id="onlineCount">0</span> online</div>
   </div>
   <div class="header-right">
     <button class="hbtn" id="searchToggleBtn" onclick="toggleSearch()" title="Поиск">🔍</button>
@@ -693,10 +815,17 @@ header {
       <button id="clearVoice" onclick="clearVoice()">✕</button>
     </div>
     <div id="charCounter"></div>
+    <div id="gifPanel">
+      <div id="gifSearchRow">
+        <input type="text" id="gifSearchInput" placeholder="Поиск GIF..." oninput="handleGifSearch(this.value)" />
+      </div>
+      <div id="gifGrid"></div>
+    </div>
     <div class="compose-row">
       <textarea id="msgInput" rows="1" placeholder="Написать сообщение..." onkeydown="handleKey(event)" oninput="handleInput(this)"></textarea>
       <div class="compose-actions">
         <button class="cmp-btn" id="composeEmojiBtn" onclick="toggleComposeEmoji()" title="Эмодзи">😀</button>
+        <button class="cmp-btn" id="gifBtn" onclick="toggleGifPanel()" title="GIF">GIF</button>
         <button class="cmp-btn" id="voiceBtn" title="Голосовое сообщение" onclick="toggleRecording()">🎙️</button>
         <label class="cmp-btn" id="photoBtn" title="Прикрепить файл или фото" style="cursor:pointer">
           📎<input type="file" accept="*/*" id="photoInput" style="display:none" onchange="handlePhoto(event)" />
@@ -743,6 +872,31 @@ header {
 </div>
 
 <div id="toast"></div>
+
+<!-- CONTEXT MENU -->
+<div id="contextMenu">
+  <button class="ctx-item" onclick="ctxReply()"><span class="ctx-icon">↩</span>Ответить</button>
+  <button class="ctx-item" onclick="ctxCopy()"><span class="ctx-icon">📋</span>Копировать</button>
+  <button class="ctx-item" onclick="ctxTranslate()"><span class="ctx-icon">🌐</span>Перевести</button>
+  <button class="ctx-item" onclick="ctxPin()" id="ctxPinBtn"><span class="ctx-icon">📌</span>Закрепить</button>
+  <div class="ctx-sep"></div>
+  <button class="ctx-item" onclick="ctxEdit()" id="ctxEditBtn"><span class="ctx-icon">✏️</span>Редактировать</button>
+  <button class="ctx-item danger" onclick="ctxDelete()" id="ctxDeleteBtn"><span class="ctx-icon">🗑</span>Удалить</button>
+</div>
+
+<!-- ONLINE SIDEBAR -->
+<div id="onlineOverlay" onclick="closeOnlineSidebar()"></div>
+<div id="onlineSidebar">
+  <div id="onlinePanel">
+    <div id="onlinePanelHead">
+      <h3>Онлайн</h3>
+      <button id="onlinePanelClose" onclick="closeOnlineSidebar()">✕</button>
+    </div>
+    <div id="onlineList">
+      <div id="onlineEmpty">Загрузка...</div>
+    </div>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -831,9 +985,18 @@ async function initPresence() {
   setInterval(async () => { await setDoc(presenceRef, { user: currentUser, ts: Date.now() }); }, 20000);
   onSnapshot(collection(db, 'presence'), snap => {
     const cutoff = Date.now() - 60000;
-    const active = new Set();
-    snap.docs.forEach(d => { if (d.data().ts > cutoff) active.add(d.data().user); });
-    document.getElementById('onlineCount').textContent = active.size;
+    const userMap = new Map();
+    snap.docs.forEach(d => {
+      const data = d.data();
+      if (data.ts > cutoff) {
+        const existing = userMap.get(data.user);
+        if (!existing || data.ts > existing.ts) userMap.set(data.user, data);
+      }
+    });
+    onlineUsersData = Array.from(userMap.values()).sort((a, b) => b.ts - a.ts);
+    document.getElementById('onlineCount').textContent = onlineUsersData.length;
+    if (document.getElementById('onlineSidebar').classList.contains('open')) renderOnlineList();
+    loadAllProfiles(onlineUsersData.map(u => u.user));
   });
   window.addEventListener('beforeunload', clearPresence);
 }
@@ -1083,6 +1246,7 @@ function buildCard(m, isGrouped = false) {
 
   const liked = likedMsgs.includes(m.id);
   const likeCount = (m.likes||[]).length;
+  const canTranslate = m.text && m.text.length > 2;
   const footerHTML = `<div class="bubble-footer">
     <div class="footer-left">
       <button class="like-btn ${liked?'liked':''}" onclick="toggleLike('${m.id}')">${liked?'❤️':'🤍'}${likeCount?' '+likeCount:''}</button>
@@ -1090,6 +1254,7 @@ function buildCard(m, isGrouped = false) {
     </div>
     <div class="footer-right">
       ${actionsHtml}
+      ${canTranslate ? `<button class="translate-btn" onclick="translateMessage('${m.id}')">🌐</button>` : ''}
       <span class="msg-time-inline">${time}${isPinned?' 📌':''}${m.edited?' <span class="edited-tag">·ред</span>':''}</span>
       ${statusHtml}
     </div>
@@ -1365,6 +1530,7 @@ document.addEventListener('click', e => {
   if (!e.target.closest('.emoji-picker-btn') && !e.target.closest('.emoji-popup')) closeAllPickers();
   if (!e.target.closest('#composeEmojiBtn') && !e.target.closest('#composeEmojiPanel')) document.getElementById('composeEmojiPanel').classList.remove('open');
   if (!e.target.closest('#notifBtn') && !e.target.closest('#notifPanel')) document.getElementById('notifPanel').classList.remove('open');
+  if (!e.target.closest('#gifBtn') && !e.target.closest('#gifPanel')) { gifPanelOpen = false; document.getElementById('gifPanel').classList.remove('open'); }
 });
 
 // ── REPLY ──
@@ -1524,6 +1690,205 @@ window.showToast = (msg) => {
   const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 };
+
+// ── SWIPE TO REPLY ──
+let swipeStartX = 0, swipeStartY = 0, swipeMsgEl = null, swipeThreshold = 80;
+document.addEventListener('touchstart', e => {
+  const row = e.target.closest('.msg-row');
+  if (!row || e.target.closest('button') || e.target.closest('audio') || e.target.closest('a') || e.target.closest('.emoji-popup')) return;
+  swipeStartX = e.touches[0].clientX;
+  swipeStartY = e.touches[0].clientY;
+  swipeMsgEl = row;
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+  if (!swipeMsgEl) return;
+  const dx = e.touches[0].clientX - swipeStartX;
+  const dy = e.touches[0].clientY - swipeStartY;
+  if (Math.abs(dy) > Math.abs(dx)) { swipeMsgEl = null; return; }
+  if (dx > 0) {
+    swipeMsgEl.classList.add('swiping');
+    swipeMsgEl.style.transform = `translateX(${Math.min(dx, 120)}px)`;
+    swipeMsgEl.style.opacity = Math.max(0.4, 1 - dx / 250);
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (!swipeMsgEl) return;
+  const row = swipeMsgEl;
+  row.classList.remove('swiping');
+  const transform = row.style.transform;
+  const match = transform.match(/translateX\((\d+)/);
+  const dx = match ? parseInt(match[1]) : 0;
+  row.style.transform = '';
+  row.style.opacity = '';
+  if (dx > swipeThreshold) {
+    const id = row.id?.replace('msg-','');
+    if (id) { replyMessage(id); showToast('↩ Ответ'); }
+  }
+  swipeMsgEl = null;
+});
+
+// ── CONTEXT MENU ──
+let ctxMsgId = null;
+function showContextMenu(e, msgId) {
+  e.preventDefault(); e.stopPropagation();
+  ctxMsgId = msgId;
+  const menu = document.getElementById('contextMenu');
+  const msg = allMessages.find(m => m.id === msgId);
+  if (!msg) return;
+
+  const isOwn = msg.author === currentUser;
+  document.getElementById('ctxEditBtn').style.display = isOwn && msg.text && !msg.imgUrl && !msg.voiceUrl ? '' : 'none';
+  document.getElementById('ctxDeleteBtn').style.display = (isOwn || isAdmin) ? '' : 'none';
+  document.getElementById('ctxPinBtn').style.display = isAdmin ? '' : 'none';
+
+  menu.style.left = Math.min(e.clientX || e.pageX, window.innerWidth - 200) + 'px';
+  menu.style.top = Math.min(e.clientY || e.pageY, window.innerHeight - 250) + 'px';
+  menu.classList.add('open');
+}
+function hideContextMenu() { document.getElementById('contextMenu').classList.remove('open'); ctxMsgId = null; }
+document.addEventListener('click', e => { if (!e.target.closest('#contextMenu')) hideContextMenu(); });
+
+window.ctxReply = () => { if (ctxMsgId) replyMessage(ctxMsgId); hideContextMenu(); };
+window.ctxCopy = () => {
+  if (!ctxMsgId) return;
+  const msg = allMessages.find(m => m.id === ctxMsgId);
+  if (msg?.text) { navigator.clipboard.writeText(msg.text).then(() => showToast('📋 Скопировано')).catch(() => {}); }
+  hideContextMenu();
+};
+window.ctxTranslate = () => { if (ctxMsgId) { translateMessage(ctxMsgId); } hideContextMenu(); };
+window.ctxPin = () => {
+  if (!ctxMsgId) return;
+  const msg = allMessages.find(m => m.id === ctxMsgId);
+  if (msg) pinMessage(ctxMsgId, msg.author, (msg.text||'').slice(0,60));
+  hideContextMenu();
+};
+window.ctxEdit = () => { if (ctxMsgId) startEdit(ctxMsgId); hideContextMenu(); };
+window.ctxDelete = () => { if (ctxMsgId) deleteMessage(ctxMsgId); hideContextMenu(); };
+
+// Long-press for context menu
+let longPressTimer = null;
+document.addEventListener('mousedown', e => {
+  const row = e.target.closest('.msg-row');
+  if (!row || e.target.closest('button') || e.target.closest('audio') || e.target.closest('a')) return;
+  longPressTimer = setTimeout(() => {
+    const id = row.id?.replace('msg-','');
+    if (id) showContextMenu(e, id);
+  }, 500);
+});
+document.addEventListener('mouseup', () => { clearTimeout(longPressTimer); });
+document.addEventListener('mousemove', () => { clearTimeout(longPressTimer); });
+document.addEventListener('contextmenu', e => {
+  const row = e.target.closest('.msg-row');
+  if (row) {
+    const id = row.id?.replace('msg-','');
+    if (id) showContextMenu(e, id);
+  }
+});
+
+// ── ONLINE SIDEBAR ──
+let onlineUsersData = [];
+window.openOnlineSidebar = () => {
+  document.getElementById('onlineOverlay').classList.add('open');
+  document.getElementById('onlineSidebar').classList.add('open');
+  renderOnlineList();
+};
+window.closeOnlineSidebar = () => {
+  document.getElementById('onlineOverlay').classList.remove('open');
+  document.getElementById('onlineSidebar').classList.remove('open');
+};
+function renderOnlineList() {
+  const list = document.getElementById('onlineList');
+  if (!onlineUsersData.length) { list.innerHTML = '<div id="onlineEmpty">Никого нет онлайн</div>'; return; }
+  list.innerHTML = onlineUsersData.map(u => {
+    const profile = userProfiles[u.user] || { photoURL: null, displayName: u.user };
+    const initials = (u.user || '?')[0].toUpperCase();
+    const avatarContent = profile.photoURL
+      ? `<img src="${escHtml(profile.photoURL)}" alt="" />`
+      : initials;
+    const ago = Math.round((Date.now() - u.ts) / 1000);
+    const timeStr = ago < 60 ? 'сейчас' : `${Math.floor(ago/60)}м назад`;
+    return `<div class="online-user">
+      <div class="online-avatar">${avatarContent}<div class="online-dot"></div></div>
+      <div><div class="online-name">${escHtml(profile.displayName || u.user)}</div><div class="online-time">${timeStr}</div></div>
+    </div>`;
+  }).join('');
+}
+
+// ── GIF SEARCH ──
+let gifPanelOpen = false, gifSearchTimeout = null, gifDebounce = null;
+window.toggleGifPanel = () => {
+  gifPanelOpen = !gifPanelOpen;
+  document.getElementById('gifPanel').classList.toggle('open', gifPanelOpen);
+  if (gifPanelOpen) document.getElementById('gifSearchInput').focus();
+};
+window.handleGifSearch = (val) => {
+  clearTimeout(gifDebounce);
+  if (!val.trim()) { document.getElementById('gifGrid').innerHTML = ''; return; }
+  gifDebounce = setTimeout(() => searchGifs(val.trim()), 400);
+};
+async function searchGifs(query) {
+  const grid = document.getElementById('gifGrid');
+  grid.innerHTML = '<div id="gifLoading">Поиск GIF...</div>';
+  try {
+    const resp = await fetch(`https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ&limit=18&media_filter=gif,tinygif,mp4`);
+    const data = await resp.json();
+    if (!data.results?.length) { grid.innerHTML = '<div id="gifEmpty">Ничего не найдено</div>'; return; }
+    grid.innerHTML = data.results.map(r => {
+      const url = r.media_formats?.gif?.url || r.media_formats?.tinygif?.url || '';
+      return url ? `<div class="gif-item" onclick="sendGif('${escHtml(url)}')"><img src="${escHtml(url)}" loading="lazy" /></div>` : '';
+    }).join('');
+  } catch(e) { grid.innerHTML = '<div id="gifEmpty">Ошибка загрузки</div>'; }
+}
+window.sendGif = async (url) => {
+  if (bannedUsers.has(currentUser) && !isAdmin) return;
+  const now = Date.now();
+  if (!isAdmin && now - lastSentTime < COOLDOWN) { showToast(`⏳ Подождите`); return; }
+
+  document.getElementById('sendBtn').disabled = true;
+  await addDoc(collection(db, 'messages'), {
+    author: currentUser, text: '',
+    imgUrl: url, voiceUrl: null, fileType: 'image/gif', fileName: 'gif',
+    likes: [], reactions: {}, readBy: [currentUser], edited: false,
+    ts: serverTimestamp()
+  });
+  lastSentTime = Date.now();
+  startCooldown();
+  toggleGifPanel();
+  document.getElementById('gifSearchInput').value = '';
+  document.getElementById('gifGrid').innerHTML = '';
+};
+
+// ── MESSAGE TRANSLATION ──
+async function translateMessage(msgId) {
+  const msg = allMessages.find(m => m.id === msgId);
+  if (!msg?.text) return;
+  const existing = document.getElementById('trans-' + msgId);
+  if (existing) { existing.remove(); return; }
+
+  const btn = document.querySelector(`#msg-${msgId} .translate-btn`);
+  if (btn) btn.classList.add('loading');
+
+  try {
+    const detectLang = /[а-яёА-ЯЁ]/.test(msg.text) ? 'ru' : 'en';
+    const targetLang = detectLang === 'ru' ? 'en' : 'ru';
+    const resp = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(msg.text)}&langpair=${detectLang}|${targetLang}`);
+    const data = await resp.json();
+    const translated = data.responseData?.translatedText || 'Не удалось перевести';
+
+    const bubble = document.querySelector(`#msg-${msgId} .bubble`);
+    if (bubble) {
+      const div = document.createElement('div');
+      div.className = 'translate-result';
+      div.id = 'trans-' + msgId;
+      div.textContent = translated;
+      bubble.appendChild(div);
+    }
+  } catch(e) { showToast('❌ Ошибка перевода'); }
+  if (btn) btn.classList.remove('loading');
+}
+window.translateMessage = translateMessage;
 
 // ── INIT ──
 if (initAuth()) {
