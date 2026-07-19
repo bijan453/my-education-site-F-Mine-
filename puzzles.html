@@ -10,32 +10,36 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #13131A;
-  --bg2: rgba(30, 30, 42, 0.7);
-  --bg3: rgba(40, 40, 55, 0.7);
-  --surface: rgba(34, 34, 48, 0.65);
-  --surface2: rgba(44, 44, 60, 0.65);
-  --surface3: rgba(54, 54, 75, 0.65);
-  --border: rgba(255, 255, 255, 0.06);
-  --border2: rgba(255, 255, 255, 0.1);
-  --text: #F0F0F5;
-  --text2: #A0A0B8;
-  --text3: #686880;
+  --bg: #f4f6fb;
+  --bg2: rgba(255, 255, 255, 0.85);
+  --bg3: rgba(240, 242, 248, 0.9);
+  --surface: rgba(255, 255, 255, 0.8);
+  --surface2: rgba(240, 242, 248, 0.9);
+  --surface3: rgba(228, 231, 242, 0.9);
+  --border: rgba(0, 0, 0, 0.07);
+  --border2: rgba(0, 0, 0, 0.1);
+  --text: #1e2235;
+  --text2: #5a5d72;
+  --text3: #888ba3;
   --purple: #6E56CF;
-  --purple-dim: rgba(110, 86, 207, 0.15);
-  --emerald: #10B981;
-  --rose: #F43F5E;
-  --gold: #F59E0B;
+  --purple-dim: rgba(110, 86, 207, 0.08);
+  --emerald: #059669;
+  --rose: #e11d48;
+  --gold: #d97706;
   --r: 12px;
   --ease: 0.25s ease;
   --blur: blur(16px);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.03);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,.05), 0 4px 6px rgba(0,0,0,.03);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: 'Outfit', sans-serif;
   background: var(--bg);
-  background-image: radial-gradient(circle at 80% 20%, rgba(110, 86, 207, 0.08) 0%, transparent 40%),
-                    radial-gradient(circle at 10% 90%, rgba(110, 86, 207, 0.05) 0%, transparent 30%);
+  background-image: radial-gradient(circle at 80% 20%, rgba(110, 86, 207, 0.04) 0%, transparent 40%),
+                    radial-gradient(circle at 10% 90%, rgba(110, 86, 207, 0.03) 0%, transparent 30%);
   background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
@@ -51,15 +55,16 @@ header {
   -webkit-backdrop-filter: var(--blur);
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
 }
 header h1 {
-  font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: #fff; letter-spacing: 0.5px;
+  font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text); letter-spacing: 0.5px;
 }
 header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
 .header-right { display: flex; gap: 10px; align-items: center; font-size: 12px; font-weight: 600; }
 .header-right .elo {
   background: var(--surface); border: 1px solid var(--border);
-  padding: 6px 12px; border-radius: 20px; color: #fff;
+  padding: 6px 12px; border-radius: 20px; color: var(--text);
   display: flex; align-items: center; gap: 4px;
 }
 .header-right .streak {

@@ -7,6 +7,46 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
+      --bg: #f2f4ff;
+      --bg2: #e7eaff;
+      --bg3: #dfe2fc;
+      --bg4: #d5d9f7;
+      --surface: rgba(255,255,255,0.55);
+      --surface2: rgba(255,255,255,0.7);
+      --surface3: rgba(139,92,246,0.08);
+      --glass: rgba(255,255,255,0.35);
+      --border: rgba(139,92,246,0.1);
+      --border2: rgba(139,92,246,0.18);
+      --border3: rgba(139,92,246,0.25);
+      --text: #1a1730;
+      --text2: #5a5580;
+      --text3: #8884b0;
+      --shadow-xs: 0 1px 3px rgba(108,99,255,0.08);
+      --shadow-sm: 0 2px 8px rgba(108,99,255,0.1);
+      --shadow: 0 4px 16px rgba(108,99,255,0.12);
+      --shadow-lg: 0 8px 28px rgba(108,99,255,0.15);
+      --violet: #8b5cf6;
+      --violet2: #6d3fec;
+      --violet-glow: rgba(139,92,246,0.2);
+      --amber: #d97706;
+      --amber2: #f59e0b;
+      --amber-glow: rgba(217,119,6,0.15);
+      --emerald: #059669;
+      --emerald-glow: rgba(5,150,105,0.15);
+      --rose: #e11d48;
+      --rose-glow: rgba(225,29,72,0.15);
+      --teal: #0d9488;
+      --teal-glow: rgba(13,148,136,0.15);
+      --radius: 18px;
+      --radius-sm: 13px;
+      --radius-xs: 9px;
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --font-body: 'Outfit', sans-serif;
+      --ease: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    body.dark {
       --bg: #06080f;
       --bg2: #0b0e1a;
       --bg3: #101524;
@@ -33,41 +73,10 @@
       --rose-glow: rgba(244,63,94,0.3);
       --teal: #40E0D0;
       --teal-glow: rgba(64,224,208,0.45);
-      --radius: 18px;
-      --radius-sm: 13px;
-      --radius-xs: 9px;
       --shadow-xs: 0 1px 3px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.02);
       --shadow-sm: 0 2px 8px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.03);
       --shadow: 0 4px 16px rgba(0,0,0,0.7),0 8px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.04);
       --shadow-lg: 0 8px 24px rgba(0,0,0,0.8),0 16px 48px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.05),0 0 40px rgba(139,92,246,0.08);
-      --shadow-glow-violet: 0 0 0 1px rgba(139,92,246,0.4),0 0 30px rgba(139,92,246,0.3),0 8px 32px rgba(0,0,0,0.5);
-      --shadow-glow-amber: 0 0 0 1px rgba(245,158,11,0.35),0 0 28px rgba(245,158,11,0.22),0 8px 32px rgba(0,0,0,0.5);
-      --shadow-glow-emerald: 0 0 0 1px rgba(16,185,129,0.3),0 0 22px rgba(16,185,129,0.18),0 8px 28px rgba(0,0,0,0.5);
-      --font-display: 'Syne', sans-serif;
-      --font-mono: 'DM Mono', monospace;
-      --font-body: 'Outfit', sans-serif;
-      --ease: 0.25s cubic-bezier(0.4,0,0.2,1);
-    }
-
-    body.light {
-      --bg: #f2f4ff;
-      --bg2: #e7eaff;
-      --bg3: #dfe2fc;
-      --bg4: #d5d9f7;
-      --surface: rgba(255,255,255,0.55);
-      --surface2: rgba(255,255,255,0.7);
-      --surface3: rgba(139,92,246,0.08);
-      --glass: rgba(255,255,255,0.35);
-      --border: rgba(139,92,246,0.1);
-      --border2: rgba(139,92,246,0.18);
-      --border3: rgba(139,92,246,0.25);
-      --text: #1a1730;
-      --text2: #5a5580;
-      --text3: #8884b0;
-      --shadow-xs: 0 1px 3px rgba(108,99,255,0.08);
-      --shadow-sm: 0 2px 8px rgba(108,99,255,0.1);
-      --shadow: 0 4px 16px rgba(108,99,255,0.12);
-      --shadow-lg: 0 8px 28px rgba(108,99,255,0.15);
     }
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -170,11 +179,11 @@
     textarea, input[type="text"], input[type="number"], select {
       width: 100%; margin-top: 10px; padding: 12px 14px;
       border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-      outline: none; background: rgba(0,0,0,0.2); color: var(--text);
+      outline: none; background: rgba(255,255,255,0.85); color: var(--text);
       font-family: var(--font-body); font-size: 14px; transition: border-color 0.2s;
     }
-    body.light textarea, body.light input, body.light select {
-      background: rgba(255,255,255,0.85); color: #111;
+    body.dark textarea, body.dark input, body.dark select {
+      background: rgba(0,0,0,0.2); color: var(--text);
     }
     textarea:focus, input:focus, select:focus { border-color: var(--violet); }
 
@@ -520,7 +529,7 @@ const weekKey  = ()=>{ const d=new Date(),day=d.getDay()||7,m=new Date(d); m.set
 async function logActivity(text) { const arr = [...(fd.activities||[]), {text, time: new Date().toLocaleString("ru-RU")}].slice(-10); fd.activities=arr; await patch({activities:arr}); renderHistory(); }
 
 window.togglePanel = (id)=> document.getElementById(id).classList.toggle("open");
-window.toggleTheme = ()=>{ document.body.classList.toggle("light"); localStorage.setItem("accountTheme", document.body.classList.contains("light")?"light":"dark"); };
+window.toggleTheme = ()=>{ document.body.classList.toggle("dark"); localStorage.setItem("accountTheme", document.body.classList.contains("dark")?"dark":"light"); };
 window.toggleAvatarMenu = ()=> document.getElementById("avatarMenu").classList.toggle("open");
 window.pickAvatar = ()=>{ document.getElementById("avatarFile").click(); document.getElementById("avatarMenu").classList.remove("open"); };
 window.resetAvatar = async ()=>{ document.getElementById("avatar").src="https://via.placeholder.com/80"; await setProfile({avatar:"https://via.placeholder.com/80"}); await logActivity("Аватар сброшен"); renderProfile(); };
@@ -651,7 +660,7 @@ function renderHistory() {
 function renderAll() { renderProfile(); renderStats(); renderOverall(); renderSubjects(); renderDetails(); renderBadges(); renderHistory(); }
 
 async function init() {
-  if (localStorage.getItem("accountTheme")==="light") document.body.classList.add("light");
+  if (localStorage.getItem("accountTheme")==="dark") document.body.classList.add("dark");
   await load();
   renderAll();
 }
