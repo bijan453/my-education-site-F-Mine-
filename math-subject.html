@@ -10,35 +10,40 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <style>
 :root {
-  --bg: #08090f;
-  --surface: #0e1019;
-  --surface2: #151722;
-  --surface3: #1c1e2e;
-  --border: rgba(255,255,255,.06);
-  --border2: rgba(255,255,255,.1);
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --surface2: #f8f9fe;
+  --surface3: #eef0f7;
+  --border: rgba(0,0,0,.06);
+  --border2: rgba(0,0,0,.1);
   --indigo: #6366f1;
   --indigo2: #4f46e5;
-  --text: #dde0f5;
-  --muted: #5a5a7a;
+  --text: #1e2235;
+  --muted: #7b7fa0;
   --danger: #f43f5e;
-  --green: #34d399;
-  --cyan: #22d3ee;
-  --gold: #fbbf24;
-  --radius: 14px;
+  --green: #22c55e;
+  --cyan: #06b6d4;
+  --gold: #f59e0b;
+  --radius: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.03);
+  --shadow: 0 4px 14px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.03);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.04);
+  --shadow-xl: 0 20px 60px rgba(0,0,0,.1), 0 4px 12px rgba(0,0,0,.05);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E"); pointer-events:none; z-index:0; }
+body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 20% 0%, rgba(99,102,241,.06) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(6,182,212,.05) 0%, transparent 50%); pointer-events:none; z-index:0; }
 
 /* ── HEADER ── */
 header {
   position:sticky; top:0; z-index:100;
-  background:rgba(8,9,15,.9); backdrop-filter:blur(20px);
+  background:rgba(255,255,255,.82); backdrop-filter:blur(20px) saturate(1.4);
   border-bottom:1px solid var(--border);
   padding:0 24px; height:54px;
   display:flex; align-items:center; justify-content:space-between;
+  box-shadow: 0 1px 8px rgba(0,0,0,.04);
 }
-.logo { font-weight:800; font-size:20px; letter-spacing:-.5px; }
+.logo { font-weight:800; font-size:20px; letter-spacing:-.5px; cursor:pointer; }
 .logo-f { background:linear-gradient(135deg,var(--indigo),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 .logo-rest { color:var(--text); }
 .header-nav { display:flex; gap:8px; align-items:center; }
@@ -47,8 +52,8 @@ header {
   padding:6px 14px; font-size:12px; font-weight:600; color:var(--muted);
   cursor:pointer; font-family:inherit; transition:all .15s;
 }
-.nav-btn:hover { border-color:var(--indigo); color:var(--indigo); }
-.nav-btn.active { background:var(--indigo); color:white; border-color:var(--indigo); }
+.nav-btn:hover { border-color:var(--indigo); color:var(--indigo); background:rgba(99,102,241,.04); }
+.nav-btn.active { background:var(--indigo); color:white; border-color:var(--indigo); box-shadow: 0 2px 10px rgba(99,102,241,.3); }
 
 /* ── VIEWS ── */
 .view { display:none; position:relative; z-index:1; min-height:calc(100vh - 54px); }
@@ -56,55 +61,58 @@ header {
 
 /* ── GRADE SELECTOR ── */
 #gradeView { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; }
-.grade-title { font-size:36px; font-weight:800; margin-bottom:8px; text-align:center; }
+.grade-title { font-size:36px; font-weight:800; margin-bottom:8px; text-align:center; color:var(--text); }
 .grade-sub { color:var(--muted); font-size:15px; margin-bottom:40px; text-align:center; }
 .grade-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; max-width:600px; width:100%; }
 .grade-card {
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:28px 16px; text-align:center; cursor:pointer; transition:all .2s;
+  padding:28px 16px; text-align:center; cursor:pointer; transition:all .25s ease;
   position:relative; overflow:hidden;
+  box-shadow: var(--shadow-sm);
 }
-.grade-card:hover { border-color:var(--indigo); transform:translateY(-3px); box-shadow:0 8px 30px rgba(99,102,241,.15); }
+.grade-card:hover { border-color:var(--indigo); transform:translateY(-4px); box-shadow: var(--shadow-lg), 0 0 0 1px rgba(99,102,241,.1); }
 .grade-card .grade-num { font-size:42px; font-weight:800; background:linear-gradient(135deg,var(--indigo),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 .grade-card .grade-label { font-size:13px; color:var(--muted); margin-top:4px; }
 .grade-card .grade-badge { position:absolute; top:10px; right:10px; background:var(--indigo); color:white; font-size:9px; font-weight:700; padding:2px 7px; border-radius:8px; }
 .grade-card.locked { opacity:.4; cursor:not-allowed; }
-.grade-card.locked:hover { transform:none; box-shadow:none; border-color:var(--border); }
+.grade-card.locked:hover { transform:none; box-shadow:var(--shadow-sm); border-color:var(--border); }
 
 /* ── TOPIC MENU ── */
 #topicView { padding:30px 24px; max-width:900px; margin:0 auto; }
 .topic-head { margin-bottom:28px; }
 .topic-head h1 { font-size:28px; font-weight:800; margin-bottom:4px; }
 .topic-head p { color:var(--muted); font-size:14px; }
-.topic-progress-bar { height:4px; background:var(--surface3); border-radius:4px; margin-top:14px; overflow:hidden; }
-.topic-progress-fill { height:100%; background:linear-gradient(90deg,var(--indigo),var(--cyan)); border-radius:4px; transition:width .4s; }
+.topic-progress-bar { height:6px; background:var(--surface3); border-radius:6px; margin-top:14px; overflow:hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,.04); }
+.topic-progress-fill { height:100%; background:linear-gradient(90deg,var(--indigo),var(--cyan)); border-radius:6px; transition:width .4s; box-shadow: 0 1px 4px rgba(99,102,241,.3); }
 .topic-list { display:flex; flex-direction:column; gap:10px; }
 .topic-card {
   display:flex; align-items:center; gap:14px;
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:16px 18px; cursor:pointer; transition:all .18s;
+  padding:16px 18px; cursor:pointer; transition:all .2s ease;
+  box-shadow: var(--shadow-sm);
 }
-.topic-card:hover { border-color:var(--indigo); background:rgba(99,102,241,.04); }
-.topic-card.done { border-color:rgba(52,211,153,.3); }
+.topic-card:hover { border-color:var(--indigo); background:rgba(99,102,241,.03); box-shadow: var(--shadow); transform:translateX(3px); }
+.topic-card.done { border-color:rgba(34,197,94,.3); }
 .topic-num {
   width:38px; height:38px; border-radius:10px; flex-shrink:0;
   background:var(--surface3); display:flex; align-items:center; justify-content:center;
-  font-size:14px; font-weight:700; color:var(--muted);
+  font-size:14px; font-weight:700; color:var(--muted); transition:all .2s;
 }
-.topic-card.done .topic-num { background:rgba(52,211,153,.12); color:var(--green); }
-.topic-card:hover .topic-num { background:rgba(99,102,241,.12); color:var(--indigo); }
+.topic-card.done .topic-num { background:rgba(34,197,94,.1); color:var(--green); }
+.topic-card:hover .topic-num { background:rgba(99,102,241,.1); color:var(--indigo); }
 .topic-info { flex:1; min-width:0; }
 .topic-name { font-size:14px; font-weight:600; }
 .topic-desc { font-size:12px; color:var(--muted); margin-top:2px; }
-.topic-arrow { color:var(--muted); font-size:16px; flex-shrink:0; }
+.topic-arrow { color:var(--muted); font-size:16px; flex-shrink:0; transition:transform .2s; }
+.topic-card:hover .topic-arrow { transform:translateX(3px); color:var(--indigo); }
 
 /* ── LESSON VIEW ── */
 #lessonView { display:flex; height:calc(100vh - 54px); }
 .lesson-back {
   position:fixed; top:64px; left:16px; z-index:50;
-  background:var(--surface2); border:1px solid var(--border); border-radius:8px;
+  background:var(--surface); border:1px solid var(--border); border-radius:8px;
   padding:6px 12px; font-size:12px; color:var(--muted); cursor:pointer;
-  font-family:inherit; display:none;
+  font-family:inherit; display:none; box-shadow: var(--shadow);
 }
 #lessonView.active ~ .lesson-back { display:block; }
 
@@ -124,23 +132,26 @@ header {
 }
 .theory-section h2 .section-icon { font-size:20px; }
 .theory-section h3 { font-size:15px; font-weight:600; margin:16px 0 8px; color:var(--indigo); }
-.theory-section p, .theory-section li { font-size:14px; line-height:1.7; color:#b8bcd0; }
+.theory-section p, .theory-section li { font-size:14px; line-height:1.7; color:#4a4e6a; }
 .theory-section ul { padding-left:20px; margin:8px 0; }
 .theory-section li { margin-bottom:4px; }
 .theory-section .highlight-box {
-  background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.15);
-  border-radius:10px; padding:14px 18px; margin:12px 0;
+  background:rgba(99,102,241,.05); border:1px solid rgba(99,102,241,.12);
+  border-radius:12px; padding:14px 18px; margin:12px 0;
+  box-shadow: var(--shadow-sm);
 }
-.theory-section .highlight-box.green { background:rgba(52,211,153,.06); border-color:rgba(52,211,153,.15); }
-.theory-section .highlight-box.gold { background:rgba(251,191,36,.06); border-color:rgba(251,191,36,.15); }
+.theory-section .highlight-box.green { background:rgba(34,197,94,.05); border-color:rgba(34,197,94,.12); }
+.theory-section .highlight-box.gold { background:rgba(245,158,11,.05); border-color:rgba(245,158,11,.12); }
 .formula-block {
   background:var(--surface2); border:1px solid var(--border);
-  border-radius:10px; padding:14px 18px; margin:10px 0;
+  border-radius:12px; padding:14px 18px; margin:10px 0;
   text-align:center; font-size:18px; overflow-x:auto;
+  box-shadow: var(--shadow-sm);
 }
 .example-block {
   background:var(--surface2); border:1px solid var(--border);
-  border-radius:10px; padding:16px 18px; margin:12px 0;
+  border-radius:12px; padding:16px 18px; margin:12px 0;
+  box-shadow: var(--shadow-sm);
 }
 .example-block .step {
   display:flex; gap:10px; margin-bottom:10px; font-size:13px; line-height:1.7;
@@ -149,16 +160,18 @@ header {
   width:22px; height:22px; border-radius:50%; flex-shrink:0;
   background:var(--indigo); color:white; font-size:11px; font-weight:700;
   display:flex; align-items:center; justify-content:center; margin-top:2px;
+  box-shadow: 0 2px 6px rgba(99,102,241,.3);
 }
 .example-block .step-rule { color:var(--gold); font-size:11px; font-weight:600; display:block; margin-top:2px; }
 
 .context-box {
-  background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(34,211,238,.06));
-  border:1px solid rgba(99,102,241,.15); border-radius:var(--radius);
+  background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(6,182,212,.04));
+  border:1px solid rgba(99,102,241,.12); border-radius:var(--radius);
   padding:18px 20px; margin-bottom:24px;
+  box-shadow: var(--shadow-sm);
 }
 .context-box h3 { font-size:13px; font-weight:700; color:var(--cyan); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
-.context-box p { font-size:14px; line-height:1.7; color:#b8bcd0; }
+.context-box p { font-size:14px; line-height:1.7; color:#4a4e6a; }
 
 /* ── PRACTICE PANEL ── */
 .practice-head { margin-bottom:16px; }
@@ -167,7 +180,8 @@ header {
 .practice-stats { display:flex; gap:8px; margin-bottom:16px; }
 .stat-chip {
   flex:1; background:var(--surface2); border:1px solid var(--border);
-  border-radius:10px; padding:10px; text-align:center;
+  border-radius:12px; padding:10px; text-align:center;
+  box-shadow: var(--shadow-sm);
 }
 .stat-chip .stat-val { font-size:20px; font-weight:800; }
 .stat-chip .stat-label { font-size:10px; color:var(--muted); margin-top:2px; }
@@ -175,64 +189,67 @@ header {
 .stat-chip.wrong .stat-val { color:var(--danger); }
 
 .task-card {
-  background:var(--surface2); border:1px solid var(--border);
+  background:var(--surface); border:1px solid var(--border);
   border-radius:var(--radius); padding:20px; margin-bottom:14px;
+  box-shadow: var(--shadow);
 }
 .task-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; }
 .task-formula {
   font-size:20px; text-align:center; padding:14px;
-  background:var(--surface3); border-radius:10px; margin-bottom:14px;
+  background:var(--surface2); border-radius:12px; margin-bottom:14px;
   font-family:'JetBrains Mono',monospace; min-height:50px;
   display:flex; align-items:center; justify-content:center;
+  box-shadow: var(--shadow-sm);
 }
 .task-input-row { display:flex; gap:8px; }
 .task-input {
-  flex:1; background:var(--surface3); border:1px solid var(--border);
-  border-radius:9px; padding:10px 14px; color:var(--text);
+  flex:1; background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:10px 14px; color:var(--text);
   font-family:'JetBrains Mono',monospace; font-size:16px; outline:none;
-  text-align:center; transition:border-color .15s;
+  text-align:center; transition:all .2s;
 }
-.task-input:focus { border-color:var(--indigo); }
-.task-input.correct { border-color:var(--green); background:rgba(52,211,153,.06); }
-.task-input.wrong { border-color:var(--danger); background:rgba(244,63,94,.06); }
+.task-input:focus { border-color:var(--indigo); box-shadow: 0 0 0 3px rgba(99,102,241,.1); }
+.task-input.correct { border-color:var(--green); background:rgba(34,197,94,.05); }
+.task-input.wrong { border-color:var(--danger); background:rgba(244,63,94,.05); }
 .check-btn {
   background:var(--indigo); color:white; border:none;
-  border-radius:9px; padding:10px 20px; font-size:13px; font-weight:700;
+  border-radius:10px; padding:10px 20px; font-size:13px; font-weight:700;
   cursor:pointer; font-family:inherit; transition:all .15s; white-space:nowrap;
+  box-shadow: 0 2px 8px rgba(99,102,241,.3);
 }
-.check-btn:hover { background:var(--indigo2); }
-.check-btn:disabled { opacity:.4; cursor:not-allowed; }
+.check-btn:hover { background:var(--indigo2); box-shadow: 0 4px 14px rgba(99,102,241,.4); transform:translateY(-1px); }
+.check-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
 .next-btn {
-  width:100%; background:var(--surface3); border:1px solid var(--border);
-  border-radius:9px; padding:10px; font-size:13px; font-weight:600;
+  width:100%; background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:10px; font-size:13px; font-weight:600;
   color:var(--text); cursor:pointer; font-family:inherit; transition:all .15s;
-  margin-top:8px; display:none;
+  margin-top:8px; display:none; box-shadow: var(--shadow-sm);
 }
-.next-btn:hover { border-color:var(--indigo); color:var(--indigo); }
+.next-btn:hover { border-color:var(--indigo); color:var(--indigo); box-shadow: var(--shadow); }
 .task-feedback {
-  margin-top:10px; padding:10px 14px; border-radius:8px;
+  margin-top:10px; padding:10px 14px; border-radius:10px;
   font-size:13px; line-height:1.6; display:none;
 }
-.task-feedback.correct { display:block; background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.2); color:var(--green); }
-.task-feedback.wrong { display:block; background:rgba(244,63,94,.08); border:1px solid rgba(244,63,94,.2); color:var(--danger); }
+.task-feedback.correct { display:block; background:rgba(34,197,94,.06); border:1px solid rgba(34,197,94,.15); color:#16a34a; }
+.task-feedback.wrong { display:block; background:rgba(244,63,94,.06); border:1px solid rgba(244,63,94,.15); color:var(--danger); }
 .task-solution { margin-top:8px; font-size:12px; color:var(--muted); line-height:1.6; }
 
 .task-type-tabs { display:flex; gap:4px; margin-bottom:14px; flex-wrap:wrap; }
 .task-type-tab {
   padding:6px 12px; border-radius:8px; font-size:11px; font-weight:600;
-  background:var(--surface3); border:1px solid var(--border);
+  background:var(--surface); border:1px solid var(--border);
   color:var(--muted); cursor:pointer; font-family:inherit; transition:all .12s;
 }
-.task-type-tab.active { background:var(--indigo); color:white; border-color:var(--indigo); }
-.task-type-tab:hover:not(.active) { border-color:var(--indigo); color:var(--indigo); }
+.task-type-tab.active { background:var(--indigo); color:white; border-color:var(--indigo); box-shadow: 0 2px 8px rgba(99,102,241,.25); }
+.task-type-tab:hover:not(.active) { border-color:var(--indigo); color:var(--indigo); background:rgba(99,102,241,.03); }
 
 .hint-btn {
   background:none; border:1px solid var(--border); border-radius:8px;
   padding:6px 12px; font-size:11px; color:var(--gold); cursor:pointer;
   font-family:inherit; margin-top:8px; display:none; transition:all .12s;
 }
-.hint-btn:hover { border-color:var(--gold); }
-.hint-text { display:none; margin-top:8px; padding:10px; background:rgba(251,191,36,.06); border:1px solid rgba(251,191,36,.15); border-radius:8px; font-size:12px; color:var(--gold); line-height:1.6; }
+.hint-btn:hover { border-color:var(--gold); background:rgba(245,158,11,.04); }
+.hint-text { display:none; margin-top:8px; padding:10px; background:rgba(245,158,11,.05); border:1px solid rgba(245,158,11,.12); border-radius:10px; font-size:12px; color:#b45309; line-height:1.6; }
 
 /* ── AI CHAT WIDGET ── */
 .ai-fab {
@@ -240,11 +257,11 @@ header {
   width:52px; height:52px; border-radius:50%;
   background:linear-gradient(135deg,var(--indigo),var(--cyan));
   border:none; color:white; font-size:22px; cursor:pointer;
-  box-shadow:0 4px 20px rgba(99,102,241,.4);
+  box-shadow: 0 4px 16px rgba(99,102,241,.35), 0 2px 4px rgba(0,0,0,.1);
   transition:transform .2s, box-shadow .2s;
   display:none; align-items:center; justify-content:center;
 }
-.ai-fab:hover { transform:scale(1.08); box-shadow:0 6px 28px rgba(99,102,241,.55); }
+.ai-fab:hover { transform:scale(1.08); box-shadow: 0 6px 24px rgba(99,102,241,.45), 0 2px 6px rgba(0,0,0,.12); }
 #lessonView.active ~ .ai-fab { display:flex; }
 
 .ai-panel {
@@ -252,22 +269,22 @@ header {
   width:min(380px, calc(100vw - 40px)); height:460px;
   background:var(--surface); border:1px solid var(--border2);
   border-radius:var(--radius); flex-direction:column;
-  box-shadow:0 12px 50px rgba(0,0,0,.6);
-  animation:slideUp .2s ease;
+  box-shadow: var(--shadow-xl);
+  animation:slideUp .25s ease;
 }
 .ai-panel.open { display:flex; }
-@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 .ai-head {
   padding:12px 16px; border-bottom:1px solid var(--border);
   display:flex; align-items:center; gap:10px; flex-shrink:0;
 }
-.ai-head-dot { width:8px; height:8px; border-radius:50%; background:var(--green); }
+.ai-head-dot { width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow: 0 0 6px rgba(34,197,94,.4); }
 .ai-head span { font-size:13px; font-weight:600; flex:1; }
 .ai-close { background:none; border:none; color:var(--muted); font-size:16px; cursor:pointer; }
 .ai-messages { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; }
 .ai-msg { max-width:85%; padding:10px 14px; border-radius:12px; font-size:13px; line-height:1.6; }
-.ai-msg.user { align-self:flex-end; background:var(--indigo); color:white; border-bottom-right-radius:4px; }
-.ai-msg.bot { align-self:flex-start; background:var(--surface2); border:1px solid var(--border); color:var(--text); border-bottom-left-radius:4px; }
+.ai-msg.user { align-self:flex-end; background:var(--indigo); color:white; border-bottom-right-radius:4px; box-shadow: 0 2px 8px rgba(99,102,241,.25); }
+.ai-msg.bot { align-self:flex-start; background:var(--surface2); border:1px solid var(--border); color:var(--text); border-bottom-left-radius:4px; box-shadow: var(--shadow-sm); }
 .ai-msg.bot .katex { font-size:14px; }
 .ai-typing { display:flex; gap:4px; padding:10px 14px; }
 .ai-typing span { width:6px; height:6px; background:var(--muted); border-radius:50%; animation:aiDot 1.2s infinite; }
@@ -279,29 +296,32 @@ header {
 .ai-input {
   flex:1; background:var(--surface2); border:1px solid var(--border);
   border-radius:10px; padding:9px 13px; color:var(--text);
-  font-family:inherit; font-size:13px; outline:none;
+  font-family:inherit; font-size:13px; outline:none; transition:all .2s;
 }
-.ai-input:focus { border-color:var(--indigo); }
+.ai-input:focus { border-color:var(--indigo); box-shadow: 0 0 0 3px rgba(99,102,241,.08); }
 .ai-send {
   background:var(--indigo); color:white; border:none; border-radius:10px;
   width:38px; height:38px; font-size:15px; cursor:pointer; flex-shrink:0;
+  box-shadow: 0 2px 8px rgba(99,102,241,.3);
+  transition:all .15s;
 }
+.ai-send:hover { background:var(--indigo2); box-shadow: 0 4px 12px rgba(99,102,241,.4); }
 .ai-send:disabled { opacity:.4; }
 .ai-quick-btns { display:flex; gap:4px; padding:0 12px 8px; flex-wrap:wrap; }
 .ai-quick-btn {
-  background:var(--surface3); border:1px solid var(--border); border-radius:8px;
+  background:var(--surface2); border:1px solid var(--border); border-radius:8px;
   padding:5px 10px; font-size:10px; color:var(--muted); cursor:pointer;
   font-family:inherit; transition:all .12s;
 }
-.ai-quick-btn:hover { border-color:var(--indigo); color:var(--indigo); }
+.ai-quick-btn:hover { border-color:var(--indigo); color:var(--indigo); background:rgba(99,102,241,.03); }
 
 /* ── TOAST ── */
 #toast {
   position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
-  background:var(--surface2); border:1px solid var(--border2);
+  background:var(--surface); border:1px solid var(--border2);
   border-radius:24px; padding:8px 18px; font-size:12px; font-weight:600; color:var(--text);
   opacity:0; pointer-events:none; transition:opacity .2s, bottom .2s;
-  z-index:300; white-space:nowrap; box-shadow:0 4px 20px rgba(0,0,0,.5);
+  z-index:300; white-space:nowrap; box-shadow: var(--shadow-lg);
 }
 #toast.show { opacity:1; bottom:100px; }
 
@@ -313,20 +333,22 @@ header {
   .ai-panel { width:calc(100vw - 32px); right:16px; bottom:80px; height:380px; }
 }
 
-::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar { width:6px; }
 ::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:var(--surface3); border-radius:4px; }
+::-webkit-scrollbar-thumb { background:#d4d6e3; border-radius:6px; }
+::-webkit-scrollbar-thumb:hover { background:#b8bac8; }
 
 .katex { font-size:inherit; }
 
 /* ── INTERACTIVE PARABOLA GRAPH ── */
 .parabola-graph-wrap {
-  background:var(--surface2); border:1px solid var(--border);
+  background:var(--surface); border:1px solid var(--border);
   border-radius:var(--radius); padding:16px; margin:16px 0;
+  box-shadow: var(--shadow);
 }
 .parabola-graph-wrap h3 { font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text); display:flex; align-items:center; gap:6px; }
 .parabola-canvas-box {
-  background:#0a0b12; border:1px solid var(--border); border-radius:10px;
+  background:#fafbfe; border:1px solid var(--border); border-radius:12px;
   overflow:hidden; margin-bottom:12px; position:relative;
 }
 .parabola-canvas-box canvas { display:block; width:100%; height:auto; }
@@ -334,24 +356,24 @@ header {
 .parabola-slider-group { display:flex; align-items:center; gap:8px; flex:1; min-width:140px; }
 .parabola-slider-group label { font-size:12px; font-weight:700; color:var(--muted); min-width:18px; }
 .parabola-slider-group input[type=range] {
-  flex:1; -webkit-appearance:none; height:4px; border-radius:4px;
+  flex:1; -webkit-appearance:none; height:6px; border-radius:6px;
   background:var(--surface3); outline:none;
 }
 .parabola-slider-group input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
-  background:var(--indigo); cursor:pointer; border:2px solid var(--bg);
-  box-shadow:0 0 6px rgba(99,102,241,.4);
+  -webkit-appearance:none; width:18px; height:18px; border-radius:50%;
+  background:var(--indigo); cursor:pointer; border:3px solid white;
+  box-shadow: 0 1px 6px rgba(99,102,241,.35);
 }
 .parabola-slider-group .val { font-size:12px; font-weight:700; color:var(--indigo); min-width:30px; text-align:right; }
-.parabola-info { margin-top:10px; padding:10px 14px; background:rgba(99,102,241,.06); border:1px solid rgba(99,102,241,.15); border-radius:10px; font-size:12px; line-height:1.8; color:#b8bcd0; }
+.parabola-info { margin-top:10px; padding:10px 14px; background:rgba(99,102,241,.04); border:1px solid rgba(99,102,241,.1); border-radius:12px; font-size:12px; line-height:1.8; color:#4a4e6a; box-shadow: var(--shadow-sm); }
 .parabola-info b { color:var(--indigo); }
 .parabola-presets { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
 .parabola-preset-btn {
-  background:var(--surface3); border:1px solid var(--border); border-radius:6px;
+  background:var(--surface2); border:1px solid var(--border); border-radius:8px;
   padding:4px 10px; font-size:11px; color:var(--muted); cursor:pointer;
   font-family:'JetBrains Mono',monospace; transition:all .12s;
 }
-.parabola-preset-btn:hover { border-color:var(--indigo); color:var(--indigo); }
+.parabola-preset-btn:hover { border-color:var(--indigo); color:var(--indigo); background:rgba(99,102,241,.04); }
 </style>
 </head>
 <body>
@@ -409,7 +431,7 @@ const GRADES = [
   { id: 8, label: '8 класс', badge: 'Базовый' },
   { id: 9, label: '9 класс', badge: 'Базовый' },
   { id: 10, label: '10 класс', badge: 'Базовый' },
-  { id: 11, label: '11 класс', badge: null, locked: true },
+  { id: 11, label: '11 класс', badge: 'Продвинутый' },
 ];
 
 const TOPICS = {
@@ -460,6 +482,18 @@ const TOPICS = {
     { id: '10.8', name: 'Геометрический смысл производной', icon: '📐' },
     { id: '10.9', name: 'Аналитическая геометрия: прямая', icon: '📏' },
     { id: '10.10', name: 'Аналитическая геометрия: окружность', icon: '⭕' },
+  ],
+  11: [
+    { id: '11.1', name: 'Пределы функций', icon: '♾️' },
+    { id: '11.2', name: 'Непрерывность функции', icon: '📈' },
+    { id: '11.3', name: 'Первая производная и её свойства', icon: '✏️' },
+    { id: '11.4', name: 'Исследование функций', icon: '🔍' },
+    { id: '11.5', name: 'Площади под графиками', icon: '📐' },
+    { id: '11.6', name: 'Элементы стереометрии', icon: '🧊' },
+    { id: '11.7', name: 'Тела вращения', icon: '🔄' },
+    { id: '11.8', name: 'Комбинаторика', icon: '🔢' },
+    { id: '11.9', name: 'Элементы теории вероятностей', icon: '🎲' },
+    { id: '11.10', name: 'Тригонометрические неравенства', icon: '⚖️' },
   ]
 };
 
@@ -3696,6 +3730,292 @@ $$(x - 2)^2 + (y + 3)^2 = 16$$
       {q: 'Какое уравнение описывает окружность радиуса 2 с центром на оси $Oy$ в точке $(0; 3)$?', a: "$x^2 + (y - 3)^2 = 4$", e: '$a = 0$, $b = 3$, $R = 2$. $(x - 0)^2 + (y - 3)^2 = 4$.'},
       {q: 'Преобразуйте уравнение $x^2 + y^2 + 2x - 8 = 0$ к каноническому виду.', a: "$(x + 1)^2 + y^2 = 9$", e: '$x^2 + 2x + 1 + y^2 = 9 \\Rightarrow (x+1)^2 + y^2 = 9$. Центр $(-1; 0)$, $R = 3$.'},
       {q: 'Чему равен радиус окружности $x^2 + y^2 = 49$?', a: "$R = 7$", e: '$R^2 = 49$, следовательно $R = 7$.'}
+    ]
+  },
+  '11.1': {
+    title: 'Пределы функций',
+    theory: `<div>
+<h2>Определение предела функции</h2>
+<p><strong>Предел функции в точке</strong> — это число $A$, к которому стремится значение функции $f(x)$ при стремлении аргумента $x$ к точке $a$.</p>
+<p>Формальное определение (по Коши): $\\lim_{x \\to a} f(x) = A$, если для любого $\\varepsilon > 0$ существует такое $\\delta > 0$, что при $0 < |x - a| < \\delta$ выполняется неравенство $|f(x) - A| < \\varepsilon$.</p>
+<h2>Свойства пределов</h2>
+<p>Пусть существуют пределы $\\lim f(x)$ и $\\lim g(x)$. Тогда:</p>
+<p>1) $\\lim [f(x) \\pm g(x)] = \\lim f(x) \\pm \\lim g(x)$</p>
+<p>2) $\\lim [f(x) \\cdot g(x)] = \\lim f(x) \\cdot \\lim g(x)$</p>
+<p>3) $\\lim \\dfrac{f(x)}{g(x)} = \\dfrac{\\lim f(x)}{\\lim g(x)}$, если $\\lim g(x) \\neq 0$</p>
+<p>4) $\\lim [f(x)]^n = [\\lim f(x)]^n$</p>
+<h2>Пределы элементарных функций</h2>
+<p>$\\lim_{x \\to a} C = C$ (предел константы)</p>
+<p>$\\lim_{x \\to a} x = a$</p>
+<p>$\\lim_{x \\to a} x^n = a^n$</p>
+<p>$\\lim_{x \\to 0} \\dfrac{\\sin x}{x} = 1$ (первый замечательный предел)</p>
+<p>$\\lim_{x \\to \\infty} \\left(1 + \\dfrac{1}{x}\\right)^x = e$ (второй замечательный предел)</p>
+<h2>Методы вычисления пределов</h2>
+<p><strong>Метод подстановки:</strong> если функция непрерывна в точке $a$, то предел равен значению функции.</p>
+<p><strong>Метод разложения:</strong> приведение подкоренных выражений, раскрытие不定 формы $\\frac{0}{0}$.</p>
+<p><strong>Метод замены переменной:</strong> замена $t = \\frac{1}{x}$ при $x \\to \\infty$ даёт $t \\to 0$.</p>
+<h2>Примеры</h2>
+<p><strong>Пример 1:</strong> $\\lim_{x \\to 2} (3x^2 - 1) = 3 \\cdot 4 - 1 = 11$</p>
+<p><strong>Пример 2:</strong> $\\lim_{x \\to 0} \\dfrac{\\sin 3x}{x} = \\lim_{x \\to 0} \\dfrac{\\sin 3x}{3x} \\cdot 3 = 1 \\cdot 3 = 3$</p>
+<p><strong>Пример 3:</strong> $\\lim_{x \\to \\infty} \\left(1 + \\dfrac{2}{x}\\right)^x = e^2$</p>
+</div>`,
+    practice: [
+      { q: 'Вычислите предел: $\\lim_{x \\to 3} (2x + 1)$', a: '7', e: 'Подставляем $x = 3$: $2 \\cdot 3 + 1 = 7$.' },
+      { q: 'Вычислите предел: $\\lim_{x \\to 0} \\dfrac{\\sin 5x}{x}$', a: '5', e: 'Используем первый замечательный предел: $\\lim \\frac{\\sin 5x}{5x} \\cdot 5 = 5$.' },
+      { q: 'Вычислите предел: $\\lim_{x \\to \\infty} \\left(1 + \\dfrac{3}{x}\\right)^x$', a: '$e^3$', e: 'Второй замечательный предел: $\\lim (1 + 3/x)^x = e^3$.' },
+      { q: 'Вычислите предел: $\\lim_{x \\to 2} \\dfrac{x^2 - 4}{x - 2}$', a: '4', e: '$\\frac{(x-2)(x+2)}{x-2} = x + 2 \\to 4$.' },
+      { q: 'Вычислите предел: $\\lim_{x \\to 0} \\dfrac{1 - \\cos x}{x^2}$', a: '$\\frac{1}{2}$', e: '$1 - \\cos x = 2\\sin^2(x/2)$, получаем $\\frac{1}{2}$.' },
+      { q: 'Вычислите предел: $\\lim_{x \\to 1} \\dfrac{\\sqrt{x} - 1}{x - 1}$', a: '$\\frac{1}{2}$', e: 'Умножаем на сопряжённое: $\\frac{1}{\\sqrt{x}+1} \\to \\frac{1}{2}$.' },
+      { q: 'Вычислите предел: $\\lim_{x \\to \\infty} \\dfrac{3x^2 + 1}{2x^2 - 5}$', a: '$\\frac{3}{2}$', e: 'Делим на $x^2$: $\\frac{3 + 1/x^2}{2 - 5/x^2} \\to \\frac{3}{2}$.' },
+      { q: 'Существует ли предел $\\lim_{x \\to 0} \\dfrac{|x|}{x}$?', a: 'Не существует', e: 'Правый предел $= 1$, левый $= -1$. Не совпадают.' }
+    ]
+  },
+  '11.2': {
+    title: 'Непрерывность функции',
+    theory: `<div>
+<h2>Определение непрерывности в точке</h2>
+<p>Функция $f(x)$ называется <strong>непрерывной в точке</strong> $a$, если:</p>
+<p>1) $f(a)$ определена; 2) существует $\\lim_{x \\to a} f(x)$; 3) $\\lim_{x \\to a} f(x) = f(a)$.</p>
+<h2>Точки разрыва</h2>
+<p><strong>Разрыв первого рода:</strong> существуют конечные односторонние пределы.</p>
+<ul>
+<li>Устранимый разрыв: пределы равны</li>
+<li>Скачок: пределы не равны</li>
+</ul>
+<p><strong>Разрыв второго рода:</strong> хотя бы один односторонний предел не существует или равен $\\infty$.</p>
+<h2>Теорема о корнях</h2>
+<p>Если $f(x)$ непрерывна на $[a, b]$ и $f(a) \\cdot f(b) < 0$, то существует $c \\in (a, b)$ such that $f(c) = 0$.</p>
+<h2>Промежуточная теорема Больцано — Коши</h2>
+<p>Если $f(x)$ непрерывна на $[a, b]$, и число $C$ лежит между $f(a)$ и $f(b)$, то существует $c \\in [a, b]$ с $f(c) = C$.</p>
+</div>`,
+    practice: [
+      { q: 'Тип разрыва $f(x) = \\frac{x^2 - 1}{x - 1}$ в $x = 1$?', a: 'Устранимый', e: 'Предел $= 2$, но $f(1)$ не определена.' },
+      { q: 'Какого типа разрыв $f(x) = \\frac{1}{x^2}$ в $x = 0$?', a: 'Второго рода', e: '$\\lim_{x \\to 0} \\frac{1}{x^2} = +\\infty$.' },
+      { q: 'Сколько корней $x^3 - 4x + 1 = 0$ на $[0, 2]$?', a: 'Как минимум 2', e: '$f(0)=1>0$, $f(1)=-2<0$, $f(2)=1>0$.' },
+      { q: 'Существует ли $\\lim_{x \\to 0} \\sin \\frac{1}{x}$?', a: 'Не существует', e: 'Разрыв второго рода — бесконечные осцилляции.' },
+      { q: 'Тип разрыва $\\operatorname{sgn}(x)$ в $x = 0$?', a: 'Скачок', e: 'Левый предел $-1$, правый $+1$.' },
+      { q: 'Если $f$ непрерывна на $[0, 1]$, $f(0) = 2$, $f(1) = 5$, принимает ли $f$ значение 3?', a: 'Да', e: 'По теореме Больцано-Коши.' },
+      { q: 'Является ли $f(x) = \\lfloor x \\rfloor$ непрерывной в $x = 2$?', a: 'Нет', e: 'Скачок: $\\lim^- = 1$, $\\lim^+ = 2$.' },
+      { q: 'Тип разрыва $f(x) = \\tan x$ в $x = \\frac{\\pi}{2}$?', a: 'Второго рода', e: '$\\lim_{x \\to \\pi/2^-} \\tan x = +\\infty$.' }
+    ]
+  },
+  '11.3': {
+    title: 'Первая производная и её свойства',
+    theory: `<div>
+<h2>Определение производной</h2>
+<p>$$f'(x) = \\lim_{\\Delta x \\to 0} \\dfrac{f(x + \\Delta x) - f(x)}{\\Delta x}$$</p>
+<h2>Правила дифференцирования</h2>
+<p>$(C)' = 0$, $(x^n)' = nx^{n-1}$, $(\\sin x)' = \\cos x$, $(\\cos x)' = -\\sin x$</p>
+<p>$(e^x)' = e^x$, $(\\ln x)' = \\frac{1}{x}$, $(\\tan x)' = \\frac{1}{\\cos^2 x}$</p>
+<h2>Правила комбинаций</h2>
+<p>$(u + v)' = u' + v'$, $(uv)' = u'v + uv'$, $(u/v)' = \\frac{u'v - uv'}{v^2}$</p>
+<p>Составная функция: $[f(g(x))]' = f'(g(x)) \\cdot g'(x)$</p>
+<h2>Связь знака производной с монотонностью</h2>
+<p>$f' > 0$ — возрастание; $f' < 0$ — убывание; $f' = 0$ — постоянна.</p>
+<h2>Экстремум</h2>
+<p>Необходимое условие: $f'(x_0) = 0$ или не существует.</p>
+<p>Достаточные условия: знак $f'$ меняется с $(+)$ на $(-)$ — максимум; с $(-)$ на $(+)$ — минимум.</p>
+</div>`,
+    practice: [
+      { q: 'Найдите производную: $f(x) = 5x^4 - 3x^2 + 7$', a: '$20x^3 - 6x$', e: 'По правилу $(x^n)\' = nx^{n-1}$.' },
+      { q: 'Найдите производную: $f(x) = e^{2x}$', a: '$2e^{2x}$', e: 'Составная функция: $(e^{2x})\' = e^{2x} \\cdot 2$.' },
+      { q: 'Найдите производную: $f(x) = x^2 \\sin x$', a: '$2x\\sin x + x^2\\cos x$', e: 'Правило произведения.' },
+      { q: 'Где $f(x) = x^3 - 12x$ возрастает?', a: '$(-\\infty, -2) \\cup (2, +\\infty)$', e: '$f\' = 3x^2 - 12 > 0$ при $|x| > 2$.' },
+      { q: 'Экстремум $f(x) = x^2 - 6x + 5$?', a: 'Минимум в $x = 3$, $f(3) = -4$', e: '$f\' = 2x - 6 = 0$.' },
+      { q: 'Найдите производную: $f(x) = \\ln(x^2 + 1)$', a: '$\\frac{2x}{x^2 + 1}$', e: 'Составная: $\\frac{u\'}{u}$.' },
+      { q: 'Максимум $f(x) = \\frac{x^3}{3} - x$?', a: 'В $x = -1$, $f(-1) = \\frac{2}{3}$', e: '$f\' = x^2 - 1 = 0$, знак меняется.' },
+      { q: 'Найдите производную: $f(x) = \\frac{\\sin x}{x}$', a: '$\\frac{x\\cos x - \\sin x}{x^2}$', e: 'Правило частного.' }
+    ]
+  },
+  '11.4': {
+    title: 'Исследование функций',
+    theory: `<div>
+<h2>Алгоритм исследования</h2>
+<p>1) Область определения и точки разрыва</p>
+<p>2) Чётность / нечётность</p>
+<p>3) Точки пересечения с осями</p>
+<p>4) Асимптоты</p>
+<p>5) $f'(x)$: монотонность, экстремумы</p>
+<p>6) $f''(x)$: выпуклость, точки перегиба</p>
+<p>7) Построение графика</p>
+<h2>Асимптоты</h2>
+<p>Вертикальная $x = a$: $\\lim_{x \\to a} f(x) = \\infty$.</p>
+<p>Горизонтальная $y = b$: $\\lim_{x \\to \\pm\\infty} f(x) = b$.</p>
+<p>Наклонная $y = kx + b$: $\\lim_{x \\to \\infty} \\frac{f(x)}{x} = k$.</p>
+<h2>Выпуклость</h2>
+<p>$f'' > 0$ — выпукла вниз; $f'' < 0$ — выпукла вверх.</p>
+</div>`,
+    practice: [
+      { q: 'ОДЗ $f(x) = \\frac{\\sqrt{x+2}}{x^2 - 4}$?', a: '$[-2, 2) \\cup (2, +\\infty)$', e: '$x+2 \\geq 0$, $x^2 - 4 \\neq 0$.' },
+      { q: 'Чётность $f(x) = x^3 + x$?', a: 'Нечётная', e: '$f(-x) = -f(x)$.' },
+      { q: 'Точки перегиба $f(x) = x^3 - 3x^2$?', a: '$x = 1$, $f(1) = -2$', e: '$f\'\' = 6x - 6 = 0$.' },
+      { q: 'Асимптоты $f(x) = \\frac{1}{x - 3}$?', a: 'Верт. $x = 3$, гориз. $y = 0$', e: 'Очевидно из формы.' },
+      { q: 'Промежутки возрастания $f(x) = x^4 - 4x^3$?', a: '$(3, +\\infty)$', e: '$f\' = 4x^2(x - 3) > 0$ при $x > 3$.' },
+      { q: 'Горизонтальная асимптота $\\frac{2x^2+1}{x^2-3}$?', a: '$y = 2$', e: '$\\lim_{x \\to \\infty} = 2$.' },
+      { q: 'Область выпуклости вниз $e^{-x^2}$?', a: '$(-\\infty, -\\frac{1}{\\sqrt{2}}) \\cup (\\frac{1}{\\sqrt{2}}, +\\infty)$', e: '$f\'\' = e^{-x^2}(4x^2 - 2) > 0$ при $|x| > \\frac{1}{\\sqrt{2}}$.' },
+      { q: 'Период $f(x) = \\sin x + \\cos x$?', a: '$2\\pi$', e: '$f(x) = \\sqrt{2}\\sin(x + \\pi/4)$.' }
+    ]
+  },
+  '11.5': {
+    title: 'Площади под графиками',
+    theory: `<div>
+<h2>Площадь криволинейной трапеции</h2>
+<p>$$S = \\int_a^b f(x)\\,dx$$</p>
+<h2>Площадь между двумя графиками</h2>
+<p>Если $f(x) \\geq g(x)$ на $[a, b]$:</p>
+<p>$$S = \\int_a^b [f(x) - g(x)]\\,dx$$</p>
+<h2>Методика</h2>
+<p>1) Найти точки пересечения с $Ox$</p>
+<p>2) Разбить на промежутки знакопостоянства</p>
+<p>3) Вычислить $\\int |f(x)|\\,dx$ на каждом</p>
+<p>4) Просуммировать</p>
+<h2>Примеры</h2>
+<p>$S = \\int_0^2 x^2\\,dx = \\frac{8}{3}$</p>
+<p>$S = \\int_0^{\\pi} \\sin x\\,dx = 2$</p>
+<p>$S = \\int_0^1 (x - x^2)\\,dx = \\frac{1}{6}$</p>
+</div>`,
+    practice: [
+      { q: 'Площадь под $y = x^2$ на $[0, 3]$?', a: '$9$', e: '$\\int_0^3 x^2\\,dx = 9$.' },
+      { q: '$\\int_0^1 (3x^2 - 2x + 1)\\,dx$', a: '$1$', e: '$[x^3 - x^2 + x]_0^1 = 1$.' },
+      { q: 'Площадь между $y = x^2$ и $y = x$ на $[0, 1]$?', a: '$\\frac{1}{6}$', e: '$\\int_0^1 (x - x^2)\\,dx = \\frac{1}{6}$.' },
+      { q: '$\\int_0^{\\pi} \\sin x\\,dx$', a: '$2$', e: '$[-\\cos x]_0^{\\pi} = 2$.' },
+      { q: '$\\int_1^e \\frac{1}{x}\\,dx$', a: '$1$', e: '$[\\ln x]_1^e = 1$.' },
+      { q: 'Площадь под $e^x$ на $[0, 2]$', a: '$e^2 - 1$', e: '$[e^x]_0^2 = e^2 - 1$.' },
+      { q: 'Площадь между $\\cos x$ и $\\sin x$ на $[0, \\pi/4]$', a: '$\\sqrt{2} - 1$', e: '$[\\sin x + \\cos x]_0^{\\pi/4} = \\sqrt{2} - 1$.' },
+      { q: '$\\int_{-1}^1 |x|\\,dx$', a: '$1$', e: 'Симметрия: $2 \\int_0^1 x\\,dx = 1$.' }
+    ]
+  },
+  '11.6': {
+    title: 'Элементы стереометрии',
+    theory: `<div>
+<h2>Аксиомы стереометрии</h2>
+<p>Стереометрия изучает свойства трёхмерных фигур.</p>
+<h3>Основные аксиомы</h3>
+<p><strong>Аксиома 1:</strong> Если две точки прямой принадлежат плоскости, то все точки прямой принадлежат ей.</p>
+<p><strong>Аксиома 2:</strong> Если две плоскости имеют общую точку, они пересекаются по прямой.</p>
+<p><strong>Аксиома 3:</strong> Через три не лежащие на одной прямой точки проходит ровно одна плоскость.</p>
+<h3>Взаимное положение</h3>
+<p><strong>Прямые в пространстве:</strong> параллельные, пересекающиеся, скрещивающиеся.</p>
+<p><strong>Параллельность прямой и плоскости:</strong> если $a \\parallel b$, $b \\subset \\alpha$, $a \\not\\subset \\alpha$, то $a \\parallel \\alpha$.</p>
+<p><strong>Перпендикулярность:</strong> $a \\perp \\alpha$, если $a$ перпендикулярна двум пересекающимся прямым в $\\alpha$.</p>
+<h3>Углы и расстояния</h3>
+<p>Угол между скрещивающимися прямыми — угол между параллельными им пересекающимися прямыми.</p>
+<p>Расстояние от точки до плоскости — длина перпендикуляра.</p>
+</div>`,
+    practice: [
+      {q: 'Сколько плоскостей через три точки?', a: 'Одну (если не на одной прямой)', e: 'По аксиоме стереометрии.'},
+      {q: 'Какие бывают пары прямых в пространстве?', a: 'Параллельные, пересекающиеся, скрещивающиеся', e: 'В отличие от плоской геометрии.'},
+      {q: 'Прямая $a \\parallel b$, $b \\parallel \\alpha$. Параллельна ли $a$ плоскости $\\alpha$?', a: 'Не обязательно', e: '$a$ может лежать в $\\alpha$.'},
+      {q: 'Угол между диагоналями куба со стороной $a$?', a: '$\\arccos\\frac{1}{3}$', e: 'Диагональ куба $d = a\\sqrt{3}$, $\\cos\\alpha = \\frac{1}{3}$.'},
+      {q: 'Угол между ребром куба и диагональю его грани?', a: '$45°$', e: 'Грань — квадрат, диагональ делит угол пополам.'},
+      {q: 'Как найти расстояние от точки до плоскости?', a: 'Длина перпендикуляра', e: 'Это кратчайшее расстояние.'},
+      {q: '$a \\parallel b$, $b \\subset \\alpha$, $a \\not\\subset \\alpha$. Доказательство $a \\parallel \\alpha$?', a: 'Если $a$ пересекала бы $\\alpha$, точка пересечения лежала бы и на $b$ — противоречие.', e: 'Свойство параллельности.'},
+      {q: 'Плоскости $\\alpha \\parallel \\beta$, $a \\subset \\alpha$. Параллельна ли $a$ плоскости $\\beta$?', a: 'Да', e: 'Прямая в одной из параллельных плоскостей параллельна другой.'}
+    ]
+  },
+  '11.7': {
+    title: 'Тела вращения',
+    theory: `<div>
+<h2>Цилиндр</h2>
+<p>$S_{полн} = 2\\pi r(r + h)$, $S_{бок} = 2\\pi r h$, $V = \\pi r^2 h$</p>
+<h2>Конус</h2>
+<p>$l = \\sqrt{r^2 + h^2}$, $S_{полн} = \\pi r(r + l)$, $S_{бок} = \\pi r l$, $V = \\frac{1}{3}\\pi r^2 h$</p>
+<h2>Шар</h2>
+<p>$S = 4\\pi R^2$, $V = \\frac{4}{3}\\pi R^3$</p>
+<h2>Шаровой слой</h2>
+<p>$S_{сл} = 2\\pi R h$</p>
+</div>`,
+    practice: [
+      {q: 'Объём цилиндра: $r = 2$, $h = 7$?', a: '$28\\pi$', e: '$V = \\pi \\cdot 4 \\cdot 7 = 28\\pi$.'},
+      {q: 'Боковая поверхность цилиндра: $r = 3$, $h = 4$?', a: '$24\\pi$', e: '$S_{бок} = 2\\pi \\cdot 3 \\cdot 4 = 24\\pi$.'},
+      {q: 'Высота конуса: $r = 5$, $l = 13$?', a: '$12$', e: '$h = \\sqrt{169 - 25} = 12$.'},
+      {q: 'Объём конуса: $r = 6$, $h = 8$?', a: '$96\\pi$', e: '$V = \\frac{1}{3}\\pi \\cdot 36 \\cdot 8 = 96\\pi$.'},
+      {q: 'Радиус шара: $S = 100\\pi$?', a: '$5$', e: '$4\\pi R^2 = 100\\pi \\Rightarrow R = 5$.'},
+      {q: 'Объём шара: $R = 3$?', a: '$36\\pi$', e: '$V = \\frac{4}{3}\\pi \\cdot 27 = 36\\pi$.'},
+      {q: 'Объём конуса вписанного в цилиндр ($V_{цил} = 60\\pi$)?', a: '$20\\pi$', e: '$V_{кон} = \\frac{1}{3}V_{цил}$.'},
+      {q: 'Полная поверхность конуса: $r = 3$, $h = 4$?', a: '$24\\pi$', e: '$l = 5$, $S = \\pi \\cdot 3 \\cdot 8 = 24\\pi$.'}
+    ]
+  },
+  '11.8': {
+    title: 'Комбинаторика',
+    theory: `<div>
+<h3>Правило суммы</h3>
+<p>$N = m + n$</p>
+<h3>Правило произведения</h3>
+<p>$N = m \\cdot n$</p>
+<h3>Размещения</h3>
+<p>$A_n^k = \\dfrac{n!}{(n-k)!}$</p>
+<h3>Перестановки</h3>
+<p>$P_n = n!$</p>
+<h3>Сочетания</h3>
+<p>$C_n^k = \\dfrac{n!}{k!(n-k)!}$</p>
+<h3>Свойства</h3>
+<p>$C_n^k = C_n^{n-k}$, $\\sum_{k=0}^{n} C_n^k = 2^n$, $C_n^k = C_{n-1}^{k-1} + C_{n-1}^k$</p>
+<h3>С повторениями</h3>
+<p>$\\bar{A}_n^k = n^k$, $\\bar{C}_n^k = C_{n+k-1}^k$</p>
+</div>`,
+    practice: [
+      {q: 'Трёхзначных чисел из 1-6 без повторений?', a: '$120$', e: '$A_6^3 = 6 \\cdot 5 \\cdot 4 = 120$.'},
+      {q: 'Сочетаний из 8 по 3?', a: '$56$', e: '$C_8^3 = 56$.'},
+      {q: 'Рассадить 4 гостей за круглым столом?', a: '$6$', e: '$P_3 = 6$.'},
+      {q: 'Выбрать 3 из 7 книг?', a: '$35$', e: '$C_7^3 = 35$.'},
+      {q: '4-значных кодов (цифры 0-9)?', a: '$10000$', e: '$10^4 = 10000$.'},
+      {q: 'Комитетов из 6 из 10 человек?', a: '$210$', e: '$C_{10}^6 = 210$.'},
+      {q: '3-значных чисел из 1-5 с повторениями?', a: '$125$', e: '$5^3 = 125$.'},
+      {q: 'Пар (книга, журнал) из 4 книг и 3 журналов?', a: '$12$', e: '$4 \\cdot 3 = 12$.'}
+    ]
+  },
+  '11.9': {
+    title: 'Элементы теории вероятностей',
+    theory: `<div>
+<h3>Классическое определение</h3>
+<p>$P(A) = \\dfrac{m}{n}$, где $m$ — благоприятные исходы, $n$ — все исходы.</p>
+<h3>Свойства</h3>
+<p>$0 \\leq P(A) \\leq 1$, $P(\\Omega) = 1$, $P(\\varnothing) = 0$</p>
+<h3>Сложение</h3>
+<p>Несовместные: $P(A + B) = P(A) + P(B)$</p>
+<p>Произвольные: $P(A + B) = P(A) + P(B) - P(AB)$</p>
+<h3>Условная вероятность</h3>
+<p>$P(B|A) = \\dfrac{P(AB)}{P(A)}$</p>
+<h3>Независимые события</h3>
+<p>$P(AB) = P(A) \\cdot P(B)$</p>
+<h3>Формула полной вероятности</h3>
+<p>$P(B) = \\sum_{i=1}^{n} P(A_i) \\cdot P(B|A_i)$</p>
+</div>`,
+    practice: [
+      {q: 'Вероятность туза из 36 карт?', a: '$\\frac{1}{9}$', e: '$P = \\frac{4}{36} = \\frac{1}{9}$.'},
+      {q: 'Сумма 7 при броске двух кубиков?', a: '$\\frac{1}{6}$', e: '6 благоприятных из 36.'},
+      {q: '$P(A) = 0.6$. $P(\\overline{A})$?', a: '$0.4$', e: '$1 - 0.6 = 0.4$.'},
+      {q: 'Два белых шара без возврата из 6Б + 4Ч?', a: '$\\frac{1}{3}$', e: '$\\frac{6}{10} \\cdot \\frac{5}{9} = \\frac{1}{3}$.'},
+      {q: 'Оба сдадут (независимо): 0.7 и 0.8?', a: '$0.56$', e: '$0.7 \\cdot 0.8 = 0.56$.'},
+      {q: 'Вероятность годной из 10 (3 бракованные)?', a: '$\\frac{7}{10}$', e: '$\\frac{7}{10}$.'},
+      {q: 'Девочка из 12М + 15Д?', a: '$\\frac{5}{9}$', e: '$\\frac{15}{27} = \\frac{5}{9}$.'},
+      {q: 'Ровно 2 орла из 3 бросков?', a: '$\\frac{3}{8}$', e: '3 благоприятных из 8.'}
+    ]
+  },
+  '11.10': {
+    title: 'Тригонометрические неравенства',
+    theory: `<div>
+<h3>Базовые неравенства</h3>
+<p>$\\sin x \\geq 0$ при $x \\in [0 + 2\\pi n; \\pi + 2\\pi n]$</p>
+<p>$\\cos x \\geq 0$ при $x \\in [-\\frac{\\pi}{2} + 2\\pi n; \\frac{\\pi}{2} + 2\\pi n]$</p>
+<p>$\\operatorname{tg} x \\geq 0$ при $x \\in [0 + \\pi n; \\frac{\\pi}{2} + \\pi n)$</p>
+<h3>Метод единичной окружности</h3>
+<p>Находим точки равенства, затем интервалы выполнения неравенства.</p>
+<h3>Метод замены</h3>
+<p>$\\sin x + \\cos x = \\sqrt{2}\\sin(x + \\frac{\\pi}{4})$</p>
+<h3>Квадратные неравенства</h3>
+<p>Замена $t = \\sin x$ или $t = \\cos x$ и решение квадратного неравенства.</p>
+</div>`,
+    practice: [
+      {q: 'Решите $\\sin x > 0$', a: '$x \\in (2\\pi n; \\pi + 2\\pi n)$', e: 'Синус положителен в 1-м и 2-м квадрантах.'},
+      {q: 'Решите $\\cos x \\geq \\frac{1}{2}$', a: '$x \\in [-\\frac{\\pi}{3} + 2\\pi n; \\frac{\\pi}{3} + 2\\pi n]$', e: 'Косинус больше $\\frac{1}{2}$ в интервале $\\pm 60°$.'},
+      {q: 'Решите $\\operatorname{tg} x < 1$', a: '$x \\in (-\\frac{3\\pi}{4} + \\pi n; \\frac{\\pi}{4} + \\pi n)$', e: 'Тангенс меньше 1 в интервале от $-135°$ до $45°$.'},
+      {q: 'Решите $\\sin^2 x - \\sin x < 0$', a: '$\\sin x \\in (0; 1)$', e: '$\\sin x(\\sin x - 1) < 0$, следовательно $\\sin x \\in (0; 1)$.'},
+      {q: 'Решите $\\cos 2x > 0$', a: '$x \\in (-\\frac{\\pi}{4} + \\pi n; \\frac{\\pi}{4} + \\pi n)$', e: '$\\cos 2x > 0$ при $2x \\in (-\\frac{\\pi}{2} + 2\\pi n; \\frac{\\pi}{2} + 2\\pi n)$.'},
+      {q: 'Решите $2\\sin x + 1 > 0$', a: '$x \\in (-\\frac{\\pi}{6} + 2\\pi n; \\frac{7\\pi}{6} + 2\\pi n)$', e: '$\\sin x > -\\frac{1}{2}$.'},
+      {q: 'Решите $\\sin x \\leq \\cos x$', a: '$x \\in [\\frac{5\\pi}{4} + 2\\pi n; \\frac{9\\pi}{4} + 2\\pi n]$', e: '$\\sqrt{2}\\sin(x - \\frac{\\pi}{4}) \\leq 0$.'},
+      {q: 'Решите $\\operatorname{ctg} x \\geq 0$', a: '$x \\in (\\pi n; \\frac{\\pi}{2} + \\pi n]$', e: 'Котангенс неотрицателен в 1-м и 3-м квадрантах.'}
     ]
   }
 };
