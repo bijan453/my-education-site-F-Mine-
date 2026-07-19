@@ -64,12 +64,14 @@ body {
   max-width: 380px;
   position: relative;
   z-index: 2;
+  text-align: center;
 }
 
 /* Logo */
 .logo {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 2px;
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
@@ -94,6 +96,7 @@ h2 {
   color: #fff;
   margin: 8px 0 24px;
   letter-spacing: -0.5px;
+  text-align: center;
 }
 
 /* Language switcher styled exactly like the screenshot toggle */
@@ -108,6 +111,8 @@ h2 {
   margin-bottom: 32px;
   width: 116px;
   height: 34px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .lang-slider {
   position: absolute;
@@ -297,7 +302,8 @@ input:focus {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
   background: #010103;
   overflow: hidden;
   padding: 60px;
@@ -319,7 +325,7 @@ input:focus {
   position: relative;
   z-index: 2;
   max-width: 640px;
-  text-align: left;
+  text-align: center;
 }
 
 /* Exact gradient distribution from the mockup image */
@@ -352,6 +358,7 @@ input:focus {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: center;
 }
 .feature-pill {
   padding: 8px 16px;
