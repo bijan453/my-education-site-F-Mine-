@@ -63,5 +63,10 @@ service cloud.firestore {
     match /announcements/{docId} {
       allow read, write: if true;
     }
+
+    match /olympScores/{userId} {
+      allow read: if true;
+      allow write: if true;
+    }
   }
 }
