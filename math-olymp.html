@@ -559,9 +559,10 @@ function finishQuiz() {
   safeSetText("finishScore", `Итог: ${state.points}`);
   safeSetText("bestText", `Лучший результат: ${Math.max(Number(localStorage.getItem(`${user}_olymp_best_${state.classNum}`) || 0), state.points)}`);
   saveLocalOlymp(state.classNum, state.points, percent);
-  saveFirestoreScore(state.classNum, state.points, percent).then(() => refreshLeaderboard()).catch(() => {});
   updateAccountKeys();
   markStudyToday();
+  $("scoreSavedMsg").classList.add("hidden");
+  $("addScoreBtn").disabled = false;
   renderReview();
   addActivity(`Завершил олимпиаду: ${state.points} очков, ${percent}%.`);
 }
@@ -602,6 +603,20 @@ $("skipBtn").addEventListener("click", skipQuestion);
 $("nextBtn").addEventListener("click", nextQuestion);
 $("restartBtn").addEventListener("click", () => { stopTimer(); state.phase = "idle"; $("finishPanel").classList.add("hidden"); $("quizPanel").classList.add("hidden"); $("reviewPanel").classList.add("hidden"); $("startPanel").classList.remove("hidden"); renderClassCards(); });
 $("copyBtn").addEventListener("click", copySummary);
+$("addScoreBtn").addEventListener("click", async () => {
+  const percent = Math.round((state.correct / state.questions.length) * 100);
+  $("addScoreBtn").disabled = true;
+  $("addScoreBtn").textContent = "Сохраняю...";
+  try {
+    await saveFirestoreScore(state.classNum, state.points, percent);
+    await refreshLeaderboard();
+    $("scoreSavedMsg").classList.remove("hidden");
+    $("addScoreBtn").textContent = "Добавлено ✓";
+  } catch {
+    $("addScoreBtn").textContent = "Ошибка, попробовать снова";
+    $("addScoreBtn").disabled = false;
+  }
+});
 $("answer").addEventListener("keydown", e => { if (e.key === "Enter" && !$("submitBtn").disabled) checkAnswer(); });
 $("lobbyBtn").addEventListener("click", goLobby);
 $("accountBtn").addEventListener("click", goAccount);
@@ -842,8 +857,10 @@ input[type="text"]:focus { border-color:var(--indigo); box-shadow:0 0 0 3px rgba
         <div class="finish-text" id="finishText"></div>
         <div class="big-points" id="finishScore"></div>
         <div class="small" id="bestText">Лучший результат: 0</div>
+        <div id="scoreSavedMsg" class="small hidden" style="color:#22c55e;margin-top:6px">✅ Результат добавлен в таблицу лидеров!</div>
         <div class="pill-row" style="margin-top:12px"><span class="pill" id="copyState">Готово к копированию</span></div>
         <div class="controls" style="margin-top:14px">
+          <button class="primary" id="addScoreBtn">Добавить в рейтинг</button>
           <button class="ghost" id="copyBtn">Скопировать итог</button>
           <button class="primary" id="restartBtn">Играть ещё раз</button>
         </div>
