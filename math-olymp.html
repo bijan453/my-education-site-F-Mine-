@@ -554,12 +554,30 @@ function finishQuiz() {
   addActivity(`Завершил олимпиаду: ${state.points} очков, ${percent}%.`);
 }
 
+async function seedFakeLeaderboard() {
+  const fakeUsers = [
+    { id: "alexey_m_olymp", nick: "Алексей_М", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alexey", p7Points: 1250, p8Points: 890, p9Points: 0, p10Points: 0, p7Percent: 87, p8Percent: 73, p9Percent: 0, p10Percent: 0, totalPoints: 2140 },
+    { id: "maria_k_olymp", nick: "Мария_К", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria", p7Points: 680, p8Points: 1340, p9Points: 420, p10Points: 0, p7Percent: 65, p8Percent: 91, p9Percent: 58, p10Percent: 0, totalPoints: 2440 },
+    { id: "dmitry_v_olymp", nick: "Дмитрий_В", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dmitry", p7Points: 350, p8Points: 600, p9Points: 780, p10Points: 510, p7Percent: 48, p8Percent: 62, p9Percent: 77, p10Percent: 69, totalPoints: 2240 }
+  ];
+  for (const f of fakeUsers) {
+    try {
+      const ref = doc(db, "olympScores", f.id);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, { ...f, updatedAt: serverTimestamp() });
+      }
+    } catch {}
+  }
+}
+
 async function init() {
   await loadProfile();
   setProfileView();
   addStartCards();
   renderClassCards();
   updateStats();
+  try { await seedFakeLeaderboard(); } catch {}
   try { await ensureOlympDoc(); } catch {}
   try { await refreshLeaderboard(); } catch {}
   addActivity("Opened olymp page.");
