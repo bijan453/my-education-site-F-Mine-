@@ -146,7 +146,7 @@ function gen7() {
     question(`${a} + ${b} = ?`, a + b, "Сложи числа.", `Ответ: ${a + b}.`, numberCheck(a + b), "Сложение"),
     question(`${a} - ${b} = ?`, a - b, "Вычти числа.", `Ответ: ${a - b}.`, numberCheck(a - b), "Вычитание"),
     question(`${c} × ${d} = ?`, c * d, "Умножь.", `Ответ: ${c * d}.`, numberCheck(c * d), "Умножение"),
-    question(`${a} : ${c} = ?`, a / c, "Раздели.", `Ответ: ${a / c}.`, numberCheck(a / c), "Деление"),
+    question(`${a} : ${c} = ?`, fracString(a, c), `Ответ: ${fracString(a, c)} (${round2(a / c)}).`, `Ответ: ${fracString(a, c)}.`, v => fracCheck(a, c)(v) || numberCheck(round2(a / c))(v), "Деление"),
     question(`${x}x = ${x * n}`, n, "Раздели обе части на x-коэффициент.", `x = ${n}.`, numberCheck(n), "Уравнение"),
     question(`x + ${b} = ${a}`, a - b, "Перенеси число.", `x = ${a - b}.`, numberCheck(a - b), "Уравнение"),
     question(`x - ${b} = ${a}`, a + b, "Прибавь ${b}.", `x = ${a + b}.`, numberCheck(a + b), "Уравнение"),
