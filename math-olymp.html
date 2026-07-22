@@ -23,9 +23,19 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const user = localStorage.getItem("currentUser") || "guest";
-const profile = JSON.parse(localStorage.getItem("user_" + user) || "{}");
-const nick = profile.nickname || user;
-const avatar = profile.avatar || "https://via.placeholder.com/96";
+let nick = user;
+let avatar = "https://via.placeholder.com/96";
+
+async function loadProfile() {
+  try {
+    const snap = await getDoc(doc(db, "users", user));
+    if (snap.exists()) {
+      const p = snap.data().profile || {};
+      nick = p.nickname || user;
+      avatar = p.avatar || "https://via.placeholder.com/96";
+    }
+  } catch {}
+}
 
 const CLASS_LABELS = { 7: "7 класс", 8: "8 класс", 9: "9 класс", 10: "10 класс" };
 const TOPIC_HINTS = {
@@ -545,12 +555,13 @@ function finishQuiz() {
 }
 
 async function init() {
+  await loadProfile();
   setProfileView();
   addStartCards();
   renderClassCards();
   updateStats();
-  await ensureOlympDoc();
-  await refreshLeaderboard();
+  try { await ensureOlympDoc(); } catch {}
+  try { await refreshLeaderboard(); } catch {}
   addActivity("Opened olymp page.");
 }
 
