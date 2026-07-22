@@ -485,11 +485,11 @@ async function refreshLeaderboard() {
   const map = { total: "totalPoints", 7: "p7Points", 8: "p8Points", 9: "p9Points", 10: "p10Points" };
   const field = map[mode];
   safeSetText("lbTitle", mode === "total" ? "Топ общий" : `Топ ${CLASS_LABELS[mode]}`);
-  const q = query(collection(db, "olympScores"), orderBy(field, "desc"), limit(10));
-  const snap = await getDocs(q);
+  const snap = await getDocs(collection(db, "olympScores"));
   const rows = [];
   snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
-  renderLeaderboardRows(rows, mode);
+  rows.sort((a, b) => (b[field] || 0) - (a[field] || 0));
+  renderLeaderboardRows(rows.slice(0, 10), mode);
 }
 function renderLeaderboardRows(rows, mode) {
   const box = $("leaderboardList");
