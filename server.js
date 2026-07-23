@@ -280,6 +280,74 @@ app.post("/api/send-code", async (req, res) => {
     `;
   }
 
+  let sendErrors = [];
+
+  // Method 1: Brevo (Sendinblue) HTTP API — HTTPS Port 443 (Recommended for Render: 300 free emails/day to ANY address)
+  if (process.env.BREVO_API_KEY && process.env.BREVO_API_KEY.trim() !== "") {
+    try {
+      const senderEmail = process.env.SMTP_USER || "imatshoevbijan@gmail.com";
+      const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          "accept": "application/json",
+          "api-key": process.env.BREVO_API_KEY.trim(),
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          sender: { name: "F-Mine Support", email: senderEmail },
+          to: [{ email: email, name: nick }],
+          subject: subject,
+          htmlContent: htmlContent
+        })
+      });
+      const brevoData = await brevoRes.json().catch(() => ({}));
+      if (brevoRes.ok && brevoData.messageId) {
+        console.log(`[Brevo HTTP] Email sent to ${email}, messageId: ${brevoData.messageId}`);
+        return res.json({ ok: true, provider: "brevo", messageId: brevoData.messageId });
+      } else {
+        const errMsg = brevoData.message || brevoData.code || `HTTP ${brevoRes.status}`;
+        console.warn(`[Brevo HTTP Failed]: ${errMsg}`);
+        sendErrors.push(`Brevo: ${errMsg}`);
+      }
+    } catch (err) {
+      console.error("[Brevo HTTP Error]:", err.message);
+      sendErrors.push(`Brevo: ${err.message}`);
+    }
+  }
+
+  // Method 2: Resend HTTP API
+  if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.trim() !== "") {
+    try {
+      const resendFrom = process.env.RESEND_FROM || "F-Mine Support <onboarding@resend.dev>";
+      const resendRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.RESEND_API_KEY.trim()}`
+        },
+        body: JSON.stringify({
+          from: resendFrom,
+          to: [email],
+          subject: subject,
+          html: htmlContent
+        })
+      });
+      const resendData = await resendRes.json().catch(() => ({}));
+      if (resendRes.ok && resendData.id) {
+        console.log(`[Resend HTTP] Email sent to ${email}, id: ${resendData.id}`);
+        return res.json({ ok: true, provider: "resend", id: resendData.id });
+      } else {
+        const errMsg = resendData.message || resendData.error || `HTTP ${resendRes.status}`;
+        console.warn(`[Resend HTTP Failed]: ${errMsg}`);
+        sendErrors.push(`Resend: ${errMsg}`);
+      }
+    } catch (err) {
+      console.error("[Resend HTTP Error]:", err.message);
+      sendErrors.push(`Resend: ${err.message}`);
+    }
+  }
+
+  // Method 3: Nodemailer SMTP
   const isSmtpConfigured = process.env.SMTP_USER &&
                            process.env.SMTP_PASS &&
                            process.env.SMTP_USER !== "your-email@gmail.com" &&
@@ -287,30 +355,29 @@ app.post("/api/send-code", async (req, res) => {
                            process.env.SMTP_USER.trim() !== "" &&
                            process.env.SMTP_PASS.trim() !== "";
 
-  if (!isSmtpConfigured) {
-    console.error("[send-code] SMTP credentials missing in environment");
-    return res.status(500).json({
-      ok: false,
-      error: "SMTP credentials not configured on server (SMTP_USER/SMTP_PASS missing)."
-    });
+  if (isSmtpConfigured) {
+    try {
+      await mailTransporter.sendMail({
+        from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: subject,
+        html: htmlContent,
+      });
+      console.log(`[SMTP] Email sent to ${email}`);
+      return res.json({ ok: true, provider: "smtp" });
+    } catch (error) {
+      console.error("[SMTP Error]:", error.message);
+      sendErrors.push(`SMTP: ${error.message}`);
+    }
+  } else {
+    sendErrors.push("SMTP is not configured (SMTP_USER/SMTP_PASS missing)");
   }
 
-  try {
-    await mailTransporter.sendMail({
-      from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
-      to: email,
-      subject: subject,
-      html: htmlContent,
-    });
-    console.log(`[SMTP] Email sent to ${email}`);
-    return res.json({ ok: true, provider: "smtp" });
-  } catch (error) {
-    console.error("[SMTP Error]:", error.message);
-    return res.status(500).json({
-      ok: false,
-      error: `Gmail SMTP Error: ${error.message}. Please check SMTP_PORT (use 587) and App Password.`
-    });
-  }
+  console.error(`[send-code Failed] Errors: ${sendErrors.join(" | ")}`);
+  return res.status(500).json({
+    ok: false,
+    error: `Failed to send email. Details: ${sendErrors.join("; ")}`
+  });
 });
 
 // Endpoint for secure OpenRouter chat streaming proxy (supporting both SSE stream and standard JSON)
