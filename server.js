@@ -63,8 +63,25 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 const smtpPort = parseInt(process.env.SMTP_PORT || "587", 10);
-const isSecure = process.env.SMTP_SECURE === "true"; // false for port 587 (STARTTLS)
+const isSecure = process.env.SMTP_SECURE === "true";
 
+// Brevo SMTP relay (preferred - dedicated IPs, great Gmail deliverability)
+const brevoSmtpTransporter = (process.env.BREVO_SMTP_PASS && process.env.BREVO_SMTP_USER)
+  ? nodemailer.createTransport({
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.BREVO_SMTP_USER,
+        pass: process.env.BREVO_SMTP_PASS,
+      },
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 15000,
+    })
+  : null;
+
+// Gmail SMTP fallback
 const mailTransporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
   port: smtpPort,
@@ -73,9 +90,7 @@ const mailTransporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-  tls: {
-    rejectUnauthorized: false
-  },
+  tls: { rejectUnauthorized: false },
   connectionTimeout: 15000,
   greetingTimeout: 15000,
   socketTimeout: 15000,
@@ -282,7 +297,25 @@ app.post("/api/send-code", async (req, res) => {
 
   let sendErrors = [];
 
-  // Method 1: Brevo (Sendinblue) HTTP API — HTTPS Port 443 (Recommended for Render: 300 free emails/day to ANY address)
+  // Method 1: Brevo SMTP Relay (Best Gmail deliverability - dedicated IPs)
+  if (brevoSmtpTransporter) {
+    try {
+      const senderEmail = process.env.BREVO_SMTP_USER || "umed.imatshoev@gmail.com";
+      await brevoSmtpTransporter.sendMail({
+        from: `"F-Mine Support" <${senderEmail}>`,
+        to: email,
+        subject: subject,
+        html: htmlContent,
+      });
+      console.log(`[Brevo SMTP] Email sent to ${email}`);
+      return res.json({ ok: true, provider: "brevo-smtp" });
+    } catch (err) {
+      console.error("[Brevo SMTP Error]:", err.message);
+      sendErrors.push(`Brevo SMTP: ${err.message}`);
+    }
+  }
+
+  // Method 2: Brevo HTTP API
   if (process.env.BREVO_API_KEY && process.env.BREVO_API_KEY.trim() !== "") {
     try {
       const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.SMTP_USER || "umed.imatshoev@gmail.com";
