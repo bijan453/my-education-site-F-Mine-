@@ -285,12 +285,15 @@ app.post("/api/send-code", async (req, res) => {
   }
 
   try {
-    await mailTransporter.sendMail({
-      from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
-      to: email,
-      subject: subject,
-      html: htmlContent,
-    });
+    await Promise.race([
+      mailTransporter.sendMail({
+        from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: subject,
+        html: htmlContent,
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("SMTP timeout")), 10000))
+    ]);
     res.json({ ok: true });
   } catch (error) {
     console.error("Email sending failed:", error);
