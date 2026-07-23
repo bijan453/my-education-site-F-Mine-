@@ -285,7 +285,7 @@ app.post("/api/send-code", async (req, res) => {
   // Method 1: Brevo (Sendinblue) HTTP API — HTTPS Port 443 (Recommended for Render: 300 free emails/day to ANY address)
   if (process.env.BREVO_API_KEY && process.env.BREVO_API_KEY.trim() !== "") {
     try {
-      const senderEmail = process.env.SMTP_USER || "imatshoevbijan@gmail.com";
+      const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.SMTP_USER || "umed.imatshoev@gmail.com";
       const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
         headers: {
