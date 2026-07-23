@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
-
+import nodemailer from "nodemailer";
 import path from "path";
 import fs from "fs";
 import { spawn } from "child_process";
@@ -62,7 +62,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const mailTransporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.SMTP_PORT || "465", 10),
+  secure: process.env.SMTP_SECURE === "true" || process.env.SMTP_PORT === "465",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 const geminiApiKey = process.env.GEMINI_API_KEY;
@@ -262,22 +270,27 @@ app.post("/api/send-code", async (req, res) => {
     `;
   }
 
-  // Send email via Resend API (HTTP, not SMTP — Railway blocks SMTP)
-  if (!RESEND_API_KEY) {
-    console.log(`[No API Key] Code for ${nick} (${email}): ${code}`);
-    return res.json({ ok: true });
+  // If credentials are not set or contain default placeholders, log code locally
+  const isPlaceholder = !process.env.SMTP_USER || 
+                        !process.env.SMTP_PASS || 
+                        process.env.SMTP_USER === "your-email@gmail.com" || 
+                        process.env.SMTP_PASS === "your-app-password" ||
+                        process.env.SMTP_USER.trim() === "" || 
+                        process.env.SMTP_PASS.trim() === "";
+
+  if (isPlaceholder) {
+    console.log(`[SMTP Not Configured] Code for ${nick} (${email}): ${code}`);
+    return res.json({ ok: true, message: "Code simulated (check server console logs)" });
   }
 
   try {
-    const fromAddr = process.env.SMTP_FROM || '"F-Mine Support" <onboarding@resend.dev>';
-    const resp = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: fromAddr, to: [email], subject, html: htmlContent })
+    await mailTransporter.sendMail({
+      from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: subject,
+      html: htmlContent,
     });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.message || "Resend API error");
-    console.log(`[Resend] Email sent to ${email}, id: ${data.id}`);
+    console.log(`[SMTP] Email sent to ${email}`);
   } catch (error) {
     console.error("Email sending failed (non-blocking):", error.message);
   }
