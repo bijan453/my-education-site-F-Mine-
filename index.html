@@ -843,17 +843,12 @@ async function sendCode(){
       });
     });
 
-    try{
-      await postJSON("/api/send-code", { email: emailNorm, nick, code, type: "register", lang });
-    }catch(emailErr){
-      await deleteDoc(pendingRegRef(nickNorm));
-      throw emailErr;
-    }
-
     regState = { code, nick: nickNorm, email: emailNorm, password };
     document.getElementById("codeBox").classList.remove("hidden");
     document.getElementById("finishBtn").classList.remove("hidden");
     showToast(t("regOk"), "success");
+
+    postJSON("/api/send-code", { email: emailNorm, nick, code, type: "register", lang }).catch(() => {});
   }catch(e){
     showToast(e.message || t("error"), "error");
   }
@@ -951,19 +946,14 @@ async function sendResetCode(){
       tx.set(resetRef, { nickNorm, emailNorm, code, expiresAtMs: Date.now() + 10 * 60 * 1000 });
     });
 
-    try{
-      await postJSON("/api/send-code", { email: emailNorm, nick, code, type: "reset", lang });
-    }catch(emailErr){
-      await deleteDoc(resetRef);
-      throw emailErr;
-    }
-
     resetState = { code, nick: nickNorm, email: emailNorm, verified: false };
     document.getElementById("resetCodeBox").classList.remove("hidden");
     document.getElementById("newPasswordBox").classList.add("hidden");
     document.getElementById("resetCodeHint").classList.remove("hidden");
     document.getElementById("resetCodeHint").textContent = `${t("codeHint")}: ${code}`;
     showToast(t("resetOk"), "success");
+
+    postJSON("/api/send-code", { email: emailNorm, nick, code, type: "reset", lang }).catch(() => {});
   }catch(e){
     showToast(e.message || t("error"), "error");
   }

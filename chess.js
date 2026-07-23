@@ -556,7 +556,7 @@ window.switchSideTab = function(tab) {
 // --- SERVER HTTP HELPER ---
 const SERVER_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || !window.location.protocol.startsWith('http'))
   ? 'http://localhost:3000'
-  : 'https://my-education-site-f-mine.onrender.com';
+  : 'https://my-education-site-f-mine-production.up.railway.app';
 
 // Wake up the Render server silently when the page loads
 fetch(`${SERVER_URL}/api/chess/ping`).catch(() => {});
