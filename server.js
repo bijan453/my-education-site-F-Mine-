@@ -215,6 +215,7 @@ app.post("/api/chat", async (req, res) => {
 
 // Endpoint for sending authentication codes (Registration & Password recovery)
 app.post("/api/send-code", async (req, res) => {
+  console.log(`[send-code] HIT type=${req.body.type} email=${req.body.email} nick=${req.body.nick}`);
   const { email, nick, code, type, lang } = req.body;
 
   if (!email || !nick || !code || !type) {
@@ -274,6 +275,7 @@ app.post("/api/send-code", async (req, res) => {
   }
 
   // If credentials are not set or contain default placeholders, log code locally
+  console.log(`[send-code] SMTP_USER=${process.env.SMTP_USER || 'UNDEFINED'} SMTP_PASS=${process.env.SMTP_PASS ? 'SET' : 'UNDEFINED'}`);
   const isPlaceholder = !process.env.SMTP_USER || 
                         !process.env.SMTP_PASS || 
                         process.env.SMTP_USER === "your-email@gmail.com" || 
