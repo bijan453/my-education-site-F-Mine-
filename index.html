@@ -459,6 +459,7 @@ input:focus {
             <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
             <input id="code" type="password" placeholder="Код" autocomplete="one-time-code">
           </div>
+          <div id="regCodeHint" class="code-box hidden"></div>
         </div>
 
         <button id="finishBtn" class="btn-primary hidden" onclick="finishRegister()">Создать аккаунт</button>
@@ -846,6 +847,8 @@ async function sendCode(){
     regState = { code, nick: nickNorm, email: emailNorm, password };
     document.getElementById("codeBox").classList.remove("hidden");
     document.getElementById("finishBtn").classList.remove("hidden");
+    document.getElementById("regCodeHint").classList.remove("hidden");
+    document.getElementById("regCodeHint").textContent = `${t("codeHint")}: ${code}`;
     showToast(t("regOk"), "success");
 
     postJSON("/api/send-code", { email: emailNorm, nick, code, type: "register", lang }).catch(() => {});
