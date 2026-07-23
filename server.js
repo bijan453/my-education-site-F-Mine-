@@ -62,17 +62,23 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
+const smtpPort = parseInt(process.env.SMTP_PORT || "587", 10);
+const isSecure = process.env.SMTP_SECURE === "true"; // false for port 587 (STARTTLS)
+
 const mailTransporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "465", 10),
-  secure: process.env.SMTP_SECURE === "true" || process.env.SMTP_PORT === "465",
+  port: smtpPort,
+  secure: isSecure,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-  connectionTimeout: 8000,
-  greetingTimeout: 8000,
-  socketTimeout: 8000,
+  tls: {
+    rejectUnauthorized: false
+  },
+  connectionTimeout: 15000,
+  greetingTimeout: 15000,
+  socketTimeout: 15000,
 });
 
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -274,41 +280,6 @@ app.post("/api/send-code", async (req, res) => {
     `;
   }
 
-  let sendErrors = [];
-
-  // Method 1: Resend HTTP API (Recommended for cloud hosts like Render/Railway that block SMTP)
-  if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.trim() !== "") {
-    try {
-      const resendFrom = process.env.RESEND_FROM || "F-Mine Support <onboarding@resend.dev>";
-      const resendRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.RESEND_API_KEY.trim()}`
-        },
-        body: JSON.stringify({
-          from: resendFrom,
-          to: [email],
-          subject: subject,
-          html: htmlContent
-        })
-      });
-      const resendData = await resendRes.json().catch(() => ({}));
-      if (resendRes.ok && resendData.id) {
-        console.log(`[Resend HTTP] Email sent to ${email}, id: ${resendData.id}`);
-        return res.json({ ok: true, provider: "resend", id: resendData.id });
-      } else {
-        const errMsg = resendData.message || resendData.error || `HTTP ${resendRes.status}`;
-        console.warn(`[Resend HTTP Failed]: ${errMsg}`);
-        sendErrors.push(`Resend: ${errMsg}`);
-      }
-    } catch (err) {
-      console.error("[Resend HTTP Error]:", err.message);
-      sendErrors.push(`Resend: ${err.message}`);
-    }
-  }
-
-  // Method 2: Nodemailer SMTP
   const isSmtpConfigured = process.env.SMTP_USER &&
                            process.env.SMTP_PASS &&
                            process.env.SMTP_USER !== "your-email@gmail.com" &&
@@ -316,29 +287,30 @@ app.post("/api/send-code", async (req, res) => {
                            process.env.SMTP_USER.trim() !== "" &&
                            process.env.SMTP_PASS.trim() !== "";
 
-  if (isSmtpConfigured) {
-    try {
-      await mailTransporter.sendMail({
-        from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
-        to: email,
-        subject: subject,
-        html: htmlContent,
-      });
-      console.log(`[SMTP] Email sent to ${email}`);
-      return res.json({ ok: true, provider: "smtp" });
-    } catch (error) {
-      console.error("[SMTP Error]:", error.message);
-      sendErrors.push(`SMTP: ${error.message}`);
-    }
-  } else {
-    sendErrors.push("SMTP is not configured (SMTP_USER/SMTP_PASS missing)");
+  if (!isSmtpConfigured) {
+    console.error("[send-code] SMTP credentials missing in environment");
+    return res.status(500).json({
+      ok: false,
+      error: "SMTP credentials not configured on server (SMTP_USER/SMTP_PASS missing)."
+    });
   }
 
-  console.error(`[send-code Failed] Errors: ${sendErrors.join(" | ")}`);
-  return res.status(500).json({
-    ok: false,
-    error: `Failed to send email. Details: ${sendErrors.join("; ")}`
-  });
+  try {
+    await mailTransporter.sendMail({
+      from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: subject,
+      html: htmlContent,
+    });
+    console.log(`[SMTP] Email sent to ${email}`);
+    return res.json({ ok: true, provider: "smtp" });
+  } catch (error) {
+    console.error("[SMTP Error]:", error.message);
+    return res.status(500).json({
+      ok: false,
+      error: `Gmail SMTP Error: ${error.message}. Please check SMTP_PORT (use 587) and App Password.`
+    });
+  }
 });
 
 // Endpoint for secure OpenRouter chat streaming proxy (supporting both SSE stream and standard JSON)
