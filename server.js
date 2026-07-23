@@ -65,8 +65,9 @@ app.use(express.static(__dirname));
 // Configure email transporter
 const mailTransporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "465", 10),
-  secure: process.env.SMTP_SECURE === "true" || process.env.SMTP_PORT === "465", // true for 465, false for other ports
+  port: parseInt(process.env.SMTP_PORT || "587", 10),
+  secure: process.env.SMTP_SECURE === "true",
+  requireTLS: true,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
