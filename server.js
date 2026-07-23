@@ -274,33 +274,71 @@ app.post("/api/send-code", async (req, res) => {
     `;
   }
 
-  // If credentials are not set or contain default placeholders, log code locally
-  console.log(`[send-code] SMTP_USER=${process.env.SMTP_USER || 'UNDEFINED'} SMTP_PASS=${process.env.SMTP_PASS ? 'SET' : 'UNDEFINED'}`);
-  const isPlaceholder = !process.env.SMTP_USER || 
-                        !process.env.SMTP_PASS || 
-                        process.env.SMTP_USER === "your-email@gmail.com" || 
-                        process.env.SMTP_PASS === "your-app-password" ||
-                        process.env.SMTP_USER.trim() === "" || 
-                        process.env.SMTP_PASS.trim() === "";
+  let sendErrors = [];
 
-  if (isPlaceholder) {
-    console.log(`[SMTP Not Configured] Code for ${nick} (${email}): ${code}`);
-    return res.json({ ok: true, message: "Code simulated (check server console logs)" });
+  // Method 1: Resend HTTP API (Recommended for cloud hosts like Render/Railway that block SMTP)
+  if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.trim() !== "") {
+    try {
+      const resendFrom = process.env.RESEND_FROM || "F-Mine Support <onboarding@resend.dev>";
+      const resendRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.RESEND_API_KEY.trim()}`
+        },
+        body: JSON.stringify({
+          from: resendFrom,
+          to: [email],
+          subject: subject,
+          html: htmlContent
+        })
+      });
+      const resendData = await resendRes.json().catch(() => ({}));
+      if (resendRes.ok && resendData.id) {
+        console.log(`[Resend HTTP] Email sent to ${email}, id: ${resendData.id}`);
+        return res.json({ ok: true, provider: "resend", id: resendData.id });
+      } else {
+        const errMsg = resendData.message || resendData.error || `HTTP ${resendRes.status}`;
+        console.warn(`[Resend HTTP Failed]: ${errMsg}`);
+        sendErrors.push(`Resend: ${errMsg}`);
+      }
+    } catch (err) {
+      console.error("[Resend HTTP Error]:", err.message);
+      sendErrors.push(`Resend: ${err.message}`);
+    }
   }
 
-  try {
-    await mailTransporter.sendMail({
-      from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
-      to: email,
-      subject: subject,
-      html: htmlContent,
-    });
-    console.log(`[SMTP] Email sent to ${email}`);
-  } catch (error) {
-    console.error("Email sending failed (non-blocking):", error.message);
+  // Method 2: Nodemailer SMTP
+  const isSmtpConfigured = process.env.SMTP_USER &&
+                           process.env.SMTP_PASS &&
+                           process.env.SMTP_USER !== "your-email@gmail.com" &&
+                           process.env.SMTP_PASS !== "your-app-password" &&
+                           process.env.SMTP_USER.trim() !== "" &&
+                           process.env.SMTP_PASS.trim() !== "";
+
+  if (isSmtpConfigured) {
+    try {
+      await mailTransporter.sendMail({
+        from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: subject,
+        html: htmlContent,
+      });
+      console.log(`[SMTP] Email sent to ${email}`);
+      return res.json({ ok: true, provider: "smtp" });
+    } catch (error) {
+      console.error("[SMTP Error]:", error.message);
+      sendErrors.push(`SMTP: ${error.message}`);
+    }
+  } else {
+    sendErrors.push("SMTP is not configured (SMTP_USER/SMTP_PASS missing)");
   }
 
-  res.json({ ok: true });
+  console.error(`[send-code Failed] Errors: ${sendErrors.join(" | ")}`);
+  return res.status(500).json({
+    ok: false,
+    error: `Failed to send email. Details: ${sendErrors.join("; ")}`
+  });
 });
 
 // Endpoint for secure OpenRouter chat streaming proxy (supporting both SSE stream and standard JSON)

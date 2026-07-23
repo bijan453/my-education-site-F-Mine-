@@ -828,17 +828,22 @@ async function sendCode(){
   const code = randomDigits(6);
 
   try{
+    // Check nickname / email availability before sending email
+    const [userSnap, emailSnap, pendingNickSnap] = await Promise.all([
+      getDoc(userDocRef(nickNorm)),
+      getDoc(emailDocRef(emailNorm)),
+      getDoc(pendingRegRef(nickNorm))
+    ]);
+
+    if(userSnap.exists() || emailSnap.exists() || pendingNickSnap.exists()){
+      throw new Error(t("nickEmailBusy"));
+    }
+
+    // Send verification code via backend API
+    await postJSON("/api/send-code", { email: emailNorm, nick, code, type: "register", lang });
+
+    // Save pending registration in Firestore
     await runTransaction(db, async (tx) => {
-      const [userSnap, emailSnap, pendingNickSnap] = await Promise.all([
-        tx.get(userDocRef(nickNorm)),
-        tx.get(emailDocRef(emailNorm)),
-        tx.get(pendingRegRef(nickNorm))
-      ]);
-
-      if(userSnap.exists() || emailSnap.exists() || pendingNickSnap.exists()){
-        throw new Error(t("nickEmailBusy"));
-      }
-
       tx.set(pendingRegRef(nickNorm), {
         nick, nickNorm, email, emailNorm, passwordHash, code,
         expiresAtMs: Date.now() + 10 * 60 * 1000
@@ -849,10 +854,10 @@ async function sendCode(){
     document.getElementById("codeBox").classList.remove("hidden");
     document.getElementById("finishBtn").classList.remove("hidden");
     document.getElementById("regCodeHint").classList.remove("hidden");
-    document.getElementById("regCodeHint").textContent = `${t("codeHint")}: ${code}`;
+    document.getElementById("regCodeHint").textContent = lang === "RU"
+      ? "📩 Код отправлен на ваш e-mail. Если письма нет, проверьте папку «Спам»."
+      : "📩 Code sent to your e-mail. Check your Spam folder if not received.";
     showToast(t("regOk"), "success");
-
-    postJSON("/api/send-code", { email: emailNorm, nick, code, type: "register", lang }).catch(() => {});
   }catch(e){
     showToast(e.message || t("error"), "error");
   }
@@ -946,6 +951,10 @@ async function sendResetCode(){
     if(user.emailNorm !== emailNorm) throw new Error(t("mismatchEmail"));
 
     const code = randomDigits(6);
+
+    // Send code via backend API first
+    await postJSON("/api/send-code", { email: emailNorm, nick, code, type: "reset", lang });
+
     await runTransaction(db, async (tx) => {
       tx.set(resetRef, { nickNorm, emailNorm, code, expiresAtMs: Date.now() + 10 * 60 * 1000 });
     });
@@ -954,10 +963,10 @@ async function sendResetCode(){
     document.getElementById("resetCodeBox").classList.remove("hidden");
     document.getElementById("newPasswordBox").classList.add("hidden");
     document.getElementById("resetCodeHint").classList.remove("hidden");
-    document.getElementById("resetCodeHint").textContent = `${t("codeHint")}: ${code}`;
+    document.getElementById("resetCodeHint").textContent = lang === "RU"
+      ? "📩 Код отправлен на ваш e-mail. Если письма нет, проверьте папку «Спам»."
+      : "📩 Code sent to your e-mail. Check your Spam folder if not received.";
     showToast(t("resetOk"), "success");
-
-    postJSON("/api/send-code", { email: emailNorm, nick, code, type: "reset", lang }).catch(() => {});
   }catch(e){
     showToast(e.message || t("error"), "error");
   }
