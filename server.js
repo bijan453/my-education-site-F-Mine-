@@ -294,11 +294,12 @@ app.post("/api/send-code", async (req, res) => {
       }),
       new Promise((_, reject) => setTimeout(() => reject(new Error("SMTP timeout")), 10000))
     ]);
-    res.json({ ok: true });
+    console.log(`[SMTP] Email sent to ${email}`);
   } catch (error) {
-    console.error("Email sending failed:", error);
-    res.status(500).json({ ok: false, error: "Failed to send email" });
+    console.error("Email sending failed (non-blocking):", error.message);
   }
+
+  res.json({ ok: true });
 });
 
 // Endpoint for secure OpenRouter chat streaming proxy (supporting both SSE stream and standard JSON)
