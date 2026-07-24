@@ -303,10 +303,41 @@ app.post("/api/send-code", async (req, res) => {
 
   let sendErrors = [];
 
-  // Standard Nodemailer SMTP (resolve IPv4 first to bypass Render IPv6 ENETUNREACH)
-  const isSmtpConfigured = smtpUser && smtpPass;
+  // Method 1: Resend HTTP API (works on Render — pure HTTPS, no SMTP ports needed)
+  const resendKey = cleanEnv(process.env.RESEND_API_KEY);
+  if (resendKey) {
+    try {
+      const resendFrom = cleanEnv(process.env.RESEND_FROM) || "F-Mine Support <onboarding@resend.dev>";
+      const resendRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${resendKey}`
+        },
+        body: JSON.stringify({
+          from: resendFrom,
+          to: [email],
+          subject: subject,
+          html: htmlContent
+        })
+      });
+      const resendData = await resendRes.json().catch(() => ({}));
+      if (resendRes.ok && resendData.id) {
+        console.log(`[Resend] Email sent to ${email}, id: ${resendData.id}`);
+        return res.json({ ok: true, provider: "resend", id: resendData.id });
+      } else {
+        const errMsg = resendData.message || resendData.error || `HTTP ${resendRes.status}`;
+        console.warn(`[Resend Failed]: ${errMsg}`);
+        sendErrors.push(`Resend: ${errMsg}`);
+      }
+    } catch (err) {
+      console.error("[Resend Error]:", err.message);
+      sendErrors.push(`Resend: ${err.message}`);
+    }
+  }
 
-  if (isSmtpConfigured) {
+  // Method 2: SMTP fallback (note: blocked on Render free tier)
+  if (smtpUser && smtpPass) {
     try {
       const resolvedHost = await getSmtpHostIp(smtpHost);
       const transporter = nodemailer.createTransport({
@@ -314,29 +345,21 @@ app.post("/api/send-code", async (req, res) => {
         port: smtpPort,
         secure: isSecure,
         auth: { user: smtpUser, pass: smtpPass },
-        tls: {
-          rejectUnauthorized: false,
-          servername: smtpHost, // keep original hostname for TLS SNI
-        },
-        connectionTimeout: 15000,
-        greetingTimeout: 15000,
-        socketTimeout: 15000,
+        tls: { rejectUnauthorized: false, servername: smtpHost },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
       });
       const fromField = cleanEnv(process.env.SMTP_FROM) || `"F-Mine Support" <${smtpUser}>`;
-      await transporter.sendMail({
-        from: fromField,
-        to: email,
-        subject: subject,
-        html: htmlContent,
-      });
-      console.log(`[SMTP] Email successfully sent to ${email} via ${resolvedHost}`);
+      await transporter.sendMail({ from: fromField, to: email, subject, html: htmlContent });
+      console.log(`[SMTP] Email sent to ${email} via ${resolvedHost}`);
       return res.json({ ok: true, provider: "smtp" });
     } catch (error) {
       console.error("[SMTP Error]:", error.message);
       sendErrors.push(`SMTP (${smtpHost}:${smtpPort}): ${error.message}`);
     }
   } else {
-    sendErrors.push("SMTP is not configured (SMTP_USER or SMTP_PASS missing in environment variables)");
+    sendErrors.push("SMTP not configured");
   }
 
   console.error(`[send-code Failed] Errors: ${sendErrors.join(" | ")}`);
