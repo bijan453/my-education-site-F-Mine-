@@ -73,14 +73,25 @@ const isSecure = cleanEnv(process.env.SMTP_SECURE) === "true" || smtpPort === 46
 const smtpUser = cleanEnv(process.env.SMTP_USER);
 const smtpPass = cleanEnv(process.env.SMTP_PASS);
 
-// Nodemailer SMTP Transporter
+async function getSmtpHostIp(host) {
+  if (!host || /^(\d{1,3}\.){3}\d{1,3}$/.test(host)) return host;
+  try {
+    const addresses = await dns.promises.resolve4(host);
+    if (addresses && addresses.length > 0) {
+      console.log(`[SMTP DNS] Resolved ${host} -> IPv4 IP: ${addresses[0]}`);
+      return addresses[0];
+    }
+  } catch (err) {
+    console.warn(`[SMTP DNS] resolve4 error for ${host}: ${err.message}`);
+  }
+  return host;
+}
+
+// Nodemailer SMTP Transporter (fallback instance)
 const mailTransporter = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
   secure: isSecure,
-  lookup: (hostname, options, callback) => {
-    dns.lookup(hostname, { family: 4 }, callback);
-  },
   auth: {
     user: smtpUser,
     pass: smtpPass,
@@ -292,28 +303,37 @@ app.post("/api/send-code", async (req, res) => {
 
   let sendErrors = [];
 
-  // Standard Nodemailer SMTP
-  const isSmtpConfigured = process.env.SMTP_USER &&
-                           process.env.SMTP_PASS &&
-                           process.env.SMTP_USER !== "your-email@gmail.com" &&
-                           process.env.SMTP_PASS !== "your-app-password" &&
-                           process.env.SMTP_USER.trim() !== "" &&
-                           process.env.SMTP_PASS.trim() !== "";
+  // Standard Nodemailer SMTP (resolve IPv4 first to bypass Render IPv6 ENETUNREACH)
+  const isSmtpConfigured = smtpUser && smtpPass;
 
   if (isSmtpConfigured) {
     try {
-      const fromField = process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`;
-      await mailTransporter.sendMail({
+      const resolvedHost = await getSmtpHostIp(smtpHost);
+      const transporter = nodemailer.createTransport({
+        host: resolvedHost,
+        port: smtpPort,
+        secure: isSecure,
+        auth: { user: smtpUser, pass: smtpPass },
+        tls: {
+          rejectUnauthorized: false,
+          servername: smtpHost, // keep original hostname for TLS SNI
+        },
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 15000,
+      });
+      const fromField = cleanEnv(process.env.SMTP_FROM) || `"F-Mine Support" <${smtpUser}>`;
+      await transporter.sendMail({
         from: fromField,
         to: email,
         subject: subject,
         html: htmlContent,
       });
-      console.log(`[SMTP] Email successfully sent to ${email}`);
+      console.log(`[SMTP] Email successfully sent to ${email} via ${resolvedHost}`);
       return res.json({ ok: true, provider: "smtp" });
     } catch (error) {
       console.error("[SMTP Error]:", error.message);
-      sendErrors.push(`SMTP (${process.env.SMTP_HOST || "smtp.gmail.com"}:${process.env.SMTP_PORT || "465"}): ${error.message}`);
+      sendErrors.push(`SMTP (${smtpHost}:${smtpPort}): ${error.message}`);
     }
   } else {
     sendErrors.push("SMTP is not configured (SMTP_USER or SMTP_PASS missing in environment variables)");
