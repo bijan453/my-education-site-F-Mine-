@@ -78,7 +78,9 @@ const mailTransporter = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
   secure: isSecure,
-  family: 4, // Force IPv4 (Render containers lack outbound IPv6 routing)
+  lookup: (hostname, options, callback) => {
+    dns.lookup(hostname, { family: 4 }, callback);
+  },
   auth: {
     user: smtpUser,
     pass: smtpPass,
