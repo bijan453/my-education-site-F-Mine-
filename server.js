@@ -10,6 +10,9 @@ import { fileURLToPath } from 'url';
 import { createRequire } from "module";
 import https from "https";
 import http from "http";
+import dns from "dns";
+
+try { dns.setDefaultResultOrder('ipv4first'); } catch {}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -75,6 +78,7 @@ const mailTransporter = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
   secure: isSecure,
+  family: 4, // Force IPv4 (Render containers lack outbound IPv6 routing)
   auth: {
     user: smtpUser,
     pass: smtpPass,
