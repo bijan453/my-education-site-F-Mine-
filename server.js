@@ -62,33 +62,22 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const smtpPort = parseInt(process.env.SMTP_PORT || "587", 10);
-const isSecure = process.env.SMTP_SECURE === "true";
+const cleanEnv = (val, defaultVal = "") => (val ? String(val).replace(/[\r\n"'\x00]/g, "").trim() : defaultVal);
 
-// Brevo SMTP relay (preferred - dedicated IPs, great Gmail deliverability)
-const brevoSmtpTransporter = (process.env.BREVO_SMTP_PASS && process.env.BREVO_SMTP_USER)
-  ? nodemailer.createTransport({
-      host: "smtp-relay.brevo.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.BREVO_SMTP_USER,
-        pass: process.env.BREVO_SMTP_PASS,
-      },
-      connectionTimeout: 15000,
-      greetingTimeout: 15000,
-      socketTimeout: 15000,
-    })
-  : null;
+const smtpHost = cleanEnv(process.env.SMTP_HOST, "smtp.gmail.com");
+const smtpPort = parseInt(cleanEnv(process.env.SMTP_PORT, "465"), 10);
+const isSecure = cleanEnv(process.env.SMTP_SECURE) === "true" || smtpPort === 465;
+const smtpUser = cleanEnv(process.env.SMTP_USER);
+const smtpPass = cleanEnv(process.env.SMTP_PASS);
 
-// Gmail SMTP fallback
+// Nodemailer SMTP Transporter
 const mailTransporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  host: smtpHost,
   port: smtpPort,
   secure: isSecure,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: smtpUser,
+    pass: smtpPass,
   },
   tls: { rejectUnauthorized: false },
   connectionTimeout: 15000,
@@ -297,90 +286,7 @@ app.post("/api/send-code", async (req, res) => {
 
   let sendErrors = [];
 
-  // Method 1: Brevo SMTP Relay (Best Gmail deliverability - dedicated IPs)
-  if (brevoSmtpTransporter) {
-    try {
-      const senderEmail = process.env.BREVO_SMTP_USER || "umed.imatshoev@gmail.com";
-      await brevoSmtpTransporter.sendMail({
-        from: `"F-Mine Support" <${senderEmail}>`,
-        to: email,
-        subject: subject,
-        html: htmlContent,
-      });
-      console.log(`[Brevo SMTP] Email sent to ${email}`);
-      return res.json({ ok: true, provider: "brevo-smtp" });
-    } catch (err) {
-      console.error("[Brevo SMTP Error]:", err.message);
-      sendErrors.push(`Brevo SMTP: ${err.message}`);
-    }
-  }
-
-  // Method 2: Brevo HTTP API
-  if (process.env.BREVO_API_KEY && process.env.BREVO_API_KEY.trim() !== "") {
-    try {
-      const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.SMTP_USER || "umed.imatshoev@gmail.com";
-      const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
-        method: "POST",
-        headers: {
-          "accept": "application/json",
-          "api-key": process.env.BREVO_API_KEY.trim(),
-          "content-type": "application/json"
-        },
-        body: JSON.stringify({
-          sender: { name: "F-Mine Support", email: senderEmail },
-          to: [{ email: email, name: nick }],
-          subject: subject,
-          htmlContent: htmlContent
-        })
-      });
-      const brevoData = await brevoRes.json().catch(() => ({}));
-      if (brevoRes.ok && brevoData.messageId) {
-        console.log(`[Brevo HTTP] Email sent to ${email}, messageId: ${brevoData.messageId}`);
-        return res.json({ ok: true, provider: "brevo", messageId: brevoData.messageId });
-      } else {
-        const errMsg = brevoData.message || brevoData.code || `HTTP ${brevoRes.status}`;
-        console.warn(`[Brevo HTTP Failed]: ${errMsg}`);
-        sendErrors.push(`Brevo: ${errMsg}`);
-      }
-    } catch (err) {
-      console.error("[Brevo HTTP Error]:", err.message);
-      sendErrors.push(`Brevo: ${err.message}`);
-    }
-  }
-
-  // Method 2: Resend HTTP API
-  if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.trim() !== "") {
-    try {
-      const resendFrom = process.env.RESEND_FROM || "F-Mine Support <onboarding@resend.dev>";
-      const resendRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.RESEND_API_KEY.trim()}`
-        },
-        body: JSON.stringify({
-          from: resendFrom,
-          to: [email],
-          subject: subject,
-          html: htmlContent
-        })
-      });
-      const resendData = await resendRes.json().catch(() => ({}));
-      if (resendRes.ok && resendData.id) {
-        console.log(`[Resend HTTP] Email sent to ${email}, id: ${resendData.id}`);
-        return res.json({ ok: true, provider: "resend", id: resendData.id });
-      } else {
-        const errMsg = resendData.message || resendData.error || `HTTP ${resendRes.status}`;
-        console.warn(`[Resend HTTP Failed]: ${errMsg}`);
-        sendErrors.push(`Resend: ${errMsg}`);
-      }
-    } catch (err) {
-      console.error("[Resend HTTP Error]:", err.message);
-      sendErrors.push(`Resend: ${err.message}`);
-    }
-  }
-
-  // Method 3: Nodemailer SMTP
+  // Standard Nodemailer SMTP
   const isSmtpConfigured = process.env.SMTP_USER &&
                            process.env.SMTP_PASS &&
                            process.env.SMTP_USER !== "your-email@gmail.com" &&
@@ -390,20 +296,21 @@ app.post("/api/send-code", async (req, res) => {
 
   if (isSmtpConfigured) {
     try {
+      const fromField = process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`;
       await mailTransporter.sendMail({
-        from: process.env.SMTP_FROM || `"F-Mine Support" <${process.env.SMTP_USER}>`,
+        from: fromField,
         to: email,
         subject: subject,
         html: htmlContent,
       });
-      console.log(`[SMTP] Email sent to ${email}`);
+      console.log(`[SMTP] Email successfully sent to ${email}`);
       return res.json({ ok: true, provider: "smtp" });
     } catch (error) {
       console.error("[SMTP Error]:", error.message);
-      sendErrors.push(`SMTP: ${error.message}`);
+      sendErrors.push(`SMTP (${process.env.SMTP_HOST || "smtp.gmail.com"}:${process.env.SMTP_PORT || "465"}): ${error.message}`);
     }
   } else {
-    sendErrors.push("SMTP is not configured (SMTP_USER/SMTP_PASS missing)");
+    sendErrors.push("SMTP is not configured (SMTP_USER or SMTP_PASS missing in environment variables)");
   }
 
   console.error(`[send-code Failed] Errors: ${sendErrors.join(" | ")}`);
