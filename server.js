@@ -50,28 +50,34 @@ try { dotenv.config({ path: path.join(__dirname, '.env') }); } catch {}
 
 const app = express();
 
-// Explicit CORS — allow GitHub Pages and any other origin
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-  next();
-});
+// Health Check Endpoint for Railway
+app.get('/', (req, res) => res.send('Backend is running!'));
 
-app.use(cors());
+// Dynamic CORS configuration
+const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigin === '*' || origin === allowedOrigin) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS block: Request not allowed from this origin'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(express.static(__dirname));
 
 const cleanEnv = (val, defaultVal = "") => (val ? String(val).replace(/[\r\n"'\x00]/g, "").trim() : defaultVal);
 
 const smtpHost = cleanEnv(process.env.SMTP_HOST, "smtp.gmail.com");
-const smtpPort = parseInt(cleanEnv(process.env.SMTP_PORT, "465"), 10);
+const smtpPort = parseInt(cleanEnv(process.env.SMTP_PORT, "587"), 10);
 const isSecure = cleanEnv(process.env.SMTP_SECURE) === "true" || smtpPort === 465;
 const smtpUser = cleanEnv(process.env.SMTP_USER);
 const smtpPass = cleanEnv(process.env.SMTP_PASS);
+const smtpFrom = cleanEnv(process.env.SMTP_FROM, `"F-Mine Support" <${smtpUser || 'no-reply@fmine.app'}>`);
 
 async function getSmtpHostIp(host) {
   if (!host || /^(\d{1,3}\.){3}\d{1,3}$/.test(host)) return host;
@@ -87,8 +93,8 @@ async function getSmtpHostIp(host) {
   return host;
 }
 
-// Nodemailer SMTP Transporter (fallback instance)
-const mailTransporter = nodemailer.createTransport({
+// Nodemailer SMTP Transporter
+const createMailTransporter = () => nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
   secure: isSecure,
@@ -100,6 +106,17 @@ const mailTransporter = nodemailer.createTransport({
   connectionTimeout: 15000,
   greetingTimeout: 15000,
   socketTimeout: 15000,
+});
+
+const mailTransporter = createMailTransporter();
+
+// Verify SMTP Connection on server start
+mailTransporter.verify((error, success) => {
+  if (error) {
+    console.error('[SMTP Auth Error]: Ошибка подключения к SMTP:', error);
+  } else {
+    console.log('[SMTP Success]: Сервер успешно подключён к SMTP.');
+  }
 });
 
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -237,6 +254,71 @@ app.post("/api/chat", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ reply: "Ошибка сервера" });
+  }
+});
+
+// Endpoint for user registration and confirmation email sending via SMTP
+app.post("/api/register", async (req, res) => {
+  const { email, username } = req.body;
+  console.log(`[POST /api/register] Registration request for email: ${email}, username: ${username}`);
+
+  // 1. Email validation
+  if (!email || typeof email !== "string") {
+    return res.status(400).json({ success: false, error: "Пожалуйста, укажите адрес электронной почты." });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.trim())) {
+    return res.status(400).json({ success: false, error: "Некорректный формат адреса электронной почты." });
+  }
+
+  const name = username || email.split("@")[0];
+
+  try {
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+          <h2 style="color: #4f46e5; text-align: center;">Добро пожаловать, ${name}!</h2>
+          <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+            Спасибо за регистрацию в <strong>F-Mine</strong>! Ваш аккаунт успешно создан.
+          </p>
+          <p style="font-size: 15px; color: #4b5563;">
+            Если у вас возникнут вопросы или потребуется помощь, мы всегда на связи.
+          </p>
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 25px 0;" />
+          <p style="font-size: 12px; color: #9ca3af; text-align: center;">
+            Это автоматическое уведомление от F-Mine Support. Ответ на данное письмо не требуется.
+          </p>
+        </div>
+      </div>
+    `;
+
+    const fromAddress = smtpFrom || `"F-Mine Support" <${smtpUser}>`;
+
+    // Attempt SMTP delivery using Nodemailer
+    const mailOptions = {
+      from: fromAddress,
+      to: email.trim(),
+      subject: "F-Mine | Успешная регистрация",
+      html: htmlContent
+    };
+
+    const info = await mailTransporter.sendMail(mailOptions);
+    console.log(`[SMTP Success] Email sent to ${email}. Message ID: ${info.messageId}`);
+
+    return res.json({
+      success: true,
+      message: "Письмо успешно отправлено!"
+    });
+  } catch (error) {
+    // Log full error details securely on server
+    console.error("[SMTP Error] /api/register failure:", error);
+
+    // Return friendly error message to client without exposing credentials
+    return res.status(500).json({
+      success: false,
+      error: "Не удалось отправить подтверждающее письмо. Попробуйте позже."
+    });
   }
 });
 
