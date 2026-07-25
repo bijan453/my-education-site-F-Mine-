@@ -72,9 +72,10 @@ app.use(express.static(__dirname));
 
 const cleanEnv = (val, defaultVal = "") => (val ? String(val).replace(/[\r\n"'\x00]/g, "").trim() : defaultVal);
 
+// Pure Google SMTP Environment Variables
 const smtpHost = cleanEnv(process.env.SMTP_HOST, "smtp.gmail.com");
-const smtpPort = parseInt(cleanEnv(process.env.SMTP_PORT, "587"), 10);
-const isSecure = cleanEnv(process.env.SMTP_SECURE) === "true" || smtpPort === 465;
+const smtpPort = Number(cleanEnv(process.env.SMTP_PORT, "465"));
+const isSecure = process.env.SMTP_SECURE === "true" || process.env.SMTP_SECURE === undefined || smtpPort === 465;
 const smtpUser = cleanEnv(process.env.SMTP_USER);
 const smtpPass = cleanEnv(process.env.SMTP_PASS);
 const smtpFrom = cleanEnv(process.env.SMTP_FROM, `"F-Mine Support" <${smtpUser || 'no-reply@fmine.app'}>`);
@@ -93,7 +94,7 @@ async function getSmtpHostIp(host) {
   return host;
 }
 
-// Nodemailer SMTP Transporter
+// Nodemailer Google SMTP Transporter (Port 465 SSL)
 const createMailTransporter = () => nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
@@ -103,19 +104,19 @@ const createMailTransporter = () => nodemailer.createTransport({
     pass: smtpPass,
   },
   tls: { rejectUnauthorized: false },
-  connectionTimeout: 15000,
-  greetingTimeout: 15000,
-  socketTimeout: 15000,
+  connectionTimeout: 10000,
+  socketTimeout: 10000,
+  greetingTimeout: 5000,
 });
 
 const mailTransporter = createMailTransporter();
 
-// Verify SMTP Connection on server start
+// Verify Google SMTP Connection on server start
 mailTransporter.verify((error, success) => {
   if (error) {
-    console.error('[SMTP Auth Error]: Ошибка подключения к SMTP:', error);
+    console.error('[SMTP Auth Error]: Ошибка подключения к Google SMTP:', error.message);
   } else {
-    console.log('[SMTP Success]: Сервер успешно подключён к SMTP.');
+    console.log('[SMTP Success]: Сервер успешно подключён к Google SMTP (Port 465 SSL).');
   }
 });
 
@@ -257,198 +258,139 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-// Endpoint for user registration and confirmation email sending via SMTP
+// Endpoint for user registration & OTP email delivery via pure Google SMTP
 app.post("/api/register", async (req, res) => {
-  const { email, username } = req.body;
-  console.log(`[POST /api/register] Registration request for email: ${email}, username: ${username}`);
+  const { email, username, code } = req.body;
+  console.log(`[POST /api/register] Email: ${email}, Username: ${username}`);
 
-  // 1. Email validation
   if (!email || typeof email !== "string") {
-    return res.status(400).json({ success: false, error: "Пожалуйста, укажите адрес электронной почты." });
+    return res.status(400).json({ success: false, ok: false, error: "Пожалуйста, укажите адрес электронной почты." });
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email.trim())) {
-    return res.status(400).json({ success: false, error: "Некорректный формат адреса электронной почты." });
+    return res.status(400).json({ success: false, ok: false, error: "Некорректный формат адреса электронной почты." });
   }
+
+  // Generate 6-digit OTP code if not provided
+  const otpCode = (code && String(code).trim().length >= 4)
+    ? String(code).trim()
+    : Math.floor(100000 + Math.random() * 900000).toString();
 
   const name = username || email.split("@")[0];
 
   try {
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
-        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-          <h2 style="color: #4f46e5; text-align: center;">Добро пожаловать, ${name}!</h2>
-          <p style="font-size: 16px; color: #374151; line-height: 1.6;">
-            Спасибо за регистрацию в <strong>F-Mine</strong>! Ваш аккаунт успешно создан.
-          </p>
-          <p style="font-size: 15px; color: #4b5563;">
-            Если у вас возникнут вопросы или потребуется помощь, мы всегда на связи.
-          </p>
-          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 25px 0;" />
-          <p style="font-size: 12px; color: #9ca3af; text-align: center;">
-            Это автоматическое уведомление от F-Mine Support. Ответ на данное письмо не требуется.
-          </p>
+      <div style="font-family: Arial, sans-serif; background-color: #0d1117; padding: 30px; color: #ffffff;">
+        <div style="max-width: 550px; margin: 0 auto; background: #161b22; border-radius: 16px; padding: 30px; border: 1px solid #30363d; text-align: center;">
+          <h2 style="color: #58a6ff; margin-bottom: 8px;">Добро пожаловать в F-Mine, ${name}!</h2>
+          <p style="font-size: 15px; color: #8b949e; margin-bottom: 24px;">Ваш 6-значный код подтверждения регистрации:</p>
+          <div style="background: rgba(56, 139, 253, 0.15); border: 1px solid #1f6feb; border-radius: 12px; padding: 18px; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #58a6ff; display: inline-block; margin-bottom: 24px;">
+            ${otpCode}
+          </div>
+          <p style="font-size: 13px; color: #8b949e;">Код действителен в течение 10 минут.</p>
         </div>
       </div>
     `;
 
     const fromAddress = smtpFrom || `"F-Mine Support" <${smtpUser}>`;
 
-    // Attempt SMTP delivery using Nodemailer
-    const mailOptions = {
+    await mailTransporter.sendMail({
       from: fromAddress,
       to: email.trim(),
-      subject: "F-Mine | Успешная регистрация",
+      subject: "F-Mine | Код подтверждения регистрации",
       html: htmlContent
-    };
+    });
 
-    const info = await mailTransporter.sendMail(mailOptions);
-    console.log(`[SMTP Success] Email sent to ${email}. Message ID: ${info.messageId}`);
-
+    console.log(`[Google SMTP Success] Registration OTP email sent to ${email}`);
     return res.json({
       success: true,
-      message: "Письмо успешно отправлено!"
+      ok: true,
+      message: "Код подтверждения отправлен на вашу почту!",
+      code: otpCode
     });
   } catch (error) {
-    // Log full error details securely on server
-    console.error("[SMTP Error] /api/register failure:", error);
-
-    // Return friendly error message to client without exposing credentials
+    console.error("[Google SMTP Error] /api/register failure:", error.message);
     return res.status(500).json({
       success: false,
-      error: "Не удалось отправить подтверждающее письмо. Попробуйте позже."
+      ok: false,
+      error: "Ошибка отправки письма через Google SMTP. Проверьте настройки SMTP в Railway."
     });
   }
 });
 
 // Endpoint for sending authentication codes (Registration & Password recovery)
 app.post("/api/send-code", async (req, res) => {
-  console.log(`[send-code] HIT type=${req.body.type} email=${req.body.email} nick=${req.body.nick}`);
   const { email, nick, code, type, lang } = req.body;
+  console.log(`[POST /api/send-code] email=${email} nick=${nick} type=${type}`);
 
-  if (!email || !nick || !code || !type) {
-    return res.status(400).json({ ok: false, error: "Missing required fields" });
+  if (!email) {
+    return res.status(400).json({ success: false, ok: false, error: "Email is required" });
   }
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(String(email).trim())) {
+    return res.status(400).json({ success: false, ok: false, error: "Invalid email format" });
+  }
+
+  // Generate 6-digit OTP code if not provided
+  const otpCode = (code && String(code).trim().length >= 4)
+    ? String(code).trim()
+    : Math.floor(100000 + Math.random() * 900000).toString();
+
+  const userNick = nick || email.split("@")[0];
   const isRu = (lang === "RU");
-  let subject = "";
-  let htmlContent = "";
+  const actionText = (type === "reset")
+    ? (isRu ? "сброса пароля" : "password reset")
+    : (isRu ? "подтверждения регистрации" : "registration confirmation");
 
-  if (type === "register") {
-    subject = isRu ? "F-Mine | Подтверждение регистрации" : "F-Mine | Registration confirmation";
-    htmlContent = isRu ? `
-      <div style="font-family: sans-serif; padding: 20px; color: #333;">
-        <h2>Добро пожаловать в F-Mine, ${nick}!</h2>
-        <p>Для подтверждения вашего адреса электронной почты и завершения регистрации используйте код ниже:</p>
-        <div style="background: #f1f1f1; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 2px; text-align: center; margin: 20px 0; color: #4a47d1;">
-          ${code}
+  const subject = isRu
+    ? `F-Mine | Код ${actionText}`
+    : `F-Mine | Verification code for ${actionText}`;
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; background-color: #0d1117; padding: 30px; color: #ffffff;">
+      <div style="max-width: 550px; margin: 0 auto; background: #161b22; border-radius: 16px; padding: 30px; border: 1px solid #30363d; text-align: center;">
+        <h2 style="color: #58a6ff; margin-bottom: 8px;">F-Mine | ${userNick}</h2>
+        <p style="font-size: 15px; color: #8b949e; margin-bottom: 24px;">
+          ${isRu ? `Ваш код для ${actionText}:` : `Your verification code for ${actionText}:`}
+        </p>
+        <div style="background: rgba(56, 139, 253, 0.15); border: 1px solid #1f6feb; border-radius: 12px; padding: 18px; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #58a6ff; display: inline-block; margin-bottom: 24px;">
+          ${otpCode}
         </div>
-        <p>Этот код действителен в течение 10 минут.</p>
-        <p>Если вы не регистрировались на нашем сайте, просто проигнорируйте это письмо.</p>
+        <p style="font-size: 13px; color: #8b949e;">
+          ${isRu ? "Код действителен в течение 10 минут." : "This code is valid for 10 minutes."}
+        </p>
       </div>
-    ` : `
-      <div style="font-family: sans-serif; padding: 20px; color: #333;">
-        <h2>Welcome to F-Mine, ${nick}!</h2>
-        <p>To verify your email address and complete registration, please use the code below:</p>
-        <div style="background: #f1f1f1; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 2px; text-align: center; margin: 20px 0; color: #4a47d1;">
-          ${code}
-        </div>
-        <p>This code is valid for 10 minutes.</p>
-        <p>If you did not request this code, please ignore this email.</p>
-      </div>
-    `;
-  } else if (type === "reset") {
-    subject = isRu ? "F-Mine | Сброс пароля" : "F-Mine | Password reset";
-    htmlContent = isRu ? `
-      <div style="font-family: sans-serif; padding: 20px; color: #333;">
-        <h2>Восстановление пароля F-Mine для ${nick}</h2>
-        <p>Мы получили запрос на изменение пароля для вашего аккаунта. Используйте этот код безопасности:</p>
-        <div style="background: #f1f1f1; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 2px; text-align: center; margin: 20px 0; color: #4a47d1;">
-          ${code}
-        </div>
-        <p>Этот код действителен в течение 10 минут.</p>
-        <p>Если вы не запрашивали сброс пароля, немедленно проверьте настройки безопасности вашего аккаунта.</p>
-      </div>
-    ` : `
-      <div style="font-family: sans-serif; padding: 20px; color: #333;">
-        <h2>F-Mine Password Recovery for ${nick}</h2>
-        <p>We received a request to change the password for your account. Please use this security code:</p>
-        <div style="background: #f1f1f1; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 2px; text-align: center; margin: 20px 0; color: #4a47d1;">
-          ${code}
-        </div>
-        <p>This code is valid for 10 minutes.</p>
-        <p>If you did not request a password reset, please secure your account immediately.</p>
-      </div>
-    `;
+    </div>
+  `;
+
+  try {
+    const fromAddress = smtpFrom || `"F-Mine Support" <${smtpUser}>`;
+
+    await mailTransporter.sendMail({
+      from: fromAddress,
+      to: String(email).trim(),
+      subject: subject,
+      html: htmlContent
+    });
+
+    console.log(`[Google SMTP Success] OTP sent to ${email} (code: ${otpCode})`);
+    return res.json({
+      success: true,
+      ok: true,
+      provider: "google-smtp",
+      message: isRu ? "Код успешно отправлен!" : "Code sent successfully!",
+      code: otpCode
+    });
+  } catch (error) {
+    console.error("[Google SMTP Error] /api/send-code failure:", error.message);
+    return res.status(500).json({
+      success: false,
+      ok: false,
+      error: "Failed to send email via Google SMTP. Check your SMTP settings."
+    });
   }
-
-  let sendErrors = [];
-
-  // Method 1: Resend HTTP API (works on Render — pure HTTPS, no SMTP ports needed)
-  const resendKey = cleanEnv(process.env.RESEND_API_KEY);
-  if (resendKey) {
-    try {
-      const resendFrom = cleanEnv(process.env.RESEND_FROM) || "F-Mine Support <onboarding@resend.dev>";
-      const resendRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${resendKey}`
-        },
-        body: JSON.stringify({
-          from: resendFrom,
-          to: [email],
-          subject: subject,
-          html: htmlContent
-        })
-      });
-      const resendData = await resendRes.json().catch(() => ({}));
-      if (resendRes.ok && resendData.id) {
-        console.log(`[Resend] Email sent to ${email}, id: ${resendData.id}`);
-        return res.json({ ok: true, provider: "resend", id: resendData.id });
-      } else {
-        const errMsg = resendData.message || resendData.error || `HTTP ${resendRes.status}`;
-        console.warn(`[Resend Failed]: ${errMsg}`);
-        sendErrors.push(`Resend: ${errMsg}`);
-      }
-    } catch (err) {
-      console.error("[Resend Error]:", err.message);
-      sendErrors.push(`Resend: ${err.message}`);
-    }
-  }
-
-  // Method 2: SMTP fallback (note: blocked on Render free tier)
-  if (smtpUser && smtpPass) {
-    try {
-      const resolvedHost = await getSmtpHostIp(smtpHost);
-      const transporter = nodemailer.createTransport({
-        host: resolvedHost,
-        port: smtpPort,
-        secure: isSecure,
-        auth: { user: smtpUser, pass: smtpPass },
-        tls: { rejectUnauthorized: false, servername: smtpHost },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
-      });
-      const fromField = cleanEnv(process.env.SMTP_FROM) || `"F-Mine Support" <${smtpUser}>`;
-      await transporter.sendMail({ from: fromField, to: email, subject, html: htmlContent });
-      console.log(`[SMTP] Email sent to ${email} via ${resolvedHost}`);
-      return res.json({ ok: true, provider: "smtp" });
-    } catch (error) {
-      console.error("[SMTP Error]:", error.message);
-      sendErrors.push(`SMTP (${smtpHost}:${smtpPort}): ${error.message}`);
-    }
-  } else {
-    sendErrors.push("SMTP not configured");
-  }
-
-  console.error(`[send-code Failed] Errors: ${sendErrors.join(" | ")}`);
-  return res.status(500).json({
-    ok: false,
-    error: `Failed to send email. Details: ${sendErrors.join("; ")}`
-  });
 });
 
 // Endpoint for secure OpenRouter chat streaming proxy (supporting both SSE stream and standard JSON)
