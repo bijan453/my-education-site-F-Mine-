@@ -94,14 +94,14 @@ async function getSmtpHostIp(host) {
   return host;
 }
 
-// Nodemailer Google SMTP Transporter (Port 465 SSL, forced IPv4 DNS)
+// Nodemailer Brevo SMTP Transporter (Port 587, secure: false)
 const createMailTransporter = () => nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: Number(process.env.SMTP_PORT) || 465,
-  secure: true,
+  host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: process.env.SMTP_SECURE === 'true' || false,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    user: process.env.BREVO_SMTP_USER || process.env.SMTP_USER,
+    pass: process.env.BREVO_SMTP_PASS || process.env.SMTP_PASS
   },
   tls: {
     rejectUnauthorized: false
@@ -112,12 +112,12 @@ const createMailTransporter = () => nodemailer.createTransport({
 
 const mailTransporter = createMailTransporter();
 
-// Verify Google SMTP Connection on server start
+// Verify Brevo SMTP Connection on server start
 mailTransporter.verify((error, success) => {
   if (error) {
-    console.error('[SMTP Auth Error]: Ошибка подключения к Google SMTP:', error.message);
+    console.error('[SMTP Auth Error]: Ошибка подключения к Brevo SMTP:', error.message);
   } else {
-    console.log('[SMTP Success]: Сервер успешно подключён к Google SMTP (Port 465 SSL).');
+    console.log('[SMTP Success]: Сервер успешно подключён к Brevo SMTP (smtp-relay.brevo.com:587).');
   }
 });
 
