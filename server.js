@@ -94,19 +94,22 @@ async function getSmtpHostIp(host) {
   return host;
 }
 
-// Nodemailer Google SMTP Transporter (Port 465 SSL)
+// Nodemailer Google SMTP Transporter (Port 465 SSL with forced IPv4 family: 4)
 const createMailTransporter = () => nodemailer.createTransport({
-  host: smtpHost,
-  port: smtpPort,
-  secure: isSecure,
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: Number(process.env.SMTP_PORT) || 465,
+  secure: process.env.SMTP_SECURE === 'true' || true,
+  family: 4, // Принудительный IPv4 (убирает ошибку ENETUNREACH)
   auth: {
-    user: smtpUser,
-    pass: smtpPass,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
-  tls: { rejectUnauthorized: false },
-  connectionTimeout: 10000,
-  socketTimeout: 10000,
-  greetingTimeout: 5000,
+  tls: {
+    rejectUnauthorized: false
+  },
+  connectionTimeout: 15000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
 });
 
 const mailTransporter = createMailTransporter();
