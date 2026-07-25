@@ -94,32 +94,37 @@ async function getSmtpHostIp(host) {
   return host;
 }
 
-// Nodemailer Brevo SMTP Transporter (Port 587, secure: false)
-const createMailTransporter = () => nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: process.env.SMTP_SECURE === 'true' || false,
-  auth: {
-    user: process.env.BREVO_SMTP_USER || process.env.SMTP_USER,
-    pass: process.env.BREVO_SMTP_PASS || process.env.SMTP_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  connectionTimeout: 15000,
-  socketTimeout: 15000
-});
+// Brevo HTTP API sender (bypasses SMTP port blocks on Railway)
+async function sendBrevoEmail({ to, subject, htmlContent, senderName, senderEmail }) {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) throw new Error('BREVO_API_KEY is not configured');
 
-const mailTransporter = createMailTransporter();
+  const from = senderEmail || process.env.SMTP_FROM
+    ? { name: senderName || 'F-Mine Support', email: senderEmail || (process.env.BREVO_SMTP_USER || process.env.SMTP_USER) }
+    : { name: 'F-Mine Support', email: process.env.BREVO_SMTP_USER || process.env.SMTP_USER };
 
-// Verify Brevo SMTP Connection on server start
-mailTransporter.verify((error, success) => {
-  if (error) {
-    console.error('[SMTP Auth Error]: Ошибка подключения к Brevo SMTP:', error.message);
-  } else {
-    console.log('[SMTP Success]: Сервер успешно подключён к Brevo SMTP (smtp-relay.brevo.com:587).');
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': apiKey
+    },
+    body: JSON.stringify({
+      sender: from,
+      to: [{ email: String(to).trim() }],
+      subject,
+      htmlContent
+    })
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Brevo API HTTP ${res.status}`);
   }
-});
+  return data;
+}
+
+console.log('[Brevo] HTTP API email sender initialized (no SMTP ports needed).');
 
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 const geminiApiKey = process.env.GEMINI_API_KEY;
@@ -259,7 +264,7 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-// Endpoint for user registration & OTP email delivery via pure Google SMTP
+// Endpoint for user registration & OTP email delivery via Brevo HTTP API
 app.post("/api/register", async (req, res) => {
   const { email, username, code } = req.body;
   console.log(`[POST /api/register] Email: ${email}, Username: ${username}`);
@@ -273,7 +278,6 @@ app.post("/api/register", async (req, res) => {
     return res.status(400).json({ success: false, ok: false, error: "Некорректный формат адреса электронной почты." });
   }
 
-  // Generate 6-digit OTP code if not provided
   const otpCode = (code && String(code).trim().length >= 4)
     ? String(code).trim()
     : Math.floor(100000 + Math.random() * 900000).toString();
@@ -281,42 +285,27 @@ app.post("/api/register", async (req, res) => {
   const name = username || email.split("@")[0];
 
   try {
-    const htmlContent = `
-      <div style="font-family: Arial, sans-serif; background-color: #0d1117; padding: 30px; color: #ffffff;">
-        <div style="max-width: 550px; margin: 0 auto; background: #161b22; border-radius: 16px; padding: 30px; border: 1px solid #30363d; text-align: center;">
-          <h2 style="color: #58a6ff; margin-bottom: 8px;">Добро пожаловать в F-Mine, ${name}!</h2>
-          <p style="font-size: 15px; color: #8b949e; margin-bottom: 24px;">Ваш 6-значный код подтверждения регистрации:</p>
-          <div style="background: rgba(56, 139, 253, 0.15); border: 1px solid #1f6feb; border-radius: 12px; padding: 18px; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #58a6ff; display: inline-block; margin-bottom: 24px;">
-            ${otpCode}
-          </div>
-          <p style="font-size: 13px; color: #8b949e;">Код действителен в течение 10 минут.</p>
-        </div>
-      </div>
-    `;
-
-    const fromAddress = smtpFrom || `"F-Mine Support" <${smtpUser}>`;
-
-    await mailTransporter.sendMail({
-      from: fromAddress,
+    await sendBrevoEmail({
       to: email.trim(),
       subject: "F-Mine | Код подтверждения регистрации",
-      html: htmlContent
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; background-color: #0d1117; padding: 30px; color: #ffffff;">
+          <div style="max-width: 550px; margin: 0 auto; background: #161b22; border-radius: 16px; padding: 30px; border: 1px solid #30363d; text-align: center;">
+            <h2 style="color: #58a6ff; margin-bottom: 8px;">Добро пожаловать в F-Mine, ${name}!</h2>
+            <p style="font-size: 15px; color: #8b949e; margin-bottom: 24px;">Ваш 6-значный код подтверждения регистрации:</p>
+            <div style="background: rgba(56,139,253,0.15); border: 1px solid #1f6feb; border-radius: 12px; padding: 18px; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #58a6ff; display: inline-block; margin-bottom: 24px;">
+              ${otpCode}
+            </div>
+            <p style="font-size: 13px; color: #8b949e;">Код действителен в течение 10 минут.</p>
+          </div>
+        </div>`
     });
 
-    console.log(`[Google SMTP Success] Registration OTP email sent to ${email}`);
-    return res.json({
-      success: true,
-      ok: true,
-      message: "Код подтверждения отправлен на вашу почту!",
-      code: otpCode
-    });
+    console.log(`[Brevo API Success] Registration OTP sent to ${email}`);
+    return res.json({ success: true, ok: true, message: "Код подтверждения отправлен на вашу почту!", code: otpCode });
   } catch (error) {
-    console.error("[Google SMTP Error] /api/register failure:", error.message);
-    return res.status(500).json({
-      success: false,
-      ok: false,
-      error: "Ошибка отправки письма через Google SMTP. Проверьте настройки SMTP в Railway."
-    });
+    console.error("[Brevo API Error] /api/register failure:", error.message);
+    return res.status(500).json({ success: false, ok: false, error: "Ошибка отправки письма. Проверьте BREVO_API_KEY в Railway." });
   }
 });
 
@@ -334,7 +323,6 @@ app.post("/api/send-code", async (req, res) => {
     return res.status(400).json({ success: false, ok: false, error: "Invalid email format" });
   }
 
-  // Generate 6-digit OTP code if not provided
   const otpCode = (code && String(code).trim().length >= 4)
     ? String(code).trim()
     : Math.floor(100000 + Math.random() * 900000).toString();
@@ -356,7 +344,7 @@ app.post("/api/send-code", async (req, res) => {
         <p style="font-size: 15px; color: #8b949e; margin-bottom: 24px;">
           ${isRu ? `Ваш код для ${actionText}:` : `Your verification code for ${actionText}:`}
         </p>
-        <div style="background: rgba(56, 139, 253, 0.15); border: 1px solid #1f6feb; border-radius: 12px; padding: 18px; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #58a6ff; display: inline-block; margin-bottom: 24px;">
+        <div style="background: rgba(56,139,253,0.15); border: 1px solid #1f6feb; border-radius: 12px; padding: 18px; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #58a6ff; display: inline-block; margin-bottom: 24px;">
           ${otpCode}
         </div>
         <p style="font-size: 13px; color: #8b949e;">
@@ -367,29 +355,22 @@ app.post("/api/send-code", async (req, res) => {
   `;
 
   try {
-    const fromAddress = smtpFrom || `"F-Mine Support" <${smtpUser}>`;
+    await sendBrevoEmail({ to: email, subject, htmlContent });
 
-    await mailTransporter.sendMail({
-      from: fromAddress,
-      to: String(email).trim(),
-      subject: subject,
-      html: htmlContent
-    });
-
-    console.log(`[Google SMTP Success] OTP sent to ${email} (code: ${otpCode})`);
+    console.log(`[Brevo API Success] OTP sent to ${email} (code: ${otpCode})`);
     return res.json({
       success: true,
       ok: true,
-      provider: "google-smtp",
+      provider: "brevo-api",
       message: isRu ? "Код успешно отправлен!" : "Code sent successfully!",
       code: otpCode
     });
   } catch (error) {
-    console.error("[Google SMTP Error] /api/send-code failure:", error.message);
+    console.error("[Brevo API Error] /api/send-code failure:", error.message);
     return res.status(500).json({
       success: false,
       ok: false,
-      error: "Failed to send email via Google SMTP. Check your SMTP settings."
+      error: "Failed to send email via Brevo API. Check BREVO_API_KEY in Railway."
     });
   }
 });
