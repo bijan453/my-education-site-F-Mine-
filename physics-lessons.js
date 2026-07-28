@@ -551,3 +551,493 @@ LESSONS['8.10'] = {
     }
   ]
 };
+
+// ==================== GRADE 9 ====================
+
+LESSONS['9.1'] = {
+  title: 'Круговое движение',
+  context: 'Вращение Земли, карусели, планет — круговое движение повсюду. Тело движется по окружности с постоянной скоростью, но его направление постоянно меняется.',
+  theory: [
+    { icon: '🔄', title: 'Центростремительное ускорение', html: '<p>При движении по окружности тело имеет ускорение, направленное к центру:</p><div class="formula-block">$a_ц = \\frac{v^2}{R} = \\omega^2 R$</div><p>$v$ — линейная скорость, $R$ — радиус, $\\omega$ — угловая скорость.</p>' },
+    { icon: '📐', title: 'Период и частота', html: '<div class="formula-block">$T = \\frac{2\\pi R}{v}$</div><div class="formula-block">$\\nu = \\frac{1}{T}$</div><p>$T$ — период (с), $\\nu$ — частота (Гц).</p>' },
+    { icon: '📏', title: 'Центростремительная сила', html: '<div class="formula-block">$F_ц = ma_ц = m\\frac{v^2}{R}$</div><div class="highlight-box green">Это не отдельная сила, а результат действия других сил (трения, натяжения, тяготения).</div>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Шарик на нити $R = 0.5$ м, $v = 3$ м/с, $m = 0.2$ кг.', rule: '' },
+      { text: '$a_ц = \\frac{9}{0.5} = 18$ м/с²', rule: 'Центростремительное ускорение' },
+      { text: '$F_ц = 0.2 \\cdot 18 = 3.6$ Н', rule: 'Центростремительная сила' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Ускорение', icon: '🔄',
+      generate(){const v=randInt(2,15),r=randInt(1,10);return{v,r,a:round2(v*v/r)}},
+      template(v,r,a){return{text:`$v = ${v}$ м/с, $R = ${r}$ м. $a_ц$? (м/с², округлите до сотых)`,answer:a,hint:`$a_ц = \\frac{v^2}{R} = \\frac{${v}^2}{${r}}$`,solution:`$a_ц = ${a}$ м/с²`}},
+    },
+    { name: 'Сила', icon: '📐',
+      generate(){const m=randInt(1,10),v=randInt(2,12),r=randInt(1,8);return{m,v,r,f:round2(m*v*v/r)}},
+      template(m,v,r,f){return{text:`$m = ${m}$ кг, $v = ${v}$ м/с, $R = ${r}$ м. Центростремительная сила?`,answer:f,hint:`$F_ц = \\frac{mv^2}{R}$`,solution:`$F_ц = ${f}$ Н`}},
+    },
+    { name: 'Период', icon: '⏱️',
+      generate(){const r=randInt(1,10),v=randInt(2,15);return{r,v,t:round2(2*Math.PI*r/v)}},
+      template(r,v,t){return{text:`$R = ${r}$ м, $v = ${v}$ м/с. Период $T$? (с, округлите до сотых)`,answer:t,hint:`$T = \\frac{2\\pi R}{v}$`,solution:`$T = ${t}$ с`}},
+    }
+  ]
+};
+
+LESSONS['9.2'] = {
+  title: 'Закон сохранения энергии',
+  context: 'Энергия не создаётся и не уничтожается, а лишь переходит из одной формы в другую — один из фундаментальных законов физики.',
+  theory: [
+    { icon: '🔋', title: 'Полная механическая энергия', html: '<div class="formula-block">$E = E_k + E_p = \\frac{mv^2}{2} + mgh = \\text{const}$</div><p>Сохраняется, если действуют только консервативные силы (сила тяжести, упругость).</p>' },
+    { icon: '📐', title: 'Закон сохранения', html: '<div class="formula-block">$E_{k1} + E_{p1} = E_{k2} + E_{p2}$</div><div class="highlight-box"><strong>Полная энергия:</strong> $E_{\\text{полн}} = E_{\\text{мех}} + Q + E_{\\text{внут}}$<br>С учётом необратимых процессов (трение → нагрев).</div>' }
+  ],
+  examples: [
+    { title: 'Пример: Скачок с горки', steps: [
+      { text: 'Катер скатывается с горки $h = 5$ м. С какую скорость прибудет?', rule: '' },
+      { text: '$mgh = \\frac{mv^2}{2} \\Rightarrow v = \\sqrt{2gh}$', rule: 'Сохранение энергии' },
+      { text: '$v = \\sqrt{2 \\cdot 9.8 \\cdot 5} = \\sqrt{98} \\approx 9.9$ м/с', rule: 'Ответ' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Скорость', icon: '🔋',
+      generate(){const h=randInt(2,30);return{h,v:round2(Math.sqrt(2*9.8*h))}},
+      template(h,v){return{text:`Тело скатывается с высоты $h = ${h}$ м. Скорость внизу?`,answer:v,hint:`$v = \\sqrt{2gh} = \\sqrt{2 \\cdot 9.8 \\cdot ${h}}$`,solution:`$v = ${v}$ м/с`}},
+    },
+    { name: 'Высота', icon: '📐',
+      generate(){const v=randInt(3,25);return{v,h:round2(v*v/(2*9.8))}},
+      template(v,h){return{text:`Тело拥有 скорость $v = ${v}$ м/с. С какой высоты упало?`,answer:h,hint:`$h = \\frac{v^2}{2g}$`,solution:`$h = ${h}$ м`}},
+    },
+    { name: 'Энергия', icon: '⚡',
+      generate(){const m=randInt(1,20),h=randInt(1,15);return{m,h,e:round2(m*9.8*h)}},
+      template(m,h,e){return{text:`$m = ${m}$ кг на высоте $h = ${h}$ м. Потенциальная энергия?`,answer:e,hint:`$E_p = mgh = ${m} \\cdot 9.8 \\cdot ${h}$`,solution:`$E_p = ${e}$ Дж`}},
+    }
+  ]
+};
+
+LESSONS['9.3'] = {
+  title: 'Колебания и их характеристики',
+  context: 'Колебания — повторяющиеся движения: маятник, струна, звук. Колебания лежат в основе часов, музыки и связи.',
+  theory: [
+    { icon: '〰️', title: 'Характеристики', html: '<ul><li><strong>Амплитуда</strong> $A$ — максимальное отклонение от положения равновесия</li><li><strong>Период</strong> $T$ — время одного полного колебания (с)</li><li><strong>Частота</strong> $\\nu = \\frac{1}{T}$ — число колебаний в секунду (Гц)</li><li><strong>Циклическая частота</strong> $\\omega = 2\\pi\\nu = \\frac{2\\pi}{T}$ (рад/с)</li></ul>' },
+    { icon: '📐', title: 'Математический маятник', html: '<div class="formula-block">$T = 2\\pi\\sqrt{\\frac{l}{g}}$</div><p>$l$ — длина нити, не зависит от массы и амплитуды (при малых углах).</p>' },
+    { icon: '📏', title: 'Формула колебаний', html: '<div class="formula-block">$x = A\\cos(\\omega t + \\varphi_0)$</div>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Маятник: $l = 1$ м. Найдите период.', rule: '' },
+      { text: '$T = 2\\pi\\sqrt{\\frac{1}{9.8}} \\approx 2\\pi \\cdot 0.319 \\approx 2.01$ с', rule: 'Формула мат. маятника' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Период', icon: '⏱️',
+      generate(){const l=round2(randInt(5,20)/10);return{l,t:round2(2*Math.PI*Math.sqrt(l/9.8))}},
+      template(l,t){return{text:`$l = ${l}$ м. Период $T$ мат. маятника? (с, округлите до сотых)`,answer:t,hint:`$T = 2\\pi\\sqrt{\\frac{${l}}{9.8}}$`,solution:`$T = ${t}$ с`}},
+    },
+    { name: 'Частота', icon: '🔊',
+      generate(){const nu=randInt(1,50);return{nu,t:round2(1/nu)}},
+      template(nu,t){return{text:`Частота $\\nu = ${nu}$ Гц. Период $T$?`,answer:t,hint:`$T = \\frac{1}{\\nu}$`,solution:`$T = ${t}$ с`}},
+    },
+    { name: 'Длина', icon: '📏',
+      generate(){const t=round2(randInt(10,40)/10);return{t,l:round2(9.8*(t/(2*Math.PI))*(t/(2*Math.PI)))}},
+      template(t,l){return{text:`$T = ${t}$ с. Длина маятника?`,answer:l,hint:`$l = g\\left(\\frac{T}{2\\pi}\\right)^2$`,solution:`$l = ${l}$ м`}},
+    }
+  ]
+};
+
+LESSONS['9.4'] = {
+  title: 'Механические волны. Звук',
+  context: 'Волны переносят энергию без переноса вещества. Звук — это механическая волна в воздухе.',
+  theory: [
+    { icon: '🔊', title: 'Звуковые волны', html: '<p>Звук — продольная волна в упругой среде.</p><div class="formula-block">$v_{\\text{звука}} \\approx 340$ м/с (в воздухе, 20°C)</div><p>Скорость зависит от среды: в воде ~1500 м/с, в стали ~5000 м/с.</p>' },
+    { icon: '📐', title: 'Связь', html: '<div class="formula-block">$v = \\lambda \\nu$</div><p>$\\lambda$ — длина волны, $\\nu$ — частота.</p>' },
+    { icon: '📏', title: 'Интервалы', html: '<ul><li>Слышимый диапазон: 20 Гц — 20 кГц</li><li>Ультразвук: > 20 кГц</li><li>Инфразвук: < 20 Гц</li></ul>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Частота звука $\\nu = 440$ Гц, $v = 340$ м/с.', rule: '' },
+      { text: '$\\lambda = \\frac{v}{\\nu} = \\frac{340}{440} \\approx 0.773$ м', rule: 'Длина волны' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Длина волны', icon: '🔊',
+      generate(){const nu=randInt(100,2000),v=340;return{nu,v,l:round2(v/nu)}},
+      template(nu,v,l){return{text:`$\\nu = ${nu}$ Гц, $v = 340$ м/с. Длина волны $\\lambda$? (м, округлите до сотых)`,answer:l,hint:`$\\lambda = \\frac{v}{\\nu}$`,solution:`$\\lambda = ${l}$ м`}},
+    },
+    { name: 'Частота', icon: '🎵',
+      generate(){const l=round2(randInt(5,50)/100),v=340;return{l,v,nu:Math.round(v/l)}},
+      template(l,v,nu){return{text:`$\\lambda = ${l}$ м, $v = 340$ м/с. Частота $\\nu$? (Гц)`,answer:nu,hint:`$\\nu = \\frac{v}{\\lambda}$`,solution:`$\\nu = ${nu}$ Гц`}},
+    }
+  ]
+};
+
+LESSONS['9.5'] = {
+  title: 'Свет: распространение и отражение',
+  context: 'Свет — электромагнитная волна. Он распространяется прямолинейно и отражается от поверхностей.',
+  theory: [
+    { icon: '💡', title: 'Прямолинейное распространение', html: '<p>Свет распространяется прямолинейно в однородной среде со скоростью $c = 3 \\times 10^8$ м/с.</p><div class="highlight-box"><strong>Тень</strong> — область, куда свет не проникает из-за непрозрачного тела.</div>' },
+    { icon: '📐', title: 'Закон отражения', html: '<ul><li>Падающий луч, отражённый луч и нормаль лежат в одной плоскости</li><li><strong>Угол отравления = углу падения:</strong> $\\alpha = \\beta$</li></ul>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Луч падает под углом $30°$ к поверхности.', rule: '' },
+      { text: 'Угол к нормали: $\\alpha = 90° - 30° = 60°$', rule: 'Угол падения' },
+      { text: 'Угол отражения: $\\beta = 60°$', rule: 'Закон отражения' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Угол', icon: '📐',
+      generate(){const alpha=randInt(10,80);return{alpha,beta:alpha}},
+      template(alpha,beta){return{text:`Угол падения $\\alpha = ${alpha}°$. Угол отражения?`,answer:beta,hint:'Закон отражения: $\\alpha = \\beta$',solution:`$\\beta = ${beta}°$`}},
+    }
+  ]
+};
+
+LESSONS['9.6'] = {
+  title: 'Законы отражения и преломления',
+  context: 'Преломление света — изменение направления при переходе из одной среды в другую. Объясняет为什么 ложка в воде кажется согнутой.',
+  theory: [
+    { icon: '🌈', title: 'Закон преломления (Снеллиус)', html: '<div class="formula-block">$\\frac{\\sin \\alpha}{\\sin \\gamma} = \\frac{n_2}{n_1}$</div><p>$\\alpha$ — угол падения, $\\gamma$ — угол преломления, $n$ — показатель преломления.</p>' },
+    { icon: '📐', title: 'Показатели преломления', html: '<ul><li>$n_{\\text{воздух}} \\approx 1$</li><li>$n_{\\text{воды}} \\approx 1.33$</li><li>$n_{\\text{стекла}} \\approx 1.5$</li></ul><div class="highlight-box green"><strong>Полное внутреннее отражение:</strong> при $\\alpha > \\alpha_{\\text{кр}}$, где $\\sin \\alpha_{\\text{кр}} = \\frac{n_2}{n_1}$</div>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Луч из воздуха ($n_1 = 1$) в стекло ($n_2 = 1.5$). $\\alpha = 30°$.', rule: '' },
+      { text: '$\\sin \\gamma = \\frac{n_1}{n_2}\\sin\\alpha = \\frac{1}{1.5} \\cdot 0.5 \\approx 0.333$', rule: 'Закон Снеллиуса' },
+      { text: '$\\gamma = \\arcsin(0.333) \\approx 19.5°$', rule: 'Ответ' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Преломление', icon: '🌈',
+      generate(){const n1=1,n2=round2(randInt(13,18)/10),alpha=randInt(15,60);const sinG=(n1/n2)*Math.sin(alpha*Math.PI/180);const gamma=round2(Math.asin(sinG)*180/Math.PI);return{n1,n2,alpha,gamma}},
+      template(n1,n2,alpha,gamma){return{text:`$n_1 = ${n1}$ (воздух), $n_2 = ${n2}$, $\\alpha = ${alpha}°$. Угол преломления $\\gamma$?`,answer:gamma,hint:`$\\sin\\gamma = \\frac{${n1}}{${n2}}\\sin${alpha}°$`,solution:`$\\gamma = ${gamma}°$`}},
+    },
+    { name: 'Полное отражение', icon: '💡',
+      generate(){const n1=1.5,n2=1;const sinA=n2/n1;const alpha=round2(Math.asin(sinA)*180/Math.PI);return{n1,n2,alpha}},
+      template(n1,n2,alpha){return{text:`$n_1 = ${n1}$, $n_2 = ${n2}$. Критический угол $\\alpha_{\\text{кр}}$?`,answer:alpha,hint:`$\\sin\\alpha_{\\text{кр}} = \\frac{${n2}}{${n1}}$`,solution:`$\\alpha_{\\text{кр}} = ${alpha}°$`}},
+    }
+  ]
+};
+
+LESSONS['9.7'] = {
+  title: 'Линзы и построение изображений',
+  context: 'Линзы — основа очков, микроскопов, телескопов и камер. Собирающая линза — двояковыпуклая, рассеивающая — двояковогнутая.',
+  theory: [
+    { icon: '🔍', title: 'Типы линз', html: '<ul><li><strong>Собирающая (положительная):</strong>焦点 положительный, даёт действительное изображение</li><li><strong>Рассеивающая (отрицательная):</strong>焦点 отрицательный, даёт мнимое изображение</li></ul>' },
+    { icon: '📐', title: 'Формула линзы', html: '<div class="formula-block">$\\frac{1}{F} = \\frac{1}{d} + \\frac{1}{f}$</div><p>$F$ — фокусное расстояние, $d$ — расстояние от предмета, $f$ — расстояние до изображения.</p>' },
+    { icon: '📏', title: 'Увеличение', html: '<div class="formula-block">$\\Gamma = \\frac{f}{d} = \\frac{\\text{размер изображения}}{\\text{размер предмета}}$</div>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: '$F = 10$ см, предмет на $d = 30$ см.', rule: '' },
+      { text: '$\\frac{1}{f} = \\frac{1}{F} - \\frac{1}{d} = \\frac{1}{10} - \\frac{1}{30} = \\frac{2}{30} = \\frac{1}{15}$', rule: 'Формула линзы' },
+      { text: '$f = 15$ см, $\\Gamma = \\frac{15}{30} = 0.5$ (уменьшенное)', rule: 'Ответ' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Изображение', icon: '🔍',
+      generate(){const F=randInt(5,20),d=randInt(F+5,40);const f=round2(1/(1/F-1/d));return{F,d,f}},
+      template(F,d,f){return{text:`$F = ${F}$ см, $d = ${d}$ см. Расстояние до изображения $f$?`,answer:f,hint:`$\\frac{1}{f} = \\frac{1}{${F}} - \\frac{1}{${d}}$`,solution:`$f = ${f}$ см`}},
+    },
+    { name: 'Увеличение', icon: '📐',
+      generate(){const F=randInt(5,15),d=randInt(F+2,30);const f=round2(1/(1/F-1/d));const g=round2(f/d);return{F,d,f,g}},
+      template(F,d,f,g){return{text:`$F = ${F}$ см, $d = ${d}$ см. Увеличение $\\Gamma$?`,answer:g,hint:`$\\Gamma = \\frac{f}{d}$`,solution:`$\\Gamma = ${g}$`}},
+    }
+  ]
+};
+
+LESSONS['9.8'] = {
+  title: 'Интерференция и дифракция света',
+  context: 'Интерференция — наложение двух волн, дифракция — огибание препятствий. Эти явления доказывают волновую природу света.',
+  theory: [
+    { icon: '🌈', title: 'Интерференция', html: '<p>При наложении двух когерентных волн происходит усиление и ослабление.</p><div class="highlight-box"><strong>Усиление:</strong> $\\Delta = k\\lambda$ (разность ходов = целое число длин волн)</div><div class="highlight-box green"><strong>Ослабление:</strong> $\\Delta = (k+\\frac{1}{2})\\lambda$</div>' },
+    { icon: '📐', title: 'Дифракция', html: '<p>Дифракция — огибание волнами препятствий, размеры которых сравнимы с длиной волны.</p><div class="formula-block">$a\\sin\\varphi = k\\lambda$</div><p>$a$ — ширина щели, $\\varphi$ — угол дифракционного минимума.</p>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: '$\\lambda = 500$ нм, $a = 0.01$ мм. Найдите угол первого минимума.', rule: '' },
+      { text: '$\\sin\\varphi = \\frac{\\lambda}{a} = \\frac{5 \\times 10^{-7}}{10^{-5}} = 0.05$', rule: 'Формула' },
+      { text: '$\\varphi = \\arcsin(0.05) \\approx 2.87°$', rule: 'Ответ' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Дифракция', icon: '🌈',
+      generate(){const a_nm=randInt(500,5000);const l_nm=randInt(400,700);const sinPhi=round2(l_nm/a_nm);return{a_nm,l_nm,sinPhi}},
+      template(a_nm,l_nm,sinPhi){return{text:`$a = ${a_nm}$ нм, $\\lambda = ${l_nm}$ нм. $\\sin\\varphi_1$ первого минимума?`,answer:sinPhi,hint:`$\\sin\\varphi = \\frac{\\lambda}{a}$`,solution:`$\\sin\\varphi = ${sinPhi}$`}},
+    }
+  ]
+};
+
+LESSONS['9.9'] = {
+  title: 'Электромагнитные волны',
+  context: 'Электромагнитные волны — от радиоволн до гамма-излучения. Максвелл предсказал их существование, Герц экспериментально подтвердил.',
+  theory: [
+    { icon: '📡', title: 'Спектр', html: '<p>ЭМ волны различаются по длине волны:</p><ul><li>Радиоволны: > 1 мм</li><li>ИК: 760 нм — 1 мм</li><li>Видимый свет: 380 — 760 нм</li><li>УФ: 10 — 380 нм</li><li>Рентген: 0.01 — 10 нм</li><li>Гамма: < 0.01 нм</li></ul>' },
+    { icon: '📐', title: 'Скорость', html: '<div class="formula-block">$c = 3 \\times 10^8$ м/с</div><p>Все ЭМ волны в вакууме распространяется с одинаковой скоростью.</p>' },
+    { icon: '📏', title: 'Связь', html: '<div class="formula-block">$c = \\lambda \\nu$</div>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Частота $\\nu = 100$ МГц. Найдите длину волны.', rule: '' },
+      { text: '$\\lambda = \\frac{c}{\\nu} = \\frac{3 \\times 10^8}{10^8} = 3$ м', rule: 'Формула' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Длина волны', icon: '📡',
+      generate(){const nu_GHz=round2(randInt(1,100)/10);return{nu_GHz,l:round2(3/nu_GHz)}},
+      template(nu_GHz,l){return{text:`$\\nu = ${nu_GHz}$ ГГц. $\\lambda$? (м, округлите до сотых)`,answer:l,hint:`$\\lambda = \\frac{3 \\times 10^8}{${nu_GHz} \\times 10^9}$`,solution:`$\\lambda = ${l}$ м`}},
+    }
+  ]
+};
+
+LESSONS['9.10'] = {
+  title: 'Релятивистская механика',
+  context: 'На близких к свету скоростях классическая механика ньютона перестаёт работать. Эйнштейн открыл новые законы.',
+  theory: [
+    { icon: '🚀', title: 'Постулаты Эйнштейна', html: '<ul><li>Все инерциальные системы отсчёта равноправны</li><li>Скорость света в вакууме постоянна для всех наблюдателей: $c = 3 \\times 10^8$ м/с</li></ul>' },
+    { icon: '📐', title: 'Релятивистские эффекты', html: '<p><strong>Замедление времени:</strong></p><div class="formula-block">$\\Delta t = \\frac{\\Delta t_0}{\\sqrt{1 - \\frac{v^2}{c^2}}}$</div><p><strong>Удлинение длины:</strong></p><div class="formula-block">$l = l_0\\sqrt{1 - \\frac{v^2}{c^2}}$</div><p><strong>Релятивистская масса:</strong></p><div class="formula-block">$m = \\frac{m_0}{\\sqrt{1 - \\frac{v^2}{c^2}}}$</div>' },
+    { icon: '⚡', title: 'Энергия покоя', html: '<div class="formula-block">$E = m_0 c^2$</div><p>Масса — это форма энергии!</p>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Корабль летит со скоростью $v = 0.6c$. Как замедляется время?', rule: '' },
+      { text: '$\\gamma = \\frac{1}{\\sqrt{1 - 0.36}} = \\frac{1}{0.8} = 1.25$', rule: 'Коэффициент Лоренца' },
+      { text: '1 час на борту = 1.25 часа на Земле', rule: 'Замедление времени' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Замедление', icon: '🚀',
+      generate(){const v_c=round2(randInt(1,9)/10);const gamma=round2(1/Math.sqrt(1-v_c*v_c));return{v_c,gamma}},
+      template(v_c,gamma){return{text:`$v = ${v_c}c$. Коэффициент $\\gamma = \\frac{1}{\\sqrt{1-v^2/c^2}}$?`,answer:gamma,hint:`$\\gamma = \\frac{1}{\\sqrt{1-${v_c}^2}}$`,solution:`$\\gamma = ${gamma}$`}},
+    }
+  ]
+};
+
+// ==================== GRADE 10 ====================
+
+LESSONS['10.1'] = {
+  title: 'Молекулярно-кинетическая теория',
+  context: 'Всё вещество состоит из молекул, которые постоянно и хаотично движутся. МКТ объясняет давление, температуру и агрегатные состояния.',
+  theory: [
+    { icon: '🔬', title: 'Основные положения', html: '<ul><li>Вещество состоит из частиц (молекул, атомов)</li><li>Частицы постоянно и хаотично движутся</li><li>Между частицами действуют силы притяжения и отталкивания</li></ul>' },
+    { icon: '📐', title: 'Средняя кинетическая энергия', html: '<div class="formula-block">$\\bar{E}_k = \\frac{3}{2}kT$</div><p>$k = 1.38 \\times 10^{-23}$ Дж/К — постоянная Больцмана, $T$ — температура (К).</p>' },
+    { icon: '📏', title: 'Давление идеального газа', html: '<div class="formula-block">$p = \\frac{2}{3}\\frac{N}{V}\\bar{E}_k = nkT$</div><p>$n = N/V$ — концентрация частиц.</p>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: '$T = 300$ К. Средняя кинетическая энергия?', rule: '' },
+      { text: '$\\bar{E}_k = \\frac{3}{2} \\cdot 1.38 \\times 10^{-23} \\cdot 300 \\approx 6.21 \\times 10^{-21}$ Дж', rule: 'Формула' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Энергия', icon: '🔬',
+      generate(){const T=randInt(100,1000);return{T,e:round2(1.5*1.38e-23*T)}},
+      template(T,e){return{text:`$T = ${T}$ К. Средняя $\\bar{E}_k$? (Дж, scientific notation)`,answer:e,hint:`$\\bar{E}_k = \\frac{3}{2}kT$`,solution:`$\\bar{E}_k \\approx ${e}$ Дж`}},
+    },
+    { name: 'Температура', icon: '🌡️',
+      generate(){const T=randInt(100,500);const e=round2(1.5*1.38e-23*T);return{T,e}},
+      template(T,e){return{text:`$\\bar{E}_k = ${e}$ Дж. Температура $T$? (К)`,answer:T,hint:`$T = \\frac{2\\bar{E}_k}{3k}$`,solution:`$T = ${T}$ К`}},
+    }
+  ]
+};
+
+LESSONS['10.2'] = {
+  title: 'Идеальный газ. Уравнение состояния',
+  context: 'Идеальный газ — модель, где молекулы не взаимодействуют и занимают ничтожный объём. Уравнение Менделеева-Клапейрона описывает его.',
+  theory: [
+    { icon: '📊', title: 'Уравнение Менделеева-Клапейрона', html: '<div class="formula-block">$pV = \\nu RT$</div><p>$\\nu$ — количество вещества (моль), $R = 8.314$ Дж/(моль·К).</p>' },
+    { icon: '📐', title: 'Законы', html: '<ul><li><strong>Бойля-Мариотта:</strong> $pV = \\text{const}$ (при $T = \\text{const}$)</li><li><strong>Шарля:</strong> $V/T = \\text{const}$ (при $p = \\text{const}$)</li><li><strong>Гей-Люссака:</strong> $p/T = \\text{const}$ (при $V = \\text{const}$)</li></ul>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: '$p = 2 \\cdot 10^5$ Па, $V = 3$ л, $T = 300$ К. Найдите $\\nu$.', rule: '' },
+      { text: '$\\nu = \\frac{pV}{RT} = \\frac{2 \\times 10^5 \\cdot 3 \\times 10^{-3}}{8.314 \\cdot 300} \\approx 0.24$ моль', rule: 'Уравнение состояния' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Давление', icon: '📊',
+      generate(){const nu=randInt(1,5),T=randInt(200,500),V=round2(randInt(1,5)/10);const p=round2(nu*8.314*T/V);return{nu,T,V,p}},
+      template(nu,T,V,p){return{text:`$\\nu = ${nu}$ моль, $T = ${T}$ К, $V = ${V}$ м³. Давление $p$? (Па, округлите до сотых)`,answer:p,hint:`$p = \\frac{\\nu RT}{V}$`,solution:`$p = ${p}$ Па`}},
+    },
+    { name: 'Закон Бойля', icon: '📐',
+      generate(){const p1=randInt(1,5),V1=randInt(2,10),V2=randInt(2,10);return{p1,V1,V2,p2:round2(p1*V1/V2)}},
+      template(p1,V1,V2,p2){return{text:`$p_1 = ${p1}$ атм, $V_1 = ${V1}$ л, $V_2 = ${V2}$ л. $p_2$? (атм)`,answer:p2,hint:`$p_1 V_1 = p_2 V_2$`,solution:`$p_2 = ${p2}$ атм`}},
+    }
+  ]
+};
+
+LESSONS['10.3'] = {
+  title: 'Внутренняя энергия и теплоёмкость',
+  context: 'Внутренняя энергия газа — сумма кинетических энергий всех молекул. Теплоёмкость — сколько теплоты нужно для нагрева.',
+  theory: [
+    { icon: '🔥', title: 'Внутренняя энергия', html: '<div class="formula-block">$U = \\nu C_V T$</div><p>Для одноатомного газа: $C_V = \\frac{3}{2}R$</p><p>Для двухатомного: $C_V = \\frac{5}{2}R$</p>' },
+    { icon: '📐', title: 'Количество теплоты', html: '<div class="formula-block">$Q = \\nu C \\Delta T$</div><p>$C$ — молярная теплоёмкость.</p><ul><li>При постоянном объёме: $Q_V = \\nu C_V \\Delta T$</li><li>При постоянном давлении: $Q_p = \\nu C_p \\Delta T$</li></ul>' },
+    { icon: '📏', title: 'Связь', html: '<div class="formula-block">$C_p = C_V + R$</div>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: '$\\nu = 2$ моль одноатомного газа нагрели на $\\Delta T = 50$ К при $V = \\text{const}$.', rule: '' },
+      { text: '$C_V = \\frac{3}{2}R = 12.47$ Дж/(моль·К)', rule: 'Теплоёмкость' },
+      { text: '$Q = 2 \\cdot 12.47 \\cdot 50 = 1247$ Дж', rule: 'Количество теплоты' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Теплота', icon: '🔥',
+      generate(){const nu=randInt(1,5),dT=randInt(20,100);const Cv=round2(1.5*8.314);return{nu,dT,Cv,q:round2(nu*Cv*dT)}},
+      template(nu,dT,Cv,q){return{text:`$\\nu = ${nu}$ моль, $\\Delta T = ${dT}$ К, одноатомный, $V = \\text{const}$. $Q$?`,answer:q,hint:`$Q = \\nu C_V \\Delta T = ${nu} \\cdot ${Cv} \\cdot ${dT}$`,solution:`$Q = ${q}$ Дж`}},
+    }
+  ]
+};
+
+LESSONS['10.4'] = {
+  title: 'Первый закон термодинамики',
+  context: 'Первый закон — обобщение закона сохранения энергии для термодинамических систем.',
+  theory: [
+    { icon: '⚖️', title: 'Закон', html: '<div class="formula-block">$\\Delta U = Q + A$</div><p>$\\Delta U$ — изменение внутренней энергии, $Q$ — теплота, полученная системой, $A$ — работа, совершённая над системой.</p><div class="highlight-box green"><strong>Конвенция знаков:</strong> $Q > 0$ — теплота получена, $A > 0$ — работа совершена над системой.</div>' },
+    { icon: '📐', title: 'Процессы', html: '<ul><li><strong>Изохорный ($V = \\text{const}$):</strong> $A = 0$, $\\Delta U = Q$</li><li><strong>Изобарный ($p = \\text{const}$):</strong> $A = p\\Delta V$, $Q = \\Delta U + p\\Delta V$</li><li><strong>Адиабатный ($Q = 0$):</strong> $\\Delta U = A$</li></ul>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Газ получил $Q = 500$ Дж и совершил работу $A = -200$ Дж (над газом).', rule: '' },
+      { text: '$\\Delta U = 500 + (-200) = 300$ Дж', rule: 'Первый закон' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Первый закон', icon: '⚖️',
+      generate(){const Q=randInt(100,1000),A=randInt(-500,500);return{Q,A,dU:Q+A}},
+      template(Q,A,dU){return{text:`$Q = ${Q}$ Дж, $A = ${A}$ Дж. $\\Delta U$?`,answer:dU,hint:`$\\Delta U = Q + A$`,solution:`$\\Delta U = ${dU}$ Дж`}},
+    }
+  ]
+};
+
+LESSONS['10.5'] = {
+  title: 'Работа и КПД тепловых машин',
+  context: 'Тепловая машина преобразует теплоту в работу. КПД — отношение полезной работы к затраченной теплоте.',
+  theory: [
+    { icon: '⚙️', title: 'КПД', html: '<div class="formula-block">$\\eta = \\frac{A}{Q_{\\text{нап}}} = 1 - \\frac{Q_{\\text{отд}}}{Q_{\\text{нап}}}$</div>' },
+    { icon: '📐', title: 'Цикл Карно', html: '<p>Максимальный КПД для машины, работающей между источником $T_1$ и стоком $T_2$:</p><div class="formula-block">$\\eta_{\\text{Карно}} = 1 - \\frac{T_2}{T_1}$</div><p>$T_1, T_2$ — температуры в Кельвинах.</p><div class="highlight-box"><strong>КПД всегда < 100%!</strong></div>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Источник $T_1 = 600$ К, сток $T_2 = 300$ К.', rule: '' },
+      { text: '$\\eta_{\\text{Карно}} = 1 - \\frac{300}{600} = 0.5 = 50\\%$', rule: 'Максимальный КПД' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'КПД Карно', icon: '⚙️',
+      generate(){const T1=randInt(400,800),T2=randInt(200,T1-100);return{T1,T2,eta:round2((1-T2/T1)*100)}},
+      template(T1,T2,eta){return{text:`$T_1 = ${T1}$ К, $T_2 = ${T2}$ К. $\\eta_{\\text{Карно}}$? (в %, округлите до сотых)`,answer:eta,hint:`$\\eta = 1 - \\frac{T_2}{T_1} = 1 - \\frac{${T2}}{${T1}}$`,solution:`$\\eta = ${eta}$%`}},
+    },
+    { name: 'Теплота', icon: '🔥',
+      generate(){const Qnap=randInt(500,2000),eta=randInt(20,50);return{Qnap,eta,Qotd:round2(Qnap*(1-eta/100))}},
+      template(Qnap,eta,Qotd){return{text:`$Q_{\\text{нап}} = ${Qnap}$ Дж, $\\eta = ${eta}$%. КПД. Какая теплота отдаётся стоку?`,answer:Qotd,hint:`$Q_{\\text{отд}} = Q_{\\text{нап}}(1-\\eta)$`,solution:`$Q_{\\text{отд}} = ${Qotd}$ Дж`}},
+    }
+  ]
+};
+
+LESSONS['10.6'] = {
+  title: 'Второй закон термодинамики',
+  context: 'Второй закон определяет направление тепловых процессов: тепло всегда идёт от горячего к холодному.',
+  theory: [
+    { icon: '🌡️', title: 'Формулировки', html: '<ul><li><strong>Клаузиус:</strong> Теплота не может самопроизвольно перейти от холодного тела к горячему</li><li><strong>Томсона:</strong> Невозможно создать perpetual motion машина второго рода (100% КПД)</li></ul>' },
+    { icon: '📐', title: 'Энтропия', html: '<div class="formula-block">$\\Delta S = \\frac{Q}{T}$</div><p>Энтропия — мера неупорядоченности. В изолированной системе $\\Delta S \\geq 0$.</p><div class="highlight-box green">Энтропия Вселенной всегда возрастает.</div>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Теплота $Q = 1000$ Дж передана при $T = 500$ К.', rule: '' },
+      { text: '$\\Delta S = \\frac{1000}{500} = 2$ Дж/К', rule: 'Изменение энтропии' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Энтропия', icon: '🌡️',
+      generate(){const Q=randInt(500,5000),T=randInt(200,800);return{Q,T,dS:round2(Q/T)}},
+      template(Q,T,dS){return{text:`$Q = ${Q}$ Дж, $T = ${T}$ К. $\\Delta S$? (Дж/К, округлите до сотых)`,answer:dS,hint:`$\\Delta S = \\frac{Q}{T}$`,solution:`$\\Delta S = ${dS}$ Дж/К`}},
+    }
+  ]
+};
+
+LESSONS['10.7'] = {
+  title: 'Фазовые переходы',
+  context: 'При нагревании вещества меняют агрегатное состояние: твёрдое → жидкое → газообразное. Эти переходы сопровождаются поглощением или выделением теплоты.',
+  theory: [
+    { icon: '❄️', title: 'Агрегатные состояния', html: '<ul><li><strong>Твёрдое:</strong> молекуры колеблются около положений равновесия</li><li><strong>Жидкое:</strong> молекулы移动 по объёму, но рядом друг с другом</li><li><strong>Газообразное:</strong> молекулы летают свободно</li></ul>' },
+    { icon: '📐', title: 'Теплота плавления и парообразования', html: '<div class="formula-block">$Q = \\lambda m$</div><p>$\\lambda$ — удельная теплота плавления/парообразования (Дж/кг).</p><ul><li>$\\lambda_{\\text{лёд}} = 3.4 \\times 10^5$ Дж/кг</li><li>$\\lambda_{\\text{вода}} = 2.3 \\times 10^6$ Дж/кг</li></ul>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: '$m = 2$ кг льда ($\\lambda = 3.4 \\times 10^5$). Сколько теплоты на плавление?', rule: '' },
+      { text: '$Q = 3.4 \\times 10^5 \\cdot 2 = 6.8 \\times 10^5$ Дж', rule: 'Теплота плавления' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Теплота', icon: '❄️',
+      generate(){const m=randInt(1,10);return{m,q:340000*m}},
+      template(m,q){return{text:`$m = ${m}$ кг льда. Теплота плавления $Q$? (Дж)`,answer:q,hint:`$Q = \\lambda m = 340\\,000 \\cdot ${m}$`,solution:`$Q = ${q}$ Дж`}},
+    }
+  ]
+};
+
+LESSONS['10.8'] = {
+  title: 'Насыщенный пар. Влажность',
+  context: 'Парциальное давление пара, влажность воздуха — важные параметры погоды и комфорта.',
+  theory: [
+    { icon: '💧', title: 'Насыщенный пар', html: '<p><strong>Насыщенный пар</strong> — пар в динамическом равновесии с жидкостью.</p><p>Давление насыщенного пара зависит только от температуры.</p><div class="highlight-box">При нагревании давление насыщенного пара растёт.</div>' },
+    { icon: '📐', title: 'Влажность', html: '<ul><li><strong>Абсолютная:</strong> $\\rho$ — масса пара в 1 м³ (г/м³)</li><li><strong>Относительная:</strong> $\\varphi = \\frac{\\rho}{\\rho_{\\text{нас}}} \\cdot 100\\%$</li></ul>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: '$\\rho = 8$ г/м³, $\\rho_{\\text{нас}} = 13$ г/м³.', rule: '' },
+      { text: '$\\varphi = \\frac{8}{13} \\cdot 100\\% \\approx 61.5\\%$', rule: 'Относительная влажность' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Влажность', icon: '💧',
+      generate(){const rho=randInt(3,12),rhoNas=randInt(rho+1,15);return{rho,rhoNas,phi:round2(rho/rhoNas*100)}},
+      template(rho,rhoNas,phi){return{text:`$\\rho = ${rho}$ г/м³, $\\rho_{\\text{нас}} = ${rhoNas}$ г/м³. $\\varphi$? (%)`,answer:phi,hint:`$\\varphi = \\frac{${rho}}{${rhoNas}} \\cdot 100\\%$`,solution:`$\\varphi = ${phi}$%`}},
+    }
+  ]
+};
+
+LESSONS['10.9'] = {
+  title: 'Поверхностное натяжение. Смачивание',
+  context: 'На поверхности жидкости молекулы испытывают неравномерное воздействие, создавая «плёнку». Это объясняет форму капель и смачивание.',
+  theory: [
+    { icon: '🫧', title: 'Поверхностное натяжение', html: '<p>Сила, действующая вдоль поверхности жидкости:</p><div class="formula-block">$F = \\sigma l$</div><p>$\\sigma$ — коэффициент поверхностного натяния (Н/м), $l$ — длина линии.</p>' },
+    { icon: '📐', title: 'Смачивание', html: '<ul><li><strong>Смачивание</strong> ($\\theta < 90°$): жидкость поднимается по стенке (вода и чистое стекло)</li><li><strong>Не смачивание</strong> ($\\theta > 90°$): жидкость опускается (ртуть и стекло)</li></ul>' },
+    { icon: '📏', title: 'Капиллярный эффект', html: '<div class="formula-block">$h = \\frac{2\\sigma\\cos\\theta}{\\rho g r}$</div><p>Жидкость поднимается в тонких трубках (капиллярах).</p>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'Капилляр $r = 0.5$ мм, $\\sigma = 0.073$ Н/м, $\\theta = 0°$. $\\rho = 1000$ кг/м³.', rule: '' },
+      { text: '$h = \\frac{2 \\cdot 0.073 \\cdot 1}{1000 \\cdot 9.8 \\cdot 5 \\times 10^{-4}} \\approx 0.03$ м = 3 см', rule: 'Высота подъёма' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Сила', icon: '🫧',
+      generate(){const sigma=round2(randInt(20,80)/1000),l=randInt(1,10);return{sigma,l,f:round2(sigma*l)}},
+      template(sigma,l,f){return{text:`$\\sigma = ${sigma}$ Н/м, $l = ${l}$ м. Сила поверхностного натяжения?`,answer:f,hint:`$F = \\sigma l = ${sigma} \\cdot ${l}$`,solution:`$F = ${f}$ Н`}},
+    }
+  ]
+};
+
+LESSONS['10.10'] = {
+  title: 'Кристаллы и аморфные тела',
+  context: 'Кристаллы имеют упорядоченную структуру, аморфные тела — нет. Это влияет на их свойства: плавление, прочность, оптические характеристики.',
+  theory: [
+    { icon: '💎', title: 'Кристаллы', html: '<ul><li>Атомы расположены в правильном порядке (кристаллическая решётка)</li><li>Имеют точку плавления</li><li>Анизотропны (свойства зависят от направления)</li></ul><p>Типы решёток: ионная, ковалентная, металлическая, молекулярная.</p>' },
+    { icon: '📐', title: 'Аморфные тела', html: '<ul><li>Атомы расположены хаотично</li><li>Мягко размягчаются при нагревании</li><li>Изотропны</li></ul><p>Примеры: стекло, пластмассы, воск.</p>' },
+    { icon: '📏', title: 'Сравнение', html: '<div class="highlight-box green"><strong>Кристаллы:</strong> кварц, алмаз, соль, металл<br><strong>Аморфные:</strong> стекло, янтарь, сахарная вата</div>' }
+  ],
+  examples: [
+    { title: 'Пример', steps: [
+      { text: 'При нагревании вещества температура постоянна во время плавления.', rule: '' },
+      { text: 'Это вещество — кристалл (аморфные плавятся постепенно).', rule: 'Признак кристалла' }
+    ]}
+  ],
+  taskTypes: [
+    { name: 'Тип', icon: '💎',
+      generate(){const items=[{name:'Кварц',ans:'кристалл'},{name:'Стекло',ans:'аморфное'},{name:'Алмаз',ans:'кристалл'},{name:'Пластмасса',ans:'аморфное'},{name:'Соль',ans:'кристалл'},{name:'Янтарь',ans:'аморфное'}];const c=items[randInt(0,5)];return{...c}},
+      template(name,ans){return{text:`$${name}$ — кристалл или аморфное тело?`,answer:ans,hint:'Кристаллы имеют точку плавления, аморфные — размягчаются постепенно',solution:`$${name}$ — ${ans} тело`}},
+    }
+  ]
+};

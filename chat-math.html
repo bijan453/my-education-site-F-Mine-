@@ -8943,6 +8943,8 @@
           var qParts = quadNorm.split('='); if (qParts.length < 2) return null;
           var qRhs = parseFloat(qParts[1]); if (isNaN(qRhs)) return null;
           var qLhs = qParts[0] + '-(' + (qRhs) + ')';
+          // Sanitize: strip anything that isn't a math expression character
+          qLhs = qLhs.replace(/[^0-9xxyy+\-*/^().,\s]/g, '');
 
           var solutions = [];
           var steps = [];
@@ -9851,6 +9853,31 @@
             : 'Соединяем их плавной <b>параболой</b> ' + (a>0?'ветвями вверх ∪':'ветвями вниз ∩') + '.')
         );
 
+        // Absolute value explanation (stored by analyzeGraphExpr)
+        if (info.absStep) {
+          var abs = info.absStep;
+          if (abs.type === 'none') {
+            buildHtml += step(7,
+              'Абсолютное значение не меняет график',
+              'Absolute value does not affect the graph',
+              (L==='EN'
+                ? 'Inner function ' + abs.inner + ' is always ≥ 0 on [-10,10], so |' + abs.inner + '| = ' + abs.inner + '.'
+                : 'Внутренняя функция ' + abs.inner + ' всегда ≥ 0 в диапазоне [-10,10], поэтому |' + abs.inner + '| = ' + abs.inner + '.'));
+          } else if (abs.type === 'reflect') {
+            buildHtml += step(7,
+              'Отражение отрицательных участков',
+              'Reflection of negative parts',
+              (L==='EN'
+                ? 'Graph of ' + abs.inner + ' is reflected across the X-axis where it is negative, forming |' + abs.inner + '|.'
+                : 'График функции ' + abs.inner + ' отражается относительно оси X в областях, где он отрицателен, образуя |' + abs.inner + '|.'));
+          } else if (abs.type === 'piecewise') {
+            buildHtml += step(7,
+              'График с абсолютным значением',
+              'Graph with absolute value',
+              abs.html);
+          }
+        }
+
       } else if (info.buildType === 'linear') {
         var k = info.lk, bL = info.lb;
 
@@ -10193,25 +10220,21 @@
               if (val < 0) { allNonNeg = false; break; }
             }
             if (allNonNeg) {
-              // Absolute does not change graph – explain this
-              buildHtml += step(7, 'Абсолютное значение не меняет график', 'Absolute value does not affect the graph',
-                'Внутренняя функция ' + innerExpr + ' всегда ≥ 0 в диапазоне [-10,10], поэтому |' + innerExpr + '| = ' + innerExpr + '.');
+              info.absStep = { type: 'none', inner: innerExpr };
             } else {
-              // Reflect negative parts
-              buildHtml += step(7, 'Отражение отрицательных участков', 'Reflection of negative parts',
-                'График функции ' + innerExpr + ' отражается относительно оси X в областях, где он отрицателен, образуя |' + innerExpr + '|.');
+              info.absStep = { type: 'reflect', inner: innerExpr };
             }
           } else if (innerExpr && isInnerQuad) {
             // Case like x^2 - 2|x| + 3 (absolute on |x| term)
-            // Build piecewise description
-            var piecewise = 'Для x ≥ 0: y = x^2 - 2x + 3;<br>Для x < 0: y = x^2 + 2x + 3';
-            var vertex1 = {x:1, y:2};
-            var vertex2 = {x:-1, y:2};
-            var center = {x:0, y:3};
-            var body = 'График состоит из двух ветвей параболы, открывающихся вверх, соединённых в точке (0,3). Ветви достигают минимумов (1,2) и (−1,2).';
-            buildHtml += step(7, 'График с абсолютным значением', 'Graph with absolute value',
-              piecewise + '<br>' + body +
-              '<br>Ключевые точки: (0,3), (1,2), (−1,2).');
+            var innerA = info.qa, innerB = info.qb, innerC = info.qc;
+            var v1x = Math.round((-innerB / (2 * innerA)) * 100) / 100;
+            var v1y = Math.round((innerA * v1x * v1x + innerB * v1x + innerC) * 100) / 100;
+            var v2x = Math.round(-v1x * 100) / 100;
+            var v2y = Math.round((innerA * v2x * v2x + innerB * v2x + innerC) * 100) / 100;
+            var cY = Math.round(innerC * 100) / 100;
+            var piecewise = 'Для x ≥ 0: y = ' + innerExpr + ';<br>Для x < 0: y = ' + innerExpr.replace(/x/g, '(-x)') + ';';
+            var body = 'График состоит из двух ветвей параболы, открывающихся вверх, соединённых в точке (0,' + cY + '). Ветви достигают минимумов (' + v1x + ',' + v1y + ') и (' + v2x + ',' + v2y + ').';
+            info.absStep = { type: 'piecewise', html: piecewise + '<br>' + body + '<br>Ключевые точки: (0,' + cY + '), (' + v1x + ',' + v1y + '), (' + v2x + ',' + v2y + ').' };
           }
         }
 
@@ -15996,6 +16019,230 @@
     }
 
     /* ══════════════════════════════════════════════════════
+       RECIPROCAL-SUM SOLVER: (A)/(B) + (B)/(A) = R
+       Pattern: f/g + g/f = R  →  t + 1/t = R  →  t² − Rt + 1 = 0
+       Works with multi-variable expressions (e.g. (x+y)/(x-y))
+       ══════════════════════════════════════════════════════ */
+    function tryReciprocalSumRational(text) {
+      var eq = text.replace(/\s+/g, '').replace(/[−–—]/g, '-').replace(/²/g, '^2').replace(/³/g, '^3');
+      if (eq.indexOf('=') < 0) return null;
+
+      // Pattern: (A)/(B) + (B)/(A) = R  or  (A)/(B) + (B)/(A) = P/Q
+      // We need to detect that the two fractions are reciprocals of each other
+      var re = /^\(?([^()=]+)\)?\s*\/\s*\(([^()]+)\)\s*\+\s*\(?([^()=]+)\)?\s*\/\s*\(([^()]+)\)\s*=\s*(.+)$/;
+      // Try with parens on numerators too
+      var re2 = /^\(([^()]+)\)\s*\/\s*\(([^()]+)\)\s*\+\s*\(([^()]+)\)\s*\/\s*\(([^()]+)\)\s*=\s*(.+)$/;
+      var m = eq.match(re2) || eq.match(re);
+      if (!m) return null;
+
+      var numA = m[1].trim(), denA = m[2].trim(), numB = m[3].trim(), denB = m[4].trim(), rhsStr = m[5].trim();
+
+      // Check that fractions are reciprocals: numA === denB and denA === numB (or with signs)
+      function normalize(s) { return s.replace(/\s/g, '').replace(/^\+/, ''); }
+      var nA = normalize(numA), dA = normalize(denA), nB = normalize(numB), dB = normalize(denB);
+
+      var isReciprocal = (nA === dB && dA === nB);
+      if (!isReciprocal) return null;
+
+      // Parse R (right-hand side) — could be fraction P/Q or number
+      var R = null, Rp = null, Rq = null;
+      var fracMatch = rhsStr.match(/^(-?\d+)\/(\d+)$/);
+      if (fracMatch) {
+        Rp = parseInt(fracMatch[1]);
+        Rq = parseInt(fracMatch[2]);
+        R = Rp / Rq;
+      } else {
+        R = parseFloat(rhsStr);
+        if (isNaN(R)) return null;
+      }
+
+      // Now solve: t + 1/t = R  →  t² − R·t + 1 = 0
+      var e = EN();
+      var sf = function(n,d){return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.92em;line-height:1.2;margin:0 3px"><span style="border-bottom:2px solid var(--v);padding:0 5px 2px">'+n+'</span><span style="padding:0 5px">'+d+'</span></span>';};
+      var rDisplay = fracMatch ? sf(Rp, Rq) : String(R);
+      var rText = fracMatch ? Rp + '/' + Rq : String(R);
+
+      var _h = '<div style="font-size:15px;line-height:1.9;overflow-wrap:anywhere;word-break:break-word">';
+
+      // Header
+      _h += '<div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(94,243,255,.08));border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:14px">'
+        +'<div style="font-size:13px;font-weight:800;color:var(--v);margin-bottom:4px">🔮 '+(e?'Reciprocal Sum Pattern Detected!':'Обнаружен паттерн обратной суммы!')+'</div>'
+        +'<div style="font-size:12px;color:var(--c);font-weight:700">🛠️ '+(e?'Cheat code: A/B + B/A = R → substitute t = A/B → solve t + 1/t = R':'Чит-код: A/B + B/A = R → подставляем t = A/B → решаем t + 1/t = R')+'</div>'
+        +'<div style="font-size:11px;color:var(--text2);margin-top:4px">'+(e?'The two fractions are RECIPROCALS of each other — this is the key!':'Две дроби являются ОБРАТНЫМИ друг другу — это ключ к решению!')+'</div></div>';
+
+      // Step 1: Identify the pattern
+      _h += '<div class="mega-section"><div class="mega-section-title">🔍 '+(e?'Step 1: Identify the Reciprocal Pattern':'Шаг 1: Распознаём паттерн обратных дробей')+'</div><div class="mega-section-body">'
+        +'<p>'+(e?'Your equation:':'Ваше уравнение:')+'</p>'
+        +'<p style="text-align:center;font-size:16px;margin:10px 0">'+sf(numA,denA)+' + '+sf(numB,denB)+' = '+rDisplay+'</p>'
+        +'<p>'+(e?'Notice that the second fraction is the <b>reciprocal</b> (flip) of the first:':'Заметим, что вторая дробь — <b>обратная</b> (перевёрнутая) к первой:')+'</p>'
+        +'<p style="text-align:center;font-size:14px;margin:6px 0;color:var(--a)">'+sf(numA,denA)+' = t &nbsp;⟹&nbsp; '+sf(numB,denB)+' = '+sf('1','t')+'</p>'
+        +'</div></div>';
+
+      // Step 2: Substitution
+      _h += '<div class="mega-section"><div class="mega-section-title">✨ '+(e?'Step 2: Magic Substitution':'Шаг 2: Волшебная замена')+'</div><div class="mega-section-body">'
+        +'<p style="text-align:center;font-size:18px;font-weight:700;margin:12px 0;color:var(--v)">t = '+sf(numA,denA)+'</p>'
+        +'<p>'+(e?'The equation transforms to:':'Уравнение превращается в:')+'</p>'
+        +'<p style="text-align:center;font-size:18px;margin:10px 0">t + '+sf('1','t')+' = '+rDisplay+'</p>'
+        +'<p style="font-size:11px;color:var(--text2)">💡 '+(e?'A complex multi-variable equation just became a simple equation in ONE variable t!':'Сложное многопеременное уравнение только что стало простым уравнением с ОДНОЙ переменной t!')+'</p>'
+        +'</div></div>';
+
+      // Step 3: Multiply by t → quadratic
+      // t² − R·t + 1 = 0
+      var quadA_coeff, quadB_coeff, quadC_coeff;
+      if (fracMatch) {
+        // t + 1/t = P/Q → multiply by Q·t: Q·t² + Q = P·t → Q·t² − P·t + Q = 0
+        quadA_coeff = Rq;
+        quadB_coeff = -Rp;
+        quadC_coeff = Rq;
+      } else {
+        quadA_coeff = 1;
+        quadB_coeff = -R;
+        quadC_coeff = 1;
+      }
+
+      var D = quadB_coeff * quadB_coeff - 4 * quadA_coeff * quadC_coeff;
+
+      _h += '<div class="mega-section"><div class="mega-section-title">📝 '+(e?'Step 3: Multiply by t and Solve the Quadratic':'Шаг 3: Умножаем на t и решаем квадратное')+'</div><div class="mega-section-body">'
+        +'<p>'+(e?'Multiply both sides by t (t ≠ 0):':'Умножаем обе части на t (t ≠ 0):')+'</p>'
+        +'<p style="text-align:center;font-size:16px;margin:10px 0">t² + 1 = '+rText+' · t</p>'
+        +'<p>'+(e?'Rearrange:':'Переносим:')+'</p>'
+        +'<p style="text-align:center;font-size:16px;font-weight:700;margin:10px 0;color:var(--v)">'+(quadA_coeff===1?'':quadA_coeff)+'t² '+(quadB_coeff>=0?'+ '+quadB_coeff:'− '+Math.abs(quadB_coeff))+'t + '+quadC_coeff+' = 0</p>';
+
+      if (D >= 0) {
+        var sqrtD = Math.sqrt(D);
+        var t1 = (-quadB_coeff + sqrtD) / (2 * quadA_coeff);
+        var t2 = (-quadB_coeff - sqrtD) / (2 * quadA_coeff);
+        var t1_nice = pN(t1), t2_nice = pN(t2);
+
+        // Check if D is a perfect square
+        var sqrtD_int = Math.round(sqrtD);
+        var isDPerfectSquare = Math.abs(sqrtD_int * sqrtD_int - D) < 1e-9;
+
+        _h += '<p>D = ('+quadB_coeff+')² − 4·'+quadA_coeff+'·'+quadC_coeff+' = <b style="color:var(--c)">'+D+'</b></p>';
+        if (isDPerfectSquare) {
+          _h += '<p>√D = '+sqrtD_int+'</p>';
+        } else {
+          _h += '<p>√D = '+sqrtD.toFixed(6)+'</p>';
+        }
+        _h += '<p>'+(e?'Solutions for t:':'Решения для t:')+'</p>'
+          +'<p style="font-size:16px;font-weight:700">'
+          +'<span style="color:var(--g)">t₁ = '+t1_nice+'</span>';
+        if (Math.abs(t1 - t2) > 1e-9) {
+          _h += ', <span style="color:var(--g)">t₂ = '+t2_nice+'</span>';
+        }
+        _h += '</p></div></div>';
+
+        // Step 4: Back-substitute
+        _h += '<div class="mega-section"><div class="mega-section-title">🎯 '+(e?'Step 4: Return to Original Variables':'Шаг 4: Возвращаемся к исходным переменным')+'</div><div class="mega-section-body">'
+          +'<p>'+(e?'Recall the substitution:':'Вспоминаем подстановку:')+'</p>'
+          +'<p style="text-align:center;font-size:15px;margin:8px 0">t = '+sf(numA,denA)+'</p>';
+
+        var processBranch = function(tv, label) {
+          var tv_nice = pN(tv);
+          var result = '<div style="background:var(--glass);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:8px 0">';
+          result += '<p><b style="color:var(--v)">'+(e?'Branch':'Ветка')+' '+label+':</b> t = '+tv_nice+'</p>';
+          result += '<p>'+sf(numA,denA)+' = '+tv_nice+'</p>';
+          result += '<p>'+(e?'Cross-multiply:':'Перемножаем крест-накрест:')+'</p>';
+          result += '<p style="font-size:14px"><b>'+numA+' = '+tv_nice+' · ('+denA+')</b></p>';
+
+          // For the common case (x+y)/(x-y) = t, solve: x+y = t(x-y) → x+y = tx-ty → x(1-t) = -y(1+t) → x/y = -(1+t)/(1-t) = (1+t)/(t-1)
+          // Check if numA and denA contain simple a+b / a-b patterns
+          var abMatch1 = numA.match(/^([a-zA-Z]+)([+-])([a-zA-Z]+)$/);
+          var abMatch2 = denA.match(/^([a-zA-Z]+)([+-])([a-zA-Z]+)$/);
+
+          if (abMatch1 && abMatch2 && abMatch1[1] === abMatch2[1] && abMatch1[3] === abMatch2[3]) {
+            var varA = abMatch1[1], varB = abMatch1[3];
+            var signNum = abMatch1[2], signDen = abMatch2[2];
+
+            // (varA ± varB) / (varA ± varB) = tv
+            // varA + s1*varB = tv * (varA + s2*varB)
+            // varA(1 - tv) = varB(tv*s2 - s1)
+            // varA/varB = (tv*s2 - s1) / (1 - tv)
+            var s1 = signNum === '+' ? 1 : -1;
+            var s2 = signDen === '+' ? 1 : -1;
+
+            if (Math.abs(1 - tv) > 1e-12) {
+              var ratio = (tv * s2 - s1) / (1 - tv);
+              var ratio_nice = pN(ratio);
+              result += '<p>'+varA+'(1 − '+tv_nice+') = '+varB+'('+tv_nice+'·('+(s2===1?'+':'')+s2+') − ('+(s1===1?'+':'')+s1+'))</p>';
+              result += '<p style="font-size:16px;font-weight:700;color:var(--g)">'+sf(varA,varB)+' = '+ratio_nice+'</p>';
+            } else {
+              // tv = 1 → 1 - tv = 0 → special case
+              // numA = denA → (s1=s2) or tv=1 means numA/denA=1 → numA=denA
+              result += '<p style="color:var(--a)">t = 1 → '+numA+' = '+denA;
+              if (s1 !== s2) {
+                result += ' → '+(e?'This implies '+varB+' = 0':'Следует, что '+varB+' = 0');
+              } else {
+                result += ' → '+(e?'Identity (always true)':'Тождество (верно всегда)');
+              }
+              result += '</p>';
+            }
+          } else {
+            result += '<p style="color:var(--text2)">'+(e?'Solve the resulting linear/algebraic equation for the required variable.':'Решите полученное алгебраическое уравнение относительно нужной переменной.')+'</p>';
+          }
+
+          result += '</div>';
+          return result;
+        };
+
+        _h += processBranch(t1, 't₁');
+        if (Math.abs(t1 - t2) > 1e-9) {
+          _h += processBranch(t2, 't₂');
+        }
+
+        _h += '</div></div>';
+
+        // Final answer box
+        _h += '<div style="margin-top:12px;padding:10px 14px;background:linear-gradient(135deg,rgba(74,222,128,.12),rgba(34,211,238,.08));border:1px solid var(--g);border-radius:10px">'
+          +'<div style="font-size:11px;font-weight:800;color:var(--g);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">🏁 '+(e?'ANSWER':'ОТВЕТ')+'</div>'
+          +'<div style="font-size:15px;font-weight:700">'+(e?'From':'Из')+' t + 1/t = '+rText+':</div>'
+          +'<div style="font-size:14px;margin-top:4px"><b style="color:var(--g)">t₁ = '+t1_nice+'</b>';
+        if (Math.abs(t1 - t2) > 1e-9) {
+          _h += ', <b style="color:var(--g)">t₂ = '+t2_nice+'</b>';
+        }
+        _h += '</div>';
+
+        // Show the variable ratio if applicable
+        var abM1 = numA.match(/^([a-zA-Z]+)([+-])([a-zA-Z]+)$/);
+        var abM2 = denA.match(/^([a-zA-Z]+)([+-])([a-zA-Z]+)$/);
+        if (abM1 && abM2 && abM1[1] === abM2[1] && abM1[3] === abM2[3]) {
+          var vA = abM1[1], vB = abM1[3];
+          var s1f = abM1[2] === '+' ? 1 : -1;
+          var s2f = abM2[2] === '+' ? 1 : -1;
+          var ratios = [];
+          [t1, t2].forEach(function(tv, idx) {
+            if (Math.abs(1 - tv) > 1e-12) {
+              ratios.push(vA+'/'+vB+' = '+pN((tv*s2f - s1f)/(1 - tv)));
+            }
+          });
+          if (ratios.length) {
+            _h += '<div style="font-size:14px;margin-top:6px;color:var(--c)">→ '+ratios.join(' &nbsp;'+(e?'or':'или')+'&nbsp; ')+'</div>';
+          }
+        }
+
+        _h += '</div>';
+
+      } else {
+        _h += '<p>D = ('+quadB_coeff+')² − 4·'+quadA_coeff+'·'+quadC_coeff+' = <b style="color:var(--r)">'+D+'</b> &lt; 0</p>'
+          +'<p style="color:var(--r);font-weight:700">❌ '+(e?'No real solutions — the discriminant is negative.':'Нет действительных решений — дискриминант отрицателен.')+'</p>'
+          +'</div></div>';
+      }
+
+      // Practice & Tips
+      if (typeof megaMistakes === 'function') _h += megaMistakes(e
+        ?['⚠️ Forgetting that t ≠ 0','❌ Cross-multiplying directly leads to a messy quartic','🔄 Not recognizing the reciprocal pattern','💀 Wrong sign when solving back for variables']
+        :['⚠️ Забыть, что t ≠ 0','❌ Перемножение крест-накрест напрямую ведёт к запутанному уравнению 4-й степени','🔄 Не распознать паттерн обратных дробей','💀 Ошибка знака при обратной подстановке']);
+
+      _h += '<div style="margin-top:8px;font-size:11px;color:var(--text2)">💡 '+(e?'This trick works whenever you see A/B + B/A = R. The key insight: two fractions that are reciprocals of each other!':'Этот приём работает каждый раз, когда видишь A/B + B/A = R. Ключ: две дроби — обратные друг другу!')+'</div>';
+
+      if (typeof megaPractice === 'function') _h += megaPractice(e
+        ?['(x+1)/(x-1) + (x-1)/(x+1) = 10/3', '(a+b)/(a-b) + (a-b)/(a+b) = 2', '(2x+1)/(x-3) + (x-3)/(2x+1) = 26/5']
+        :['(x+1)/(x-1) + (x-1)/(x+1) = 10/3', '(a+b)/(a-b) + (a-b)/(a+b) = 2', '(2x+1)/(x-3) + (x-3)/(2x+1) = 26/5']);
+
+      return _h + '</div>';
+    }
+
+    /* ══════════════════════════════════════════════════════
        HOOK INTO tryMegaSolve CHAIN
        ══════════════════════════════════════════════════════ */
     var _prevMega2 = tryMegaSolve;
@@ -16011,6 +16258,10 @@
       // 1b. Symmetric rational equation intercept (before general rational solver)
       var symRes = trySymmetricRational(text);
       if (symRes) return symRes;
+
+      // 1c. Reciprocal-sum pattern: (A)/(B) + (B)/(A) = R
+      var recipRes = tryReciprocalSumRational(text);
+      if (recipRes) return recipRes;
 
       // 2. Rational equations (fractions with x in denominator)
       if (isRationalEquation(text)) {
@@ -17514,7 +17765,6 @@
       }
     }
     if (hasExpandPattern && !hasRational) {
-      alert('TYPE 3/11 ENTERED: hasExpandPattern=' + hasExpandPattern + ', hasRational=' + hasRational);
       var expResult = ndExpand(eqExpr);
       var simpResult = ndSimplify(expResult || eqExpr);
 
@@ -17911,27 +18161,6 @@
       }
     }
   };
-        h += megaExpandable(e ? '🔍 How does Horner\'s scheme work?' : '🔍 Как работает схема Горнера?',
-          '<div class="mega-section-body" style="font-size:12px;line-height:1.8">'
-          + (e
-            ? 'Horner\'s scheme (synthetic division) is a compact way to divide a polynomial by (x−r):<br><br>'
-            + '1. Write the coefficients: <b style="color:var(--v)">a, b, c, d</b><br>'
-            + '2. Bring down <b style="color:var(--g)">a</b> (it becomes q2a)<br>'
-            + '3. Multiply by r: <b style="color:var(--c)">a·r</b>, add to next coefficient: <b style="color:var(--g)">b + a·r = q2b</b><br>'
-            + '4. Multiply q2b by r: <b style="color:var(--c)">q2b·r</b>, add to c: <b style="color:var(--g)">c + q2b·r = q2c</b><br>'
-            + '5. Multiply q2c by r: <b style="color:var(--c)">q2c·r</b>, add to d — should give 0<br><br>'
-            + 'The bottom row gives coefficients of the reduced polynomial: <b style="color:var(--g)">q2a·x² + q2b·x + q2c</b>'
-            : 'Схема Горнера — компактный способ деления многочлена на (x−r):<br><br>'
-            + '1. Записываем коэффициенты: <b style="color:var(--v)">a, b, c, d</b><br>'
-            + '2. Сносим <b style="color:var(--g)">a</b> (это q2a)<br>'
-            + '3. Умножаем на r: <b style="color:var(--c)">a·r</b>, прибавляем к следующему: <b style="color:var(--g)">b + a·r = q2b</b><br>'
-            + '4. Умножаем q2b на r: <b style="color:var(--c)">q2b·r</b>, прибавляем к c: <b style="color:var(--g)">c + q2b·r = q2c</b><br>'
-            + '5. Умножаем q2c на r: <b style="color:var(--c)">q2c·r</b>, прибавляем к d — остаток 0<br><br>'
-            + 'Нижняя строка — коэффициенты пониженного многочлена: <b style="color:var(--g)">q2a·x² + q2b·x + q2c</b>')
-          + '</div>');
-
-
-
 })();
 </script>
 

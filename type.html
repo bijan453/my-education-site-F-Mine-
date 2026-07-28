@@ -1,403 +1,1382 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F-Mine | Blind Typing Pro</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@300;400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Слепая печать | TypeMaster Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-slate: #090d16;
+      --glass-panel: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-blur: blur(12px);
+      --accent-purple: #8b5cf6;
+      --accent-purple-glow: rgba(139, 92, 246, 0.4);
+      --accent-cyan: #06b6d4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.4);
+      --accent-emerald: #10b981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.3);
+      --accent-rose: #f43f5e;
+      --accent-amber: #f59e0b;
+      --text-primary: #f8fafc;
+      --text-muted: #94a3b8;
+      --key-bg: rgba(255, 255, 255, 0.04);
+      --key-border: rgba(255, 255, 255, 0.1);
+      --font-ui: 'Inter', system-ui, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
 
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
-  background: #06070a;
-  color: #fff;
-  overflow-x: hidden;
-}
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-ui); user-select: none; }
 
-/* Ambient lights */
-body::before {
-  content: '';
-  position: fixed;
-  top: -20%;
-  right: -10%;
-  width: 60%;
-  height: 60%;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
-}
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg-slate);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 40%);
+      color: var(--text-primary);
+    }
 
-.split-container {
-  display: grid;
-  grid-template-columns: 420px 1fr;
-  min-height: 100vh;
-  position: relative;
-  z-index: 1;
-}
+    .app-viewport {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+    }
 
-.left-panel {
-  display: flex;
-  flex-direction: column;
-  padding: 40px clamp(24px, 5vw, 40px);
-  background: #090a0f;
-  position: relative;
-  overflow: hidden;
-  border-right: 1px solid rgba(255,255,255,0.06);
-}
-.left-panel::before {
-  content: '';
-  position: absolute;
-  top: 20%; left: -25%;
-  width: 50%; height: 60%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, transparent 70%);
-  pointer-events: none; filter: blur(50px);
-}
-.left-panel::after {
-  content: '';
-  position: absolute;
-  bottom: -10%; right: -20%;
-  width: 40%; height: 40%;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
-  filter: blur(40px);
-}
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 280px;
+      height: 100vh;
+      background: var(--glass-panel);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-right: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      gap: 1.5rem;
+      flex-shrink: 0;
+      z-index: 10;
+    }
 
-.form-wrapper { width: 100%; position: relative; z-index: 2; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
 
-.logo {
-  display: flex; align-items: center; gap: 2px;
-  font-family: 'Outfit', sans-serif; font-weight: 800;
-  font-size: 34px; letter-spacing: -1.5px; margin-bottom: 12px;
-  text-shadow: 0 0 20px rgba(167,139,250,0.3);
-}
-.logo-f {
-  background: linear-gradient(135deg, #a78bfa, #06b6d4);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 12px rgba(6,182,212,0.4));
-}
+    .brand-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--accent-purple-glow);
+      font-size: 1.2rem;
+    }
 
-h2 {
-  font-family: 'Outfit', sans-serif; font-weight: 700;
-  font-size: 32px; margin: 8px 0 24px; letter-spacing: -0.5px;
-}
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
 
-.language-select {
-  position: relative; display: inline-flex; align-items: center;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  padding: 4px; border-radius: 30px; margin-bottom: 32px; width: 116px; height: 34px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 0 20px rgba(124,58,237,0.1);
-}
-.lang-slider {
-  position: absolute; top: 3px; left: 4px; width: 52px; height: calc(100% - 6px);
-  border-radius: 20px;
-  background: linear-gradient(135deg, #7c3aed, #06b6d4);
-  box-shadow: 0 0 12px rgba(6,182,212,0.5), inset 0 1px 1px rgba(255,255,255,0.2);
-  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 1;
-}
-.language-select button {
-  position: relative; z-index: 2; flex: 1; background: transparent; border: none;
-  color: rgba(255,255,255,0.4); font-weight: 600; font-size: 13px; cursor: pointer; height: 100%;
-}
-.language-select button.active { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid transparent;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
 
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-.stat {
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px; padding: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
-  transition: all 0.2s ease;
-}
-.stat:hover { background: rgba(255,255,255,0.06); box-shadow: 0 6px 20px rgba(124,58,237,0.15), inset 0 1px 0 rgba(255,255,255,0.08); }
-.stat-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
-.stat-value { font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 500; color: #fff; text-shadow: 0 0 10px rgba(6,182,212,0.3); }
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--glass-panel);
+      color: var(--text-primary);
+      border-color: var(--glass-border);
+    }
 
-select, .btn-primary, .btn-secondary {
-  width: 100%; padding: 14px 16px; border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.04);
-  color: #fff; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; margin-bottom: 16px;
-}
-select:focus { border-color: rgba(6,182,212,0.4); background-color: rgba(255,255,255,0.06); box-shadow: 0 0 0 3px rgba(6,182,212,0.1); }
+    .nav-btn.active {
+      border-left: 3px solid var(--accent-purple);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
 
-.btn-primary {
-  padding: 15px 20px; margin-top: 12px; border: none;
-  background: linear-gradient(to right, #b5179e 0%, #7209b7 35%, #06b6d4 100%);
-  font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.25s ease;
-  box-shadow: 0 4px 15px rgba(114,9,183,0.3), 0 0 30px rgba(6,182,212,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
-}
-.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 25px rgba(114,9,183,0.4), 0 0 40px rgba(6,182,212,0.25); }
+    /* Daily Goal Widget */
+    .daily-goal-box {
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
 
-.btn-secondary {
-  padding: 14px 20px; margin-top: 12px; background: transparent;
-  border: 1px solid rgba(255,255,255,0.12); font-weight: 600; cursor: pointer;
-  transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-.btn-secondary:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+    .daily-goal-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
 
-.right-panel {
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  padding: 40px; position: relative;
-}
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
 
-.typing-area {
-  width: 100%; max-width: 880px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px; padding: 40px; backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(124,58,237,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
-  position: relative;
-}
-.typing-area::before {
-  content: ''; position: absolute; inset: -1px; border-radius: 20px;
-  background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(6,182,212,0.2));
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: xor; -webkit-mask-composite: xor; padding: 1px; pointer-events: none;
-}
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+      width: 60%;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
 
-.text-container {
-  position: relative; height: 200px; overflow: hidden;
-  mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-}
-.text-display {
-  font-family: 'DM Mono', monospace; font-size: 22px; line-height: 1.9;
-  color: rgba(255,255,255,0.4); word-wrap: break-word;
-  height: 100%; overflow-y: auto; padding-right: 12px;
-  scroll-behavior: smooth;
-}
-.text-display::-webkit-scrollbar { width: 6px; }
-.text-display::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
-.text-display::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #7c3aed, #06b6d4); border-radius: 3px; }
+    /* Profile Widget */
+    .profile-widget {
+      margin-top: auto;
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
 
-.text-display span { transition: all 0.1s ease; }
-.text-display span.current {
-  background: linear-gradient(135deg, #7c3aed, #06b6d4);
-  color: #fff; border-radius: 4px; padding: 2px 1px;
-  box-shadow: 0 0 12px rgba(6,182,212,0.6), 0 0 20px rgba(124,58,237,0.4);
-  animation: pulse 1.2s infinite;
-}
-.text-display span.correct { color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.4); }
-.text-display span.incorrect { color: #ef4444; background: rgba(239,68,68,0.25); border-radius: 3px; }
+    .profile-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
 
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #fff;
+    }
 
-.hidden-input { position: absolute; opacity: 0; pointer-events: none; }
+    .stats-row-mini {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      text-align: center;
+    }
 
-.keyboard { display: grid; gap: 6px; margin-top: 32px; }
-.keyboard-row { display: flex; justify-content: center; gap: 6px; }
-.key {
-  min-width: 40px; height: 42px; background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.07); border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Mono', monospace; font-size: 13px; color: rgba(255,255,255,0.6);
-  transition: all 0.1s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
-}
-.key.wide { min-width: 60px; } .key.space { min-width: 260px; }
-.key.active {
-  background: linear-gradient(135deg, #7c3aed, #06b6d4); color: #fff;
-  transform: translateY(2px); box-shadow: 0 0 15px rgba(6,182,212,0.7), 0 0 30px rgba(124,58,237,0.5), inset 0 1px 1px rgba(255,255,255,0.3);
-}
+    .stat-card-mini {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.4rem;
+      border-radius: 8px;
+    }
 
-.results { display: none; text-align: center; margin-top: 20px; }
-.results.active { display: block; }
-.results h3 { font-family: 'Outfit', sans-serif; font-size: 28px; margin-bottom: 24px; text-shadow: 0 0 20px rgba(167,139,250,0.4); }
+    .stat-val { font-weight: 800; color: var(--accent-cyan); font-size: 0.95rem; }
+    .stat-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
 
-@media (max-width: 900px) {
-  .split-container { grid-template-columns: 1fr; }
-  .left-panel { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .text-container { height: 160px; }
-  .key { min-width: 30px; height: 36px; font-size: 11px; }
-  .key.space { min-width: 180px; }
-}
-</style>
+    /* Mute & Audio Controls */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .icon-button {
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .icon-button:hover { background: var(--accent-purple); border-color: var(--accent-purple); }
+
+    /* Main Stage Workspace */
+    .main-stage {
+      flex: 1;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 2rem;
+      gap: 1.2rem;
+      overflow: hidden;
+    }
+
+    .stage-view { display: none; width: 100%; flex: 1; min-height: 0; flex-direction: column; gap: 1.2rem; }
+    .stage-view.active { display: flex; }
+
+    /* Top Stats Header */
+    .workspace-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: var(--glass-blur);
+      border-radius: 16px;
+      padding: 0.8rem 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .metric-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+    }
+
+    .metric-value { color: var(--accent-cyan); font-size: 1.15rem; font-family: var(--font-mono); }
+
+    /* Finger Hint Card */
+    .finger-guide-banner {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: 14px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .guide-text { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); }
+
+    .hand-diagram {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .finger-node {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid var(--glass-border);
+    }
+    .finger-node.active {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 12px var(--accent-cyan);
+    }
+
+    /* Central Exercise Area */
+    .exercise-display {
+      flex: 1;
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: var(--glass-blur);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Mode 1: Single Key Intro */
+    .intro-display-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .intro-key-card {
+      width: 110px;
+      height: 110px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 0 40px var(--accent-purple-glow);
+      animation: floatPulse 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatPulse {
+      from { transform: translateY(0) scale(1); }
+      to { transform: translateY(-6px) scale(1.03); }
+    }
+
+    /* Mode 2: Line Stream */
+    .line-stream {
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      letter-spacing: 4px;
+      white-space: nowrap;
+      display: flex;
+    }
+
+    .char-node {
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+
+    .char-node.correct {
+      color: var(--accent-emerald);
+      background: var(--accent-emerald-glow);
+    }
+
+    .char-node.wrong {
+      color: var(--accent-rose);
+      background: rgba(244, 63, 94, 0.25);
+      animation: shakeKey 0.2s ease-in-out;
+    }
+
+    .char-node.current {
+      color: #fff;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 16px var(--accent-cyan-glow);
+    }
+
+    @keyframes shakeKey {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    /* Mode 3: Falling Keys Canvas */
+    #fallingCanvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      display: none;
+    }
+
+    /* Virtual Keyboard Grid */
+    .keyboard-container {
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: var(--glass-blur);
+      border-radius: 20px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .key-cap {
+      min-width: 44px;
+      height: 44px;
+      background: var(--key-bg);
+      border: 1px solid var(--key-border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      transition: all 0.1s ease;
+      position: relative;
+    }
+
+    .key-cap.wide-tab { min-width: 70px; }
+    .key-cap.wide-caps { min-width: 80px; }
+    .key-cap.wide-shift { min-width: 95px; }
+    .key-cap.wide-enter { min-width: 90px; }
+    .key-cap.wide-space { min-width: 300px; }
+
+    /* Finger Color Zones */
+    .key-cap[data-finger="lp"] { border-bottom: 3px solid #f43f5e; }
+    .key-cap[data-finger="lr"] { border-bottom: 3px solid #f97316; }
+    .key-cap[data-finger="lm"] { border-bottom: 3px solid #eab308; }
+    .key-cap[data-finger="li"] { border-bottom: 3px solid #10b981; }
+    .key-cap[data-finger="ri"] { border-bottom: 3px solid #06b6d4; }
+    .key-cap[data-finger="rm"] { border-bottom: 3px solid #3b82f6; }
+    .key-cap[data-finger="rr"] { border-bottom: 3px solid #8b5cf6; }
+    .key-cap[data-finger="rp"] { border-bottom: 3px solid #ec4899; }
+    .key-cap[data-finger="thumb"] { border-bottom: 3px solid #a855f7; }
+
+    .key-cap.target {
+      background: var(--accent-cyan);
+      color: #fff;
+      box-shadow: 0 0 20px var(--accent-cyan-glow);
+      transform: translateY(-2px);
+    }
+
+    .key-cap.pressed {
+      background: var(--accent-emerald);
+      color: #fff;
+      transform: translateY(2px);
+    }
+
+    /* Lessons Grid Dashboard */
+    .lessons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+      flex: 1;
+      min-height: 0;
+      align-content: start;
+    }
+
+    .lesson-card {
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .lesson-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .lesson-title { font-weight: 700; font-size: 1.05rem; }
+    .stars-badge { color: var(--accent-amber); font-size: 1.1rem; }
+
+    .btn-action {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: auto;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--accent-purple-glow);
+    }
+
+    /* Completion Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal-box {
+      background: var(--bg-slate);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 2rem 2.5rem;
+      width: 90%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-stars { font-size: 2.8rem; color: var(--accent-amber); }
+    .xp-gain-badge {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      padding: 0.4rem 1.2rem;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .modal-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .modal-stat-box {
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      padding: 0.8rem;
+      border-radius: 12px;
+    }
+
+    .modal-btn-row {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 12px;
+      background: var(--glass-panel);
+      border: 1px solid var(--glass-border);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+  </style>
 </head>
 <body>
-<div class="split-container">
-  <div class="left-panel">
-    <div class="form-wrapper">
-      <div class="logo"><span class="logo-f">F</span><span class="logo-rest">-Mine</span></div>
-      <h2 id="title">Blind Typing</h2>
-      
-      <div class="language-select">
-        <div class="lang-slider" id="langSlider"></div>
-        <button class="active" data-lang="en">EN</button>
-        <button data-lang="ru">RU</button>
+  <div class="app-viewport">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">⚡</div>
+        <div>TypeMaster</div>
       </div>
 
-      <div class="stat-grid">
-        <div class="stat"><div class="stat-label" id="wpmLabel">WPM</div><div class="stat-value" id="wpm">0</div></div>
-        <div class="stat"><div class="stat-label" id="accLabel">Accuracy</div><div class="stat-value" id="accuracy">100%</div></div>
-        <div class="stat"><div class="stat-label" id="timeLabel">Time</div><div class="stat-value" id="time">0s</div></div>
-        <div class="stat"><div class="stat-label" id="mistakesLabel">Mistakes</div><div class="stat-value" id="mistakes">0</div></div>
-      </div>
+      <nav class="nav-list">
+        <button class="nav-btn active" onclick="switchTab('dashboard')">📚 Уроки</button>
+        <button class="nav-btn" onclick="switchTab('speedtest')">⚡ Тест Скорости</button>
+        <button class="nav-btn" onclick="switchTab('arcade')">🎮 Падающие Буквы</button>
+        <button class="nav-btn" onclick="switchTab('stats')">📊 Профиль</button>
+      </nav>
 
-      <select id="difficulty">
-        <option value="easy">Easy - Words</option>
-        <option value="medium" selected>Medium - Sentences</option>
-        <option value="hard">Hard - Paragraphs</option>
-      </select>
-
-      <button class="btn-primary" id="startBtn">Start Practice</button>
-      <button class="btn-secondary" id="resetBtn">Reset</button>
-    </div>
-  </div>
-
-  <div class="right-panel">
-    <div class="typing-area">
-      <div class="text-container">
-        <div class="text-display" id="textDisplay">Click "Start Practice" to begin your blind typing journey...</div>
-      </div>
-      <input type="text" class="hidden-input" id="hiddenInput" autocomplete="off">
-      
-      <div class="keyboard" id="keyboard"></div>
-
-      <div class="results" id="results">
-        <h3>Complete!</h3>
-        <div class="stat-grid" style="grid-template-columns: repeat(3,1fr);">
-          <div class="stat"><div class="stat-label">Final WPM</div><div class="stat-value" id="finalWpm">0</div></div>
-          <div class="stat"><div class="stat-label">Accuracy</div><div class="stat-value" id="finalAcc">0%</div></div>
-          <div class="stat"><div class="stat-label">Time</div><div class="stat-value" id="finalTime">0s</div></div>
+      <!-- Daily Goal Widget -->
+      <div class="daily-goal-box">
+        <div class="daily-goal-header">
+          <span>🎯 Дневная Цель</span>
+          <span id="lblDailyGoalTime">8 / 15 мин</span>
         </div>
-        <button class="btn-primary" id="tryAgainBtn">Try Again</button>
+        <div class="progress-track">
+          <div class="progress-fill" id="dailyGoalFill" style="width: 53%;"></div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-bar">
+        <button class="icon-button" id="btnMuteToggle" onclick="toggleAudioMute()" title="Вкл/Выкл Звук">🔊</button>
+      </div>
+
+      <!-- Profile -->
+      <div class="profile-widget">
+        <div class="profile-meta">
+          <div class="avatar">TM</div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.95rem;">Студент</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);" id="lblUserLevel">Уровень 3</div>
+          </div>
+        </div>
+        <div class="stats-row-mini">
+          <div class="stat-card-mini">
+            <div class="stat-val" id="lblProfileWpm">45</div>
+            <div class="stat-lbl">WPM</div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="stat-val" id="lblProfileAcc">97%</div>
+            <div class="stat-lbl">Точность</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Stage Workspace -->
+    <main class="main-stage">
+
+      <!-- View 1: Lessons Dashboard -->
+      <section id="view-dashboard" class="stage-view active">
+        <h2 style="font-size: 1.5rem; font-weight: 800;">Курсы и Уроки</h2>
+        <div class="lessons-grid" id="lessonsGrid"></div>
+      </section>
+
+      <!-- View 2: Active Practice Workspace -->
+      <section id="view-workspace" class="stage-view">
+        <!-- Top Stats Bar -->
+        <div class="workspace-topbar">
+          <button class="btn-secondary" style="max-width: 100px;" onclick="switchTab('dashboard')">← Назад</button>
+          <div class="metric-pill">Прогресс: <span class="metric-value" id="lblProgress">1 / 5</span></div>
+          <div class="metric-pill">WPM: <span class="metric-value" id="lblLiveWpm">0</span></div>
+          <div class="metric-pill">Точность: <span class="metric-value" id="lblLiveAcc">100%</span></div>
+          <div class="metric-pill">XP: <span class="metric-value" id="lblLiveXp">+0</span></div>
+        </div>
+
+        <!-- Finger Hint Banner -->
+        <div class="finger-guide-banner">
+          <div class="guide-text" id="lblFingerGuide">Нажмите подсвеченную клавишу</div>
+          <div class="hand-diagram">
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Лев</span>
+            <div class="finger-node" data-f="lp"></div>
+            <div class="finger-node" data-f="lr"></div>
+            <div class="finger-node" data-f="lm"></div>
+            <div class="finger-node" data-f="li"></div>
+            <div class="finger-node" data-f="thumb"></div>
+            <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem;">Прав</span>
+            <div class="finger-node" data-f="ri"></div>
+            <div class="finger-node" data-f="rm"></div>
+            <div class="finger-node" data-f="rr"></div>
+            <div class="finger-node" data-f="rp"></div>
+          </div>
+        </div>
+
+        <!-- Exercise Display Stage -->
+        <div class="exercise-display" id="exerciseDisplay">
+          <!-- Mode 1: Intro -->
+          <div class="intro-display-box" id="introBox" style="display: none;">
+            <div class="intro-key-card" id="introKeyCard">J</div>
+            <div style="font-size: 1.1rem; color: var(--text-muted);" id="introInstructionText">Используйте указательный палец правой руки</div>
+          </div>
+
+          <!-- Mode 2: Line Stream -->
+          <div class="line-stream" id="lineStream"></div>
+
+          <!-- Mode 3: Falling Canvas -->
+          <canvas id="fallingCanvas"></canvas>
+        </div>
+
+        <!-- Virtual Keyboard -->
+        <div class="keyboard-container" id="virtualKeyboard">
+          <!-- Row 1 -->
+          <div class="kb-row">
+            <div class="key-cap" data-code="Backquote" data-key="`" data-finger="lp">`</div>
+            <div class="key-cap" data-code="Digit1" data-key="1" data-finger="lp">1</div>
+            <div class="key-cap" data-code="Digit2" data-key="2" data-finger="lr">2</div>
+            <div class="key-cap" data-code="Digit3" data-key="3" data-finger="lm">3</div>
+            <div class="key-cap" data-code="Digit4" data-key="4" data-finger="li">4</div>
+            <div class="key-cap" data-code="Digit5" data-key="5" data-finger="li">5</div>
+            <div class="key-cap" data-code="Digit6" data-key="6" data-finger="ri">6</div>
+            <div class="key-cap" data-code="Digit7" data-key="7" data-finger="ri">7</div>
+            <div class="key-cap" data-code="Digit8" data-key="8" data-finger="rm">8</div>
+            <div class="key-cap" data-code="Digit9" data-key="9" data-finger="rr">9</div>
+            <div class="key-cap" data-code="Digit0" data-key="0" data-finger="rp">0</div>
+            <div class="key-cap wide-tab" data-code="Backspace" data-key="Backspace" data-finger="rp">←</div>
+          </div>
+          <!-- Row 2 -->
+          <div class="kb-row">
+            <div class="key-cap wide-tab" data-code="Tab" data-key="Tab" data-finger="lp">Tab</div>
+            <div class="key-cap" data-code="KeyQ" data-key="q" data-finger="lp">Q</div>
+            <div class="key-cap" data-code="KeyW" data-key="w" data-finger="lr">W</div>
+            <div class="key-cap" data-code="KeyE" data-key="e" data-finger="lm">E</div>
+            <div class="key-cap" data-code="KeyR" data-key="r" data-finger="li">R</div>
+            <div class="key-cap" data-code="KeyT" data-key="t" data-finger="li">T</div>
+            <div class="key-cap" data-code="KeyY" data-key="y" data-finger="ri">Y</div>
+            <div class="key-cap" data-code="KeyU" data-key="u" data-finger="ri">U</div>
+            <div class="key-cap" data-code="KeyI" data-key="i" data-finger="rm">I</div>
+            <div class="key-cap" data-code="KeyO" data-key="o" data-finger="rr">O</div>
+            <div class="key-cap" data-code="KeyP" data-key="p" data-finger="rp">P</div>
+          </div>
+          <!-- Row 3 -->
+          <div class="kb-row">
+            <div class="key-cap wide-caps" data-code="CapsLock" data-key="CapsLock" data-finger="lp">Caps</div>
+            <div class="key-cap" data-code="KeyA" data-key="a" data-finger="lp">A</div>
+            <div class="key-cap" data-code="KeyS" data-key="s" data-finger="lr">S</div>
+            <div class="key-cap" data-code="KeyD" data-key="d" data-finger="lm">D</div>
+            <div class="key-cap" data-code="KeyF" data-key="f" data-finger="li">F</div>
+            <div class="key-cap" data-code="KeyG" data-key="g" data-finger="li">G</div>
+            <div class="key-cap" data-code="KeyH" data-key="h" data-finger="ri">H</div>
+            <div class="key-cap" data-code="KeyJ" data-key="j" data-finger="ri">J</div>
+            <div class="key-cap" data-code="KeyK" data-key="k" data-finger="rm">K</div>
+            <div class="key-cap" data-code="KeyL" data-key="l" data-finger="rr">L</div>
+            <div class="key-cap wide-enter" data-code="Enter" data-key="Enter" data-finger="rp">Enter</div>
+          </div>
+          <!-- Row 4 -->
+          <div class="kb-row">
+            <div class="key-cap wide-shift" data-code="ShiftLeft" data-key="Shift" data-finger="lp">Shift</div>
+            <div class="key-cap" data-code="KeyZ" data-key="z" data-finger="lp">Z</div>
+            <div class="key-cap" data-code="KeyX" data-key="x" data-finger="lr">X</div>
+            <div class="key-cap" data-code="KeyC" data-key="c" data-finger="lm">C</div>
+            <div class="key-cap" data-code="KeyV" data-key="v" data-finger="li">V</div>
+            <div class="key-cap" data-code="KeyB" data-key="b" data-finger="li">B</div>
+            <div class="key-cap" data-code="KeyN" data-key="n" data-finger="ri">N</div>
+            <div class="key-cap" data-code="KeyM" data-key="m" data-finger="ri">M</div>
+            <div class="key-cap wide-shift" data-code="ShiftRight" data-key="Shift" data-finger="rp">Shift</div>
+          </div>
+          <!-- Row 5 -->
+          <div class="kb-row">
+            <div class="key-cap wide-space" data-code="Space" data-key=" " data-finger="thumb">Space</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Speed Test -->
+      <section id="view-speedtest" class="stage-view">
+        <h2 style="font-size: 1.5rem; font-weight: 800;">⚡ Тест Скорости Печати</h2>
+
+        <!-- Duration Selector -->
+        <div style="display: flex; gap: 0.75rem; flex-shrink: 0;">
+          <button class="btn-secondary" onclick="initSpeedTest(30)" style="flex: 1;">30 сек</button>
+          <button class="btn-secondary" onclick="initSpeedTest(60)" style="flex: 1; background: var(--accent-purple); border-color: var(--accent-purple);">60 сек</button>
+          <button class="btn-secondary" onclick="initSpeedTest(120)" style="flex: 1;">120 сек</button>
+        </div>
+
+        <!-- Timer & Live Stats -->
+        <div class="workspace-topbar">
+          <div class="metric-pill">Время: <span class="metric-value" id="stTimer">60</span>с</div>
+          <div class="metric-pill">WPM: <span class="metric-value" id="stWpm">0</span></div>
+          <div class="metric-pill">Точность: <span class="metric-value" id="stAcc">100%</span></div>
+        </div>
+
+        <!-- Typing Area -->
+        <div class="exercise-display" style="padding: 2rem; align-items: flex-start; justify-content: flex-start; flex-wrap: wrap; overflow-y: hidden;">
+          <div id="stTextStream" style="font-family: var(--font-mono); font-size: 1.6rem; letter-spacing: 2px; display: flex; flex-wrap: wrap; line-height: 2.4rem;"></div>
+        </div>
+
+        <!-- Results Panel (shown after test) -->
+        <div id="stResultsPanel" style="display: none; background: var(--glass-panel); border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.5rem; text-align: center;">
+          <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem;">📊 Результаты Теста</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Скорость</div>
+              <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-cyan);" id="stFinalWpm">0 WPM</div>
+            </div>
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Точность</div>
+              <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-emerald);" id="stFinalAcc">100%</div>
+            </div>
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Символов</div>
+              <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-purple);" id="stFinalChars">0</div>
+            </div>
+          </div>
+          <button class="btn-action" style="margin-top: 1rem;" onclick="initSpeedTest(stDuration)">Повторить тест</button>
+        </div>
+      </section>
+
+      <!-- View 3: Profile Stats -->
+      <section id="view-stats" class="stage-view">
+        <h2 style="font-size: 1.5rem; font-weight: 800;">Статистика Ученика</h2>
+        <div style="background: var(--glass-panel); border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+          <div>
+            <div style="color: var(--text-muted); font-size: 0.85rem;">Всего XP</div>
+            <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-purple);" id="lblTotalXp">1200</div>
+          </div>
+          <div>
+            <div style="color: var(--text-muted); font-size: 0.85rem;">Средняя Скорость</div>
+            <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-cyan);" id="lblAvgWpm">45 WPM</div>
+          </div>
+          <div>
+            <div style="color: var(--text-muted); font-size: 0.85rem;">Точность</div>
+            <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-emerald);" id="lblAccStat">97%</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="modal-overlay" id="completionModal">
+    <div class="modal-box">
+      <h3 style="font-size: 1.6rem; font-weight: 800;">🎉 Урок Пройден!</h3>
+      <div class="modal-stars" id="modalStars">⭐⭐⭐</div>
+      <div class="xp-gain-badge" id="modalXpBadge">+1000 XP</div>
+
+      <div class="modal-stats-grid">
+        <div class="modal-stat-box">
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Скорость</div>
+          <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent-cyan);" id="modalWpm">48 WPM</div>
+        </div>
+        <div class="modal-stat-box">
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Точность</div>
+          <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent-emerald);" id="modalAcc">98%</div>
+        </div>
+      </div>
+
+      <div class="modal-btn-row">
+        <button class="btn-secondary" onclick="retryCurrentLesson()">Пересдать (Esc)</button>
+        <button class="btn-action" style="flex:1;" onclick="nextLesson()">Следующий урок</button>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-// 324 SENTENCES - 162 EN + 162 RU
-const texts = {
-  en: {
-    easy: [
-      "the quick brown fox","jumps over lazy dog","practice makes perfect","type without looking","focus on accuracy","speed comes later","keep your fingers home","blind typing is power","code every day","learn by doing",
-      // ... (I'll include 50 for brevity in example, but in real file add 54 each)
-      "hello world","touch typing skills","build muscle memory","stay consistent","don't look down","trust your hands","small steps daily","typing is meditation","calm and steady","breathe and type"
-    ],
-    medium: [
-      "The quick brown fox jumps over the lazy dog.",
-      "Practice makes perfect when learning to type without looking.",
-      "Consistency beats intensity in the long run.",
-      "Your fingers remember what your eyes forget.",
-      "Blind typing unlocks your true coding speed.",
-      "Every mistake is a lesson in muscle memory.",
-      "Keep your wrists straight and shoulders relaxed.",
-      "Speed is a byproduct of accuracy.",
-      "Type like nobody is watching your keyboard.",
-      "The best programmers never look down.",
-      // ... add 54 total, I'll generate more below in actual code
-    ],
-    hard: [
-      "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!",
-      "In a world where distractions multiply exponentially, the ability to type blindly becomes a superpower for developers, writers, and creators alike.",
-      "function calculateWPM(chars, seconds) { return Math.round((chars / 5) / (seconds / 60)); }",
-      "True mastery comes not from looking, but from trusting the thousands of repetitions that built neural pathways in your fingertips.",
-      // longer paragraphs...
-    ]
-  },
-  ru: {
-    easy: ["привет мир","быстрая печать","слепая печать","практика каждый день","не смотри вниз","доверяй пальцам","скорость придет","точность важнее","держи ритм","спокойно печатай"],
-    medium: ["Съешь ещё этих мягких французских булок.","Печатать вслепую сложно но очень полезно для скорости.","Практика делает мастера.","Доверяй мышечной памяти.","Не смотри на клавиатуру никогда."],
-    hard: ["В мире полном отвлекающих факторов умение печатать вслепую становится настоящим суперспособностью для программистов.","function getData() { return fetch('/api').then(r => r.json()); }"]
-  }
-};
+  <script>
+    /* --- FINGER MAP MAPPING --- */
+    const FINGER_MAP = {
+      'j': { name: 'Указательный палец правой руки', code: 'ri' },
+      'f': { name: 'Указательный палец левой руки', code: 'li' },
+      ' ': { name: 'Большой палец', code: 'thumb' },
+      'u': { name: 'Указательный палец правой руки', code: 'ri' },
+      'r': { name: 'Указательный палец левой руки', code: 'li' },
+      'k': { name: 'Средний палец правой руки', code: 'rm' },
+      'd': { name: 'Средний палец левой руки', code: 'lm' },
+      'e': { name: 'Средний палец левой руки', code: 'lm' },
+      'i': { name: 'Средний палец правой руки', code: 'rm' },
+      'a': { name: 'Мизинец левой руки', code: 'lp' },
+      's': { name: 'Безымянный палец левой руки', code: 'lr' },
+      'l': { name: 'Безымянный палец правой руки', code: 'rr' }
+    };
 
-// To keep answer readable, I'm loading full 324 sentences via JS fetch simulation
-// FULL LIST - I'll inject it now (abbreviated here, full version in file)
-const fullTexts = {
-  en: {
-    easy: Array.from({length:54},(_,i)=>`practice word set ${i+1} type fast and accurate blind typing drill`),
-    medium: Array.from({length:54},(_,i)=>`Sentence ${i+1}: Learning to type without looking transforms your workflow completely and builds real confidence.`),
-    hard: Array.from({length:54},(_,i)=>`Paragraph ${i+1}: The art of blind typing requires patience, repetition, and trust. Over weeks of daily practice, your fingers develop independent intelligence. You stop thinking about keys and start thinking about ideas. This is where true speed lives — not in frantic movement, but in calm, automatic precision that frees your mind for creation.`)
-  },
-  ru: {
-    easy: Array.from({length:54},(_,i)=>`тренировка ${i+1} печать вслепую быстро`),
-    medium: Array.from({length:54},(_,i)=>`Предложение ${i+1}: Печать вслепую развивает память и скорость мышления.`),
-    hard: Array.from({length:54},(_,i)=>`Параграф ${i+1}: Искусство слепой печати требует терпения и ежедневной практики. Через месяцы тренировок пальцы начинают двигаться сами, а разум освобождается для творчества.`)
-  }
-};
-Object.assign(texts.en, fullTexts.en);
-Object.assign(texts.ru, fullTexts.ru);
+    const LESSON_DATABASE = [
+      { id: 1, title: 'Урок 1: Вводное Знакомство (J)', mode: 'intro', targetKey: 'j', instruction: 'Используйте указательный палец правой руки для нажатия клавиши J' },
+      { id: 2, title: 'Урок 2: Вводное Знакомство (F)', mode: 'intro', targetKey: 'f', instruction: 'Используйте указательный палец левой руки для нажатия клавиши F' },
+      { id: 3, title: 'Урок 3: Строка J & F', mode: 'line', text: 'f f f j j j fj fj f j f j f f j j' },
+      { id: 4, title: 'Урок 4: Клавиши U, R, K', mode: 'line', text: 'u r k u r k r u k k r u urk rku' },
+      { id: 5, title: 'Урок 5: Базовый Ряд (Home Row)', mode: 'line', text: 'asdf jkl; asdf jkl; a s d f j k l ;' },
+      { id: 6, title: 'Урок 6: Код JavaScript', mode: 'line', text: 'const sum = (a, b) => a + b;' },
+      { id: 7, title: 'Урок 7: Гласные E, I, O', mode: 'line', text: 'die die die oil oil oil lie lie fie fie oie oie' },
+      { id: 8, title: 'Урок 8: Клавиши G, H, T, Y', mode: 'line', text: 'gh ght thy ght gh thy gt hy ght thy ght' },
+      { id: 9, title: 'Урок 9: Простые Предложения', mode: 'line', text: 'the quick brown fox jumps over the lazy dog' },
+      { id: 10, title: 'Урок 10: Знаки Препинания', mode: 'line', text: 'hello, world! how are you? i am fine. thank you!' },
+      { id: 11, title: 'Урок 11: Абзац Текста', mode: 'line', text: 'coding is fun and practice makes you a better typist every single day' }
+    ];
 
-const keyboardLayout = [
-  ['`','1','2','3','4','5','6','7','8','9','0','-','=','Backspace'],
-  ['Tab','q','w','e','r','t','y','u','i','o','p','[',']','\\'],
-  ['Caps','a','s','d','f','g','h','j','k','l',';','\'','Enter'],
-  ['Shift','z','x','c','v','b','n','m',',','.','/','Shift'],
-  ['Space']
-];
+    /* --- APPLICATION STATE --- */
+    let activeLesson = null;
+    let charIndex = 0;
+    let hits = 0;
+    let errors = 0;
+    let startTime = null;
+    let audioMuted = false;
+    let audioContext = null;
+    let gameActive = false;
 
-let currentLang='en', currentText='', currentIndex=0, startTime=null, mistakes=0, timerInterval=null, isRunning=false;
+    // Arcade Falling Engine State
+    let fallingCanvas = null;
+    let fallingCtx = null;
+    let fallingBubbles = [];
+    let particles = [];
+    let fallingAnimId = null;
+    let arcadeScore = 0;
 
-const textDisplay=document.getElementById('textDisplay');
-const hiddenInput=document.getElementById('hiddenInput');
+    /* --- AUDIO ENGINE SYNTHESIS --- */
+    function initAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+    }
 
-function initKeyboard(){ /* same as before */ 
-  const kb=document.getElementById('keyboard'); kb.innerHTML='';
-  keyboardLayout.forEach(row=>{ const r=document.createElement('div'); r.className='keyboard-row';
-    row.forEach(k=>{ const d=document.createElement('div'); d.className='key'; d.dataset.key=k.toLowerCase(); d.textContent=k;
-      if(['Backspace','Tab','Caps','Enter','Shift'].includes(k))d.classList.add('wide'); if(k==='Space')d.classList.add('space'); r.appendChild(d); });
-    kb.appendChild(r);
-  });
-}
+    function toggleAudioMute() {
+      audioMuted = !audioMuted;
+      document.getElementById('btnMuteToggle').textContent = audioMuted ? '🔇' : '🔊';
+    }
 
-function renderText(){
-  textDisplay.innerHTML=currentText.split('').map((c,i)=>{
-    let cls=''; if(i<currentIndex)cls='correct'; else if(i===currentIndex)cls='current';
-    return `<span class="${cls}">${c}</span>`;
-  }).join('');
-  // smooth scroll to current
-  const cur=textDisplay.querySelector('.current');
-  if(cur) cur.scrollIntoView({behavior:'smooth', block:'center'});
-}
+    function playClickSynth() {
+      if (audioMuted) return;
+      initAudioContext();
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(580, audioContext.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(140, audioContext.currentTime + 0.035);
+      gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.035);
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.start();
+      osc.stop(audioContext.currentTime + 0.035);
+    }
 
-function start(){
-  const diff=document.getElementById('difficulty').value;
-  const arr=texts[currentLang][diff];
-  currentText=arr[Math.floor(Math.random()*arr.length)];
-  currentIndex=0; mistakes=0; startTime=Date.now(); isRunning=true;
-  document.getElementById('results').classList.remove('active');
-  renderText(); hiddenInput.value=''; hiddenInput.focus();
-  timerInterval=setInterval(updateStats,100);
-}
+    function playErrorSynth() {
+      if (audioMuted) return;
+      initAudioContext();
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(140, audioContext.currentTime);
+      gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.start();
+      osc.stop(audioContext.currentTime + 0.12);
+    }
 
-function updateStats(){ /* same logic */ 
-  if(!startTime) return;
-  const elapsed=(Date.now()-startTime)/1000;
-  const wpm=Math.round(((currentIndex/5)/(elapsed/60))||0);
-  const acc=currentIndex?Math.round(((currentIndex-mistakes)/currentIndex)*100):100;
-  document.getElementById('wpm').textContent=wpm;
-  document.getElementById('accuracy').textContent=acc+'%';
-  document.getElementById('time').textContent=Math.round(elapsed)+'s';
-  document.getElementById('mistakes').textContent=mistakes;
-}
+    function playFanfareSynth() {
+      if (audioMuted) return;
+      initAudioContext();
+      const frequencies = [523.25, 659.25, 783.99, 1046.50];
+      frequencies.forEach((freq, i) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, audioContext.currentTime + i * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + i * 0.08 + 0.22);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(audioContext.currentTime + i * 0.08);
+        osc.stop(audioContext.currentTime + i * 0.08 + 0.22);
+      });
+    }
 
-hiddenInput.addEventListener('input',e=>{
-  if(!isRunning) return;
-  const typed=e.target.value.slice(-1);
-  if(typed===currentText[currentIndex]){ currentIndex++; renderText(); if(currentIndex>=currentText.length){ finish(); } }
-  else { mistakes++; }
-  e.target.value='';
-});
+    /* --- TAB NAVIGATION --- */
+    function switchTab(tabName) {
+      gameActive = false;
+      if (fallingAnimId) cancelAnimationFrame(fallingAnimId);
+      
+      document.querySelectorAll('.stage-view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
-function finish(){
-  isRunning=false; clearInterval(timerInterval);
-  const elapsed=(Date.now()-startTime)/1000;
-  document.getElementById('finalWpm').textContent=document.getElementById('wpm').textContent;
-  document.getElementById('finalAcc').textContent=document.getElementById('accuracy').textContent;
-  document.getElementById('finalTime').textContent=Math.round(elapsed)+'s';
-  document.getElementById('results').classList.add('active');
-}
+      if (tabName === 'arcade') {
+        startArcadeMode();
+        return;
+      }
 
-// language toggle, keys, etc. (simplified)
-document.querySelectorAll('.language-select button').forEach(b=>b.onclick=()=>{currentLang=b.dataset.lang; document.querySelectorAll('.language-select button').forEach(x=>x.classList.toggle('active',x===b)); document.getElementById('langSlider').style.transform=b.dataset.lang==='ru'?'translateX(52px)':'translateX(0)';});
-document.getElementById('startBtn').onclick=start;
-document.getElementById('resetBtn').onclick=()=>location.reload();
-document.getElementById('tryAgainBtn').onclick=start;
-document.addEventListener('keydown',e=>{ const k=e.key===' '?'space':e.key.toLowerCase(); const el=document.querySelector(`[data-key="${k}"]`); if(el){el.classList.add('active'); setTimeout(()=>el.classList.remove('active'),120);} });
+      const target = document.getElementById(`view-${tabName}`);
+      if (target) target.classList.add('active');
+    }
 
-initKeyboard();
-</script>
+    /* --- DASHBOARD RENDER --- */
+    function renderDashboard() {
+      const grid = document.getElementById('lessonsGrid');
+      grid.innerHTML = '';
+      LESSON_DATABASE.forEach(l => {
+        const card = document.createElement('div');
+        card.className = 'lesson-card';
+        card.innerHTML = `
+          <div class="lesson-card-header">
+            <div class="lesson-title">${l.title}</div>
+            <div class="stars-badge">⭐⭐⭐</div>
+          </div>
+          <button class="btn-action" onclick="launchLesson(${l.id})">Начать Урок</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    /* --- LESSON ENGINE --- */
+    function launchLesson(id) {
+      gameActive = false;
+      if (fallingAnimId) cancelAnimationFrame(fallingAnimId);
+
+      activeLesson = LESSON_DATABASE.find(l => l.id === id);
+      charIndex = 0;
+      hits = 0;
+      errors = 0;
+      startTime = null;
+
+      switchTab('workspace');
+      document.getElementById('fallingCanvas').style.display = 'none';
+
+      if (activeLesson.mode === 'intro') {
+        document.getElementById('introBox').style.display = 'flex';
+        document.getElementById('lineStream').style.display = 'none';
+        document.getElementById('introKeyCard').textContent = activeLesson.targetKey.toUpperCase();
+        document.getElementById('introInstructionText').textContent = activeLesson.instruction;
+      } else {
+        document.getElementById('introBox').style.display = 'none';
+        document.getElementById('lineStream').style.display = 'flex';
+        renderLineStream();
+      }
+
+      updateFingerGuidance();
+      updateTargetKeyHighlight();
+    }
+
+    function renderLineStream() {
+      const stream = document.getElementById('lineStream');
+      stream.innerHTML = '';
+      activeLesson.text.split('').forEach((ch, idx) => {
+        const span = document.createElement('span');
+        span.className = 'char-node' + (idx === 0 ? ' current' : '');
+        span.textContent = ch === ' ' ? '␣' : ch;
+        stream.appendChild(span);
+      });
+    }
+
+    function updateFingerGuidance() {
+      const targetChar = activeLesson.mode === 'intro' ? activeLesson.targetKey : activeLesson.text[charIndex]?.toLowerCase();
+      const info = FINGER_MAP[targetChar] || { name: 'Нажмите клавишу', code: '' };
+      
+      document.getElementById('lblFingerGuide').textContent = `Клавиша: ${targetChar === ' ' ? 'Space' : targetChar?.toUpperCase()} → ${info.name}`;
+
+      document.querySelectorAll('.finger-node').forEach(n => n.classList.remove('active'));
+      if (info.code) {
+        const activeNode = document.querySelector(`.finger-node[data-f="${info.code}"]`);
+        if (activeNode) activeNode.classList.add('active');
+      }
+    }
+
+    function updateTargetKeyHighlight() {
+      document.querySelectorAll('.key-cap').forEach(k => k.classList.remove('target'));
+      const targetChar = activeLesson.mode === 'intro' ? activeLesson.targetKey : activeLesson.text[charIndex]?.toLowerCase();
+      if (targetChar) {
+        const keyCap = document.querySelector(`.key-cap[data-key="${targetChar}"]`);
+        if (keyCap) keyCap.classList.add('target');
+      }
+    }
+
+    /* --- FALLING KEYS ARCADE ENGINE --- */
+    function startArcadeMode() {
+      switchTab('workspace');
+      gameActive = true;
+      activeLesson = { id: 99, mode: 'arcade' };
+      
+      document.getElementById('introBox').style.display = 'none';
+      document.getElementById('lineStream').style.display = 'none';
+
+      fallingCanvas = document.getElementById('fallingCanvas');
+      fallingCanvas.style.display = 'block';
+      fallingCanvas.width = fallingCanvas.parentElement.clientWidth || 700;
+      fallingCanvas.height = fallingCanvas.parentElement.clientHeight || 300;
+      fallingCtx = fallingCanvas.getContext('2d');
+
+      fallingBubbles = [];
+      particles = [];
+      arcadeScore = 0;
+
+      spawnBubble();
+      if (fallingAnimId) cancelAnimationFrame(fallingAnimId);
+      arcadeLoop();
+    }
+
+    function spawnBubble() {
+      if (!gameActive) return;
+      const chars = 'abcdefghijklmnopqrstuvwxyz';
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      const x = Math.random() * (fallingCanvas.width - 60) + 30;
+      fallingBubbles.push({ char: ch, x: x, y: 0, speed: 1.5 + Math.random() * 1.5 });
+      setTimeout(spawnBubble, 1200);
+    }
+
+    function createExplosion(x, y) {
+      for (let i = 0; i < 12; i++) {
+        particles.push({
+          x: x, y: y,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6,
+          life: 1.0,
+          color: '#06b6d4'
+        });
+      }
+    }
+
+    function arcadeLoop() {
+      if (!gameActive) return;
+      fallingCtx.clearRect(0, 0, fallingCanvas.width, fallingCanvas.height);
+
+      // Render Falling Bubbles
+      for (let i = fallingBubbles.length - 1; i >= 0; i--) {
+        const b = fallingBubbles[i];
+        b.y += b.speed;
+
+        fallingCtx.beginPath();
+        fallingCtx.arc(b.x, b.y, 24, 0, Math.PI * 2);
+        fallingCtx.fillStyle = 'rgba(139, 92, 246, 0.85)';
+        fallingCtx.shadowColor = '#8b5cf6';
+        fallingCtx.shadowBlur = 18;
+        fallingCtx.fill();
+
+        fallingCtx.font = 'bold 20px "Fira Code", monospace';
+        fallingCtx.fillStyle = '#ffffff';
+        fallingCtx.textAlign = 'center';
+        fallingCtx.textBaseline = 'middle';
+        fallingCtx.fillText(b.char.toUpperCase(), b.x, b.y);
+
+        if (b.y > fallingCanvas.height) {
+          playErrorSynth();
+          fallingBubbles.splice(i, 1);
+        }
+      }
+
+      // Render Particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.04;
+
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+
+        fallingCtx.beginPath();
+        fallingCtx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        fallingCtx.fillStyle = `rgba(6, 182, 212, ${p.life})`;
+        fallingCtx.fill();
+      }
+
+      fallingAnimId = requestAnimationFrame(arcadeLoop);
+    }
+
+    function checkArcadeHit(char) {
+      if (!gameActive) return;
+      const idx = fallingBubbles.findIndex(b => b.char.toLowerCase() === char.toLowerCase());
+      if (idx !== -1) {
+        playClickSynth();
+        const hit = fallingBubbles[idx];
+        createExplosion(hit.x, hit.y);
+        fallingBubbles.splice(idx, 1);
+        arcadeScore += 100;
+        document.getElementById('lblLiveXp').textContent = `+${arcadeScore}`;
+      }
+    }
+
+    /* --- UNIFIED KEYDOWN EVENT ENGINE --- */
+    window.addEventListener('keydown', (e) => {
+      // Initialize Web Audio API on first keypress gesture
+      initAudioContext();
+
+      // Prevent browser default scroll/navigation
+      if (['Space', 'Tab', 'Backspace', 'ArrowUp', 'ArrowDown'].includes(e.code)) {
+        e.preventDefault();
+      }
+
+      // Escape hotkey for completion modal
+      if (e.key === 'Escape' && document.getElementById('completionModal').classList.contains('active')) {
+        retryCurrentLesson();
+        return;
+      }
+
+      if (!activeLesson) return;
+
+      // Highlight virtual key matching e.code or e.key
+      const keyCap = document.querySelector(`.key-cap[data-code="${e.code}"]`) || document.querySelector(`.key-cap[data-key="${e.key.toLowerCase()}"]`);
+      if (keyCap) {
+        keyCap.classList.add('pressed');
+        setTimeout(() => keyCap.classList.remove('pressed'), 120);
+      }
+
+      if (gameActive) {
+        checkArcadeHit(e.key);
+        return;
+      }
+
+      if (!startTime) startTime = Date.now();
+
+      if (activeLesson.mode === 'intro') {
+        if (e.key.toLowerCase() === activeLesson.targetKey) {
+          playClickSynth();
+          finishLesson();
+        } else if (e.key.length === 1 || e.key === ' ') {
+          playErrorSynth();
+        }
+        return;
+      }
+
+      // Line Mode Logic
+      const expectedChar = activeLesson.text[charIndex];
+      if (e.key === expectedChar) {
+        playClickSynth();
+        hits++;
+        updateCharNode(charIndex, 'correct');
+        charIndex++;
+
+        if (charIndex >= activeLesson.text.length) {
+          finishLesson();
+          return;
+        }
+
+        updateCharNode(charIndex, 'current');
+        updateFingerGuidance();
+        updateTargetKeyHighlight();
+      } else if (e.key.length === 1 || e.key === ' ') {
+        playErrorSynth();
+        errors++;
+        updateCharNode(charIndex, 'wrong');
+      }
+
+      updateLiveMetrics();
+    });
+
+    function updateCharNode(idx, status) {
+      const nodes = document.querySelectorAll('#lineStream .char-node');
+      if (nodes[idx]) nodes[idx].className = `char-node ${status}`;
+    }
+
+    function updateLiveMetrics() {
+      if (!startTime) return;
+      const minutes = (Date.now() - startTime) / 60000 || 0.001;
+      const wpm = Math.round((hits / 5) / minutes);
+      const acc = Math.round((hits / (hits + errors)) * 100) || 100;
+
+      document.getElementById('lblLiveWpm').textContent = wpm;
+      document.getElementById('lblLiveAcc').textContent = `${acc}%`;
+      document.getElementById('lblProgress').textContent = `${charIndex + 1} / ${activeLesson.text.length}`;
+    }
+
+    function finishLesson() {
+      playFanfareSynth();
+      const minutes = (Date.now() - startTime) / 60000 || 0.01;
+      const finalWpm = Math.round((hits / 5) / minutes) || 40;
+      const finalAcc = Math.round((hits / (hits + errors)) * 100) || 100;
+
+      document.getElementById('modalWpm').textContent = `${finalWpm} WPM`;
+      document.getElementById('modalAcc').textContent = `${finalAcc}%`;
+      document.getElementById('modalStars').textContent = finalAcc >= 95 ? '⭐⭐⭐' : finalAcc >= 85 ? '⭐⭐☆' : '⭐☆☆';
+      document.getElementById('completionModal').classList.add('active');
+    }
+
+    function retryCurrentLesson() {
+      document.getElementById('completionModal').classList.remove('active');
+      launchLesson(activeLesson.id);
+    }
+
+    function nextLesson() {
+      document.getElementById('completionModal').classList.remove('active');
+      const nextId = activeLesson.id + 1;
+      if (LESSON_DATABASE.find(l => l.id === nextId)) {
+        launchLesson(nextId);
+      } else {
+        switchTab('dashboard');
+      }
+    }
+
+    /* --- SPEED TEST ENGINE --- */
+    const WORD_BANK = [
+      'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'it',
+      'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this',
+      'but', 'his', 'by', 'from', 'they', 'we', 'her', 'she', 'or', 'an',
+      'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what', 'so', 'up',
+      'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me', 'when', 'make',
+      'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take', 'people', 'into',
+      'year', 'your', 'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then',
+      'now', 'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after',
+      'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way', 'even', 'new',
+      'want', 'because', 'any', 'these', 'give', 'day', 'most', 'find', 'code', 'type',
+      'quick', 'brown', 'fox', 'jumps', 'lazy', 'dog', 'program', 'function', 'return', 'value'
+    ];
+
+    let stDuration = 60;
+    let stTimerInterval = null;
+    let stTimeLeft = 60;
+    let stActive = false;
+    let stText = '';
+    let stIndex = 0;
+    let stHits = 0;
+    let stMisses = 0;
+    let stStartTime = null;
+
+    function generateSpeedTestText(wordCount) {
+      let words = [];
+      for (let i = 0; i < wordCount; i++) {
+        words.push(WORD_BANK[Math.floor(Math.random() * WORD_BANK.length)]);
+      }
+      return words.join(' ');
+    }
+
+    function initSpeedTest(seconds) {
+      stDuration = seconds;
+      stTimeLeft = seconds;
+      stActive = false;
+      stIndex = 0;
+      stHits = 0;
+      stMisses = 0;
+      stStartTime = null;
+
+      if (stTimerInterval) clearInterval(stTimerInterval);
+
+      stText = generateSpeedTestText(120);
+
+      document.getElementById('stTimer').textContent = seconds;
+      document.getElementById('stWpm').textContent = '0';
+      document.getElementById('stAcc').textContent = '100%';
+      document.getElementById('stResultsPanel').style.display = 'none';
+
+      const container = document.getElementById('stTextStream');
+      container.innerHTML = '';
+      stText.split('').forEach((ch, i) => {
+        const span = document.createElement('span');
+        span.className = 'char-node' + (i === 0 ? ' current' : '');
+        span.textContent = ch === ' ' ? '␣' : ch;
+        container.appendChild(span);
+      });
+    }
+
+    function startSpeedTestTimer() {
+      stStartTime = Date.now();
+      stActive = true;
+      stTimerInterval = setInterval(() => {
+        stTimeLeft--;
+        document.getElementById('stTimer').textContent = stTimeLeft;
+        if (stTimeLeft <= 0) {
+          clearInterval(stTimerInterval);
+          stActive = false;
+          endSpeedTest();
+        }
+      }, 1000);
+    }
+
+    function endSpeedTest() {
+      const elapsed = stDuration / 60;
+      const finalWpm = Math.round((stHits / 5) / elapsed) || 0;
+      const finalAcc = stHits + stMisses > 0 ? Math.round((stHits / (stHits + stMisses)) * 100) : 100;
+
+      document.getElementById('stFinalWpm').textContent = finalWpm + ' WPM';
+      document.getElementById('stFinalAcc').textContent = finalAcc + '%';
+      document.getElementById('stFinalChars').textContent = stHits;
+      document.getElementById('stResultsPanel').style.display = 'block';
+
+      playFanfareSynth();
+    }
+
+    function handleSpeedTestKey(e) {
+      if (!document.getElementById('view-speedtest').classList.contains('active')) return;
+      if (!stText || stIndex >= stText.length) return;
+
+      if (['Space', 'Tab', 'Backspace'].includes(e.code)) e.preventDefault();
+      if (e.key.length > 1 && e.key !== ' ') return;
+
+      if (!stActive && stTimeLeft === stDuration) {
+        startSpeedTestTimer();
+      }
+      if (!stActive) return;
+
+      const expected = stText[stIndex];
+      const nodes = document.querySelectorAll('#stTextStream .char-node');
+
+      if (e.key === expected) {
+        playClickSynth();
+        stHits++;
+        if (nodes[stIndex]) nodes[stIndex].className = 'char-node correct';
+        stIndex++;
+        if (stIndex < stText.length && nodes[stIndex]) nodes[stIndex].className = 'char-node current';
+      } else {
+        playErrorSynth();
+        stMisses++;
+        if (nodes[stIndex]) nodes[stIndex].className = 'char-node wrong';
+      }
+
+      const elapsedMin = (Date.now() - stStartTime) / 60000 || 0.001;
+      document.getElementById('stWpm').textContent = Math.round((stHits / 5) / elapsedMin);
+      document.getElementById('stAcc').textContent = Math.round((stHits / (stHits + stMisses)) * 100) + '%';
+    }
+
+    window.addEventListener('keydown', handleSpeedTestKey);
+
+    /* --- INITIALIZATION --- */
+    renderDashboard();
+    initSpeedTest(60);
+  </script>
 </body>
 </html>
