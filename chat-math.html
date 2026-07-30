@@ -3283,6 +3283,7 @@
             <span class="wchip wchip-g" onclick="ex('площадь трапеции a=8 b=4 h=5')">трапеция</span>
             <span class="wchip wchip-c" onclick="ex('прямоугольный треугольник катет a=3 b=4')">прям. △</span>
             <span class="wchip wchip-a" onclick="ex('длина дуги r=5 угол=60')">дуга</span>
+            <span class="wchip wchip-v" onclick="ex('(x+y)/(x-y) + (x-y)/(x+y) = 50/7')">(x+y)/(x−y) + … = 50/7</span>
           </div>
         </div>
       </div>
@@ -6831,7 +6832,7 @@
           // Card 4: expanded form (if different and useful)
           if (expanded2 && expanded2 !== simplified2 && expanded2 !== normE) {
             h += '<div class="mega-section"><div class="mega-section-title">📊 ' + (isEN() ? 'Step 2: Expanded form' : 'Шаг 2: Раскрытые скобки') + '</div>';
-            h += '<div class="mega-section-body"><b style="color:var(--v);font-size:15px">' + expanded2 + '</b></div></div>';
+            h += '<div class="mega-section-body"><b style="color:var(--v);font-size:15px">' + formatMath(expanded2) + '</b></div></div>';
           }
 
           // Verification (x=2)
@@ -7224,6 +7225,8 @@
             }
           });
         }
+
+        function addSolver(cfg) { regSolver(cfg); }
 
         addGeo('sq_area', 'Площадь квадрата', 'Square area', /(?:площадь\s*квадрата|square\s*area).*?(\d+\.?\d*)/i,
           function (m) { return { a: +m[1] } }, function (p) { var S = p.a * p.a; return { answer: 'S=' + fmtN(S), steps: ['a=' + p.a, 'S=a²=' + p.a + '²=' + fmtN(S)] } },
@@ -15634,49 +15637,35 @@
 
       var eq = text.replace(/\s+/g, '').replace(/[−–—]/g, '-').replace(/²/g, '^2').replace(/³/g, '^3');
 
+      // Strip outer matching parens from full equation
+      function stripOuter(str) {
+        while (str.length > 2 && str[0] === '(' && str[str.length - 1] === ')') {
+          var depth = 0, wrapsAll = true;
+          for (var i = 0; i < str.length - 1; i++) {
+            if (str[i] === '(') depth++;
+            else if (str[i] === ')') depth--;
+            if (depth === 0) { wrapsAll = false; break; }
+          }
+          if (wrapsAll) str = str.substring(1, str.length - 1);
+          else break;
+        }
+        return str;
+      }
+      eq = stripOuter(eq);
+
       // Split at =
       var sides = eq.split('=');
       if (sides.length !== 2) return null;
-      var lhs = sides[0], rhs = sides[1];
-
-      // Find all fractional terms: expr/expr where denominator contains x
-      // We look for patterns like  (stuff)/(stuff)  or  number/(stuff)
-      function extractFractions(expr) {
-        var fracs = [];
-        var rest = expr;
-
-        // Match (...)/(...)  or  num/(...)  patterns
-        var fracRe = /(?:\(([^()]+)\)|(\d+\.?\d*))\/\(([^()]+)\)/g;
-        var m;
-        while ((m = fracRe.exec(expr)) !== null) {
-          var num = m[1] || m[2];
-          var den = m[3];
-          if (/x/i.test(den)) {
-            fracs.push({ num: num, den: den, full: m[0] });
-          }
-        }
-
-        // Also match simpler: num/(linear)  like  1/(x-1)
-        var simpleRe = /(\d*\.?\d*)\/\(([^()]+)\)/g;
-        // Already captured above
-
-        // Match expr/(expr) without parens on numerator — like 1/x or 5/(x+1)
-        var bare = /(?:^|[+\-])(\d+\.?\d*)\/([a-zA-Z][^+\-=]*)/g;
-        // This is complex — let's use a different approach
-
-        return fracs;
-      }
+      var lhs = stripOuter(sides[0]), rhs = stripOuter(sides[1]);
 
       // Find denominators containing x
       function findDenominators(expr) {
         var denoms = [];
-        // Pattern: something/(expression_with_x)
         var re = /\/\(([^()]*x[^()]*)\)/gi;
         var m;
         while ((m = re.exec(expr)) !== null) {
           denoms.push(m[1]);
         }
-        // Also bare /x or /(x-1) without outer parens
         var re2 = /\/x(?!\^|\w)/gi;
         if (re2.test(expr)) denoms.push('x');
         return denoms;
@@ -15685,41 +15674,57 @@
       var allDenoms = findDenominators(lhs).concat(findDenominators(rhs));
       if (allDenoms.length === 0) return null; // no x in denominator — not a rational equation
 
-      // Parse linear expression to find zero
-      function findZero(expr) {
+      // Find zeros of any denominator (linear or quadratic/factored)
+      function findDenomZeros(expr) {
+        expr = stripOuter(expr.replace(/\s/g, ''));
+        var zeros = [];
+        if (typeof nerdamer !== 'undefined') {
+          try {
+            var sol = nerdamer.solveEquations(expr, 'x');
+            if (sol && sol.length) {
+              for (var i = 0; i < sol.length; i++) {
+                var sv = parseFloat(nerdamer(sol[i]).evaluate().text());
+                if (!isNaN(sv)) zeros.push(sv);
+              }
+              if (zeros.length) return zeros;
+            }
+          } catch(ex) {}
+        }
         expr = expr.replace(/\s/g, '');
         var a = 0, b = 0;
         if (expr[0] !== '-' && expr[0] !== '+') expr = '+' + expr;
         var terms = expr.match(/[+-][^+-]*/g) || [];
         for (var i = 0; i < terms.length; i++) {
           var t = terms[i];
-          if (/x/i.test(t)) {
+          if (/x/i.test(t) && !/\^/i.test(t)) {
             var co = t.replace(/x/gi, '').replace(/^\+/, '');
             a += co === '' ? 1 : co === '-' ? -1 : parseFloat(co);
-          } else {
+          } else if (!/x/i.test(t)) {
             b += parseFloat(t) || 0;
           }
         }
-        if (a === 0) return null;
-        return -b / a;
+        if (a !== 0) zeros.push(-b / a);
+        return zeros;
       }
 
       // Find ОДЗ (domain restrictions)
       var restrictions = [];
       var restrictionExprs = [];
       for (var i = 0; i < allDenoms.length; i++) {
-        var z = findZero(allDenoms[i]);
-        if (z !== null) {
+        var zs = findDenomZeros(allDenoms[i]);
+        for (var k = 0; k < zs.length; k++) {
+          var z = zs[k];
           var dup = false;
           for (var j = 0; j < restrictions.length; j++) {
             if (Math.abs(restrictions[j] - z) < 1e-9) dup = true;
           }
           if (!dup) {
             restrictions.push(z);
-            restrictionExprs.push(allDenoms[i]);
+            restrictionExprs.push(allDenoms[i] + ' ≠ 0 → x ≠ ' + pN(z));
           }
         }
       }
+      restrictions.sort(function(a,b){return a-b;});
 
       // Original equation display
       var dispEq = text.replace(/\s+/g, ' ').trim();
@@ -16021,32 +16026,112 @@
     /* ══════════════════════════════════════════════════════
        RECIPROCAL-SUM SOLVER: (A)/(B) + (B)/(A) = R
        Pattern: f/g + g/f = R  →  t + 1/t = R  →  t² − Rt + 1 = 0
-       Works with multi-variable expressions (e.g. (x+y)/(x-y))
+       Robust parser: strips outer parens, extracts equation, matches terms
        ══════════════════════════════════════════════════════ */
     function tryReciprocalSumRational(text) {
-      var eq = text.replace(/\s+/g, '').replace(/[−–—]/g, '-').replace(/²/g, '^2').replace(/³/g, '^3');
-      if (eq.indexOf('=') < 0) return null;
+      if (!text || text.indexOf('=') < 0) return null;
 
-      // Pattern: (A)/(B) + (B)/(A) = R  or  (A)/(B) + (B)/(A) = P/Q
-      // We need to detect that the two fractions are reciprocals of each other
-      var re = /^\(?([^()=]+)\)?\s*\/\s*\(([^()]+)\)\s*\+\s*\(?([^()=]+)\)?\s*\/\s*\(([^()]+)\)\s*=\s*(.+)$/;
-      // Try with parens on numerators too
-      var re2 = /^\(([^()]+)\)\s*\/\s*\(([^()]+)\)\s*\+\s*\(([^()]+)\)\s*\/\s*\(([^()]+)\)\s*=\s*(.+)$/;
-      var m = eq.match(re2) || eq.match(re);
-      if (!m) return null;
+      // 1. Extract equation string containing '='
+      var raw = text.replace(/[−–—]/g, '-').replace(/²/g, '^2').replace(/³/g, '^3');
+      // Look for equation part: e.g. ((x+y)/(x-y)+(x-y)/(x+y)=50/7)
+      var eqMatch = raw.match(/(\(?\(?[a-zA-Z0-9_+\-/*^().\s]+\)?\)?\s*=\s*[a-zA-Z0-9_+\-/*^().\s]+)/);
+      var s = eqMatch ? eqMatch[1].trim() : raw.trim();
 
-      var numA = m[1].trim(), denA = m[2].trim(), numB = m[3].trim(), denB = m[4].trim(), rhsStr = m[5].trim();
+      // Remove spaces
+      s = s.replace(/\s+/g, '');
 
-      // Check that fractions are reciprocals: numA === denB and denA === numB (or with signs)
-      function normalize(s) { return s.replace(/\s/g, '').replace(/^\+/, ''); }
-      var nA = normalize(numA), dA = normalize(denA), nB = normalize(numB), dB = normalize(denB);
+      // Strip outer matching parentheses wrapping the ENTIRE equation
+      function stripOuterParens(str) {
+        while (str.length > 2 && str[0] === '(' && str[str.length - 1] === ')') {
+          var depth = 0, wrapsAll = true;
+          for (var i = 0; i < str.length - 1; i++) {
+            if (str[i] === '(') depth++;
+            else if (str[i] === ')') depth--;
+            if (depth === 0) { wrapsAll = false; break; }
+          }
+          if (wrapsAll) str = str.substring(1, str.length - 1);
+          else break;
+        }
+        return str;
+      }
+      s = stripOuterParens(s);
 
-      var isReciprocal = (nA === dB && dA === nB);
-      if (!isReciprocal) return null;
+      // Split at '='
+      var sides = s.split('=');
+      if (sides.length !== 2) return null;
+      var lhsStr = stripOuterParens(sides[0]);
+      var rhsStr = stripOuterParens(sides[1]);
 
-      // Parse R (right-hand side) — could be fraction P/Q or number
+      // Helper: parse a single fraction term "c*(A)/(B)" or "(A)/(B)" or "A/B"
+      function parseFracTerm(termStr) {
+        termStr = stripOuterParens(termStr.trim());
+        var coeff = 1;
+        // Check for leading coefficient: e.g. "7*(A)/(B)" or "7(A)/(B)"
+        var coeffMatch = termStr.match(/^([+-]?\d+\.?\d*)\*?\((.+)\)$/);
+        if (coeffMatch) {
+          coeff = parseFloat(coeffMatch[1]);
+          termStr = coeffMatch[2];
+        }
+
+        // Find main '/' separating numerator and denominator
+        var depth = 0, slashIdx = -1;
+        for (var i = 0; i < termStr.length; i++) {
+          var ch = termStr[i];
+          if (ch === '(') depth++;
+          else if (ch === ')') depth--;
+          else if (ch === '/' && depth === 0) {
+            slashIdx = i;
+            break;
+          }
+        }
+        if (slashIdx < 0) return null;
+
+        var numRaw = termStr.substring(0, slashIdx);
+        var denRaw = termStr.substring(slashIdx + 1);
+
+        var num = stripOuterParens(numRaw);
+        var den = stripOuterParens(denRaw);
+
+        return { coeff: coeff, num: num, den: den };
+      }
+
+      // Split LHS into top-level terms separated by + or -
+      var terms = [], currentTerm = '', depth = 0;
+      for (var i = 0; i < lhsStr.length; i++) {
+        var ch = lhsStr[i];
+        if (ch === '(') depth++;
+        else if (ch === ')') depth--;
+
+        if ((ch === '+' || ch === '-') && depth === 0 && i > 0) {
+          terms.push(currentTerm);
+          currentTerm = (ch === '-') ? '-' : '';
+        } else {
+          currentTerm += ch;
+        }
+      }
+      if (currentTerm) terms.push(currentTerm);
+
+      if (terms.length !== 2) return null;
+
+      var ft1 = parseFracTerm(terms[0]);
+      var ft2 = parseFracTerm(terms[1]);
+      if (!ft1 || !ft2) return null;
+
+      // Check reciprocity: num1 === den2 && den1 === num2 (normalized)
+      function norm(str) { return str.replace(/\s/g, '').replace(/^\+/, ''); }
+      var n1 = norm(ft1.num), d1 = norm(ft1.den);
+      var n2 = norm(ft2.num), d2 = norm(ft2.den);
+
+      var isRecip = (n1 === d2 && d1 === n2);
+      if (!isRecip) return null;
+
+      var coeff1 = ft1.coeff, coeff2 = ft2.coeff;
+      var numA = ft1.num, denA = ft1.den;
+      var numB = ft2.num, denB = ft2.den;
+
+      // Parse RHS (right-hand side)
       var R = null, Rp = null, Rq = null;
-      var fracMatch = rhsStr.match(/^(-?\d+)\/(\d+)$/);
+      var fracMatch = rhsStr.match(/^([+-]?\d+)\/(\d+)$/);
       if (fracMatch) {
         Rp = parseInt(fracMatch[1]);
         Rq = parseInt(fracMatch[2]);
@@ -16056,7 +16141,22 @@
         if (isNaN(R)) return null;
       }
 
-      // Now solve: t + 1/t = R  →  t² − R·t + 1 = 0
+      // Solve: coeff1 * t + coeff2 / t = R
+      // → coeff1 * t² − R * t + coeff2 = 0
+      // If R = Rp / Rq:  (Rq * coeff1) * t² − Rp * t + (Rq * coeff2) = 0
+      var quadA, quadB, quadC;
+      if (fracMatch) {
+        quadA = Rq * coeff1;
+        quadB = -Rp;
+        quadC = Rq * coeff2;
+      } else {
+        quadA = coeff1;
+        quadB = -R;
+        quadC = coeff2;
+      }
+
+      var D = quadB * quadB - 4 * quadA * quadC;
+
       var e = EN();
       var sf = function(n,d){return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.92em;line-height:1.2;margin:0 3px"><span style="border-bottom:2px solid var(--v);padding:0 5px 2px">'+n+'</span><span style="padding:0 5px">'+d+'</span></span>';};
       var rDisplay = fracMatch ? sf(Rp, Rq) : String(R);
@@ -16070,7 +16170,7 @@
         +'<div style="font-size:12px;color:var(--c);font-weight:700">🛠️ '+(e?'Cheat code: A/B + B/A = R → substitute t = A/B → solve t + 1/t = R':'Чит-код: A/B + B/A = R → подставляем t = A/B → решаем t + 1/t = R')+'</div>'
         +'<div style="font-size:11px;color:var(--text2);margin-top:4px">'+(e?'The two fractions are RECIPROCALS of each other — this is the key!':'Две дроби являются ОБРАТНЫМИ друг другу — это ключ к решению!')+'</div></div>';
 
-      // Step 1: Identify the pattern
+      // Step 1: Identify pattern
       _h += '<div class="mega-section"><div class="mega-section-title">🔍 '+(e?'Step 1: Identify the Reciprocal Pattern':'Шаг 1: Распознаём паттерн обратных дробей')+'</div><div class="mega-section-body">'
         +'<p>'+(e?'Your equation:':'Ваше уравнение:')+'</p>'
         +'<p style="text-align:center;font-size:16px;margin:10px 0">'+sf(numA,denA)+' + '+sf(numB,denB)+' = '+rDisplay+'</p>'
@@ -16083,56 +16183,36 @@
         +'<p style="text-align:center;font-size:18px;font-weight:700;margin:12px 0;color:var(--v)">t = '+sf(numA,denA)+'</p>'
         +'<p>'+(e?'The equation transforms to:':'Уравнение превращается в:')+'</p>'
         +'<p style="text-align:center;font-size:18px;margin:10px 0">t + '+sf('1','t')+' = '+rDisplay+'</p>'
-        +'<p style="font-size:11px;color:var(--text2)">💡 '+(e?'A complex multi-variable equation just became a simple equation in ONE variable t!':'Сложное многопеременное уравнение только что стало простым уравнением с ОДНОЙ переменной t!')+'</p>'
+        +'<p style="font-size:11px;color:var(--text2)">💡 '+(e?'A complex multi-variable equation just became a simple quadratic in ONE variable t!':'Сложное многопеременное уравнение только что стало простым квадратным уравнением с ОДНОЙ переменной t!')+'</p>'
         +'</div></div>';
 
-      // Step 3: Multiply by t → quadratic
-      // t² − R·t + 1 = 0
-      var quadA_coeff, quadB_coeff, quadC_coeff;
-      if (fracMatch) {
-        // t + 1/t = P/Q → multiply by Q·t: Q·t² + Q = P·t → Q·t² − P·t + Q = 0
-        quadA_coeff = Rq;
-        quadB_coeff = -Rp;
-        quadC_coeff = Rq;
-      } else {
-        quadA_coeff = 1;
-        quadB_coeff = -R;
-        quadC_coeff = 1;
-      }
-
-      var D = quadB_coeff * quadB_coeff - 4 * quadA_coeff * quadC_coeff;
-
+      // Step 3: Quadratic in t
       _h += '<div class="mega-section"><div class="mega-section-title">📝 '+(e?'Step 3: Multiply by t and Solve the Quadratic':'Шаг 3: Умножаем на t и решаем квадратное')+'</div><div class="mega-section-body">'
         +'<p>'+(e?'Multiply both sides by t (t ≠ 0):':'Умножаем обе части на t (t ≠ 0):')+'</p>'
         +'<p style="text-align:center;font-size:16px;margin:10px 0">t² + 1 = '+rText+' · t</p>'
         +'<p>'+(e?'Rearrange:':'Переносим:')+'</p>'
-        +'<p style="text-align:center;font-size:16px;font-weight:700;margin:10px 0;color:var(--v)">'+(quadA_coeff===1?'':quadA_coeff)+'t² '+(quadB_coeff>=0?'+ '+quadB_coeff:'− '+Math.abs(quadB_coeff))+'t + '+quadC_coeff+' = 0</p>';
+        +'<p style="text-align:center;font-size:16px;font-weight:700;margin:10px 0;color:var(--v)">'+(quadA===1?'':quadA)+'t² '+(quadB>=0?'+ '+quadB:'− '+Math.abs(quadB))+'t + '+quadC+' = 0</p>';
 
       if (D >= 0) {
         var sqrtD = Math.sqrt(D);
-        var t1 = (-quadB_coeff + sqrtD) / (2 * quadA_coeff);
-        var t2 = (-quadB_coeff - sqrtD) / (2 * quadA_coeff);
+        var t1 = (-quadB + sqrtD) / (2 * quadA);
+        var t2 = (-quadB - sqrtD) / (2 * quadA);
         var t1_nice = pN(t1), t2_nice = pN(t2);
 
-        // Check if D is a perfect square
         var sqrtD_int = Math.round(sqrtD);
         var isDPerfectSquare = Math.abs(sqrtD_int * sqrtD_int - D) < 1e-9;
 
-        _h += '<p>D = ('+quadB_coeff+')² − 4·'+quadA_coeff+'·'+quadC_coeff+' = <b style="color:var(--c)">'+D+'</b></p>';
-        if (isDPerfectSquare) {
-          _h += '<p>√D = '+sqrtD_int+'</p>';
-        } else {
-          _h += '<p>√D = '+sqrtD.toFixed(6)+'</p>';
-        }
+        _h += '<p>D = ('+quadB+')² − 4·'+quadA+'·'+quadC+' = <b style="color:var(--c)">'+D+'</b></p>';
+        if (isDPerfectSquare) _h += '<p>√D = '+sqrtD_int+'</p>';
+        else _h += '<p>√D = '+sqrtD.toFixed(6)+'</p>';
+
         _h += '<p>'+(e?'Solutions for t:':'Решения для t:')+'</p>'
           +'<p style="font-size:16px;font-weight:700">'
           +'<span style="color:var(--g)">t₁ = '+t1_nice+'</span>';
-        if (Math.abs(t1 - t2) > 1e-9) {
-          _h += ', <span style="color:var(--g)">t₂ = '+t2_nice+'</span>';
-        }
+        if (Math.abs(t1 - t2) > 1e-9) _h += ', <span style="color:var(--g)">t₂ = '+t2_nice+'</span>';
         _h += '</p></div></div>';
 
-        // Step 4: Back-substitute
+        // Step 4: Back-substitute for variable relationship
         _h += '<div class="mega-section"><div class="mega-section-title">🎯 '+(e?'Step 4: Return to Original Variables':'Шаг 4: Возвращаемся к исходным переменным')+'</div><div class="mega-section-body">'
           +'<p>'+(e?'Recall the substitution:':'Вспоминаем подстановку:')+'</p>'
           +'<p style="text-align:center;font-size:15px;margin:8px 0">t = '+sf(numA,denA)+'</p>';
@@ -16145,21 +16225,13 @@
           result += '<p>'+(e?'Cross-multiply:':'Перемножаем крест-накрест:')+'</p>';
           result += '<p style="font-size:14px"><b>'+numA+' = '+tv_nice+' · ('+denA+')</b></p>';
 
-          // For the common case (x+y)/(x-y) = t, solve: x+y = t(x-y) → x+y = tx-ty → x(1-t) = -y(1+t) → x/y = -(1+t)/(1-t) = (1+t)/(t-1)
-          // Check if numA and denA contain simple a+b / a-b patterns
           var abMatch1 = numA.match(/^([a-zA-Z]+)([+-])([a-zA-Z]+)$/);
           var abMatch2 = denA.match(/^([a-zA-Z]+)([+-])([a-zA-Z]+)$/);
 
           if (abMatch1 && abMatch2 && abMatch1[1] === abMatch2[1] && abMatch1[3] === abMatch2[3]) {
             var varA = abMatch1[1], varB = abMatch1[3];
-            var signNum = abMatch1[2], signDen = abMatch2[2];
-
-            // (varA ± varB) / (varA ± varB) = tv
-            // varA + s1*varB = tv * (varA + s2*varB)
-            // varA(1 - tv) = varB(tv*s2 - s1)
-            // varA/varB = (tv*s2 - s1) / (1 - tv)
-            var s1 = signNum === '+' ? 1 : -1;
-            var s2 = signDen === '+' ? 1 : -1;
+            var s1 = abMatch1[2] === '+' ? 1 : -1;
+            var s2 = abMatch2[2] === '+' ? 1 : -1;
 
             if (Math.abs(1 - tv) > 1e-12) {
               var ratio = (tv * s2 - s1) / (1 - tv);
@@ -16167,15 +16239,7 @@
               result += '<p>'+varA+'(1 − '+tv_nice+') = '+varB+'('+tv_nice+'·('+(s2===1?'+':'')+s2+') − ('+(s1===1?'+':'')+s1+'))</p>';
               result += '<p style="font-size:16px;font-weight:700;color:var(--g)">'+sf(varA,varB)+' = '+ratio_nice+'</p>';
             } else {
-              // tv = 1 → 1 - tv = 0 → special case
-              // numA = denA → (s1=s2) or tv=1 means numA/denA=1 → numA=denA
-              result += '<p style="color:var(--a)">t = 1 → '+numA+' = '+denA;
-              if (s1 !== s2) {
-                result += ' → '+(e?'This implies '+varB+' = 0':'Следует, что '+varB+' = 0');
-              } else {
-                result += ' → '+(e?'Identity (always true)':'Тождество (верно всегда)');
-              }
-              result += '</p>';
+              result += '<p style="color:var(--a)">t = 1 → '+numA+' = '+denA+'</p>';
             }
           } else {
             result += '<p style="color:var(--text2)">'+(e?'Solve the resulting linear/algebraic equation for the required variable.':'Решите полученное алгебраическое уравнение относительно нужной переменной.')+'</p>';
@@ -16186,10 +16250,7 @@
         };
 
         _h += processBranch(t1, 't₁');
-        if (Math.abs(t1 - t2) > 1e-9) {
-          _h += processBranch(t2, 't₂');
-        }
-
+        if (Math.abs(t1 - t2) > 1e-9) _h += processBranch(t2, 't₂');
         _h += '</div></div>';
 
         // Final answer box
@@ -16197,12 +16258,9 @@
           +'<div style="font-size:11px;font-weight:800;color:var(--g);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">🏁 '+(e?'ANSWER':'ОТВЕТ')+'</div>'
           +'<div style="font-size:15px;font-weight:700">'+(e?'From':'Из')+' t + 1/t = '+rText+':</div>'
           +'<div style="font-size:14px;margin-top:4px"><b style="color:var(--g)">t₁ = '+t1_nice+'</b>';
-        if (Math.abs(t1 - t2) > 1e-9) {
-          _h += ', <b style="color:var(--g)">t₂ = '+t2_nice+'</b>';
-        }
+        if (Math.abs(t1 - t2) > 1e-9) _h += ', <b style="color:var(--g)">t₂ = '+t2_nice+'</b>';
         _h += '</div>';
 
-        // Show the variable ratio if applicable
         var abM1 = numA.match(/^([a-zA-Z]+)([+-])([a-zA-Z]+)$/);
         var abM2 = denA.match(/^([a-zA-Z]+)([+-])([a-zA-Z]+)$/);
         if (abM1 && abM2 && abM1[1] === abM2[1] && abM1[3] === abM2[3]) {
@@ -16210,7 +16268,7 @@
           var s1f = abM1[2] === '+' ? 1 : -1;
           var s2f = abM2[2] === '+' ? 1 : -1;
           var ratios = [];
-          [t1, t2].forEach(function(tv, idx) {
+          [t1, t2].forEach(function(tv) {
             if (Math.abs(1 - tv) > 1e-12) {
               ratios.push(vA+'/'+vB+' = '+pN((tv*s2f - s1f)/(1 - tv)));
             }
@@ -16219,18 +16277,15 @@
             _h += '<div style="font-size:14px;margin-top:6px;color:var(--c)">→ '+ratios.join(' &nbsp;'+(e?'or':'или')+'&nbsp; ')+'</div>';
           }
         }
-
         _h += '</div>';
-
       } else {
-        _h += '<p>D = ('+quadB_coeff+')² − 4·'+quadA_coeff+'·'+quadC_coeff+' = <b style="color:var(--r)">'+D+'</b> &lt; 0</p>'
-          +'<p style="color:var(--r);font-weight:700">❌ '+(e?'No real solutions — the discriminant is negative.':'Нет действительных решений — дискриминант отрицателен.')+'</p>'
+        _h += '<p>D = ('+quadB+')² − 4·'+quadA+'·'+quadC+' = <b style="color:var(--r)">'+D+'</b> &lt; 0</p>'
+          +'<p style="color:var(--r);font-weight:700">❌ '+(e?'No real solutions — discriminant is negative.':'Нет действительных решений — дискриминант отрицателен.')+'</p>'
           +'</div></div>';
       }
 
-      // Practice & Tips
       if (typeof megaMistakes === 'function') _h += megaMistakes(e
-        ?['⚠️ Forgetting that t ≠ 0','❌ Cross-multiplying directly leads to a messy quartic','🔄 Not recognizing the reciprocal pattern','💀 Wrong sign when solving back for variables']
+        ?['⚠️ Forgetting that t ≠ 0','❌ Cross-multiplying directly leads to a messy quartic','🔄 Not recognizing reciprocal pattern','💀 Wrong sign when solving back for variables']
         :['⚠️ Забыть, что t ≠ 0','❌ Перемножение крест-накрест напрямую ведёт к запутанному уравнению 4-й степени','🔄 Не распознать паттерн обратных дробей','💀 Ошибка знака при обратной подстановке']);
 
       _h += '<div style="margin-top:8px;font-size:11px;color:var(--text2)">💡 '+(e?'This trick works whenever you see A/B + B/A = R. The key insight: two fractions that are reciprocals of each other!':'Этот приём работает каждый раз, когда видишь A/B + B/A = R. Ключ: две дроби — обратные друг другу!')+'</div>';
@@ -16335,7 +16390,19 @@
   function tx(k) { return typeof t === 'function' ? t(k) : k; }
   function pN(n) {
     if (typeof n !== 'number' || !isFinite(n)) return String(n);
-    return (Math.abs(n - Math.round(n)) < 1e-9) ? String(Math.round(n)) : n.toFixed(6).replace(/\.?0+$/, '');
+    if (Math.abs(n - Math.round(n)) < 1e-9) return String(Math.round(n));
+    // Check for simple fractions
+    var abs = Math.abs(n), sign = n < 0 ? -1 : 1;
+    for (var d = 2; d <= 100; d++) {
+      var num = Math.round(abs * d);
+      if (Math.abs(abs - num / d) < 1e-9) {
+        if (d === 2 && num % 2 === 1) return _frac(sign * num, d);
+        var g = gcd(Math.abs(num), d);
+        num /= g; d /= g;
+        return _frac(sign * num, d);
+      }
+    }
+    return n.toFixed(6).replace(/\.?0+$/, '');
   }
   function fmt(n) { return pN(n); }
   function _frac(n, d) {
@@ -16357,12 +16424,46 @@
       .replace(/\)([a-zA-Z])/g, ')*$1');
   }
 
+  // Format polynomial for display (descending powers)
+  function formatPoly(p) {
+    var tokens = [];
+    var re = /([+-]?\d*\.?\d*)\*?x(?:\^(\d+))?|([+-]?\d+\.?\d*)(?!\*?x)/g;
+    var m;
+    while ((m = re.exec(p)) !== null) {
+      if (m[3] !== undefined) tokens.push({ c: parseFloat(m[3]), d: 0 });
+      else {
+        var c = m[1] === '' || m[1] === '+' ? 1 : m[1] === '-' ? -1 : parseFloat(m[1]);
+        tokens.push({ c: c, d: m[2] ? parseInt(m[2]) : 1 });
+      }
+    }
+    tokens.sort(function(a,b){return b.d - a.d;});
+    var out = '';
+    for (var i = 0; i < tokens.length; i++) {
+      if (i > 0 && tokens[i].c > 0) out += '+';
+      if (tokens[i].c === -1 && tokens[i].d > 0) out += '-';
+      else if (tokens[i].c !== 1 || tokens[i].d === 0) out += tokens[i].c;
+      if (tokens[i].d > 0) out += 'x' + (tokens[i].d > 1 ? '^' + tokens[i].d : '');
+    }
+    return out;
+  }
+  // Format expanded math expression for human-readable HTML display
+  // e.g., "14*x*y+7*x^2+7*y^2" → "14xy + 7x<sup>2</sup> + 7y<sup>2</sup>"
+  function formatMath(s) {
+    return s
+      .replace(/\*/g, '')
+      .replace(/\^(\d+)/g, '<sup>$1</sup>')
+      .replace(/([+-])\s*/g, ' $1 ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
   // Safe nerdamer calls
   function ndExpand(s) { try { return nerdamer('expand(' + s + ')').toString(); } catch (e) { return null; } }
   function ndFactor(s) { try { return nerdamer('factor(' + s + ')').toString(); } catch (e) { return null; } }
   function ndSimplify(s) { try { return nerdamer(s).toString(); } catch (e) { return null; } }
   function ndEval(s, vars) { try { return nerdamer(s).evaluate(vars || {}).toString(); } catch (e) { return null; } }
   function ndSolve(expr) { try { return nerdamer.solveEquations(expr, 'x'); } catch (e) { return null; } }
+  function hasExtraVars(s) { return /[yzYZ]/.test(String(s).replace(/\b[a-z]+\s*\(/gi, '')); }
 
   // Solve equation string using nerdamer, return numeric roots array
   function solveWithNerdamer(eq) {
@@ -16375,11 +16476,111 @@
     var roots = [];
     for (var i = 0; i < sols.length; i++) {
       try {
-        var sv = parseFloat(nerdamer(sols[i]).evaluate().text());
+        var txt = nerdamer(sols[i]).evaluate().text();
+        if (txt.indexOf('i') >= 0) continue;
+        var sv = parseFloat(txt);
         if (!isNaN(sv) && isFinite(sv)) roots.push(sv);
       } catch (e) {}
     }
     return roots;
+  }
+
+  // Extract quadratic coefficients from a polynomial string (e.g. "(-4*x+x^2+1)" → {a:1, b:-4, c:1})
+  // Returns a=b=c=0 if the polynomial is not degree ≤ 2
+  function extractQuadCoeffs(polyStr) {
+    var s = polyStr.replace(/\s+/g, '').replace(/^\(|\)$/g, '');
+    if (s[0] !== '-' && s[0] !== '+') s = '+' + s;
+    var coeffs = {}, maxDeg = 0;
+    var re = /([+-]?)([^+-]+)/g, m;
+    while ((m = re.exec(s)) !== null) {
+      var sign = m[1] === '-' ? -1 : 1;
+      var term = m[2];
+      var deg = 0, coeff = 1;
+      if (term.indexOf('x') >= 0) {
+        if (term.indexOf('^') >= 0) deg = parseInt(term.split('^')[1]);
+        else deg = 1;
+        var xIdx = term.indexOf('x');
+        var coeffPart = term.substring(0, xIdx);
+        if (coeffPart.indexOf('*') >= 0) coeff = parseFloat(coeffPart.replace('*', ''));
+        else if (coeffPart.length > 0) coeff = parseFloat(coeffPart) || 1;
+        else coeff = 1;
+      } else {
+        coeff = parseFloat(term);
+      }
+      coeffs[deg] = (coeffs[deg] || 0) + sign * coeff;
+      if (deg > maxDeg) maxDeg = deg;
+    }
+    if (maxDeg > 2) return { a: 0, b: 0, c: 0 };
+    return { a: coeffs[2] || 0, b: coeffs[1] || 0, c: coeffs[0] || 0 };
+  }
+
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
+
+  // Simplify √n by extracting perfect square factors: √12 → {outside:2, inside:3}
+  function simplifyRadical(n) {
+    if (n <= 0 || n !== n) return { outside: 0, inside: 0 };
+    n = Math.round(n);
+    var outside = 1;
+    for (var f = 2; f * f <= n; f++) {
+      while (n % (f * f) === 0) { outside *= f; n /= f * f; }
+    }
+    return { outside: outside, inside: n };
+  }
+
+  // Return exact radical form for quadratic roots: e.g. "2 ± √3" or "(5 ± √21)/2"
+  function formatExactQuadratic(polyStr) {
+    var c = extractQuadCoeffs(polyStr);
+    var a = c.a, b = c.b, cc = c.c;
+    if (Math.abs(a) < 1e-12) return '';
+    var disc = b * b - 4 * a * cc;
+    if (disc < 0) return '';
+    var sr = simplifyRadical(disc);
+    var num1 = -b, rad = sr.outside, radInside = sr.inside, den = 2 * a;
+    var g = gcd(Math.abs(num1), Math.abs(den));
+    if (rad > 0) g = gcd(g, rad);
+    num1 /= g; rad /= g; den /= g;
+    if (den < 0) { num1 = -num1; rad = -rad; den = -den; }
+    if (radInside <= 1) {
+      if (den === 1) return String(num1);
+      return '(' + num1 + ')/' + den;
+    }
+    var radStr = '';
+    if (rad > 0) {
+      if (rad === 1) radStr = '√' + (radInside > 1 ? radInside : '');
+      else radStr = rad + '√' + radInside;
+    }
+    if (rad === 0) return num1 ? String(num1) : '0';
+    if (den === 1) {
+    if (num1 === 0) return '± ' + radStr;
+    return num1 + ' ± ' + radStr;
+  }
+  if (num1 === 0) return '± ' + radStr + '/' + den;
+  return '(' + num1 + ' ± ' + radStr + ')/' + den;
+  }
+
+  // Return array of individual exact root labels for a quadratic: e.g. ["2+√3", "2-√3"]
+  function getExactRootLabels(polyStr) {
+    var c = extractQuadCoeffs(polyStr);
+    var a = c.a, b = c.b, cc = c.c;
+    if (Math.abs(a) < 1e-12 || b*b - 4*a*cc < 0) return [];
+    var disc = b*b - 4*a*cc;
+    var sr = simplifyRadical(disc);
+    var num = -b, rad = sr.outside, radInside = sr.inside, den = 2*a;
+    var g = gcd(Math.abs(num), Math.abs(den));
+    if (rad > 0) g = gcd(g, rad);
+    num /= g; rad /= g; den /= g;
+    if (den < 0) { num = -num; rad = -rad; den = -den; }
+    function oneLabel(sign) {
+      if (radInside <= 1) return String(Math.round((num + sign * rad) / den));
+      var rStr = rad === 1 ? '√' + radInside : rad + '√' + radInside;
+      if (den === 1) {
+        if (num === 0) return (sign > 0 ? '' : '-') + rStr;
+        return num + (sign > 0 ? '+' : '-') + rStr;
+      }
+      if (num === 0) return (sign > 0 ? '' : '-') + rStr + '/' + den;
+      return '(' + num + (sign > 0 ? '+' : '-') + rStr + ')/' + den;
+    }
+    return [oneLabel(1), oneLabel(-1)];
   }
 
   // Try to factor a polynomial expression string; return factored form or null
@@ -16398,7 +16599,7 @@
 
   // Custom polynomial solver using rational root theorem
   function solvePoly(polyStr) {
-    var s = polyStr.replace(/\s+/g, '');
+    var s = polyStr.replace(/\s+/g, '').replace(/^\(|\)$/g, '');
     var coeffs = {};
     var re = /([+-]?)([^+-]+)/g;
     if (s[0] !== '-' && s[0] !== '+') s = '+' + s;
@@ -16447,11 +16648,6 @@
         var sd = Math.sqrt(disc);
         roots.push((-b + sd) / (2 * a));
         roots.push((-b - sd) / (2 * a));
-      } else {
-        var rp = -b / (2 * a);
-        var ip = Math.sqrt(-disc) / (2 * a);
-        roots.push(rp + '+' + ip + 'i');
-        roots.push(rp + '-' + ip + 'i');
       }
       return roots;
     }
@@ -16565,28 +16761,35 @@
   }
 
   // ==== HELPER: Answer block ====
-  function answerBlock(roots, odz) {
+  function answerBlock(roots, odz, exactForms) {
     var h = '<br><div class="result-banner">✅ ' + tx('answer') + ': ';
     if (!roots || !roots.length) {
       h += (E() ? 'No solutions' : 'Нет решений');
     } else {
       // Filter out any violating ODZ
-      var valid = roots;
+      var valid = [], validExact = [];
       if (odz && odz.length) {
-        valid = [];
         for (var i = 0; i < roots.length; i++) {
           var bad = false;
           for (var j = 0; j < odz.length; j++) {
             if (Math.abs(roots[i] - odz[j]) < 1e-9) { bad = true; break; }
           }
-          if (!bad) valid.push(roots[i]);
+          if (!bad) { valid.push(roots[i]); if (exactForms && exactForms[i]) validExact.push(exactForms[i]); }
         }
+      } else {
+        valid = roots;
+        if (exactForms) validExact = exactForms;
       }
-      if (valid.length !== roots.length && odz && odz.length) {
+      if (valid.length !== (odz && odz.length ? roots.length : 0) && odz && odz.length) {
         h += '<br><span style="color:var(--r);font-size:13px">⚠️ ' + (E() ? 'Extraneous roots removed: ' : 'Посторонние корни удалены: ')
           + roots.filter(function(r) { return valid.indexOf(r) < 0; }).map(pN).join(', ') + '</span><br>';
       }
-      h += valid.map(function(r) { return 'x = <b>' + pN(r) + '</b>'; }).join(';  ');
+      if (validExact.length === valid.length) {
+        h += validExact.map(function(e) { return 'x = <b>' + e + '</b>'; }).join(';  ');
+        h += '<br><span style="color:var(--text3);font-size:13px">(' + valid.map(function(r) { return pN(r); }).join('; ') + ')</span>';
+      } else {
+        h += valid.map(function(r) { return 'x = <b>' + pN(r) + '</b>'; }).join(';  ');
+      }
     }
     h += '</div>';
     return h;
@@ -17231,8 +17434,8 @@
       // Check if this is the Type 10 pattern: all numerators factor and cancel
       var t10Match = text.match(/\(x\^2[^)]+\)\/\(x[^)]+\)\s*[-+]\s*\(x\^2[^)]+\)\/\(x[^)]+\)\s*[-+]\s*\(x\^2[^)]+\)\/\(x[^)]+\)/i);
       if (!t10Match) {
-        // Broader: check for rational with quadratics in numerator and linears in denominator
-        t10Match = text.match(/x\^2.*\/.*x[-+]/i);
+        // Check for Type 10 pattern: quadratic numerator / linear denominator (x^2...)/(x±k)
+        t10Match = text.match(/\(x\^2[^)]+\)\/\(x[+-]?\d*\)/i);
       }
 
       if (t10Match) {
@@ -17250,7 +17453,7 @@
 
         // Find ODZ
         var odzVals = [];
-        var denomRe = /\(([^)]*x[^)]*)\)/g;
+        var denomRe = /\/\(([^)]*x[^)]*)\)/g;
         var denomMatch;
         while ((denomMatch = denomRe.exec(text)) !== null) {
           var dStr = denomMatch[1];
@@ -17335,25 +17538,66 @@
 
       // Find all denominators from original text
       var rawDenoms = [];
-      var dmRx = /\/([^\s=]+?(?:x[^\s=]*))/gi;
+      var dmRx = /\/(\([^)]+\)|[^\s=]+)/gi;
       var dm;
       while ((dm = dmRx.exec(text)) !== null) {
         var dPart = dm[1].replace(/[()]/g, '').trim();
         if (dPart && rawDenoms.indexOf(dPart) < 0) rawDenoms.push(dPart);
       }
+      // Normalize denominators: remove those that are the negation of another (e.g. 2-x = -(x-2))
+      var normalizedDenoms = [];
+      for (var ndi = 0; ndi < rawDenoms.length; ndi++) {
+        var d = rawDenoms[ndi];
+        var isNegation = false;
+        for (var ndj = 0; ndj < normalizedDenoms.length; ndj++) {
+          try {
+            if (nerdamer('(' + d + ')+(' + normalizedDenoms[ndj] + ')').toString() === '0') {
+              isNegation = true; break;
+            }
+          } catch (e) {}
+        }
+        if (!isNegation) normalizedDenoms.push(d);
+      }
+      rawDenoms = normalizedDenoms;
 
-      // Build LCD strings
-      var lcdTerms = [];
-      var seenLcd = {};
+      // Build LCD from FACTORED denominators
+      var denomPiecesMap = {};
+      var lcmPieces = [];
       for (var di = 0; di < rawDenoms.length; di++) {
         var dNorm = normNerd(rawDenoms[di]);
-        if (!seenLcd[dNorm]) { seenLcd[dNorm] = true; lcdTerms.push('(' + dNorm + ')'); }
+        if (denomPiecesMap[dNorm]) continue;
+        var dFact = ndFactor(dNorm);
+        var pieces;
+        if (dFact && dFact !== dNorm && dFact.indexOf('*') >= 0 && dFact.indexOf('(') >= 0) {
+          // Actual factorization detected (product of parenthesized groups, not just embedded * in terms)
+          pieces = dFact.split('*').map(function(p){return p.trim();});
+          for (var pi = 0; pi < pieces.length; pi++) {
+            var p = pieces[pi];
+            if (p.charAt(0) === '-' && p.charAt(1) !== '(' && p.indexOf('+') < 0 && p.indexOf('-', 1) < 0) pieces[pi] = p.substring(1);
+          }
+        } else {
+          pieces = ['(' + dNorm + ')'];
+        }
+        denomPiecesMap[dNorm] = pieces;
+        for (var pi = 0; pi < pieces.length; pi++) {
+          var newPiece = pieces[pi];
+          if (!newPiece) continue;
+          var alreadyInLCM = false;
+          for (var lpi = 0; lpi < lcmPieces.length; lpi++) {
+            try {
+              var diff = nerdamer(newPiece + '-(' + lcmPieces[lpi] + ')').toString();
+              if (diff === '0') { alreadyInLCM = true; break; }
+            } catch(e) {}
+          }
+          if (!alreadyInLCM) lcmPieces.push(newPiece);
+        }
       }
-      var lcdStr = lcdTerms.join('*');
+      var lcdStr = lcmPieces.join('*');
 
       // Find ODZ — solve each denominator polynomial for roots
       for (var di3 = 0; di3 < rawDenoms.length; di3++) {
         var dNorm3 = normNerd(rawDenoms[di3]);
+        if (hasExtraVars(dNorm3)) continue;
         try {
           var denomRoots = solvePoly(dNorm3);
           if (denomRoots && denomRoots.length) {
@@ -17390,13 +17634,74 @@
         ? 'Solve each denominator = 0 to find excluded values:'
         : 'Решаем каждый знаменатель = 0, чтобы найти исключённые значения:') + '<br>';
       for (var di5 = 0; di5 < rawDenoms.length; di5++) {
-        hGen += '&nbsp;&nbsp;<span style="color:var(--a)">' + rawDenoms[di5] + '</span> = 0 → <b style="color:var(--r)">x = ???</b><br>';
+        var dNorm5 = normNerd(rawDenoms[di5]);
+        if (hasExtraVars(dNorm5)) {
+          var constraint = '';
+          // Attempt 1: nerdamer solver
+          try {
+            var sol = ndSolve(dNorm5);
+            if (sol && sol.length) {
+              var parts = sol.map(function(r) { return formatMath(String(r)); }).filter(function(p) { return p; });
+              if (parts.length) constraint = 'x ≠ <b style="color:var(--r)">' + parts.join(', ') + '</b>';
+            }
+          } catch(e) {}
+          // Attempt 2: manual linear extraction
+          if (!constraint) {
+            try {
+              var s = dNorm5.replace(/\s+/g, '');
+              var xm = s.match(/^([+-]?\d*\.?\d*)\*?x(.*)$/);
+              if (xm) {
+                var a = xm[1] === '' || xm[1] === '+' ? 1 : xm[1] === '-' ? -1 : parseFloat(xm[1]);
+                if (Math.abs(a) > 1e-12 && xm[2] && xm[2] !== '0') {
+                  var rest = xm[2];
+                  var solExpr = '(-(' + rest + '))/(' + a + ')';
+                  var simp = ndSimplify(solExpr);
+                  if (simp && simp.indexOf('undefined') < 0) solExpr = simp;
+                  var fm = formatMath(solExpr);
+                  if (fm) constraint = 'x ≠ <b style="color:var(--r)">' + fm + '</b>';
+                }
+              }
+            } catch(e2) {}
+          }
+          // Attempt 3: generic display
+          if (!constraint) constraint = '<b style="color:var(--r)">' + formatMath(dNorm5) + ' ≠ 0</b>';
+          hGen += '&nbsp;&nbsp;<span style="color:var(--a)">' + rawDenoms[di5] + '</span> = 0 → ' + constraint + '<br>';
+        } else {
+          var dRoots5 = solvePoly(dNorm5) || [];
+          var dRootStr5 = dRoots5.length ? dRoots5.map(function(r) { return 'x = <b style=\"color:var(--r)\">' + pN(r) + '</b>'; }).join(', ') : (E() ? 'no real roots' : 'нет действительных корней');
+          hGen += '&nbsp;&nbsp;<span style="color:var(--a)">' + rawDenoms[di5] + '</span> = 0 → ' + dRootStr5 + '<br>';
+        }
       }
       if (odzGen.length) hGen += odzBlock(odzGen);
       hGen += '<br>' + (E()
         ? 'These x values make some denominator zero, so they are <b>forbidden</b>. If our solution contains them, we must discard them.'
         : 'Эти значения x обращают знаменатели в ноль, поэтому они <b>запрещены</b>. Если в решении они появятся, их нужно отбросить.')
         + '<br>';
+
+      // --- Factor denominators for display ---
+      var factoredDenoms = [];
+      for (var fdi = 0; fdi < rawDenoms.length; fdi++) {
+        var dText = rawDenoms[fdi];
+        var dNorm = normNerd(dText);
+        var dFactored = ndFactor(dNorm);
+        if (dFactored && dFactored !== dNorm && /\)\s*\*/.test(dFactored)) {
+          factoredDenoms.push({ original: dText, factored: dFactored });
+        }
+      }
+      if (factoredDenoms.length) {
+        hGen += '<div class="mega-section"><div class="mega-section-title" style="color:var(--c)">🔢 '
+          + (E() ? 'Factor the Denominators' : 'Раскладываем знаменатели на множители')
+          + '</div><div class="mega-section-body">';
+        hGen += (E()
+          ? 'Factor each denominator to find the LCD and domain restrictions more easily:'
+          : 'Раскладываем каждый знаменатель на множители, чтобы легче найти НОЗ и ограничения ОДЗ:')
+          + '<br><br>';
+        for (var fdi = 0; fdi < factoredDenoms.length; fdi++) {
+          hGen += '&nbsp;&nbsp;<span style="color:var(--a)">' + factoredDenoms[fdi].original + '</span>'
+            + ' = <b style="color:var(--c)">' + factoredDenoms[fdi].factored + '</b><br>';
+        }
+        hGen += '</div></div>';
+      }
 
       // --- Step 2: Clear denominators ---
       var rootsGen = [];
@@ -17417,20 +17722,47 @@
       var lhsNorm = lhsRaw.replace(/\s+/g, '');
       if (lhsNorm[0] !== '+' && lhsNorm[0] !== '-') lhsNorm = '+' + lhsNorm;
 
-      // Collect terms
-      var allTerms = [];
-      var termRe = /([+-])\(([^)]+)\)\/\(([^)]+)\)/g;
-      var tM;
-      while ((tM = termRe.exec(lhsNorm)) !== null) {
-        allTerms.push({ side: 'LHS', sign: tM[1], num: tM[2], den: tM[3] });
+      // Parse all fraction terms (handles both parenthesized and bare num/den)
+      function parseFracTerms(expr) {
+        var out = [];
+        for (var ei = 0; ei < expr.length;) {
+          if (expr[ei] !== '+' && expr[ei] !== '-') break;
+          var sg = expr[ei]; ei++;
+          var start = ei, depth = 0;
+          while (ei < expr.length && (depth > 0 || (expr[ei] !== '+' && expr[ei] !== '-'))) {
+            if (expr[ei] === '(') depth++;
+            else if (expr[ei] === ')') depth--;
+            ei++;
+          }
+          var term = expr.substring(start, ei);
+          if (!term) continue;
+          var si = -1, sd = 0;
+          for (var ci = 0; ci < term.length; ci++) {
+            if (term[ci] === '(') sd++;
+            else if (term[ci] === ')') sd--;
+            else if (term[ci] === '/' && sd === 0) { si = ci; break; }
+          }
+          if (si >= 0) {
+            var num = term.substring(0, si).replace(/^\(+|\)+$/g, '');
+            var den = term.substring(si + 1).replace(/^\(+|\)+$/g, '');
+            out.push({ sign: sg, num: num, den: den });
+          }
+        }
+        return out;
       }
-      // Also handle RHS
+      var allTerms = [];
+      var lhsTerms = parseFracTerms(lhsNorm);
+      for (var li = 0; li < lhsTerms.length; li++) {
+        allTerms.push({ side: 'LHS', sign: lhsTerms[li].sign, num: lhsTerms[li].num, den: lhsTerms[li].den });
+      }
       var rhsNorm = rhsRaw.replace(/\s+/g, '');
       if (rhsNorm[0] !== '+' && rhsNorm[0] !== '-') rhsNorm = '+' + rhsNorm;
-      while ((tM = termRe.exec(rhsNorm)) !== null) {
-        // Flip sign when moving to LHS
-        var flipSign = tM[1] === '+' ? '-' : '+';
-        allTerms.push({ side: 'RHS', sign: flipSign, num: tM[2], den: tM[3] });
+      var rhsTerms = parseFracTerms(rhsNorm);
+      var rhsHadFraction = false;
+      for (var ri = 0; ri < rhsTerms.length; ri++) {
+        var flipSign = rhsTerms[ri].sign === '+' ? '-' : '+';
+        allTerms.push({ side: 'RHS', sign: flipSign, num: rhsTerms[ri].num, den: rhsTerms[ri].den });
+        if (rhsTerms[ri].den) rhsHadFraction = true;
       }
 
       // If no terms parsed, use original solver
@@ -17446,20 +17778,33 @@
       hGen += '</div>';
 
       // Build individual product terms, expand each separately
-      var allDenoms = lcdTerms; // array like ['(2*x+5)', '(3*x-4)', '(6*x^2+7*x-20)']
       var polyTerms = [];
       var allOk = true;
 
       for (var ti = 0; ti < allTerms.length; ti++) {
         var t = allTerms[ti];
         var tNum = normNerd(t.num);
-        var tDen = '(' + normNerd(t.den) + ')';
-        // Build product of all OTHER denominators
+        var tDenStr = normNerd(t.den);
+        // Build product of all LCM factors NOT in this denominator
+        var denFactors = denomPiecesMap[tDenStr] || ['(' + tDenStr + ')'];
         var otherDens = [];
-        for (var od = 0; od < allDenoms.length; od++) {
-          if (allDenoms[od] !== tDen) otherDens.push(allDenoms[od]);
+        var signFlips = 0;
+        for (var od = 0; od < lcmPieces.length; od++) {
+          var foundInDen = false;
+          for (var df = 0; df < denFactors.length; df++) {
+            if (denFactors[df] === lcmPieces[od]) { foundInDen = true; break; }
+            try {
+              if (nerdamer(lcmPieces[od] + '-(' + denFactors[df] + ')').toString() === '0') {
+                foundInDen = true; break;
+              }
+              if (nerdamer(lcmPieces[od] + '+(' + denFactors[df] + ')').toString() === '0') {
+                foundInDen = true; signFlips++; break;
+              }
+            } catch(e) {}
+          }
+          if (!foundInDen) otherDens.push(lcmPieces[od]);
         }
-        var productStr = '(' + tNum + ')' + (otherDens.length ? '*' + otherDens.join('*') : '');
+        var productStr = '(' + tNum + ')' + (signFlips % 2 ? '*(-1)' : '') + (otherDens.length ? '*' + otherDens.join('*') : '');
         // Expand THIS product individually
         var expandedTerm = null;
         try {
@@ -17474,10 +17819,10 @@
           hGen += (E() ? 'Original fraction:'
             : 'Исходная дробь:') + ' '
             + '<span class="frac"><span class="frac-top" style="border-color:var(--a)">' + t.num + '</span><span class="frac-bot" style="border-top:2px solid var(--a)">' + t.den + '</span></span><br>';
-          hGen += (E() ? 'Multiply numerator by all OTHER denominators:' : 'Умножаем числитель на все ОСТАЛЬНЫЕ знаменатели:') + '<br>';
+          hGen += (E() ? 'Multiply numerator by (LCD ÷ denominator):' : 'Умножаем числитель на (НОЗ ÷ знаменатель):') + '<br>';
           hGen += '<span style="color:var(--text3)">' + productStr + '</span><br>';
           hGen += (E() ? 'Expand the brackets (multiply everything out):' : 'Раскрываем скобки (перемножаем всё):') + '<br>';
-          hGen += '= <b style="color:var(--v);font-size:15px">' + expandedTerm + '</b><br>';
+          hGen += '= <b style="color:var(--v);font-size:15px">' + formatMath(expandedTerm) + '</b><br>';
           if (t.sign === '-') {
             hGen += (E() ? 'This term has a <b>minus</b> sign in front, so the whole result will be subtracted later.'
               : 'У этого члена знак <b>минус</b>, поэтому весь результат будет вычтен позже.');
@@ -17492,16 +17837,17 @@
         }
       }
 
-      // Also handle non-fraction RHS constant
-      var rhsConst = parseFloat(rhsRaw);
-      if (!isNaN(rhsConst) && rhsConst !== 0) {
-        // -constant * LCD
-        var constProd = '(' + (-rhsConst) + ')*' + lcdStr;
-        var expConst = nerdamer('expand(' + constProd + ')').toString();
-        if (expConst) {
-          polyTerms.push({ sign: '+', expr: expConst });
-          hGen += (E() ? 'RHS constant: ' : 'Константа RHS: ') + constProd + '<br>'
-            + '→ expanded: <b style="color:var(--c)">' + expConst + '</b><br><br>';
+      // Also handle non-fraction RHS constant (only if RHS had NO fraction terms)
+      if (!rhsHadFraction) {
+        var rhsConst = parseFloat(rhsRaw);
+        if (!isNaN(rhsConst) && rhsConst !== 0) {
+          var constProd = '(' + (-rhsConst) + ')*' + lcdStr;
+          var expConst = nerdamer('expand(' + constProd + ')').toString();
+          if (expConst) {
+            polyTerms.push({ sign: '+', expr: expConst });
+            hGen += (E() ? 'RHS constant: ' : 'Константа RHS: ') + constProd + '<br>'
+              + '→ expanded: <b style="color:var(--c)">' + formatMath(expConst) + '</b><br><br>';
+          }
         }
       }
 
@@ -17522,16 +17868,23 @@
       hGen += (E()
         ? 'Now we add all the expanded terms together with their signs:'
         : 'Теперь складываем все полученные выражения с учётом их знаков:') + '<br><br>';
-      hGen += '<span style="color:var(--text3);font-size:13px">' + fullPoly + '</span><br>';
+      hGen += '<span style="color:var(--text3);font-size:13px">' + formatMath(fullPoly) + '</span><br>';
+      var polyDegree = 0;
+      var degParts = fullPoly.match(/x(?:\^(\d+))?/g) || [];
+      for (var dp = 0; dp < degParts.length; dp++) {
+        var degMatch = degParts[dp].match(/\^(\d+)/);
+        var d = degMatch ? parseInt(degMatch[1]) : 1;
+        if (d > polyDegree) polyDegree = d;
+      }
       hGen += (E()
-        ? 'This is a polynomial equation of degree 4 (the highest power of x is x⁴).'
-        : 'Это многочлен 4-й степени (наивысшая степень x — x⁴).');
+        ? 'This is a polynomial equation of degree ' + polyDegree + ' (the highest power of x is x' + (polyDegree > 1 ? ('<sup>' + polyDegree + '</sup>') : '') + ').'
+        : 'Это многочлен ' + polyDegree + '-й степени (наивысшая степень x — x' + (polyDegree > 1 ? ('<sup>' + polyDegree + '</sup>') : '') + ').');
       hGen += '</div></div>';
 
       // Wait, we already displayed fullPoly above. But now we have the better explanation. Let me re-think.
       // Actually, the fullPoly is displayed above, then we simplify. Let me keep the combined display.
       hGen += (E() ? 'Combined polynomial: ' : 'Объединенный многочлен: ')
-        + '<b style="color:var(--v);font-size:14px">' + fullPoly + ' = 0</b><br><br>';
+        + '<b style="color:var(--v);font-size:14px">' + formatMath(fullPoly) + ' = 0</b><br><br>';
 
       // Try to simplify and solve
       var simpPoly = ndSimplify(fullPoly);
@@ -17543,10 +17896,14 @@
         hGen += (E() ? 'Group terms with the same power of x and combine their coefficients:'
           : 'Группируем члены с одинаковыми степенями x и складываем их коэффициенты:')
           + '<br>';
-        hGen += '<span style="color:var(--text3)">' + fullPoly + '</span><br>→ <b style="color:var(--c);font-size:16px">' + simpPoly + ' = 0</b><br>';
+        hGen += '<span style="color:var(--text3)">' + formatMath(fullPoly) + '</span><br>→ <b style="color:var(--c);font-size:16px">' + formatMath(simpPoly) + ' = 0</b><br>';
+        var termLabels = [];
+        for (var td = polyDegree; td > 0; td--) termLabels.push('x<sup>' + td + '</sup>');
+        termLabels.push('x');
+        termLabels.push(E() ? 'constants' : 'константы');
         hGen += '<span style="color:var(--text3);font-size:12px">'
-          + (E() ? '(We combined x⁴ terms, x³ terms, x² terms, x terms, and constants)'
-            : '(Сложили члены с x⁴, с x³, с x², с x и константы)')
+          + (E() ? '(We combined ' + termLabels.join(', ') + ' terms)'
+            : '(Сложили члены: ' + termLabels.join(', ') + ')')
           + '</span></div>';
         fullPoly = simpPoly;
       }
@@ -17557,11 +17914,12 @@
         + (E() ? 'Step 4: Solve the polynomial equation' : 'Шаг 4: Решаем уравнение-многочлен')
         + '</div>';
       hGen += (E()
-        ? 'We have <b>' + fullPoly + ' = 0</b>. This is a quartic (degree 4). We need to find all x that satisfy it.'
-        : 'У нас <b>' + fullPoly + ' = 0</b>. Это уравнение 4-й степени. Нужно найти все x, которые ему удовлетворяют.')
+        ? 'We have <b>' + formatMath(fullPoly) + ' = 0</b>. This is a polynomial of degree ' + polyDegree + '. We need to find all x that satisfy it.'
+        : 'У нас <b>' + formatMath(fullPoly) + ' = 0</b>. Это многочлен ' + polyDegree + '-й степени. Нужно найти все x, которые ему удовлетворяют.')
         + '<br><br>';
 
       var polyRoots = solveWithNerdamer(fullPoly + '=0') || [];
+      var polyExactForms = [];
       if (!polyRoots.length) {
         // Try factoring then solving each factor (using regex, not split by '*')
         var factPoly = ndFactor(fullPoly);
@@ -17573,17 +17931,116 @@
             ? 'We factor the polynomial into simpler pieces. If a product = 0, then at least one factor = 0:'
             : 'Раскладываем многочлен на множители. Если произведение = 0, то хотя бы один множитель = 0:')
             + '<br>';
-          hGen += '<b style="color:var(--c);font-size:15px">' + factPoly + ' = 0</b><br><br>';
-          var factPieces = factPoly.match(/\([^)]+\)/g) || [];
-          for (var fi = 0; fi < factPieces.length; fi++) {
-            var fTrim = factPieces[fi];
-            hGen += (E() ? 'Solve ' : 'Решаем ') + '<span style="color:var(--a)">' + fTrim + ' = 0</span>:<br>';
-            var fRoots = solveWithNerdamer(fTrim + '=0') || [];
-            for (var fr = 0; fr < fRoots.length; fr++) {
-              if (polyRoots.indexOf(fRoots[fr]) < 0) polyRoots.push(fRoots[fr]);
-              hGen += '&nbsp;&nbsp;→ <b style="color:var(--v)">x = ' + pN(fRoots[fr]) + '</b><br>';
+          hGen += '<b style="color:var(--c);font-size:15px">' + formatMath(factPoly) + ' = 0</b><br><br>';
+          var rootIdx = 0;
+          // Split by top-level '*' (depth-aware) to get factors
+          function splitByStar(s) {
+            var parts = [], depth = 0, cur = '';
+            for (var si = 0; si < s.length; si++) {
+              var ch = s[si];
+              if (ch === '(') depth++;
+              else if (ch === ')') depth--;
+              if (ch === '*' && depth === 0) { parts.push(cur); cur = ''; }
+              else cur += ch;
             }
-            if (!fRoots.length) hGen += '&nbsp;&nbsp;→ ' + (E() ? 'no real solutions' : 'нет действительных решений') + '<br>';
+            if (cur) parts.push(cur);
+            return parts;
+          }
+          function stripOuterParens(x) {
+            while (x.length > 1 && x[0] === '(' && x[x.length - 1] === ')') x = x.slice(1, -1);
+            return x;
+          }
+          var rawFactPieces = splitByStar(factPoly);
+          var factPieces = [];
+          for (var fi = 0; fi < rawFactPieces.length; fi++) {
+            var p = rawFactPieces[fi].trim();
+            if (!p) continue;
+            if (/^-?\d+(\.\d+)?$/.test(p)) continue;
+            var pInner = stripOuterParens(p);
+            var subFactor = ndFactor(pInner);
+            if (subFactor && subFactor !== pInner && subFactor.indexOf('*') >= 0) {
+              var subPieces = splitByStar(subFactor);
+              for (var sj = 0; sj < subPieces.length; sj++) {
+                var sp = subPieces[sj].trim();
+                if (sp && !/^-?\d+(\.\d+)?$/.test(sp)) factPieces.push(stripOuterParens(sp));
+              }
+            } else {
+              factPieces.push(pInner);
+            }
+          }
+          var mvFactorSolutions = [];
+          for (var pi = 0; pi < factPieces.length; pi++) {
+            var fTrim = factPieces[pi];
+            // Strip trailing exponent: (expr)^n = 0 → solve expr = 0
+            var powMatch = fTrim.match(/\^(\d+)$/);
+            if (powMatch) fTrim = fTrim.slice(0, -powMatch[0].length);
+            hGen += (E() ? 'Solve ' : 'Решаем ') + '<span style="color:var(--a)">' + formatMath(factPieces[pi]) + ' = 0</span>:<br>';
+            if (hasExtraVars(fTrim)) {
+              var mvSols = ndSolve(fTrim);
+              if (mvSols && mvSols.length) {
+                for (var mv = 0; mv < mvSols.length; mv++) {
+                  var mvSolStr = formatMath(String(mvSols[mv]));
+                  if (mvSolStr) {
+                    hGen += '&nbsp;&nbsp;&nbsp;&nbsp;x = ' + mvSolStr + '<br>';
+                    mvFactorSolutions.push('x = ' + mvSolStr);
+                  }
+                }
+              } else {
+                // Manual fallback: extract x coefficient and solve
+                var mvBefore = mvFactorSolutions.length;
+                try {
+                  var fClean = fTrim.replace(/\s+/g, '');
+                  var xm = fClean.match(/^([+-]?\d*\.?\d*)\*?x(.*)$/);
+                  if (xm) {
+                    var a = xm[1] === '' || xm[1] === '+' ? 1 : xm[1] === '-' ? -1 : parseFloat(xm[1]);
+                    if (Math.abs(a) > 1e-12 && xm[2] && xm[2] !== '0') {
+                      var rest = xm[2];
+                      var solExpr = '(-(' + rest + '))/(' + a + ')';
+                      var simp = ndSimplify(solExpr);
+                      if (simp && simp.indexOf('undefined') < 0) solExpr = simp;
+                      var fm = formatMath(solExpr);
+                      if (fm) {
+                        hGen += '&nbsp;&nbsp;&nbsp;&nbsp;x = ' + fm + '<br>';
+                        mvFactorSolutions.push('x = ' + fm);
+                      }
+                    }
+                  }
+                } catch(e2) {}
+                if (mvFactorSolutions.length === mvBefore) {
+                  hGen += '&nbsp;&nbsp;→ ' + (E() ? 'relates variables' : 'связь переменных') + '<br>';
+                }
+              }
+              continue;
+            }
+            var exactForm = formatExactQuadratic(fTrim);
+            var fRoots = solvePoly(fTrim) || [];
+            if (!fRoots.length && !exactForm) {
+              // Fallback: try nerdamer solver
+              var ndRoots = solveWithNerdamer(fTrim + '=0');
+              if (ndRoots.length) {
+                for (var nr = 0; nr < ndRoots.length; nr++) {
+                  if (polyRoots.indexOf(ndRoots[nr]) < 0) {
+                    polyRoots.push(ndRoots[nr]);
+                    polyExactForms.push('');
+                  }
+                  hGen += '&nbsp;&nbsp;&nbsp;&nbsp;x<sub>' + (++rootIdx) + '</sub> = ' + pN(ndRoots[nr]) + '<br>';
+                }
+                continue;
+              }
+            }
+            var fLabels = getExactRootLabels(fTrim);
+            if (exactForm) {
+              hGen += '&nbsp;&nbsp;→ <b style="color:var(--g)">x = ' + exactForm + '</b><br>';
+            }
+            for (var fr = 0; fr < fRoots.length; fr++) {
+              if (polyRoots.indexOf(fRoots[fr]) < 0) {
+                polyRoots.push(fRoots[fr]);
+                if (fLabels && fLabels[fr]) polyExactForms.push(fLabels[fr]);
+                else polyExactForms.push('');
+              }
+              hGen += '&nbsp;&nbsp;&nbsp;&nbsp;x<sub>' + (++rootIdx) + '</sub> = ' + pN(fRoots[fr]) + '<br>';
+            }
+            if (!fRoots.length && !exactForm) hGen += '&nbsp;&nbsp;→ ' + (E() ? 'no real solutions' : 'нет действительных решений') + '<br>';
           }
         } else {
           hGen += (E()
@@ -17592,8 +18049,32 @@
             + '<br>';
         }
       }
-      // Fallback: try custom polynomial solver (rational root theorem)
-      if (!polyRoots.length) {
+      // For degree 2, solve directly with discriminant (skip rational root theorem)
+      if (!polyRoots.length && polyDegree === 2 && !hasExtraVars(fullPoly)) {
+        var exactQForm = formatExactQuadratic(fullPoly);
+        var qRoots = solvePoly(fullPoly) || [];
+        var qLabels = getExactRootLabels(fullPoly);
+        if (qRoots.length) {
+          hGen += '<div style="font-weight:600;font-size:14px;color:var(--g);margin-top:8px">'
+            + (E() ? 'Quadratic Equation' : 'Квадратное уравнение')
+            + '</div>';
+          hGen += '<span style="color:var(--text3)">' + (E()
+            ? 'The equation is quadratic — we solve by isolating x²:'
+            : 'Уравнение квадратное — решаем, выражая x²:') + '</span><br>';
+          if (exactQForm) {
+            hGen += '<b style="color:var(--g);font-size:15px">x = ' + exactQForm + '</b><br>';
+          }
+          var qIdx = rootIdx || 0;
+          for (var qi = 0; qi < qRoots.length; qi++) {
+            polyRoots.push(qRoots[qi]);
+            polyExactForms.push(qLabels && qLabels[qi] ? qLabels[qi] : '');
+            hGen += '&nbsp;&nbsp;&nbsp;&nbsp;x<sub>' + (++qIdx) + '</sub> = ' + pN(qRoots[qi]) + '<br>';
+          }
+        }
+      }
+
+      // Fallback: try custom polynomial solver (rational root theorem) for degree 3+
+      if (!polyRoots.length && !hasExtraVars(fullPoly)) {
         hGen += '<div style="font-weight:600;font-size:14px;color:var(--g);margin-top:8px">'
           + (E() ? 'Method 2: Rational Root Theorem' : 'Способ 2: Теорема о рациональных корнях')
           + '</div>';
@@ -17601,29 +18082,62 @@
           ? 'The Rational Root Theorem says: if the polynomial has integer coefficients, any rational root must be of the form (factor of constant term) ÷ (factor of leading coefficient).'
           : 'Теорема о рациональных корнях: если многочлен имеет целые коэффициенты, то любой рациональный корень имеет вид (делитель свободного члена) ÷ (делитель старшего коэффициента).')
           + '<br><br>';
-        hGen += (E() ? 'Constant term = 800, Leading coefficient = -6' : 'Свободный член = 800, Старший коэффициент = -6') + '<br>';
-        hGen += (E()
-          ? 'We test all combinations of divisors: ±800, ±400, ..., ±1 divided by ±1, ±2, ±3, ±6.'
-          : 'Перебираем все комбинации делителей: ±800, ±400, ..., ±1 делённые на ±1, ±2, ±3, ±6.')
-          + '<br>';
+        var leadingCoeff = 0, constTerm = 0;
+        var fpClean = fullPoly.replace(/\s+/g, '');
+        if (fpClean[0] !== '-' && fpClean[0] !== '+') fpClean = '+' + fpClean;
+        var fpParts = fpClean.match(/[+-][^+-]+/g) || [];
+        var maxDeg = 0;
+        for (var pi = 0; pi < fpParts.length; pi++) {
+          var deg = 0;
+          var dm = fpParts[pi].match(/x(?:\^(\d+))?/);
+          if (dm) deg = dm[1] ? parseInt(dm[1]) : 1;
+          if (deg > maxDeg) {
+            maxDeg = deg;
+            var cv = fpParts[pi].replace(/x(?:\^(\d+))?/, '').replace(/^([+-])$/, '$11');
+            if (cv === '+' || cv === '') leadingCoeff = 1;
+            else if (cv === '-') leadingCoeff = -1;
+            else leadingCoeff = parseFloat(cv);
+          }
+          if (deg === 0) {
+            constTerm = parseFloat(fpParts[pi]) || 0;
+          }
+        }
+        hGen += (E() ? 'Constant term = ' + constTerm + ', Leading coefficient = ' + leadingCoeff : 'Свободный член = ' + constTerm + ', Старший коэффициент = ' + leadingCoeff) + '<br>';
+        var constTermAbs = Math.abs(constTerm);
+        if (constTermAbs > 0 && constTermAbs < 100000) {
+          var constDivs = [];
+          for (var cd = 1; cd <= Math.sqrt(constTermAbs); cd++) {
+            if (constTermAbs % cd === 0) { constDivs.push(cd); var cd2 = constTermAbs / cd; if (cd2 !== cd) constDivs.push(cd2); }
+          }
+          constDivs.sort(function(a,b){return b-a});
+          var lcAbs = Math.abs(leadingCoeff);
+          var lcDivs = [];
+          for (var ld = 1; ld <= lcAbs; ld++) { if (lcAbs % ld === 0) lcDivs.push(ld); }
+          var divStr = '±' + constDivs.join(', ±') + ' divided by ±' + lcDivs.join(', ±');
+          hGen += (E()
+            ? 'We test all combinations of divisors: ' + divStr + '.'
+            : 'Перебираем все комбинации делителей: ' + divStr + '.')
+            + '<br>';
+        } else {
+          hGen += (E()
+            ? 'The constant term is too large to enumerate divisors efficiently.'
+            : 'Свободный член слишком велик для эффективного перебора делителей.')
+            + '<br>';
+        }
 
-        var customRoots = solvePoly(fullPoly);
+        var customRoots = solvePoly(fullPoly) || [];
         if (customRoots.length) {
-          hGen += (E() ? 'Found ' + customRoots.length + ' roots:' : 'Найдено ' + customRoots.length + ' корня:') + '<br>';
+          hGen += (E() ? 'Found ' + customRoots.length + ' root' + (customRoots.length > 1 ? 's' : '') + ':' : 'Найдено ' + customRoots.length + ' корня:') + '<br>';
           for (var cri = 0; cri < customRoots.length; cri++) {
-            var rootLabel = '';
-            if (Math.abs(customRoots[cri] - (-2.5)) < 1e-6) rootLabel = ' (x + 5/2 = 0 → x = -5/2)';
-            else if (Math.abs(customRoots[cri] - (4/3)) < 1e-6) rootLabel = ' (3x - 4 = 0 → x = 4/3)';
-            else if (customRoots[cri] < -1) rootLabel = ' (from the remaining quadratic)';
-            else rootLabel = ' (from the remaining quadratic)';
-            hGen += '&nbsp;&nbsp;<b style="color:var(--v)">x = ' + pN(customRoots[cri]) + '</b>' + rootLabel + '<br>';
+            hGen += '&nbsp;&nbsp;<b style="color:var(--v)">x = ' + pN(customRoots[cri]) + '</b><br>';
           }
           hGen += '<span style="color:var(--text3);font-size:12px">'
             + (E()
-              ? 'We found x = -5/2 and x = 4/3 as rational roots. Dividing the quartic by (x + 5/2)(x - 4/3) leaves a quadratic, which we solve with the quadratic formula.'
-              : 'Нашли x = -5/2 и x = 4/3 как рациональные корни. Делим многочлен 4-й степени на (x + 5/2)(x - 4/3), остаётся квадратное уравнение, решаем через дискриминант.')
+              ? 'These roots satisfy the polynomial equation. We now check which ones also satisfy the domain restrictions (ODZ).'
+              : 'Эти корни удовлетворяют уравнению-многочлену. Проверяем, какие из них удовлетворяют ограничениям ОДЗ.')
             + '</span><br>';
           polyRoots = customRoots;
+          polyExactForms = [];
         }
       }
       hGen += '</div></div>';
@@ -17643,7 +18157,8 @@
           for (var oj = 0; oj < odzGen.length; oj++) {
             if (Math.abs(polyRoots[ri] - odzGen[oj]) < 1e-9) riInOdz = true;
           }
-          hGen += '&nbsp;&nbsp;<b style="color:var(--v)">x = ' + pN(polyRoots[ri]) + '</b> — ';
+          var exactLabel = polyExactForms[ri] || '';
+          hGen += '&nbsp;&nbsp;<b style="color:var(--v)">x = ' + (exactLabel || pN(polyRoots[ri])) + '</b> — ';
           if (riInOdz) {
             hGen += '<span style="color:var(--r)">'
               + (E() ? '❌ violates ODZ (makes a denominator zero), DISCARDED'
@@ -17658,11 +18173,63 @@
           hGen += '<br>';
         }
         hGen += '</div></div>';
+      } else if (hasExtraVars(fullPoly)) {
+        hGen += '<div style="padding:12px;color:var(--text2);font-size:13px">'
+          + (E()
+            ? 'The equation contains multiple variables. The solutions are expressed as relationships between variables (shown in the factoring step above).'
+            : 'Уравнение содержит несколько переменных. Решения выражены как связи между переменными (показано на шаге разложения на множители).')
+          + '</div>';
       } else {
-        return _prevTryMega(text);
+        // Try to show D<0 / complex case
+        var polyStr2 = fullPoly.replace(/\s+/g, '');
+        var aCoef = 0, bCoef = 0, cCoef = 0;
+        var mC2 = polyStr2.match(/([+-]?\d*\.?\d*)\*?x\^2/);
+        if (mC2) { var v = mC2[1]; if (v === '' || v === '+') aCoef = 1; else if (v === '-') aCoef = -1; else aCoef = parseFloat(v); }
+        var mC1 = polyStr2.match(/([+-]?\d*\.?\d*)\*?x(?!\^)/);
+        if (mC1) { var v2 = mC1[1].replace(/^\+/, '') || '1'; bCoef = parseFloat(v2); }
+        var polyTerms2 = polyStr2.match(/[+-]?[^+-]+/g) || [];
+        for (var pt2i = polyTerms2.length - 1; pt2i >= 0; pt2i--) {
+          if (polyTerms2[pt2i].indexOf('x') < 0) { cCoef = parseFloat(polyTerms2[pt2i]) || 0; break; }
+        }
+        if (aCoef !== 0 && polyStr2.indexOf('x^2') >= 0 && polyStr2.indexOf('x^3') < 0 && polyStr2.indexOf('x^4') < 0) {
+          var disc2 = bCoef * bCoef - 4 * aCoef * cCoef;
+          hGen += '<div class="mega-section"><div class="mega-section-body">';
+          hGen += '<div style="font-weight:600;font-size:15px;margin-bottom:6px;color:var(--a)">'
+            + (E() ? 'Discriminant Check' : 'Вычисляем дискриминант') + '</div>';
+          hGen += (E() ? 'The resulting polynomial is <b>quadratic</b>:' : 'Полученный многочлен — <b>квадратный</b>:') + '<br><br>';
+          hGen += '<b style="font-size:16px;color:var(--v)">' + aCoef + 'x² ' + (bCoef >= 0 ? '+' : '') + bCoef + 'x ' + (cCoef >= 0 ? '+' : '') + cCoef + ' = 0</b><br><br>';
+          hGen += 'D = b² − 4ac = ' + bCoef + '² − 4·' + aCoef + '·' + cCoef + ' = ' + disc2 + '<br><br>';
+          if (disc2 < 0) {
+            hGen += '<b style="color:var(--r);font-size:16px">'
+              + (E() ? '❌ D < 0 — No Real Solutions!' : '❌ D < 0 — Нет действительных корней!') + '</b><br><br>';
+            hGen += (E()
+              ? 'A negative discriminant means the quadratic has <b>no real (x ∈ ℝ) solutions</b>. The answer is: no real roots.'
+              : 'Отрицательный дискриминант означает, что квадратное уравнение <b>не имеет действительных (x ∈ ℝ) корней</b>. Ответ: действительных корней нет.') + '<br>';
+          } else {
+            hGen += '<b style="color:var(--g);font-size:16px">'
+              + (E() ? '✅ D ≥ 0 — Real solutions exist!' : '✅ D ≥ 0 — Есть действительные корни!') + '</b>';
+          }
+          hGen += '</div></div>';
+        } else {
+          hGen += '<div style="padding:12px;color:var(--text2);font-size:13px">'
+            + (E() ? 'Could not find real solutions algebraically.' : 'Не удалось найти действительные решения алгебраически.')
+            + '</div>';
+        }
       }
 
-      hGen += answerBlock(rootsGen, odzGen);
+      if (hasExtraVars(fullPoly)) {
+        hGen += '<div class="result-banner">✅ ' + (E() ? 'Answer' : 'Ответ') + ': ';
+        if (mvFactorSolutions && mvFactorSolutions.length) {
+          hGen += mvFactorSolutions.join('&nbsp;&nbsp;');
+        } else {
+          hGen += '<span style="font-size:14px">'
+            + (E() ? 'the equation relates the variables.' : 'уравнение связывает переменные.')
+            + '</span>';
+        }
+        hGen += '</div>';
+      } else {
+        hGen += answerBlock(rootsGen, odzGen, polyExactForms);
+      }
       hGen += megaPractice(E()
         ? ['(x+7)/(x-2) - (x-5)/(x+3) = 28/((x-2)(x+3))', '2/(x-4) + 5/(x+3) - 7/(x-1) = (9x+11)/((x-4)(x+3)(x-1))', '(5x-7)/(x^2-9) + (4x+3)/(x^2-4x+3) = (3x^2-8x+5)/((x-3)(x+3)(x-1))']
         : ['(x+7)/(x-2) - (x-5)/(x+3) = 28/((x-2)(x+3))', '2/(x-4) + 5/(x+3) - 7/(x-1) = (9x+11)/((x-4)(x+3)(x-1))', '(5x-7)/(x^2-9) + (4x+3)/(x^2-4x+3) = (3x^2-8x+5)/((x-3)(x+3)(x-1))']);
@@ -18158,6 +18725,7 @@
           _gRoots.map(function(r, i) { return 'x<sub>' + (i+1) + '</sub> = <b style="color:var(--g);font-size:15px">' + pN(r) + '</b>'; }).join('<br>'));
         _gH += answerBlock(_gRoots, []);
         return _gH;
+      }
       }
     }
   };
