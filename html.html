@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#05070f">
+<meta name="description" content="F-Mine — образовательная платформа нового поколения: ИИ-ассистенты, калькуляторы, шахматы и наука. Учись, играй, создавай — бесплатно.">
+<title>F-Mine | Auth</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   1. БАЗА / ТОКЕНЫ (та же дизайн-система, что и в экскурсии)
+============================================================ */
+:root{
+  --bg:#05070f; --ink:#eaf1fb; --muted:#8ea1bb; --line:rgba(150,180,220,.14);
+  --cyan:#4de1ff; --amber:#ffb84d; --violet:#b78bff; --lime:#8dff9a; --pink:#ff5e9c; --gold:#ffd166;
+  --bot-glow:var(--cyan);
+  --font-display:'Unbounded',system-ui,sans-serif;
+  --font-body:'Golos Text',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --ease:cubic-bezier(.22,.9,.28,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--font-body);-webkit-font-smoothing:antialiased}
+::selection{background:rgba(77,225,255,.35)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(900px 520px at 10% -6%, rgba(77,225,255,.12), transparent 60%),
+    radial-gradient(820px 560px at 96% 20%, rgba(255,94,156,.09), transparent 60%),
+    radial-gradient(900px 640px at 50% 110%, rgba(183,139,255,.10), transparent 62%);}
+.noise{position:fixed;inset:0;z-index:66;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");}
+
+.mono{font-family:var(--font-mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.overline{color:var(--muted);display:inline-flex;align-items:center;gap:.9em}
+.overline::before{content:'';width:34px;height:1px;background:currentColor;opacity:.6}
+
+/* ============================================================
+   2. ШАПКА
+============================================================ */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px clamp(16px,4vw,40px);
+  background:rgba(7,11,22,.78);
+  -webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);
+  border-bottom:1px solid var(--line);}
+.logo{display:flex;align-items:center;gap:11px;font:700 16px var(--font-display);letter-spacing:.06em}
+.logo svg{width:27px;height:27px;color:var(--cyan);filter:drop-shadow(0 0 10px rgba(77,225,255,.5))}
+.logo small{display:block;font:400 9px var(--font-mono);letter-spacing:.3em;color:var(--muted)}
+.topbar__right{display:flex;align-items:center;gap:14px}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.lang button{font:600 11px var(--font-mono);letter-spacing:.14em;padding:.55em 1em;color:var(--muted);transition:.25s}
+.lang button.is-active{color:#041322;background:var(--cyan)}
+.lang button:not(.is-active):hover{color:var(--ink)}
+.status{display:inline-flex;align-items:center;gap:9px;font:600 10.5px var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--lime);
+  padding:.6em 1.1em;border:1px solid rgba(141,255,154,.3);border-radius:999px;background:rgba(141,255,154,.06)}
+.status .pulse{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35;transform:scale(.8)}}
+
+/* ============================================================
+   3. ОБОЛОЧКА: HERO слева + AUTH справа
+============================================================ */
+.shell{position:relative;z-index:1;width:min(1220px,94vw);margin-inline:auto;
+  display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(30px,4vw,64px);
+  align-items:center;min-height:100svh;padding:120px 0 70px;}
+
+.hero-title{font:700 clamp(1.7rem,3.4vw,2.9rem)/1.22 var(--font-display);margin:20px 0 18px;text-wrap:balance;
+  text-shadow:0 0 44px rgba(77,225,255,.28);}
+.lead{color:var(--muted);max-width:52ch;font-size:clamp(14.5px,1.3vw,16.5px)}
+.feat-chips{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:26px 0 8px}
+.feat-chips li{--acc:var(--cyan);
+  display:inline-flex;align-items:center;gap:9px;padding:.7em 1.1em;border-radius:14px;
+  font:600 13px var(--font-body);
+  border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);
+  background:color-mix(in srgb,var(--acc) 8%,transparent);
+  color:color-mix(in srgb,var(--acc) 80%,#fff);
+  transition:transform .3s var(--ease),box-shadow .3s;}
+.feat-chips li:hover{transform:translateY(-4px);box-shadow:0 10px 26px color-mix(in srgb,var(--acc) 22%,transparent)}
+.feat-chips li:nth-child(2){--acc:var(--violet)}
+.feat-chips li:nth-child(3){--acc:var(--amber)}
+.feat-chips li:nth-child(4){--acc:var(--lime)}
+.feat-chips li:nth-child(5){--acc:var(--pink)}
+.hero-stats{margin-top:18px;color:var(--muted)}
+
+/* ---------- Маскот ---------- */
+.mascot-zone{position:relative;display:flex;align-items:center;gap:18px;margin-top:34px;min-height:150px}
+.mascot{position:relative;width:130px;flex-shrink:0;color:var(--bot-glow);transition:color .8s ease}
+.mascot .bot-aura{position:absolute;left:50%;top:52%;width:150%;aspect-ratio:1;border-radius:50%;
+  transform:translate(-50%,-50%);background:currentColor;filter:blur(36px);opacity:.25;animation:auraPulse 3.4s ease-in-out infinite;}
+@keyframes auraPulse{50%{opacity:.4;transform:translate(-50%,-50%) scale(1.12)}}
+.mascot.pop .bot-aura{animation:auraFlare .9s ease-out}
+@keyframes auraFlare{30%{opacity:.75;transform:translate(-50%,-50%) scale(1.35)}100%{opacity:.25}}
+.mascot svg{position:relative;width:100%;display:block;filter:drop-shadow(0 8px 18px rgba(0,0,0,.55)) drop-shadow(0 0 16px currentColor)}
+.bot-float{animation:floaty 3.8s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-1.2deg)}50%{transform:translateY(-12px) rotate(1.4deg)}}
+.bot-eye{transform-box:fill-box;transform-origin:center;animation:blink 4.6s infinite}
+@keyframes blink{0%,90%,100%{transform:scaleY(1)}93%,96%{transform:scaleY(.08)}}
+.bot-core{transform-box:fill-box;transform-origin:center;animation:corePulse 2.2s ease-in-out infinite}
+@keyframes corePulse{50%{transform:scale(1.16);opacity:.8}}
+.bot-flame{transform-box:fill-box;transform-origin:50% 0;animation:flame .34s ease-in-out infinite alternate}
+.bot-flame--r{animation-delay:.12s}
+@keyframes flame{from{transform:scaleY(.72);opacity:.7}to{transform:scaleY(1.18);opacity:1}}
+.bot-lamp{animation:tipGlow 1.6s ease-in-out infinite}
+@keyframes tipGlow{50%{opacity:.4}}
+.bot-bubble{position:relative;max-width:300px;padding:13px 16px;border-radius:4px 16px 16px 16px;
+  background:rgba(11,17,32,.96);border:1px solid color-mix(in srgb,var(--bot-glow) 45%,transparent);
+  box-shadow:0 10px 30px rgba(0,0,0,.45);font:500 13px/1.55 var(--font-body);color:var(--ink);}
+.bot-bubble::before{content:'';position:absolute;left:-7px;top:24px;width:12px;height:12px;rotate:45deg;background:rgba(11,17,32,.96);
+  border-left:1px solid color-mix(in srgb,var(--bot-glow) 45%,transparent);border-bottom:1px solid color-mix(in srgb,var(--bot-glow) 45%,transparent);}
+
+/* ============================================================
+   4. AUTH-КАРТА
+============================================================ */
+.auth-card{position:relative;border-radius:26px;padding:clamp(22px,2.6vw,36px);
+  background:linear-gradient(165deg, rgba(19,28,52,.86), rgba(9,13,27,.88));
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  border:1px solid rgba(77,225,255,.22);
+  box-shadow:0 30px 80px rgba(0,0,0,.55);}
+.auth-card::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;padding:1px;
+  background:linear-gradient(135deg,rgba(77,225,255,.6),rgba(77,225,255,.12) 35%,transparent 60%,rgba(183,139,255,.3));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;}
+.auth-card.shake{animation:shake .4s var(--ease)}
+@keyframes shake{20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+
+.tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:14px}
+.tabs__pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 8px);border-radius:11px;
+  background:linear-gradient(135deg,rgba(77,225,255,.22),rgba(63,157,255,.14));
+  border:1px solid rgba(77,225,255,.4);transition:transform .35s var(--ease);}
+.tabs[data-active="register"] .tabs__pill{transform:translateX(calc(100% + 4px))}
+.auth-card.mode-forgot .tabs__pill{opacity:.25}
+.tabs__btn{position:relative;z-index:1;padding:.75em 0;font:600 13.5px var(--font-body);color:var(--muted);transition:color .3s}
+.tabs__btn.is-active{color:var(--ink)}
+.forgot-link{display:block;text-align:right;margin:-4px 2px 14px;color:var(--muted);font-size:10px;letter-spacing:.16em;transition:color .25s}
+.forgot-link:hover{color:var(--cyan)}
+
+/* Степпер */
+.stepper{display:flex;list-style:none;margin:6px 0 22px;counter-reset:st}
+.stepper li{flex:1;position:relative;text-align:center;padding-top:34px;color:var(--muted);
+  font:600 9.5px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;transition:color .3s}
+.stepper li i{position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  font:600 11px var(--font-mono);font-style:normal;
+  border:1.5px solid var(--line);background:rgba(255,255,255,.03);transition:.35s}
+.stepper li::before{content:'';position:absolute;top:13px;left:-50%;width:100%;height:1.5px;background:var(--line)}
+.stepper li:first-child::before{display:none}
+.stepper li.active{color:var(--cyan)}
+.stepper li.active i{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 14px rgba(77,225,255,.45)}
+.stepper li.done{color:var(--lime)}
+.stepper li.done i{border-color:var(--lime);color:#041322;background:var(--lime)}
+.stepper li.done::before{background:var(--lime)}
+
+/* Поля */
+.field{display:block;margin-bottom:16px}
+.field__lab{display:block;color:var(--muted);margin-bottom:8px}
+.field input{width:100%;padding:14px 16px;border-radius:14px;font:500 15px var(--font-body);color:var(--ink);
+  background:rgba(5,9,20,.6);border:1px solid var(--line);transition:border-color .25s,box-shadow .25s;}
+.field input::placeholder{color:rgba(142,161,187,.5)}
+.field input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(77,225,255,.15),0 0 18px rgba(77,225,255,.15)}
+.field input.bad{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,94,156,.14)}
+.err{display:block;min-height:16px;margin-top:6px;font:500 12px var(--font-body);color:var(--pink)}
+.hint{margin-top:6px;font:400 12px var(--font-body);color:var(--muted)}
+.passwrap{position:relative}
+.passwrap input{padding-right:52px}
+.eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:6px 10px;border-radius:10px;color:var(--muted);transition:color .2s}
+.eye:hover{color:var(--ink)}
+
+/* OTP */
+.otp{display:flex;gap:10px;justify-content:center;margin:8px 0 4px}
+.otp input{width:48px;height:58px;text-align:center;font:600 22px var(--font-mono);color:var(--ink);
+  background:rgba(5,9,20,.6);border:1px solid var(--line);border-radius:12px;transition:.25s;}
+.otp input:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(77,225,255,.15)}
+.resend{margin-top:12px;text-align:center;color:var(--muted)}
+.resend button{color:var(--cyan);letter-spacing:.14em;font-size:10px;text-transform:uppercase}
+.resend button:disabled{color:var(--muted);cursor:default}
+
+/* Сила пароля */
+.meter{height:6px;border-radius:99px;background:rgba(255,255,255,.06);margin:12px 0 10px;overflow:hidden}
+.meter b{display:block;height:100%;width:0;border-radius:99px;background:var(--pink);transition:width .4s var(--ease),background .4s}
+.checks{display:flex;gap:14px;flex-wrap:wrap;list-style:none}
+.checks li{font:500 11.5px var(--font-body);color:var(--muted);display:flex;align-items:center;gap:6px;transition:color .3s}
+.checks li::before{content:'○';color:var(--muted)}
+.checks li.ok{color:var(--lime)}
+.checks li.ok::before{content:'●';color:var(--lime)}
+
+/* Кнопки действий */
+.actions{display:flex;gap:12px;margin-top:20px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.6em;overflow:hidden;
+  padding:.95em 1.7em;border-radius:14px;font:600 14.5px var(--font-body);letter-spacing:.02em;
+  transition:transform .3s var(--ease),box-shadow .3s,border-color .3s,background .3s;}
+.btn--primary{flex:1;color:#041322;background:linear-gradient(135deg,#4de1ff,#3f9dff);
+  box-shadow:0 8px 30px rgba(70,200,255,.35), inset 0 0 0 1px rgba(255,255,255,.28);}
+.btn--primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(70,200,255,.5)}
+.btn--primary:disabled{opacity:.6;transform:none;cursor:wait}
+.btn--ghost{border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--ink)}
+.btn--ghost:hover{border-color:color-mix(in srgb,var(--cyan) 55%,transparent)}
+.btn.loading{color:transparent !important}
+.btn.loading::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;
+  border:2.5px solid rgba(4,19,34,.35);border-top-color:#041322;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fineprint{margin-top:16px;color:var(--muted);opacity:.7;font-size:10px;letter-spacing:.1em;text-transform:none}
+
+/* Успех */
+.panel-success{text-align:center;padding:14px 0 6px}
+.panel-success svg{width:74px;height:74px;margin-bottom:16px;color:var(--lime);filter:drop-shadow(0 0 18px rgba(141,255,154,.5))}
+.panel-success svg circle{stroke-dasharray:200;stroke-dashoffset:200;animation:draw 1s var(--ease) forwards}
+.panel-success svg path{stroke-dasharray:60;stroke-dashoffset:60;animation:draw .6s .5s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.panel-success h3{font:700 22px var(--font-display);margin-bottom:8px}
+.panel-success p{color:var(--muted);margin-bottom:22px}
+
+.auth-card.done .tabs,.auth-card.done .stepper,.auth-card.done .actions,
+.auth-card.done .forgot-link,.auth-card.done .fineprint{display:none}
+
+/* Демо-входящие (письмо с кодом) */
+.inbox{position:fixed;top:84px;right:20px;z-index:120;max-width:320px;padding:14px 18px;border-radius:16px;
+  background:rgba(11,17,32,.97);border:1px solid rgba(255,184,77,.5);
+  box-shadow:0 16px 44px rgba(0,0,0,.5),0 0 24px rgba(255,184,77,.15);
+  transform:translateX(120%);transition:transform .5s var(--ease);}
+.inbox.show{transform:none}
+.inbox b{font:600 11px var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--amber)}
+.inbox p{margin-top:6px;font:400 13px var(--font-body);color:var(--muted)}
+.inbox .code{font:700 18px var(--font-mono);color:var(--ink);letter-spacing:.3em;margin-left:6px}
+
+/* Тикер + подвал */
+.ticker{border-block:1px solid var(--line);background:rgba(9,14,28,.6);transform:rotate(-1.2deg) scale(1.02);overflow:hidden}
+.ticker__track{display:flex;gap:2.6rem;width:max-content;padding:13px 0;animation:ticker 28s linear infinite}
+.ticker span{font:600 12px var(--font-mono);letter-spacing:.28em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:2.6rem;white-space:nowrap}
+.ticker em{font-style:normal;color:var(--cyan)}
+@keyframes ticker{to{transform:translateX(-50%)}}
+.footer{position:relative;z-index:1;padding:34px 0;text-align:center}
+.footer small{font:400 11px var(--font-mono);letter-spacing:.12em;color:var(--muted)}
+
+/* Адаптив */
+@media (max-width:960px){
+  .shell{grid-template-columns:1fr;padding-top:100px;gap:26px;min-height:auto}
+  .mascot-zone{min-height:120px}
+  .mascot{width:96px}
+  .bot-bubble{max-width:240px}
+  .status{display:none}
+}
+@media (max-width:520px){
+  .otp input{width:42px;height:52px}
+  .actions{flex-direction:column-reverse}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  .ticker__track{animation:none;transform:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="noise" aria-hidden="true"></div>
+
+<!-- ================= ШАПКА ================= -->
+<header class="topbar">
+  <a class="logo" href="index.html" aria-label="F-Mine — home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/><path d="M9 3l3 6 3-6"/><path d="M12 21 9 9"/><path d="m12 21 3-12"/>
+    </svg>
+    <span>F-MINE<small data-i18n="brand_sub">добыча знаний</small></span>
+  </a>
+  <div class="topbar__right">
+    <div class="lang" role="group" aria-label="Language">
+      <button id="langRu" class="is-active">RU</button><button id="langEn">EN</button>
+    </div>
+    <span class="status"><i class="pulse"></i><span data-i18n="demo">ДЕМО-РЕЖИМ</span></span>
+  </div>
+</header>
+
+<!-- ================= ДЕМО-ВХОДЯЩИЕ ================= -->
+<aside class="inbox" id="inbox" aria-live="polite">
+  <b>📥 <span data-i18n="inbox_title">Демо-почта</span></b>
+  <p><span data-i18n="inbox_body">Твой код F-Mine:</span><span class="code" id="inboxCode">000000</span></p>
+</aside>
+
+<main class="shell">
+  <!-- ========== HERO ========== -->
+  <section class="hero-side">
+    <p class="overline mono" data-hero data-i18n="overline">Образовательная платформа · нового поколения</p>
+    <h1 class="hero-title" data-hero data-text="Учись, играй, создавай — всё бесплатно">Учись, играй, создавай — всё бесплатно</h1>
+    <p class="lead" data-hero data-i18n="desc">F-Mine — это интерактивная учебная среда, которая объединяет ИИ-ассистентов, умные калькуляторы, шахматы и целый мир научных инструментов в одном месте.</p>
+    <ul class="feat-chips" data-hero>
+      <li>🤖 <span data-i18n="f_ai">ИИ Помощник</span></li>
+      <li>🧮 <span data-i18n="f_calc">Калькуляторы</span></li>
+      <li>♟️ <span data-i18n="f_chess">Шахматы</span></li>
+      <li>🔬 <span data-i18n="f_sci">Наука</span></li>
+      <li>🎓 <span data-i18n="f_learn">Обучение</span></li>
+    </ul>
+    <p class="hero-stats mono" data-hero data-i18n="stats">100% бесплатно · без рекламы · старт за 30 секунд</p>
+
+    <!-- Маскот-проводник по auth-флоу -->
+    <div class="mascot-zone" data-hero>
+      <div class="mascot" id="mascot" aria-hidden="true">
+        <div class="bot-aura"></div>
+        <div class="bot-float">
+          <svg viewBox="0 0 220 240" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="gBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26314e"/><stop offset="1" stop-color="#0d1424"/></linearGradient>
+              <linearGradient id="gVisor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04070f"/><stop offset="1" stop-color="#0b1226"/></linearGradient>
+              <radialGradient id="gCore"><stop offset="0" stop-color="#eaffff"/><stop offset=".45" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient>
+            </defs>
+            <!-- каска шахтёра с фонариком -->
+            <path d="M60 50 Q110 14 160 50 L160 57 L60 57 Z" fill="#2a3550" stroke="#46536f" stroke-width="2"/>
+            <circle class="bot-lamp" cx="110" cy="32" r="6" fill="#ffd166"/>
+            <rect x="38" y="76" width="15" height="30" rx="7" fill="#2a3550" stroke="#46536f" stroke-width="1.5"/>
+            <rect x="167" y="76" width="15" height="30" rx="7" fill="#2a3550" stroke="#46536f" stroke-width="1.5"/>
+            <rect x="52" y="48" width="116" height="76" rx="27" fill="url(#gBody)" stroke="#46536f" stroke-width="2"/>
+            <rect x="66" y="64" width="88" height="44" rx="20" fill="url(#gVisor)" stroke="currentColor" stroke-opacity=".5" stroke-width="1.5"/>
+            <rect class="bot-eye" x="82" y="76" width="14" height="22" rx="7" fill="currentColor"/>
+            <rect class="bot-eye" x="124" y="76" width="14" height="22" rx="7" fill="currentColor"/>
+            <rect x="98" y="123" width="24" height="10" rx="5" fill="#1b2438"/>
+            <rect x="62" y="130" width="96" height="70" rx="25" fill="url(#gBody)" stroke="#46536f" stroke-width="2"/>
+            <circle class="bot-core" cx="110" cy="163" r="16" fill="url(#gCore)"/>
+            <rect x="34" y="138" width="22" height="42" rx="11" fill="#1e2740" stroke="#46536f" stroke-width="1.5"/>
+            <rect x="164" y="138" width="22" height="42" rx="11" fill="#1e2740" stroke="#46536f" stroke-width="1.5"/>
+            <rect x="79" y="196" width="27" height="11" rx="5.5" fill="#2a3550" stroke="#46536f" stroke-width="1.5"/>
+            <rect x="114" y="196" width="27" height="11" rx="5.5" fill="#2a3550" stroke="#46536f" stroke-width="1.5"/>
+            <path class="bot-flame" d="M84 207 q8 26 10.5 30 q3.5 -4 10.5 -30 z" fill="currentColor" opacity=".9"/>
+            <path class="bot-flame bot-flame--r" d="M119 207 q8 26 10.5 30 q3.5 -4 10.5 -30 z" fill="currentColor" opacity=".9"/>
+          </svg>
+        </div>
+      </div>
+      <div class="bot-bubble" role="status"><span id="botText"></span></div>
+    </div>
+  </section>
+
+  <!-- ========== AUTH ========== -->
+  <section class="auth-side">
+    <div class="auth-card" id="authCard">
+      <div class="tabs" id="tabs" data-active="register">
+        <span class="tabs__pill" aria-hidden="true"></span>
+        <button class="tabs__btn" data-mode="login"  data-i18n="tab_login">Войти</button>
+        <button class="tabs__btn is-active" data-mode="register" data-i18n="tab_reg">Регистрация</button>
+      </div>
+      <button class="forgot-link mono" id="forgotLink" type="button" data-i18n="forgot">Забыли пароль?</button>
+
+      <ol class="stepper" id="stepper">
+        <li class="active"><i>1</i><span data-i18n="st1">Никнейм</span></li>
+        <li><i>2</i><span data-i18n="st2">Почта</span></li>
+        <li><i>3</i><span data-i18n="st3">Код</span></li>
+        <li><i>4</i><span data-i18n="st4">Пароль</span></li>
+      </ol>
+
+      <!-- Вход -->
+      <section class="panel" data-panel="login" hidden>
+        <label class="field"><span class="field__lab mono" data-i18n="st1">Никнейм</span>
+          <input id="loginNick" autocomplete="username" data-i18n-ph="ph_nick" placeholder="например, space_miner">
+          <em class="err" id="loginNickErr"></em></label>
+        <label class="field"><span class="field__lab mono" data-i18n="st4">Пароль</span>
+          <div class="passwrap"><input id="loginPass" type="password" autocomplete="current-password" data-i18n-ph="ph_pass" placeholder="Минимум 8 символов">
+          <button class="eye" type="button" aria-label="show password">👁</button></div>
+          <em class="err" id="loginPassErr"></em></label>
+      </section>
+
+      <!-- Шаг 1: никнейм -->
+      <section class="panel" data-panel="1">
+        <label class="field"><span class="field__lab mono" data-i18n="st1">Никнейм</span>
+          <input id="regNick" autocomplete="username" maxlength="16" data-i18n-ph="ph_nick" placeholder="например, space_miner">
+          <em class="err" id="nickErr"></em></label>
+      </section>
+
+      <!-- Шаг 2: почта -->
+      <section class="panel" data-panel="2" hidden>
+        <label class="field"><span class="field__lab mono">Gmail</span>
+          <input id="regMail" type="email" autocomplete="email" data-i18n-ph="ph_mail" placeholder="your@gmail.com">
+          <em class="err" id="mailErr"></em>
+          <p class="hint" data-i18n="gmail_hint">Лучше всего подойдёт адрес Gmail — на него придёт код.</p></label>
+      </section>
+
+      <!-- Шаг 3: код -->
+      <section class="panel" data-panel="3" hidden>
+        <div class="otp" id="otp">
+          <input inputmode="numeric" maxlength="1" aria-label="code 1"><input inputmode="numeric" maxlength="1" aria-label="code 2"><input inputmode="numeric" maxlength="1" aria-label="code 3"><input inputmode="numeric" maxlength="1" aria-label="code 4"><input inputmode="numeric" maxlength="1" aria-label="code 5"><input inputmode="numeric" maxlength="1" aria-label="code 6">
+        </div>
+        <em class="err" id="otpErr" style="text-align:center"></em>
+        <p class="resend mono"><button id="resendBtn" type="button" data-i18n="resend">Отправить ещё раз</button> <span id="resendTimer"></span></p>
+      </section>
+
+      <!-- Шаг 4: пароль -->
+      <section class="panel" data-panel="4" hidden>
+        <label class="field"><span class="field__lab mono" data-i18n="st4">Пароль</span>
+          <div class="passwrap"><input id="regPass" type="password" autocomplete="new-password" data-i18n-ph="ph_pass" placeholder="Минимум 8 символов">
+          <button class="eye" type="button" aria-label="show password">👁</button></div>
+          <div class="meter"><b id="meterBar"></b></div>
+          <ul class="checks">
+            <li data-c="1" data-i18n="c1">8+ символов</li>
+            <li data-c="2" data-i18n="c2">Верхний и нижний регистр</li>
+            <li data-c="3" data-i18n="c3">Хотя бы одна цифра</li>
+          </ul>
+          <em class="err" id="passErr"></em></label>
+      </section>
+
+      <!-- Успех -->
+      <section class="panel panel-success" data-panel="success" hidden>
+        <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="36" cy="36" r="30"/><path d="M23 37l9 9 18-19"/>
+        </svg>
+        <h3 id="successTitle">Аккаунт создан!</h3>
+        <p id="successText"></p>
+        <a class="btn btn--primary" href="#"><span data-i18n="go">🎓 Начать обучение</span></a>
+      </section>
+
+      <div class="actions" id="actions">
+        <button class="btn btn--ghost" id="backBtn" type="button" data-i18n="back">Назад</button>
+        <button class="btn btn--primary" id="nextBtn" type="button">Далее</button>
+      </div>
+      <p class="fineprint mono" data-i18n="note">Код проверяется в Firebase, а одинаковый nickname создать второй раз нельзя.</p>
+    </div>
+  </section>
+</main>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker__track">
+    <span>ИИ-помощник <em>✦</em> Калькуляторы <em>✦</em> Шахматы <em>✦</em> Наука <em>✦</em> Обучение <em>✦</em> Бесплатно навсегда <em>✦</em></span>
+    <span>ИИ-помощник <em>✦</em> Калькуляторы <em>✦</em> Шахматы <em>✦</em> Наука <em>✦</em> Обучение <em>✦</em> Бесплатно навсегда <em>✦</em></span>
+  </div>
+</div>
+<footer class="footer"><small>© 2025 F-MINE · учись, играй, создавай</small></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+/* ============================================================
+   0. I18N
+============================================================ */
+const I18N = {
+  ru:{
+    brand_sub:'добыча знаний', demo:'ДЕМО-РЕЖИМ',
+    overline:'Образовательная платформа · нового поколения',
+    title:'Учись, играй, создавай — всё бесплатно',
+    desc:'F-Mine — это интерактивная учебная среда, которая объединяет ИИ-ассистентов, умные калькуляторы, шахматы и целый мир научных инструментов в одном месте.',
+    f_ai:'ИИ Помощник', f_calc:'Калькуляторы', f_chess:'Шахматы', f_sci:'Наука', f_learn:'Обучение',
+    stats:'100% бесплатно · без рекламы · старт за 30 секунд',
+    tab_login:'Войти', tab_reg:'Регистрация', forgot:'Забыли пароль?',
+    st1:'Никнейм', st2:'Почта', st3:'Код', st4:'Пароль',
+    ph_nick:'например, space_miner', ph_mail:'your@gmail.com', ph_pass:'Минимум 8 символов',
+    gmail_hint:'Лучше всего подойдёт адрес Gmail — на него придёт код.',
+    next:'Далее', send:'📩 Получить код', verify:'✅ Подтвердить код',
+    create:'Создать аккаунт', save:'🔐 Сохранить новый пароль', login_btn:'Войти', back:'Назад',
+    resend:'Отправить ещё раз', resend_in:'можно через',
+    note:'Код проверяется в Firebase, а одинаковый nickname создать второй раз нельзя.',
+    c1:'8+ символов', c2:'Верхний и нижний регистр', c3:'Хотя бы одна цифра',
+    ok_reg_t:'Аккаунт создан!', ok_reg_p:'Добро пожаловать в F-Mine, ',
+    ok_forgot_t:'Пароль обновлён!', ok_forgot_p:'Теперь можешь войти с новым паролем.',
+    ok_login_t:'С возвращением!', ok_login_p:'Платформа готова к работе.',
+    go:'🎓 Начать обучение',
+    inbox_title:'Демо-почта', inbox_body:'Твой код F-Mine:',
+    m_login:'Привет! Введи никнейм и пароль — и вперёд, к знаниям.',
+    m_s1:'Шаг 1: придумай никнейм. Он уникальный — повторы запрещены!',
+    m_s2:'Шаг 2: укажи Gmail — я отправлю на него код подтверждения.',
+    m_s3:'Шаг 3: введи код из письма. В демо-режиме письмо приходит в угол справа 👀',
+    m_s4:'Шаг 4: надёжный пароль — как хорошая кирка. Собери все три пункта!',
+    m_success:'Ура! Доступ открыт. Добываем знания вместе ⛏️',
+    e_nick:'3–16 символов: латиница, цифры, _', e_taken:'Такой никнейм уже занят',
+    e_notfound:'Пользователь с таким никнеймом не найден',
+    e_mail:'Проверь адрес почты', e_code:'Неверный код, попробуй ещё раз',
+    e_pass:'Пароль слишком слабый', e_login:'Неверный никнейм или пароль'
+  },
+  en:{
+    brand_sub:'mining knowledge', demo:'DEMO MODE',
+    overline:'Educational platform · next generation',
+    title:'Learn, play, create — all for free',
+    desc:'F-Mine is an interactive learning environment that unites AI assistants, smart calculators, chess and a whole world of scientific tools in one place.',
+    f_ai:'AI Assistant', f_calc:'Calculators', f_chess:'Chess', f_sci:'Science', f_learn:'Learning',
+    stats:'100% free · no ads · start in 30 seconds',
+    tab_login:'Log in', tab_reg:'Sign up', forgot:'Forgot password?',
+    st1:'Nickname', st2:'Email', st3:'Code', st4:'Password',
+    ph_nick:'e.g. space_miner', ph_mail:'your@gmail.com', ph_pass:'Min 8 characters',
+    gmail_hint:'A Gmail address works best — the code will be sent there.',
+    next:'Next', send:'📩 Get code', verify:'✅ Confirm code',
+    create:'Create account', save:'🔐 Save new password', login_btn:'Log in', back:'Back',
+    resend:'Resend code', resend_in:'available in',
+    note:'The code is verified in Firebase, and the same nickname can’t be created twice.',
+    c1:'8+ characters', c2:'Upper & lower case', c3:'At least one digit',
+    ok_reg_t:'Account created!', ok_reg_p:'Welcome to F-Mine, ',
+    ok_forgot_t:'Password updated!', ok_forgot_p:'You can now log in with the new password.',
+    ok_login_t:'Welcome back!', ok_login_p:'The platform is ready when you are.',
+    go:'🎓 Start learning',
+    inbox_title:'Demo inbox', inbox_body:'Your F-Mine code:',
+    m_login:'Hi! Type your nickname and password — and let’s learn.',
+    m_s1:'Step 1: choose a nickname. It must be unique — no duplicates!',
+    m_s2:'Step 2: enter your Gmail — I’ll send a confirmation code.',
+    m_s3:'Step 3: type the code from the letter. In demo mode it pops up in the top-right corner 👀',
+    m_s4:'Step 4: a strong password is like a good pickaxe. Tick all three checks!',
+    m_success:'Yay! Access granted. Let’s mine knowledge together ⛏️',
+    e_nick:'3–16 chars: latin, digits, _', e_taken:'This nickname is already taken',
+    e_notfound:'No user with this nickname',
+    e_mail:'Please check the email address', e_code:'Wrong code, try again',
+    e_pass:'Password is too weak', e_login:'Wrong nickname or password'
+  }
+};
+let lang = localStorage.getItem('fmine_lang') || 'ru';
+const t = k => (I18N[lang] && I18N[lang][k]) || k;
+
+/* ============================================================
+   1. ЗВЁЗДНЫЙ ФОН
+============================================================ */
+(function starfield(){
+  const cv = document.getElementById('stars'), cx = cv.getContext('2d');
+  const dpr = Math.min(devicePixelRatio || 1, 1.5);
+  let W,H,stars=[];
+  function resize(){
+    W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);
+    stars=Array.from({length:Math.min(160,Math.round(W*H/9000))},()=>({x:Math.random()*W,y:Math.random()*H,z:Math.random()*.8+.2,r:Math.random()*1.3+.3,p:Math.random()*Math.PI*2}));
+  }
+  function frame(t){
+    cx.clearRect(0,0,W,H);
+    for(const s of stars){
+      const tw=.5+.5*Math.sin(t*.0012*s.z*2+s.p);
+      cx.globalAlpha=tw*s.z*.85;
+      cx.fillStyle=s.z>.68?'#bfe9ff':'#7f8db0';
+      cx.beginPath();cx.arc(s.x,s.y,s.r,0,7);cx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  resize();addEventListener('resize',resize);
+  matchMedia('(prefers-reduced-motion: reduce)').matches ? frame(0) : requestAnimationFrame(frame);
+})();
+
+/* ============================================================
+   2. AUTH-ЛОГИКА (демо) + МАСКОТ
+============================================================ */
+(function auth(){
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const card=$('#authCard'), tabs=$('#tabs'), stepper=$('#stepper'),
+        nextBtn=$('#nextBtn'), backBtn=$('#backBtn'),
+        mascot=$('#mascot'), botText=$('#botText'),
+        inbox=$('#inbox'), inboxCode=$('#inboxCode');
+  const users = JSON.parse(localStorage.getItem('fmine_users')||'{}');
+
+  let mode='register', step=1, sentCode=null, resendInt=null, typeTimer=null;
+
+  /* ---------- Маскот: реплики + свечение ---------- */
+  function say(msg){
+    clearInterval(typeTimer); botText.textContent='';
+    if (reduced){ botText.textContent=msg; return; }
+    let i=0; typeTimer=setInterval(()=>{ botText.textContent=msg.slice(0,++i); if(i>=msg.length) clearInterval(typeTimer); },14);
+  }
+  function glow(color){ document.documentElement.style.setProperty('--bot-glow',color);
+    mascot.classList.remove('pop'); void mascot.offsetWidth; mascot.classList.add('pop'); }
+  const mood = { ok:'#8dff9a', err:'#ff5e9c', wait:'#ffb84d', idle:'#4de1ff' };
+
+  function mascotTalk(){
+    if (card.classList.contains('done')) return say(t('m_success'));
+    say(mode==='login' ? t('m_login') : t('m_s'+step));
+  }
+
+  /* ---------- i18n ---------- */
+  function applyLang(){
+    $$('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+    $$('[data-i18n-ph]').forEach(el=>el.placeholder=t(el.dataset.i18nPh));
+    $('#langRu').classList.toggle('is-active',lang==='ru');
+    $('#langEn').classList.toggle('is-active',lang==='en');
+    document.documentElement.lang=lang;
+    updateNextLabel(); mascotTalk();
+  }
+  $('#langRu').onclick=()=>{lang='ru';localStorage.setItem('fmine_lang',lang);applyLang();};
+  $('#langEn').onclick=()=>{lang='en';localStorage.setItem('fmine_lang',lang);applyLang();};
+
+  /* ---------- Рендер шагов ---------- */
+  function updateNextLabel(){
+    if (mode==='login') return nextBtn.textContent=t('login_btn');
+    nextBtn.textContent = step===1?t('next') : step===2?t('send') : step===3?t('verify') : (mode==='register'?t('create'):t('save'));
+  }
+  function renderStep(dir=1){
+    $$('.panel').forEach(p=>p.hidden=true);
+    const key = mode==='login' ? 'login' : String(step);
+    const panel=document.querySelector(`.panel[data-panel="${key}"]`);
+    panel.hidden=false;
+    if(!reduced && window.gsap) gsap.from(panel,{x:40*dir,autoAlpha:0,duration:.45,ease:'power2.out'});
+    $$('#stepper li').forEach((li,i)=>{
+      li.classList.toggle('active', mode!=='login' && i+1===step);
+      li.classList.toggle('done',  mode!=='login' && i+1<step);
+      if (mode!=='login' && i+1<step) li.querySelector('i').textContent='✓';
+      else li.querySelector('i').textContent=i+1;
+    });
+    stepper.style.display = mode==='login' ? 'none' : 'flex';
+    backBtn.style.visibility = (mode!=='login' && step>1) ? 'visible' : 'hidden';
+    card.classList.toggle('mode-forgot', mode==='forgot');
+    tabs.dataset.active = mode==='login' ? 'login' : 'register';
+    $$('.tabs__btn').forEach(b=>b.classList.toggle('is-active', b.dataset.mode===(mode==='forgot'?'register':mode)));
+    updateNextLabel(); mascotTalk();
+  }
+  function setMode(m){ mode=m; step=1; clearErrors(); renderStep(); glow(mood.idle); }
+
+  /* ---------- Ошибки ---------- */
+  function err(inputEl, errEl, key){
+    if(inputEl) inputEl.classList.add('bad');
+    if(errEl) errEl.textContent=t(key);
+    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+    glow(mood.err); say(t(key));
+  }
+  function clearErrors(){
+    $$('.err').forEach(e=>e.textContent='');
+    $$('input.bad').forEach(i=>i.classList.remove('bad'));
+  }
+
+  /* ---------- Демо-отправка кода ----------
+     FIREBASE INTEGRATION POINT:
+     замени тело sendCode() на реальный вызов, например:
+       const auth = getAuth(app);
+       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+     или свою Cloud Function sendOtp(email).                        */
+  function sendCode(){
+    sentCode = String(Math.floor(100000+Math.random()*900000));
+    inboxCode.textContent = sentCode;
+    inbox.classList.add('show');
+    setTimeout(()=>inbox.classList.remove('show'), 15000);
+    glow(mood.wait);
+    let s=30; const timer=$('#resendTimer'), btn=$('#resendBtn');
+    btn.disabled=true; clearInterval(resendInt);
+    resendInt=setInterval(()=>{ timer.textContent=`· ${t('resend_in')} ${--s}s`;
+      if(s<=0){clearInterval(resendInt);btn.disabled=false;timer.textContent='';} },1000);
+  }
+
+  /* ---------- OTP-боксы ---------- */
+  const otpInputs=$$('#otp input');
+  otpInputs.forEach((inp,i)=>{
+    inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/\D/g,'').slice(-1);
+      if(inp.value && i<5) otpInputs[i+1].focus(); });
+    inp.addEventListener('keydown',e=>{ if(e.key==='Backspace' && !inp.value && i>0) otpInputs[i-1].focus(); });
+  });
+  $('#otp').addEventListener('paste',e=>{
+    const txt=(e.clipboardData.getData('text')||'').replace(/\D/g,'').slice(0,6);
+    txt.split('').forEach((d,i)=>otpInputs[i].value=d);
+    if(txt.length) otpInputs[Math.min(txt.length,5)].focus();
+    e.preventDefault();
+  });
+  $('#resendBtn').onclick=()=>{ sendCode(); say(t('m_s3')); };
+
+  /* ---------- Сила пароля ---------- */
+  const regPass=$('#regPass'), meterBar=$('#meterBar');
+  function passScore(v){
+    let s=0; const c1=v.length>=8, c2=/[a-zа-яё]/.test(v)&&/[A-ZА-ЯЁ]/.test(v), c3=/\d/.test(v);
+    if(c1)s++; if(c2)s++; if(c3)s++;
+    $$('.checks li').forEach(li=>li.classList.toggle('ok',{1:c1,2:c2,3:c3}[+li.dataset.c]));
+    meterBar.style.width=(s/3*100)+'%';
+    meterBar.style.background = s<=1?'var(--pink)':s===2?'var(--amber)':'var(--lime)';
+    return s;
+  }
+  regPass.addEventListener('input',()=>passScore(regPass.value));
+
+  /* ---------- Глазки ---------- */
+  $$('.eye').forEach(b=>b.onclick=()=>{
+    const inp=b.parentElement.querySelector('input');
+    inp.type = inp.type==='password' ? 'text' : 'password';
+  });
+
+  /* ---------- Валидации шагов ---------- */
+  const nickRe=/^[a-zA-Z0-9_]{3,16}$/;
+  function validate(){
+    if (mode==='login'){
+      const n=$('#loginNick').value.trim(), p=$('#loginPass').value;
+      if(!n){ return err($('#loginNick'),$('#loginNickErr'),'e_nick'); }
+      if(!p){ return err($('#loginPass'),$('#loginPassErr'),'e_login'); }
+      const u=users[n];
+      if(!u || u.pass!==p){ return err($('#loginPass'),$('#loginPassErr'),'e_login'); }
+      return finish('login', n);
+    }
+    if (step===1){
+      const n=$('#regNick').value.trim();
+      if(!nickRe.test(n)) return err($('#regNick'),$('#nickErr'),'e_nick');
+      if(mode==='register' && users[n]) return err($('#regNick'),$('#nickErr'),'e_taken');
+      if(mode==='forgot' && !users[n])  return err($('#regNick'),$('#nickErr'),'e_notfound');
+      step=2; renderStep(); glow(mood.idle); return;
+    }
+    if (step===2){
+      const m=$('#regMail').value.trim();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) return err($('#regMail'),$('#mailErr'),'e_mail');
+      sendCode(); step=3; renderStep(); return;
+    }
+    if (step===3){
+      const code=otpInputs.map(i=>i.value).join('');
+      if(code!==sentCode){ otpInputs.forEach(i=>i.value=''); otpInputs[0].focus();
+        return err(null,$('#otpErr'),'e_code'); }
+      step=4; renderStep(); glow(mood.idle); return;
+    }
+    if (step===4){
+      if(passScore(regPass.value)<3) return err(regPass,$('#passErr'),'e_pass');
+      finish(mode, $('#regNick').value.trim());
+    }
+  }
+
+  function finish(kind, nick){
+    glow(mood.ok);
+    if(kind==='register'){ users[nick]={email:$('#regMail').value.trim(), pass:regPass.value};
+      localStorage.setItem('fmine_users',JSON.stringify(users));
+      $('#successTitle').textContent=t('ok_reg_t'); $('#successText').textContent=t('ok_reg_p')+nick+'!'; }
+    if(kind==='forgot'){ users[nick].pass=regPass.value;
+      localStorage.setItem('fmine_users',JSON.stringify(users));
+      $('#successTitle').textContent=t('ok_forgot_t'); $('#successText').textContent=t('ok_forgot_p'); }
+    if(kind==='login'){ $('#successTitle').textContent=t('ok_login_t'); $('#successText').textContent=t('ok_login_p'); }
+    $$('.panel').forEach(p=>p.hidden=true);
+    document.querySelector('.panel[data-panel="success"]').hidden=false;
+    card.classList.add('done');
+    if(!reduced && window.gsap) gsap.from('.panel-success > *',{y:24,autoAlpha:0,stagger:.12,duration:.6,ease:'power2.out'});
+    mascotTalk();
+  }
+
+  /* ---------- Кнопки / вкладки ---------- */
+  nextBtn.onclick=()=>{
+    nextBtn.classList.add('loading'); nextBtn.disabled=true;
+    setTimeout(()=>{ nextBtn.classList.remove('loading'); nextBtn.disabled=false; validate(); }, reduced?0:550);
+  };
+  backBtn.onclick=()=>{ if(step>1){ step--; renderStep(-1); glow(mood.idle); } };
+  $$('.tabs__btn').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+  $('#forgotLink').onclick=()=>setMode('forgot');
+  card.addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.tagName==='INPUT'){ e.preventDefault(); nextBtn.click(); } });
+
+  /* ---------- Входные анимации ---------- */
+  if(!reduced && window.gsap){
+    const tl=gsap.timeline({delay:.15,defaults:{duration:.8,ease:'power3.out'}});
+    tl.from('[data-hero]',{y:26,autoAlpha:0,stagger:.1})
+      .from('.auth-card',{x:60,autoAlpha:0,duration:.9},'-=.5');
+    (function scramble(){
+      const el=$('.hero-title'), fin=el.dataset.text, gl='01<>[]{}#*+=/\\∆Σ';
+      const st=performance.now(), dur=1200;
+      (function fr(now){
+        const p=Math.min(1,(now-st)/dur), lock=Math.floor(p*fin.length); let out='';
+        for(let i=0;i<fin.length;i++){ const ch=fin[i];
+          out += (i<lock||ch===' ')?ch:gl[(Math.random()*gl.length)|0]; }
+        el.textContent=out;
+        p<1?requestAnimationFrame(fr):el.textContent=fin;
+      })(st);
+    })();
+  }
+
+  applyLang(); renderStep();
+})();
+</script>
+</body>
+</html>
