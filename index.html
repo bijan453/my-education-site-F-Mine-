@@ -282,14 +282,27 @@ main{position:relative;z-index:1}
 .dots i{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:typingDot 1.1s infinite}
 .dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}
 @keyframes typingDot{40%{transform:translateY(-5px);opacity:.5}}
-.board{display:grid;grid-template-columns:repeat(8,1fr);width:min(260px,100%);aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
-.sq{display:grid;place-items:center;font-size:clamp(14px,2vw,20px);line-height:1}
-.sq--l{background:#28344f}.sq--d{background:#141b30}
-.sq .p-w{color:var(--amber);text-shadow:0 0 8px rgba(255,184,77,.5)}
-.sq .p-b{color:#8fa2c4;text-shadow:0 2px 4px rgba(0,0,0,.6)}
-.sq--target{cursor:pointer;box-shadow:inset 0 0 0 2px var(--amber);animation:targetPulse 1.4s ease-in-out infinite}
-@keyframes targetPulse{50%{box-shadow:inset 0 0 0 2px var(--amber),inset 0 0 18px rgba(255,184,77,.55)}}
-.sq--target.solved{animation:none;box-shadow:inset 0 0 0 2px var(--lime),inset 0 0 20px rgba(141,255,154,.45)}
+.board{
+  position:relative;width:min(300px,100%);aspect-ratio:1;border-radius:10px;overflow:hidden;
+  border:1px solid var(--line);
+  /* шахматная клетка чистым CSS — 8×8 без единой строчки JS */
+  background:repeating-conic-gradient(#28344f 0% 25%, #141b30 0% 50%);
+  background-size:25% 25%;
+}
+.pc{
+  position:absolute;width:12.5%;height:12.5%;
+  left:calc(var(--f)*12.5%);top:calc((8 - var(--r))*12.5%);
+  display:grid;place-items:center;font-size:clamp(16px,2.4vw,24px);line-height:1;pointer-events:none;
+}
+.pc.pw{color:var(--amber);text-shadow:0 0 8px rgba(255,184,77,.5)}
+.pc.pb{color:#8fa2c4;text-shadow:0 2px 4px rgba(0,0,0,.6)}
+.sq-target{
+  position:absolute;width:12.5%;height:12.5%;
+  left:calc(var(--f)*12.5%);top:calc((8 - var(--r))*12.5%);
+  cursor:pointer;box-shadow:inset 0 0 0 2px var(--amber);
+  animation:targetPulse 1.4s ease-in-out infinite;
+}
+.sq-target.solved{animation:none;box-shadow:inset 0 0 0 2px var(--lime), inset 0 0 20px rgba(141,255,154,.45)}
 .chess-msg{color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:none}
 .chess-msg.win{color:var(--lime)}
 .type-line{min-height:2em;font-size:14px;color:var(--lime);letter-spacing:.04em}
@@ -326,7 +339,7 @@ main{position:relative;z-index:1}
 @media (max-width:1100px){.dotnav{display:none}}
 @media (max-width:899px){
   .wrap{width:92vw}
-  .robot{width:92px;transform:translate(calc(100vw - 62px),86px) !important}
+  .robot{width:92px}
   .bot-bubble,.robot.flip .bot-bubble{left:auto;right:-8px;top:auto;bottom:calc(100% + 12px);max-width:190px;border-radius:12px;transform:translateY(6px)}
   .bot-bubble.show,.robot.flip .bot-bubble.show{transform:none}
   .bot-bubble::after,.robot.flip .bot-bubble::after{left:auto;right:30px;top:auto;bottom:-6px;border:none;
@@ -340,7 +353,7 @@ main{position:relative;z-index:1}
   .topbar nav{display:none}
 }
 @media (max-width:767px){
-  .robot{width:60px;transform:translate(calc(100vw - 48px),78px) !important}
+  .robot{width:60px}
   .bot-bubble{display:none}
   .feat{position:static}
 }
@@ -655,9 +668,26 @@ main{position:relative;z-index:1}
             </div>
             <div class="feat__demo">
               <div class="demo-panel">
-                <p class="demo-cap mono">// Задача дня</p>
-                <div class="board" id="chessBoard" aria-label="Шахматная доска с задачей"></div>
-                <p class="chess-msg mono" id="chessMsg">Белые начинают. Нажми поле, где ферзь ставит мат →</p>
+                <div class="demo-panel">
+  <p class="demo-cap mono">// Задача дня</p>
+
+  <!-- Доска теперь статичная: видна даже при полностью отключённом JS -->
+  <div class="board" aria-label="Шахматная доска: мат в 1 ход">
+    <span class="pc pb" style="--f:7;--r:8">♚</span>
+    <span class="pc pb" style="--f:6;--r:8">♜</span>
+    <span class="pc pb" style="--f:7;--r:7">♟</span>
+    <span class="pc pb" style="--f:6;--r:6">♟</span>
+    <span class="pc pw" style="--f:2;--r:3">♗</span>
+    <span class="pc pw" style="--f:0;--r:2">♙</span>
+    <span class="pc pw" style="--f:3;--r:4">♙</span>
+    <span class="pc pw" style="--f:4;--r:1">♔</span>
+    <span class="pc pw" style="--f:6;--r:7">♕</span>
+    <button class="sq-target" id="chessTarget" style="--f:6;--r:7"
+            aria-label="Ход ферзём на g7 — поставить мат"></button>
+  </div>
+
+  <p class="chess-msg mono" id="chessMsg">Белые начинают. Нажми поле, где ферзь ставит мат →</p>
+</div>
               </div>
             </div>
           </div>
@@ -813,21 +843,36 @@ function initMotion(){
          разрешаются при замере), поэтому разрывов быть не может.
      Гуттеры: лево 3–10vw, право 82–94vw; финал 86vw/22vh (под шапкой).
   ===================================================================== */
-  mm.add('(min-width: 900px)', () => {
-    const defs = [
+  
+  /* ТРАЕКТОРИЯ — теперь и на десктопе, и на смартфоне.
+     На узких экранах берётся набор MOBILE: робот летает вдоль краёв,
+     чередуя левую/правую сторону, как на компьютере. */
+  (function trajectory(){
+    const DESKTOP = [
       { el:'#hero',                  x:88, y:28, s:1   },
-      { el:'.mod-card:nth-child(1)', x:88, y:34, s:.8  },  // ряд 1: сначала вправо…
-      { el:'.mod-card:nth-child(2)', x:6,  y:32, s:.8  },  // …сразу после — влево
-      { el:'.mod-card:nth-child(3)', x:87, y:30, s:.78 },  // ряд 2: вправо
-      { el:'.mod-card:nth-child(4)', x:5,  y:32, s:.8  },  // влево
-      { el:'.mod-card:nth-child(5)', x:88, y:26, s:.82 },  // центр → вправо
+      { el:'.mod-card:nth-child(1)', x:88, y:34, s:.8  },
+      { el:'.mod-card:nth-child(2)', x:6,  y:32, s:.8  },
+      { el:'.mod-card:nth-child(3)', x:87, y:30, s:.78 },
+      { el:'.mod-card:nth-child(4)', x:5,  y:32, s:.8  },
+      { el:'.mod-card:nth-child(5)', x:88, y:26, s:.82 },
       { el:'#feat-ai',               x:87, y:24, s:.66 },
       { el:'#feat-chess',            x:6,  y:24, s:.66 },
       { el:'#feat-type',             x:88, y:26, s:.66 },
       { el:'#start',                 x:86, y:22, s:.95 }
     ];
+    const MOBILE = [
+      { el:'#hero',                  x:80, y:18, s:1  },
+      { el:'.mod-card:nth-child(1)', x:82, y:22, s:1  },
+      { el:'.mod-card:nth-child(2)', x:18, y:22, s:1  },
+      { el:'.mod-card:nth-child(3)', x:82, y:20, s:1  },
+      { el:'.mod-card:nth-child(4)', x:18, y:22, s:1  },
+      { el:'.mod-card:nth-child(5)', x:82, y:18, s:1  },
+      { el:'#feat-ai',               x:82, y:16, s:.9 },
+      { el:'#feat-chess',            x:18, y:16, s:.9 },
+      { el:'#feat-type',             x:82, y:18, s:.9 },
+      { el:'#start',                 x:80, y:14, s:1  }
+    ];
 
-    // quickTo даёт органичное «дого­няющее» движение без рывков
     const QX = gsap.quickTo(bot, 'x',     {duration:.5, ease:'power2.out'});
     const QY = gsap.quickTo(bot, 'y',     {duration:.5, ease:'power2.out'});
     const QS = gsap.quickTo(bot, 'scale', {duration:.5, ease:'power2.out'});
@@ -836,12 +881,12 @@ function initMotion(){
     let segs = [];
     const measure = () => {
       const ih = innerHeight;
+      const defs = innerWidth >= 900 ? DESKTOP : MOBILE;   // выбор набора по ширине
       segs = defs.map(d => {
         const el = document.querySelector(d.el);
         const top = el.getBoundingClientRect().top + scrollY;
         return {...d, start: top - ih*.82, end: top - ih*.38};
       });
-      // Разрешение перекрытий (карточки в одном ряду): сегменты строго последовательны
       for (let i = 1; i < segs.length; i++){
         if (segs[i].start < segs[i-1].end + 10) segs[i].start = segs[i-1].end + 10;
         if (segs[i].end  <= segs[i].start)      segs[i].end   = segs[i].start + ih*.25;
@@ -849,15 +894,15 @@ function initMotion(){
     };
 
     const lerp = (a,b,t) => a + (b-a)*t;
-    const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2; // easeInOutQuad
+    const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
 
     const update = () => {
       const sc = scrollY;
       let px = segs[0].x, py = segs[0].y, ps = segs[0].s;
       for (let i = 1; i < segs.length; i++){
         const g = segs[i];
-        if (sc >= g.end){ px = g.x; py = g.y; ps = g.s; continue; } // точка достигнута
-        if (sc >  g.start){                                          // перелёт
+        if (sc >= g.end){ px = g.x; py = g.y; ps = g.s; continue; }
+        if (sc >  g.start){
           const t = ease((sc - g.start) / (g.end - g.start));
           px = lerp(segs[i-1].x, g.x, t);
           py = lerp(segs[i-1].y, g.y, t);
@@ -869,15 +914,12 @@ function initMotion(){
     };
 
     measure();
-    // стартовая позиция без анимации
     gsap.set(bot, {x:segs[0].x/100*innerWidth, y:segs[0].y/100*innerHeight, scale:segs[0].s});
-
-    const st = ScrollTrigger.create({start:0, end:'max', onUpdate:update});
-    const onR = gsap.utils.debounce(() => { measure(); ScrollTrigger.refresh(); update(); }, 300);
-    addEventListener('resize', onR);
+    ScrollTrigger.create({start:0, end:'max', onUpdate:update});
+    addEventListener('resize', gsap.utils.debounce(() => { measure(); ScrollTrigger.refresh(); update(); }, 300));
     update();
-    return () => { removeEventListener('resize', onR); st.kill(); };
-  });
+  })();
+
 
   /* Наклон от скорости скролла */
   const tiltTo = gsap.quickTo('.bot-tilt', 'rotation', {duration:.45, ease:'power2.out'});
@@ -960,35 +1002,17 @@ function initMotion(){
 })();
 
 /* ---------- Шахматная задача ---------- */
+/* ---------- Шахматная задача: только клик (доска уже в HTML) ---------- */
 (function chess(){
-  const board = document.getElementById('chessBoard');
-  if (!board) return;
-  const pieces = {h8:'♚', g8:'♜', h7:'♟', g6:'♟', e1:'♔', a2:'♙', d4:'♙', c3:'♗', g7:'♕'};
-  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++){
-    const name = 'abcdefgh'[c] + (8-r);
-    const sq = document.createElement('div');
-    sq.className = 'sq ' + (((r+c)%2) ? 'sq--d' : 'sq--l');
-    if (pieces[name]){
-      const p = document.createElement('span');
-      p.textContent = pieces[name];
-      p.className = '♔♕♙'.includes(pieces[name]) ? 'p-w' : 'p-b';
-      sq.appendChild(p);
-    }
-    if (name === 'g7'){
-      sq.classList.add('sq--target');
-      sq.setAttribute('role','button'); sq.tabIndex = 0;
-      sq.setAttribute('aria-label','Ход ферзём на g7');
-      const solve = () => {
-        sq.classList.add('solved');
-        const msg = document.getElementById('chessMsg');
-        msg.textContent = '✓ Ферзь g7# — мат! Король заперт.';
-        msg.classList.add('win');
-      };
-      sq.addEventListener('click', solve);
-      sq.addEventListener('keydown', e => (e.key === 'Enter' || e.key === ' ') && solve());
-    }
-    board.appendChild(sq);
-  }
+  const target = document.getElementById('chessTarget');
+  const msg    = document.getElementById('chessMsg');
+  if (!target) return;
+  const solve = () => {
+    target.classList.add('solved');
+    msg.textContent = '✓ Ферзь g7# — мат! Король заперт собственными фигурами.';
+    msg.classList.add('win');
+  };
+  target.addEventListener('click', solve);
 })();
 
 /* ---------- Скоропечать ---------- */
