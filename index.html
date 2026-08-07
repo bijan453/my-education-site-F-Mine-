@@ -850,27 +850,27 @@ function initMotion(){
   (function trajectory(){
     const DESKTOP = [
       { el:'#hero',                  x:88, y:28, s:1   },
-      { el:'.mod-card:nth-child(1)', x:88, y:34, s:.8  },
-      { el:'.mod-card:nth-child(2)', x:6,  y:32, s:.8  },
-      { el:'.mod-card:nth-child(3)', x:87, y:30, s:.78 },
-      { el:'.mod-card:nth-child(4)', x:5,  y:32, s:.8  },
-      { el:'.mod-card:nth-child(5)', x:88, y:26, s:.82 },
-      { el:'#feat-ai',               x:87, y:24, s:.66 },
-      { el:'#feat-chess',            x:6,  y:24, s:.66 },
-      { el:'#feat-type',             x:88, y:26, s:.66 },
-      { el:'#start',                 x:86, y:22, s:.95 }
+      { el:'.mod-card:nth-child(1)', x:91, y:38, s:.9  },
+      { el:'.mod-card:nth-child(2)', x:7,  y:52, s:.75 },
+      { el:'.mod-card:nth-child(3)', x:88, y:24, s:.85 },
+      { el:'.mod-card:nth-child(4)', x:9,  y:44, s:.95 },
+      { el:'.mod-card:nth-child(5)', x:85, y:60, s:.72 },
+      { el:'#feat-ai',               x:90, y:30, s:.8  },
+      { el:'#feat-chess',            x:8,  y:48, s:.9  },
+      { el:'#feat-type',             x:92, y:22, s:.75 },
+      { el:'#start',                 x:84, y:38, s:1.05}
     ];
     const MOBILE = [
-      { el:'#hero',                  x:80, y:18, s:1  },
-      { el:'.mod-card:nth-child(1)', x:82, y:22, s:1  },
-      { el:'.mod-card:nth-child(2)', x:18, y:22, s:1  },
-      { el:'.mod-card:nth-child(3)', x:82, y:20, s:1  },
-      { el:'.mod-card:nth-child(4)', x:18, y:22, s:1  },
-      { el:'.mod-card:nth-child(5)', x:82, y:18, s:1  },
-      { el:'#feat-ai',               x:82, y:16, s:.9 },
-      { el:'#feat-chess',            x:18, y:16, s:.9 },
-      { el:'#feat-type',             x:82, y:18, s:.9 },
-      { el:'#start',                 x:80, y:14, s:1  }
+      { el:'#hero',                  x:80, y:18, s:1   },
+      { el:'.mod-card:nth-child(1)', x:85, y:26, s:.95 },
+      { el:'.mod-card:nth-child(2)', x:15, y:38, s:.85 },
+      { el:'.mod-card:nth-child(3)', x:85, y:20, s:1   },
+      { el:'.mod-card:nth-child(4)', x:15, y:34, s:.9  },
+      { el:'.mod-card:nth-child(5)', x:82, y:45, s:.8  },
+      { el:'#feat-ai',               x:84, y:20, s:.9  },
+      { el:'#feat-chess',            x:16, y:32, s:.85 },
+      { el:'#feat-type',             x:85, y:22, s:.9  },
+      { el:'#start',                 x:80, y:28, s:1   }
     ];
 
     const QX = gsap.quickTo(bot, 'x',     {duration:.5, ease:'power2.out'});
@@ -878,13 +878,28 @@ function initMotion(){
     const QS = gsap.quickTo(bot, 'scale', {duration:.5, ease:'power2.out'});
     gsap.set(bot, {xPercent:-50, yPercent:-50});
 
+    // Organic hover bobbing animation
+    let floatTime = 0;
+    const floatEl = document.querySelector('.bot-float');
+    function floatLoop() {
+      floatTime += 0.035;
+      const hoverY = Math.sin(floatTime) * 11;
+      const hoverX = Math.cos(floatTime * 0.7) * 5;
+      const hoverRot = Math.sin(floatTime * 0.5) * 3.5;
+      if (floatEl) {
+        floatEl.style.transform = `translate3d(${hoverX}px, ${hoverY}px, 0) rotate(${hoverRot}deg)`;
+      }
+      requestAnimationFrame(floatLoop);
+    }
+    floatLoop();
+
     let segs = [];
     const measure = () => {
       const ih = innerHeight;
       const defs = innerWidth >= 900 ? DESKTOP : MOBILE;   // выбор набора по ширине
       segs = defs.map(d => {
         const el = document.querySelector(d.el);
-        const top = el.getBoundingClientRect().top + scrollY;
+        const top = el ? el.getBoundingClientRect().top + scrollY : 0;
         return {...d, start: top - ih*.82, end: top - ih*.38};
       });
       for (let i = 1; i < segs.length; i++){
