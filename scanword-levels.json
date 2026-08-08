@@ -1,0 +1,10029 @@
+[
+  {
+    "id": "level_1",
+    "title": "Сканворд №1: Знаток слов",
+    "difficulty": "Легкий",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 90,
+    "rewardCoins": 22,
+    "words": [
+      {
+        "id": "l1_w1",
+        "answer": "ЛИМОН",
+        "clueText": "Желтый цитрус",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l1_w2",
+        "answer": "КАТОК",
+        "clueText": "Лед для коньков",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l1_w3",
+        "answer": "ОПЕРА",
+        "clueText": "Жанр музыки",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l1_w4",
+        "answer": "КАНАТ",
+        "clueText": "Толстый трос",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l1_w5",
+        "answer": "СКСОА",
+        "clueText": "Хвойный лес",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l1_w6",
+        "answer": "ТАЕОН",
+        "clueText": "Сладкоежка",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l1_w7",
+        "answer": "КТАПТ",
+        "clueText": "Часть ноги",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l1_w8",
+        "answer": "ОКЕАН",
+        "clueText": "Водный гигант",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Желтый цитрус",
+          "arrow": "right",
+          "wordId": "l1_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l1_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l1_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l1_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l1_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l1_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "down",
+          "wordId": "l1_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right-down",
+          "wordId": "l1_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l1_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "down",
+          "wordId": "l1_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "down",
+          "wordId": "l1_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l1_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Лед для коньков",
+          "arrow": "right",
+          "wordId": "l1_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l1_w2",
+            "l1_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l1_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l1_w2",
+            "l1_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l1_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l1_w2",
+            "l1_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l1_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l1_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l1_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l1_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l1_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Жанр музыки",
+          "arrow": "right",
+          "wordId": "l1_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l1_w3",
+            "l1_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l1_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l1_w3",
+            "l1_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l1_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l1_w3",
+            "l1_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l1_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l1_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l1_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l1_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l1_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Толстый трос",
+          "arrow": "right",
+          "wordId": "l1_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l1_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l1_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l1_w4",
+            "l1_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l1_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l1_w4",
+            "l1_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_2",
+    "title": "Сканворд №2: Летний бриз",
+    "difficulty": "Легкий",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 100,
+    "rewardCoins": 24,
+    "words": [
+      {
+        "id": "l2_w1",
+        "answer": "КАТОК",
+        "clueText": "Лед для коньков",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l2_w2",
+        "answer": "ОПЕРА",
+        "clueText": "Жанр музыки",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l2_w3",
+        "answer": "КАНАТ",
+        "clueText": "Толстый трос",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l2_w4",
+        "answer": "СОСНА",
+        "clueText": "Хвойный лес",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l2_w5",
+        "answer": "ЛОККМС",
+        "clueText": "Сладкоежка",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l2_w6",
+        "answer": "ЕТНПС",
+        "clueText": "Часть ноги",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l2_w7",
+        "answer": "АКТАА",
+        "clueText": "Водный гигант",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l2_w8",
+        "answer": "КОРМА",
+        "clueText": "Корма судна",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Лед для коньков",
+          "arrow": "right",
+          "wordId": "l2_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l2_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l2_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l2_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l2_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l2_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "down",
+          "wordId": "l2_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "right-down",
+          "wordId": "l2_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l2_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "down",
+          "wordId": "l2_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "down",
+          "wordId": "l2_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l2_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Жанр музыки",
+          "arrow": "right",
+          "wordId": "l2_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l2_w2",
+            "l2_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l2_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l2_w2",
+            "l2_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l2_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l2_w2",
+            "l2_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l2_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l2_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l2_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l2_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l2_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Толстый трос",
+          "arrow": "right",
+          "wordId": "l2_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l2_w3",
+            "l2_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l2_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l2_w3",
+            "l2_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l2_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l2_w3",
+            "l2_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l2_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l2_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l2_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l2_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l2_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right",
+          "wordId": "l2_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l2_w4",
+            "l2_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l2_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l2_w4",
+            "l2_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l2_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l2_w4",
+            "l2_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_3",
+    "title": "Сканворд №3: Тайна океана",
+    "difficulty": "Легкий",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 110,
+    "rewardCoins": 26,
+    "words": [
+      {
+        "id": "l3_w1",
+        "answer": "ОПЕРА",
+        "clueText": "Жанр музыки",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l3_w2",
+        "answer": "КАНАТ",
+        "clueText": "Толстый трос",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l3_w3",
+        "answer": "СОСНА",
+        "clueText": "Хвойный лес",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l3_w4",
+        "answer": "ЛАКОМ",
+        "clueText": "Сладкоежка",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l3_w5",
+        "answer": "СКОСА",
+        "clueText": "Часть ноги",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l3_w6",
+        "answer": "НКСАК",
+        "clueText": "Водный гигант",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l3_w7",
+        "answer": "ТОАММ",
+        "clueText": "Корма судна",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l3_w8",
+        "answer": "АРБАТ",
+        "clueText": "Улица Москвы",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Жанр музыки",
+          "arrow": "right",
+          "wordId": "l3_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l3_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l3_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l3_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l3_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l3_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "down",
+          "wordId": "l3_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "right-down",
+          "wordId": "l3_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l3_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "down",
+          "wordId": "l3_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "down",
+          "wordId": "l3_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l3_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Толстый трос",
+          "arrow": "right",
+          "wordId": "l3_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l3_w2",
+            "l3_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l3_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l3_w2",
+            "l3_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l3_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l3_w2",
+            "l3_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l3_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l3_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l3_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l3_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l3_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right",
+          "wordId": "l3_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l3_w3",
+            "l3_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l3_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l3_w3",
+            "l3_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l3_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l3_w3",
+            "l3_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l3_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l3_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l3_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l3_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l3_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "right",
+          "wordId": "l3_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l3_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l3_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l3_w4",
+            "l3_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l3_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l3_w4",
+            "l3_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_4",
+    "title": "Сканворд №4: Горные вершины",
+    "difficulty": "Легкий",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 120,
+    "rewardCoins": 28,
+    "words": [
+      {
+        "id": "l4_w1",
+        "answer": "КАНАТ",
+        "clueText": "Толстый трос",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l4_w2",
+        "answer": "СОСНА",
+        "clueText": "Хвойный лес",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l4_w3",
+        "answer": "ЛАКОМ",
+        "clueText": "Сладкоежка",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l4_w4",
+        "answer": "СТОПА",
+        "clueText": "Часть ноги",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l4_w5",
+        "answer": "ОСЕЛН",
+        "clueText": "Водный гигант",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l4_w6",
+        "answer": "СОКМО",
+        "clueText": "Корма судна",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l4_w7",
+        "answer": "АРМАА",
+        "clueText": "Улица Москвы",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l4_w8",
+        "answer": "АИСТ",
+        "clueText": "Белая птица",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Толстый трос",
+          "arrow": "right",
+          "wordId": "l4_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l4_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l4_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l4_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l4_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l4_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "down",
+          "wordId": "l4_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "right-down",
+          "wordId": "l4_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l4_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "down",
+          "wordId": "l4_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "down",
+          "wordId": "l4_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l4_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right",
+          "wordId": "l4_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l4_w2",
+            "l4_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l4_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l4_w2",
+            "l4_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l4_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l4_w2",
+            "l4_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l4_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l4_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l4_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l4_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l4_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "right",
+          "wordId": "l4_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l4_w3",
+            "l4_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l4_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l4_w3",
+            "l4_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l4_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l4_w3",
+            "l4_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l4_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l4_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l4_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l4_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "right",
+          "wordId": "l4_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l4_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l4_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l4_w4",
+            "l4_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l4_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l4_w4",
+            "l4_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_5",
+    "title": "Сканворд №5: Золотой ключик",
+    "difficulty": "Легкий",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 130,
+    "rewardCoins": 30,
+    "words": [
+      {
+        "id": "l5_w1",
+        "answer": "СОСНА",
+        "clueText": "Хвойный лес",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l5_w2",
+        "answer": "ЛАКОМ",
+        "clueText": "Сладкоежка",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l5_w3",
+        "answer": "СТОПА",
+        "clueText": "Часть ноги",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l5_w4",
+        "answer": "ОКЕАН",
+        "clueText": "Водный гигант",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l5_w5",
+        "answer": "КЛРСА",
+        "clueText": "Корма судна",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l5_w6",
+        "answer": "КРОАЕ",
+        "clueText": "Улица Москвы",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l5_w7",
+        "answer": "МИАТ",
+        "clueText": "Белая птица",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l5_w8",
+        "answer": "БАЛЕТ",
+        "clueText": "Танец пуанты",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right",
+          "wordId": "l5_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l5_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l5_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l5_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l5_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l5_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Танец пуанты",
+          "arrow": "down",
+          "wordId": "l5_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "right-down",
+          "wordId": "l5_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l5_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "down",
+          "wordId": "l5_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "down",
+          "wordId": "l5_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l5_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "right",
+          "wordId": "l5_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l5_w2",
+            "l5_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l5_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l5_w2",
+            "l5_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l5_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l5_w2",
+            "l5_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l5_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l5_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l5_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l5_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l5_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "right",
+          "wordId": "l5_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l5_w3",
+            "l5_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l5_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l5_w3",
+            "l5_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l5_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l5_w3",
+            "l5_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l5_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l5_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l5_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l5_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l5_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "right",
+          "wordId": "l5_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l5_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l5_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l5_w4",
+            "l5_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l5_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l5_w4"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_6",
+    "title": "Сканворд №6: Звездный час",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 140,
+    "rewardCoins": 32,
+    "words": [
+      {
+        "id": "l6_w1",
+        "answer": "ЛАКОМ",
+        "clueText": "Сладкоежка",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l6_w2",
+        "answer": "СТОПА",
+        "clueText": "Часть ноги",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l6_w3",
+        "answer": "ОКЕАН",
+        "clueText": "Водный гигант",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l6_w4",
+        "answer": "КОРМА",
+        "clueText": "Корма судна",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l6_w5",
+        "answer": "АСБОТ",
+        "clueText": "Улица Москвы",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l6_w6",
+        "answer": "ОИЕТ",
+        "clueText": "Белая птица",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l6_w7",
+        "answer": "ААНЕА",
+        "clueText": "Танец пуанты",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l6_w8",
+        "answer": "ВЕСНА",
+        "clueText": "После зимы",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "right",
+          "wordId": "l6_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l6_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l6_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l6_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l6_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l6_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "После зимы",
+          "arrow": "down",
+          "wordId": "l6_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "right-down",
+          "wordId": "l6_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l6_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "down",
+          "wordId": "l6_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Танец пуанты",
+          "arrow": "down",
+          "wordId": "l6_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l6_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "right",
+          "wordId": "l6_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l6_w2",
+            "l6_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l6_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l6_w2",
+            "l6_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l6_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l6_w2",
+            "l6_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l6_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l6_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l6_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l6_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l6_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "right",
+          "wordId": "l6_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l6_w3",
+            "l6_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l6_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l6_w3",
+            "l6_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l6_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l6_w3",
+            "l6_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l6_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l6_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l6_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l6_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l6_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "right",
+          "wordId": "l6_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l6_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l6_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l6_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l6_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l6_w4",
+            "l6_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_7",
+    "title": "Сканворд №7: Лесная тропа",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 150,
+    "rewardCoins": 34,
+    "words": [
+      {
+        "id": "l7_w1",
+        "answer": "СТОПА",
+        "clueText": "Часть ноги",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l7_w2",
+        "answer": "ОКЕАН",
+        "clueText": "Водный гигант",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l7_w3",
+        "answer": "КОРМА",
+        "clueText": "Корма судна",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l7_w4",
+        "answer": "АРБАТ",
+        "clueText": "Улица Москвы",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l7_w5",
+        "answer": "АОСК",
+        "clueText": "Белая птица",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l7_w6",
+        "answer": "ЕАРЕБ",
+        "clueText": "Танец пуанты",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l7_w7",
+        "answer": "НЕАНТ",
+        "clueText": "После зимы",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l7_w8",
+        "answer": "ГОРОД",
+        "clueText": "Мегаполис",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "right",
+          "wordId": "l7_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l7_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l7_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l7_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l7_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l7_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Мегаполис",
+          "arrow": "down",
+          "wordId": "l7_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "right-down",
+          "wordId": "l7_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l7_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Танец пуанты",
+          "arrow": "down",
+          "wordId": "l7_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "После зимы",
+          "arrow": "down",
+          "wordId": "l7_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "Г",
+          "wordIds": [
+            "l7_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "right",
+          "wordId": "l7_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l7_w2",
+            "l7_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l7_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l7_w2",
+            "l7_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l7_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l7_w2",
+            "l7_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l7_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l7_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l7_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l7_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l7_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "right",
+          "wordId": "l7_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l7_w3",
+            "l7_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l7_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l7_w3",
+            "l7_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l7_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l7_w3",
+            "l7_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l7_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l7_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l7_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l7_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "right",
+          "wordId": "l7_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l7_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l7_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l7_w4",
+            "l7_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l7_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l7_w4",
+            "l7_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_8",
+    "title": "Сканворд №8: Морской вояж",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 160,
+    "rewardCoins": 36,
+    "words": [
+      {
+        "id": "l8_w1",
+        "answer": "ОКЕАН",
+        "clueText": "Водный гигант",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l8_w2",
+        "answer": "КОРМА",
+        "clueText": "Корма судна",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l8_w3",
+        "answer": "АРБАТ",
+        "clueText": "Улица Москвы",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l8_w4",
+        "answer": "АИСТ",
+        "clueText": "Белая птица",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l8_w5",
+        "answer": "БКЛАТ",
+        "clueText": "Танец пуанты",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l8_w6",
+        "answer": "РЕБНС",
+        "clueText": "После зимы",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l8_w7",
+        "answer": "АОТОД",
+        "clueText": "Мегаполис",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l8_w8",
+        "answer": "ДИВАН",
+        "clueText": "Мягкая мебель",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "right",
+          "wordId": "l8_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l8_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l8_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l8_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l8_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l8_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Мягкая мебель",
+          "arrow": "down",
+          "wordId": "l8_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Танец пуанты",
+          "arrow": "right-down",
+          "wordId": "l8_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l8_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "После зимы",
+          "arrow": "down",
+          "wordId": "l8_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Мегаполис",
+          "arrow": "down",
+          "wordId": "l8_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l8_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "right",
+          "wordId": "l8_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l8_w2",
+            "l8_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l8_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l8_w2",
+            "l8_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l8_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l8_w2",
+            "l8_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l8_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l8_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l8_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l8_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l8_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "right",
+          "wordId": "l8_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l8_w3",
+            "l8_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l8_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l8_w3",
+            "l8_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l8_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l8_w3",
+            "l8_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l8_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l8_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l8_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l8_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l8_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "right",
+          "wordId": "l8_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l8_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l8_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l8_w4",
+            "l8_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l8_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l8_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_9",
+    "title": "Сканворд №9: Солнечный день",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 170,
+    "rewardCoins": 38,
+    "words": [
+      {
+        "id": "l9_w1",
+        "answer": "КОРМА",
+        "clueText": "Корма судна",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l9_w2",
+        "answer": "АРБАТ",
+        "clueText": "Улица Москвы",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l9_w3",
+        "answer": "АИСТ",
+        "clueText": "Белая птица",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l9_w4",
+        "answer": "БАЛЕТ",
+        "clueText": "Танец пуанты",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l9_w5",
+        "answer": "ВАСАА",
+        "clueText": "После зимы",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l9_w6",
+        "answer": "БОСОЛ",
+        "clueText": "Мегаполис",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l9_w7",
+        "answer": "ТИВАТ",
+        "clueText": "Мягкая мебель",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l9_w8",
+        "answer": "ЕНОТ",
+        "clueText": "Зверек полосатый",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "right",
+          "wordId": "l9_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l9_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l9_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l9_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l9_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l9_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Зверек полосатый",
+          "arrow": "down",
+          "wordId": "l9_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "После зимы",
+          "arrow": "right-down",
+          "wordId": "l9_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l9_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Мегаполис",
+          "arrow": "down",
+          "wordId": "l9_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Мягкая мебель",
+          "arrow": "down",
+          "wordId": "l9_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l9_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "right",
+          "wordId": "l9_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l9_w2",
+            "l9_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l9_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l9_w2",
+            "l9_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l9_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l9_w2",
+            "l9_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l9_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l9_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l9_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l9_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l9_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "right",
+          "wordId": "l9_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l9_w3",
+            "l9_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l9_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l9_w3",
+            "l9_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l9_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l9_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l9_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l9_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l9_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l9_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Танец пуанты",
+          "arrow": "right",
+          "wordId": "l9_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l9_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l9_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l9_w4",
+            "l9_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l9_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l9_w4",
+            "l9_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_10",
+    "title": "Сканворд №10: Олимпийский",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 180,
+    "rewardCoins": 40,
+    "words": [
+      {
+        "id": "l10_w1",
+        "answer": "АРБАТ",
+        "clueText": "Улица Москвы",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l10_w2",
+        "answer": "АИСТ",
+        "clueText": "Белая птица",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l10_w3",
+        "answer": "БАЛЕТ",
+        "clueText": "Танец пуанты",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l10_w4",
+        "answer": "ВЕСНА",
+        "clueText": "После зимы",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l10_w5",
+        "answer": "ГАРБД",
+        "clueText": "Мегаполис",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l10_w6",
+        "answer": "СИЛАС",
+        "clueText": "Мягкая мебель",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l10_w7",
+        "answer": "ЕНТТ",
+        "clueText": "Зверек полосатый",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l10_w8",
+        "answer": "ЖИРАФ",
+        "clueText": "Высокий зверь",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "right",
+          "wordId": "l10_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l10_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l10_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l10_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l10_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l10_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Высокий зверь",
+          "arrow": "down",
+          "wordId": "l10_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Мегаполис",
+          "arrow": "right-down",
+          "wordId": "l10_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "Г",
+          "wordIds": [
+            "l10_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Мягкая мебель",
+          "arrow": "down",
+          "wordId": "l10_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Зверек полосатый",
+          "arrow": "down",
+          "wordId": "l10_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "Ж",
+          "wordIds": [
+            "l10_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "right",
+          "wordId": "l10_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l10_w2",
+            "l10_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l10_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l10_w2",
+            "l10_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l10_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l10_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l10_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l10_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l10_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l10_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l10_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Танец пуанты",
+          "arrow": "right",
+          "wordId": "l10_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l10_w3",
+            "l10_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l10_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l10_w3",
+            "l10_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l10_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l10_w3",
+            "l10_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l10_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l10_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l10_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l10_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Ф",
+          "wordIds": [
+            "l10_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "После зимы",
+          "arrow": "right",
+          "wordId": "l10_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l10_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l10_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l10_w4",
+            "l10_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l10_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l10_w4"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_11",
+    "title": "Сканворд №11: Музыкальная шкатулка",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 190,
+    "rewardCoins": 42,
+    "words": [
+      {
+        "id": "l11_w1",
+        "answer": "АИСТ",
+        "clueText": "Белая птица",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l11_w2",
+        "answer": "БАЛЕТ",
+        "clueText": "Танец пуанты",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l11_w3",
+        "answer": "ВЕСНА",
+        "clueText": "После зимы",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l11_w4",
+        "answer": "ГОРОД",
+        "clueText": "Мегаполис",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l11_w5",
+        "answer": "ДБВВН",
+        "clueText": "Мягкая мебель",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l11_w6",
+        "answer": "ЛНСТ",
+        "clueText": "Зверек полосатый",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l11_w7",
+        "answer": "ТИААД",
+        "clueText": "Высокий зверь",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l11_w8",
+        "answer": "ЗАМОК",
+        "clueText": "Цитадель",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "right",
+          "wordId": "l11_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l11_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l11_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l11_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l11_w1"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Цитадель",
+          "arrow": "down",
+          "wordId": "l11_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Мягкая мебель",
+          "arrow": "right-down",
+          "wordId": "l11_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l11_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Зверек полосатый",
+          "arrow": "down",
+          "wordId": "l11_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Высокий зверь",
+          "arrow": "down",
+          "wordId": "l11_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "З",
+          "wordIds": [
+            "l11_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Танец пуанты",
+          "arrow": "right",
+          "wordId": "l11_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l11_w2",
+            "l11_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l11_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l11_w2",
+            "l11_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l11_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l11_w2",
+            "l11_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l11_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l11_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l11_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l11_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l11_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "После зимы",
+          "arrow": "right",
+          "wordId": "l11_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l11_w3",
+            "l11_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l11_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l11_w3",
+            "l11_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l11_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l11_w3",
+            "l11_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l11_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l11_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l11_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l11_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l11_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Мегаполис",
+          "arrow": "right",
+          "wordId": "l11_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "Г",
+          "wordIds": [
+            "l11_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l11_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l11_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l11_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l11_w4",
+            "l11_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_12",
+    "title": "Сканворд №12: Космическая одиссея",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 200,
+    "rewardCoins": 44,
+    "words": [
+      {
+        "id": "l12_w1",
+        "answer": "БАЛЕТ",
+        "clueText": "Танец пуанты",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l12_w2",
+        "answer": "ВЕСНА",
+        "clueText": "После зимы",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l12_w3",
+        "answer": "ГОРОД",
+        "clueText": "Мегаполис",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l12_w4",
+        "answer": "ДИВАН",
+        "clueText": "Мягкая мебель",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l12_w5",
+        "answer": "ЕВОГ",
+        "clueText": "Зверек полосатый",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l12_w6",
+        "answer": "СИРАВ",
+        "clueText": "Высокий зверь",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l12_w7",
+        "answer": "ААДОН",
+        "clueText": "Цитадель",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l12_w8",
+        "answer": "ИСКРА",
+        "clueText": "Вспышка огня",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Танец пуанты",
+          "arrow": "right",
+          "wordId": "l12_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l12_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l12_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l12_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l12_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l12_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Вспышка огня",
+          "arrow": "down",
+          "wordId": "l12_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Зверек полосатый",
+          "arrow": "right-down",
+          "wordId": "l12_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l12_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Высокий зверь",
+          "arrow": "down",
+          "wordId": "l12_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Цитадель",
+          "arrow": "down",
+          "wordId": "l12_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l12_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "После зимы",
+          "arrow": "right",
+          "wordId": "l12_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l12_w2",
+            "l12_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l12_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l12_w2",
+            "l12_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l12_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l12_w2",
+            "l12_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l12_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l12_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l12_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l12_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l12_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Мегаполис",
+          "arrow": "right",
+          "wordId": "l12_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "Г",
+          "wordIds": [
+            "l12_w3",
+            "l12_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l12_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l12_w3",
+            "l12_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l12_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l12_w3",
+            "l12_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l12_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l12_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l12_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l12_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Мягкая мебель",
+          "arrow": "right",
+          "wordId": "l12_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l12_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l12_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l12_w4",
+            "l12_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l12_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l12_w4",
+            "l12_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_13",
+    "title": "Сканворд №13: Альпийский луг",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 210,
+    "rewardCoins": 46,
+    "words": [
+      {
+        "id": "l13_w1",
+        "answer": "ВЕСНА",
+        "clueText": "После зимы",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l13_w2",
+        "answer": "ГОРОД",
+        "clueText": "Мегаполис",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l13_w3",
+        "answer": "ДИВАН",
+        "clueText": "Мягкая мебель",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l13_w4",
+        "answer": "ЕНОТ",
+        "clueText": "Зверек полосатый",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l13_w5",
+        "answer": "ЖГРДФ",
+        "clueText": "Высокий зверь",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l13_w6",
+        "answer": "РАВОО",
+        "clueText": "Цитадель",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l13_w7",
+        "answer": "ДСНРА",
+        "clueText": "Вспышка огня",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l13_w8",
+        "answer": "КОБРА",
+        "clueText": "Змея с капюшоном",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "После зимы",
+          "arrow": "right",
+          "wordId": "l13_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l13_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l13_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l13_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l13_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l13_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Змея с капюшоном",
+          "arrow": "down",
+          "wordId": "l13_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Высокий зверь",
+          "arrow": "right-down",
+          "wordId": "l13_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "Ж",
+          "wordIds": [
+            "l13_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Цитадель",
+          "arrow": "down",
+          "wordId": "l13_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Вспышка огня",
+          "arrow": "down",
+          "wordId": "l13_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l13_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Мегаполис",
+          "arrow": "right",
+          "wordId": "l13_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "Г",
+          "wordIds": [
+            "l13_w2",
+            "l13_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l13_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l13_w2",
+            "l13_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l13_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l13_w2",
+            "l13_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l13_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l13_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l13_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l13_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l13_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Мягкая мебель",
+          "arrow": "right",
+          "wordId": "l13_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l13_w3",
+            "l13_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l13_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l13_w3",
+            "l13_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l13_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l13_w3",
+            "l13_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l13_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Ф",
+          "wordIds": [
+            "l13_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l13_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l13_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l13_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Зверек полосатый",
+          "arrow": "right",
+          "wordId": "l13_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l13_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l13_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l13_w4",
+            "l13_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l13_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l13_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_14",
+    "title": "Сканворд №14: Магия слова",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 220,
+    "rewardCoins": 48,
+    "words": [
+      {
+        "id": "l14_w1",
+        "answer": "ГОРОД",
+        "clueText": "Мегаполис",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l14_w2",
+        "answer": "ДИВАН",
+        "clueText": "Мягкая мебель",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l14_w3",
+        "answer": "ЕНОТ",
+        "clueText": "Зверек полосатый",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l14_w4",
+        "answer": "ЖИРАФ",
+        "clueText": "Высокий зверь",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l14_w5",
+        "answer": "ЗДМЕК",
+        "clueText": "Цитадель",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l14_w6",
+        "answer": "ВСОРР",
+        "clueText": "Вспышка огня",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l14_w7",
+        "answer": "НОБРФ",
+        "clueText": "Змея с капюшоном",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l14_w8",
+        "answer": "ЛАМПА",
+        "clueText": "Светильник",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Мегаполис",
+          "arrow": "right",
+          "wordId": "l14_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "Г",
+          "wordIds": [
+            "l14_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l14_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l14_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l14_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l14_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Светильник",
+          "arrow": "down",
+          "wordId": "l14_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Цитадель",
+          "arrow": "right-down",
+          "wordId": "l14_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "З",
+          "wordIds": [
+            "l14_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Вспышка огня",
+          "arrow": "down",
+          "wordId": "l14_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Змея с капюшоном",
+          "arrow": "down",
+          "wordId": "l14_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l14_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Мягкая мебель",
+          "arrow": "right",
+          "wordId": "l14_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l14_w2",
+            "l14_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l14_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l14_w2",
+            "l14_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l14_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l14_w2",
+            "l14_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l14_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l14_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l14_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l14_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l14_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Зверек полосатый",
+          "arrow": "right",
+          "wordId": "l14_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l14_w3",
+            "l14_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l14_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l14_w3",
+            "l14_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l14_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l14_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l14_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l14_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l14_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l14_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l14_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Высокий зверь",
+          "arrow": "right",
+          "wordId": "l14_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "Ж",
+          "wordIds": [
+            "l14_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l14_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l14_w4",
+            "l14_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l14_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Ф",
+          "wordIds": [
+            "l14_w4",
+            "l14_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_15",
+    "title": "Сканворд №15: Изумрудный город",
+    "difficulty": "Средний",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 230,
+    "rewardCoins": 50,
+    "words": [
+      {
+        "id": "l15_w1",
+        "answer": "ДИВАН",
+        "clueText": "Мягкая мебель",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l15_w2",
+        "answer": "ЕНОТ",
+        "clueText": "Зверек полосатый",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l15_w3",
+        "answer": "ЖИРАФ",
+        "clueText": "Высокий зверь",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l15_w4",
+        "answer": "ЗАМОК",
+        "clueText": "Цитадель",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l15_w5",
+        "answer": "ИЕКЖА",
+        "clueText": "Вспышка огня",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l15_w6",
+        "answer": "ООРРМ",
+        "clueText": "Змея с капюшоном",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l15_w7",
+        "answer": "ЛАФПК",
+        "clueText": "Светильник",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l15_w8",
+        "answer": "МАКЕТ",
+        "clueText": "Копия здания",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Мягкая мебель",
+          "arrow": "right",
+          "wordId": "l15_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "Д",
+          "wordIds": [
+            "l15_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l15_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "В",
+          "wordIds": [
+            "l15_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l15_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l15_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Копия здания",
+          "arrow": "down",
+          "wordId": "l15_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Вспышка огня",
+          "arrow": "right-down",
+          "wordId": "l15_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l15_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Змея с капюшоном",
+          "arrow": "down",
+          "wordId": "l15_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Светильник",
+          "arrow": "down",
+          "wordId": "l15_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l15_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Зверек полосатый",
+          "arrow": "right",
+          "wordId": "l15_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l15_w2",
+            "l15_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l15_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l15_w2",
+            "l15_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l15_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l15_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l15_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l15_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l15_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l15_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l15_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Высокий зверь",
+          "arrow": "right",
+          "wordId": "l15_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "Ж",
+          "wordIds": [
+            "l15_w3",
+            "l15_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l15_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l15_w3",
+            "l15_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l15_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Ф",
+          "wordIds": [
+            "l15_w3",
+            "l15_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l15_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l15_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l15_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l15_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l15_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Цитадель",
+          "arrow": "right",
+          "wordId": "l15_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "З",
+          "wordIds": [
+            "l15_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l15_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l15_w4",
+            "l15_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l15_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l15_w4",
+            "l15_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_16",
+    "title": "Сканворд №16: Академия наук",
+    "difficulty": "Сложный",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 240,
+    "rewardCoins": 52,
+    "words": [
+      {
+        "id": "l16_w1",
+        "answer": "ЛИМОН",
+        "clueText": "Желтый цитрус",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l16_w2",
+        "answer": "КАТОК",
+        "clueText": "Лед для коньков",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l16_w3",
+        "answer": "ОПЕРА",
+        "clueText": "Жанр музыки",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l16_w4",
+        "answer": "КАНАТ",
+        "clueText": "Толстый трос",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l16_w5",
+        "answer": "СКСОА",
+        "clueText": "Хвойный лес",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l16_w6",
+        "answer": "ТАЕОН",
+        "clueText": "Сладкоежка",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l16_w7",
+        "answer": "КТАПТ",
+        "clueText": "Часть ноги",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l16_w8",
+        "answer": "ОКЕАН",
+        "clueText": "Водный гигант",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Желтый цитрус",
+          "arrow": "right",
+          "wordId": "l16_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l16_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l16_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l16_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l16_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l16_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "down",
+          "wordId": "l16_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right-down",
+          "wordId": "l16_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l16_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "down",
+          "wordId": "l16_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "down",
+          "wordId": "l16_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l16_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Лед для коньков",
+          "arrow": "right",
+          "wordId": "l16_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l16_w2",
+            "l16_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l16_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l16_w2",
+            "l16_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l16_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l16_w2",
+            "l16_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l16_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l16_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l16_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l16_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l16_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Жанр музыки",
+          "arrow": "right",
+          "wordId": "l16_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l16_w3",
+            "l16_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l16_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l16_w3",
+            "l16_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l16_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l16_w3",
+            "l16_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l16_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l16_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l16_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l16_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l16_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Толстый трос",
+          "arrow": "right",
+          "wordId": "l16_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l16_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l16_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l16_w4",
+            "l16_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l16_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l16_w4",
+            "l16_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_17",
+    "title": "Сканворд №17: Сокровища пиратов",
+    "difficulty": "Сложный",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 250,
+    "rewardCoins": 54,
+    "words": [
+      {
+        "id": "l17_w1",
+        "answer": "КАТОК",
+        "clueText": "Лед для коньков",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l17_w2",
+        "answer": "ОПЕРА",
+        "clueText": "Жанр музыки",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l17_w3",
+        "answer": "КАНАТ",
+        "clueText": "Толстый трос",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l17_w4",
+        "answer": "СОСНА",
+        "clueText": "Хвойный лес",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l17_w5",
+        "answer": "ЛОККМС",
+        "clueText": "Сладкоежка",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l17_w6",
+        "answer": "ЕТНПС",
+        "clueText": "Часть ноги",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l17_w7",
+        "answer": "АКТАА",
+        "clueText": "Водный гигант",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l17_w8",
+        "answer": "КОРМА",
+        "clueText": "Корма судна",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Лед для коньков",
+          "arrow": "right",
+          "wordId": "l17_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l17_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l17_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l17_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l17_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l17_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "down",
+          "wordId": "l17_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "right-down",
+          "wordId": "l17_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l17_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "down",
+          "wordId": "l17_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "down",
+          "wordId": "l17_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l17_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Жанр музыки",
+          "arrow": "right",
+          "wordId": "l17_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l17_w2",
+            "l17_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l17_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l17_w2",
+            "l17_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l17_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l17_w2",
+            "l17_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l17_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l17_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l17_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l17_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l17_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Толстый трос",
+          "arrow": "right",
+          "wordId": "l17_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l17_w3",
+            "l17_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l17_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l17_w3",
+            "l17_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l17_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l17_w3",
+            "l17_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l17_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l17_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l17_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l17_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l17_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right",
+          "wordId": "l17_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l17_w4",
+            "l17_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l17_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l17_w4",
+            "l17_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l17_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l17_w4",
+            "l17_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_18",
+    "title": "Сканворд №18: Вязь времен",
+    "difficulty": "Сложный",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 260,
+    "rewardCoins": 56,
+    "words": [
+      {
+        "id": "l18_w1",
+        "answer": "ОПЕРА",
+        "clueText": "Жанр музыки",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l18_w2",
+        "answer": "КАНАТ",
+        "clueText": "Толстый трос",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l18_w3",
+        "answer": "СОСНА",
+        "clueText": "Хвойный лес",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l18_w4",
+        "answer": "ЛАКОМ",
+        "clueText": "Сладкоежка",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l18_w5",
+        "answer": "СКОСА",
+        "clueText": "Часть ноги",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l18_w6",
+        "answer": "НКСАК",
+        "clueText": "Водный гигант",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l18_w7",
+        "answer": "ТОАММ",
+        "clueText": "Корма судна",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l18_w8",
+        "answer": "АРБАТ",
+        "clueText": "Улица Москвы",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Жанр музыки",
+          "arrow": "right",
+          "wordId": "l18_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l18_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l18_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l18_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l18_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l18_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "down",
+          "wordId": "l18_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "right-down",
+          "wordId": "l18_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l18_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "down",
+          "wordId": "l18_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "down",
+          "wordId": "l18_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l18_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Толстый трос",
+          "arrow": "right",
+          "wordId": "l18_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l18_w2",
+            "l18_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l18_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l18_w2",
+            "l18_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l18_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l18_w2",
+            "l18_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l18_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l18_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l18_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l18_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l18_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right",
+          "wordId": "l18_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l18_w3",
+            "l18_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l18_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l18_w3",
+            "l18_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l18_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l18_w3",
+            "l18_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l18_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l18_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l18_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l18_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l18_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "right",
+          "wordId": "l18_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l18_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l18_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l18_w4",
+            "l18_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l18_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l18_w4",
+            "l18_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_19",
+    "title": "Сканворд №19: Огненный феникс",
+    "difficulty": "Сложный",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 270,
+    "rewardCoins": 58,
+    "words": [
+      {
+        "id": "l19_w1",
+        "answer": "КАНАТ",
+        "clueText": "Толстый трос",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l19_w2",
+        "answer": "СОСНА",
+        "clueText": "Хвойный лес",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l19_w3",
+        "answer": "ЛАКОМ",
+        "clueText": "Сладкоежка",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l19_w4",
+        "answer": "СТОПА",
+        "clueText": "Часть ноги",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l19_w5",
+        "answer": "ОСЕЛН",
+        "clueText": "Водный гигант",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l19_w6",
+        "answer": "СОКМО",
+        "clueText": "Корма судна",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l19_w7",
+        "answer": "АРМАА",
+        "clueText": "Улица Москвы",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l19_w8",
+        "answer": "АИСТ",
+        "clueText": "Белая птица",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Толстый трос",
+          "arrow": "right",
+          "wordId": "l19_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l19_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l19_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l19_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l19_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l19_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "down",
+          "wordId": "l19_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "right-down",
+          "wordId": "l19_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l19_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "down",
+          "wordId": "l19_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "down",
+          "wordId": "l19_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l19_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right",
+          "wordId": "l19_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l19_w2",
+            "l19_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l19_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l19_w2",
+            "l19_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l19_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l19_w2",
+            "l19_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l19_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l19_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l19_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l19_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l19_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "right",
+          "wordId": "l19_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l19_w3",
+            "l19_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l19_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l19_w3",
+            "l19_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l19_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l19_w3",
+            "l19_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l19_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l19_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l19_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l19_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "right",
+          "wordId": "l19_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l19_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l19_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l19_w4",
+            "l19_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l19_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l19_w4",
+            "l19_w7"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  },
+  {
+    "id": "level_20",
+    "title": "Сканворд №20: Великий эрудит",
+    "difficulty": "Сложный",
+    "gridSize": {
+      "rows": 8,
+      "cols": 8
+    },
+    "rewardXp": 280,
+    "rewardCoins": 60,
+    "words": [
+      {
+        "id": "l20_w1",
+        "answer": "СОСНА",
+        "clueText": "Хвойный лес",
+        "direction": "horizontal",
+        "start": {
+          "r": 0,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l20_w2",
+        "answer": "ЛАКОМ",
+        "clueText": "Сладкоежка",
+        "direction": "horizontal",
+        "start": {
+          "r": 2,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 2,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l20_w3",
+        "answer": "СТОПА",
+        "clueText": "Часть ноги",
+        "direction": "horizontal",
+        "start": {
+          "r": 4,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 4,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l20_w4",
+        "answer": "ОКЕАН",
+        "clueText": "Водный гигант",
+        "direction": "horizontal",
+        "start": {
+          "r": 6,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 6,
+          "c": 0
+        },
+        "arrow": "right"
+      },
+      {
+        "id": "l20_w5",
+        "answer": "КЛРСА",
+        "clueText": "Корма судна",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 1
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 0
+        },
+        "arrow": "right-down"
+      },
+      {
+        "id": "l20_w6",
+        "answer": "КРОАЕ",
+        "clueText": "Улица Москвы",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 3
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 3
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l20_w7",
+        "answer": "МИАТ",
+        "clueText": "Белая птица",
+        "direction": "vertical",
+        "start": {
+          "r": 2,
+          "c": 5
+        },
+        "cluePos": {
+          "r": 1,
+          "c": 5
+        },
+        "arrow": "down"
+      },
+      {
+        "id": "l20_w8",
+        "answer": "БАЛЕТ",
+        "clueText": "Танец пуанты",
+        "direction": "vertical",
+        "start": {
+          "r": 1,
+          "c": 6
+        },
+        "cluePos": {
+          "r": 0,
+          "c": 6
+        },
+        "arrow": "down"
+      }
+    ],
+    "grid": [
+      [
+        {
+          "type": "clue",
+          "text": "Хвойный лес",
+          "arrow": "right",
+          "wordId": "l20_w1"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l20_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l20_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l20_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l20_w1"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l20_w1"
+          ]
+        },
+        {
+          "type": "clue",
+          "text": "Танец пуанты",
+          "arrow": "down",
+          "wordId": "l20_w8"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Корма судна",
+          "arrow": "right-down",
+          "wordId": "l20_w5"
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l20_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Улица Москвы",
+          "arrow": "down",
+          "wordId": "l20_w6"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "clue",
+          "text": "Белая птица",
+          "arrow": "down",
+          "wordId": "l20_w7"
+        },
+        {
+          "type": "letter",
+          "letter": "Б",
+          "wordIds": [
+            "l20_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Сладкоежка",
+          "arrow": "right",
+          "wordId": "l20_w2"
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l20_w2",
+            "l20_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l20_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l20_w2",
+            "l20_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l20_w2"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "М",
+          "wordIds": [
+            "l20_w2",
+            "l20_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l20_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l20_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Р",
+          "wordIds": [
+            "l20_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "И",
+          "wordIds": [
+            "l20_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Л",
+          "wordIds": [
+            "l20_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Часть ноги",
+          "arrow": "right",
+          "wordId": "l20_w3"
+        },
+        {
+          "type": "letter",
+          "letter": "С",
+          "wordIds": [
+            "l20_w3",
+            "l20_w5"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l20_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l20_w3",
+            "l20_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "П",
+          "wordIds": [
+            "l20_w3"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l20_w3",
+            "l20_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l20_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l20_w5"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l20_w6"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l20_w7"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Т",
+          "wordIds": [
+            "l20_w8"
+          ]
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "clue",
+          "text": "Водный гигант",
+          "arrow": "right",
+          "wordId": "l20_w4"
+        },
+        {
+          "type": "letter",
+          "letter": "О",
+          "wordIds": [
+            "l20_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "К",
+          "wordIds": [
+            "l20_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Е",
+          "wordIds": [
+            "l20_w4",
+            "l20_w6"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "А",
+          "wordIds": [
+            "l20_w4"
+          ]
+        },
+        {
+          "type": "letter",
+          "letter": "Н",
+          "wordIds": [
+            "l20_w4"
+          ]
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ],
+      [
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        },
+        {
+          "type": "block"
+        }
+      ]
+    ]
+  }
+]

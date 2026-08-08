@@ -1,0 +1,185 @@
+{
+  "id": "level_1",
+  "title": "Сканворд №1: Знаток слов",
+  "difficulty": "Легкий",
+  "gridSize": {
+    "rows": 8,
+    "cols": 8
+  },
+  "rewardXp": 100,
+  "rewardCoins": 30,
+  "words": [
+    {
+      "id": "w_limon",
+      "answer": "ЛИМОН",
+      "clueText": "Желтый цитрус",
+      "direction": "horizontal",
+      "start": { "r": 0, "c": 1 },
+      "cluePos": { "r": 0, "c": 0 },
+      "arrow": "right"
+    },
+    {
+      "id": "w_katok",
+      "answer": "КАТОК",
+      "clueText": "Лед для коньков",
+      "direction": "horizontal",
+      "start": { "r": 2, "c": 1 },
+      "cluePos": { "r": 2, "c": 0 },
+      "arrow": "right"
+    },
+    {
+      "id": "w_opera",
+      "answer": "ОПЕРА",
+      "clueText": "Жанр музыки",
+      "direction": "horizontal",
+      "start": { "r": 4, "c": 1 },
+      "cluePos": { "r": 4, "c": 0 },
+      "arrow": "right"
+    },
+    {
+      "id": "w_kanat",
+      "answer": "КАНАТ",
+      "clueText": "Толстый трос",
+      "direction": "horizontal",
+      "start": { "r": 6, "c": 1 },
+      "cluePos": { "r": 6, "c": 0 },
+      "arrow": "right"
+    },
+    {
+      "id": "w_sosna",
+      "answer": "СОСНА",
+      "clueText": "Хвойный лес",
+      "direction": "vertical",
+      "start": { "r": 1, "c": 6 },
+      "cluePos": { "r": 0, "c": 6 },
+      "arrow": "down"
+    },
+    {
+      "id": "w_lakomka",
+      "answer": "ЛАКОМКА",
+      "clueText": "Сладкоежка",
+      "direction": "vertical",
+      "start": { "r": 1, "c": 1 },
+      "cluePos": { "r": 1, "c": 0 },
+      "arrow": "right-down"
+    },
+    {
+      "id": "w_stopa",
+      "answer": "СТОПА",
+      "clueText": "Часть ноги",
+      "direction": "vertical",
+      "start": { "r": 1, "c": 2 },
+      "cluePos": { "r": 1, "c": 2 },
+      "arrow": "down"
+    },
+    {
+      "id": "w_okean",
+      "answer": "ОКЕАН",
+      "clueText": "Водный гигант",
+      "direction": "vertical",
+      "start": { "r": 2, "c": 3 },
+      "cluePos": { "r": 1, "c": 3 },
+      "arrow": "down"
+    },
+    {
+      "id": "w_korma",
+      "answer": "КОРМА",
+      "clueText": "Корма судна",
+      "direction": "vertical",
+      "start": { "r": 2, "c": 4 },
+      "cluePos": { "r": 1, "c": 4 },
+      "arrow": "down"
+    },
+    {
+      "id": "w_arbat",
+      "answer": "АРБАТ",
+      "clueText": "Улица Москвы",
+      "direction": "vertical",
+      "start": { "r": 2, "c": 5 },
+      "cluePos": { "r": 1, "c": 5 },
+      "arrow": "down"
+    }
+  ],
+  "grid": [
+    [
+      { "type": "clue", "text": "Желтый цитрус", "arrow": "right", "wordId": "w_limon" },
+      { "type": "letter", "letter": "Л", "wordIds": ["w_limon"] },
+      { "type": "letter", "letter": "И", "wordIds": ["w_limon"] },
+      { "type": "letter", "letter": "М", "wordIds": ["w_limon"] },
+      { "type": "letter", "letter": "О", "wordIds": ["w_limon"] },
+      { "type": "letter", "letter": "Н", "wordIds": ["w_limon"] },
+      { "type": "clue", "text": "Хвойный лес", "arrow": "down", "wordId": "w_sosna" },
+      { "type": "block" }
+    ],
+    [
+      { "type": "clue", "text": "Сладкоежка", "arrow": "right-down", "wordId": "w_lakomka" },
+      { "type": "letter", "letter": "Л", "wordIds": ["w_lakomka"] },
+      { "type": "clue", "text": "Часть ноги", "arrow": "down", "wordId": "w_stopa" },
+      { "type": "clue", "text": "Водный гигант", "arrow": "down", "wordId": "w_okean" },
+      { "type": "clue", "text": "Корма судна", "arrow": "down", "wordId": "w_korma" },
+      { "type": "clue", "text": "Улица Москвы", "arrow": "down", "wordId": "w_arbat" },
+      { "type": "letter", "letter": "С", "wordIds": ["w_sosna"] },
+      { "type": "block" }
+    ],
+    [
+      { "type": "clue", "text": "Лед для коньков", "arrow": "right", "wordId": "w_katok" },
+      { "type": "letter", "letter": "К", "wordIds": ["w_katok", "w_lakomka"] },
+      { "type": "letter", "letter": "А", "wordIds": ["w_katok", "w_stopa"] },
+      { "type": "letter", "letter": "Т", "wordIds": ["w_katok", "w_okean"] },
+      { "type": "letter", "letter": "О", "wordIds": ["w_katok", "w_korma"] },
+      { "type": "letter", "letter": "К", "wordIds": ["w_katok", "w_arbat"] },
+      { "type": "letter", "letter": "О", "wordIds": ["w_sosna"] },
+      { "type": "block" }
+    ],
+    [
+      { "type": "block" },
+      { "type": "letter", "letter": "О", "wordIds": ["w_lakomka"] },
+      { "type": "letter", "letter": "О", "wordIds": ["w_stopa"] },
+      { "type": "letter", "letter": "К", "wordIds": ["w_okean"] },
+      { "type": "letter", "letter": "Р", "wordIds": ["w_korma"] },
+      { "type": "letter", "letter": "Р", "wordIds": ["w_arbat"] },
+      { "type": "letter", "letter": "С", "wordIds": ["w_sosna"] },
+      { "type": "block" }
+    ],
+    [
+      { "type": "clue", "text": "Жанр музыки", "arrow": "right", "wordId": "w_opera" },
+      { "type": "letter", "letter": "О", "wordIds": ["w_opera", "w_lakomka"] },
+      { "type": "letter", "letter": "П", "wordIds": ["w_opera", "w_stopa"] },
+      { "type": "letter", "letter": "Е", "wordIds": ["w_opera", "w_okean"] },
+      { "type": "letter", "letter": "Р", "wordIds": ["w_opera", "w_korma"] },
+      { "type": "letter", "letter": "А", "wordIds": ["w_opera", "w_arbat"] },
+      { "type": "letter", "letter": "Н", "wordIds": ["w_sosna"] },
+      { "type": "block" }
+    ],
+    [
+      { "type": "block" },
+      { "type": "letter", "letter": "М", "wordIds": ["w_lakomka"] },
+      { "type": "letter", "letter": "А", "wordIds": ["w_stopa"] },
+      { "type": "letter", "letter": "А", "wordIds": ["w_okean"] },
+      { "type": "letter", "letter": "М", "wordIds": ["w_korma"] },
+      { "type": "letter", "letter": "Т", "wordIds": ["w_arbat"] },
+      { "type": "letter", "letter": "А", "wordIds": ["w_sosna"] },
+      { "type": "block" }
+    ],
+    [
+      { "type": "clue", "text": "Толстый трос", "arrow": "right", "wordId": "w_kanat" },
+      { "type": "letter", "letter": "К", "wordIds": ["w_kanat", "w_lakomka"] },
+      { "type": "letter", "letter": "А", "wordIds": ["w_kanat"] },
+      { "type": "letter", "letter": "Н", "wordIds": ["w_kanat", "w_okean"] },
+      { "type": "letter", "letter": "А", "wordIds": ["w_kanat", "w_korma"] },
+      { "type": "letter", "letter": "Т", "wordIds": ["w_kanat", "w_arbat"] },
+      { "type": "block" },
+      { "type": "block" }
+    ],
+    [
+      { "type": "block" },
+      { "type": "letter", "letter": "А", "wordIds": ["w_lakomka"] },
+      { "type": "block" },
+      { "type": "block" },
+      { "type": "block" },
+      { "type": "block" },
+      { "type": "block" },
+      { "type": "block" }
+    ]
+  ]
+}
