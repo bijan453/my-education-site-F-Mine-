@@ -6265,7 +6265,7 @@
       } catch (e) { return '<b>' + (isEN() ? 'Could not evaluate' : 'Не удалось вычислить') + '</b>' }
     }
 
-    function megaDefiniteIntegral(expr, a, b) {
+    function megaDefiniteIntegralLegacy(expr, a, b) {
       try {
         var fn = new Function('x', 'const {sin,cos,tan,log,sqrt,abs,exp,PI,pow}=Math;return ' + expr + ';');
         var n = 100; var h2 = (b - a) / n; var sum = fn(a) + fn(b);
@@ -9553,159 +9553,6 @@
       }
       var gmmr = lo.match(/(?:среднее\s*геометрическое|geometric\s*mean)\s+([\d\s.,]+)/i);
       if (gmmr) {
-        var IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        var API_BASE = IS_LOCAL ? '' : 'https://my-education-site-f-mine-production.up.railway.app';
-
-        async function fetchOpenRouterWithFallback(messages, modelIndex, modelsToTry) {
-          var currentModel = modelsToTry[modelIndex];
-          if (!currentModel) {
-            throw new Error(isEN() 
-              ? "All models failed or rate-limited. Please check your network connection." 
-              : "Все модели вернули ошибку или превысили лимит. Пожалуйста, проверьте интернет-соединение.");
-          }
-          
-          showToast((isEN() ? "Trying model: " : "Пробую модель: ") + currentModel);
-          
-          var userApiKey = settings.apiKey || '';
-          var headers = {
-            "Content-Type": "application/json"
-          };
-          if (userApiKey) {
-            headers["Authorization"] = "Bearer " + userApiKey;
-          }
-
-          // Backend proxy handles Groq → OpenRouter fallback automatically
-          async function _tryBackend() {
-            var response = await fetch(API_BASE + "/api/chat-stream", {
-              method: "POST",
-              headers: headers,
-              body: JSON.stringify({
-                model: currentModel,
-                messages: messages,
-                temperature: 0.3,
-                stream: false
-              })
-            });
-            if (!response.ok) {
-              var errData;
-              try { errData = await response.json(); } catch(e) {}
-              var status = response.status;
-              var errMsg = (errData && errData.error && errData.error.message) || response.statusText || ("HTTP " + status);
-              throw new Error(errMsg);
-            }
-            return await response.json();
-          }
-
-          async function _tryDirect(apiKey) {
-            var resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + apiKey,
-                "HTTP-Referer": window.location.origin,
-                "X-Title": "F-Mine Chat"
-              },
-              body: JSON.stringify({
-                model: currentModel,
-                messages: messages,
-                temperature: 0.3,
-                stream: false
-              })
-            });
-            if (!resp.ok) {
-              var errD; try { errD = await resp.json(); } catch(e) {}
-              throw new Error((errD && errD.error && errD.error.message) || "HTTP " + resp.status);
-            }
-            return await resp.json();
-          }
-
-          try {
-            var data;
-            try {
-              data = await _tryBackend();
-            } catch (backendErr) {
-              if (userApiKey) {
-                showToast((isEN() ? "Backend unavailable, trying direct API..." : "Бекенд недоступен, пробую прямой API..."));
-                data = await _tryDirect(userApiKey);
-              } else {
-                throw backendErr;
-              }
-            }
-            if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-              throw new Error("Invalid API response structure");
-            }
-            return {
-              text: data.choices[0].message.content,
-              modelUsed: currentModel
-            };
-          } catch (error) {
-            console.warn("Model " + currentModel + " failed:", error);
-            showToast((isEN() ? "Failed: " : "Ошибка: ") + currentModel + " - " + error.message);
-            return await fetchOpenRouterWithFallback(messages, modelIndex + 1, modelsToTry);
-          }
-        }
-
-        // ══════════════════════════════════════════════════════
-        // SEND MESSAGE
-        // ══════════════════════════════════════════════════════
-        window.sendMessage = async function () {
-          if (isBusy) return;
-          var text = msgInput.value.trim();
-          if (!text) return;
-          isBusy = true; sendBtn.disabled = true;
-          addMessage('user', text);
-          msgInput.value = ''; msgInput.style.height = 'auto';
-          if (window.innerWidth <= 900) closeSidebar();
-          stats.messages++;
-          if (stats.messages % 10 === 0) { stats.level++; addMessage('bot', t('levelUp', stats.level), true) }
-          saveStats(); updateStatUI();
-          
-          var convResponse = !megaMode ? detectConversation(text) : null;
-          if (convResponse) { addMessage('bot', convResponse, true); isBusy = false; sendBtn.disabled = false; return; }
-          
-          var problemText = extractProblem(text);
-          _lastProblemText = problemText;
-          
-          var gi = detectGraph(problemText);
-          if (gi) {
-            if (!gi.label) { addMessage('bot', isEN() ? 'Write: y = x^2 + 2x' : 'Напиши: y = x^2 + 2x', false); isBusy = false; sendBtn.disabled = false; return; }
-            addMessage('bot', isEN() ? '📊 Plotting y = ' + gi.label + '...' : '📊 Строю график y = ' + gi.label + '...', false);
-            setTimeout(function () {
-              drawGraphInline(gi.expr, gi.label);
-              var _gRow = document.createElement('div'); _gRow.className = 'msg-row bot mega';
-              var _gAv = document.createElement('div'); _gAv.className = 'msg-avatar mega-av'; _gAv.textContent = '🧠';
-              var _gWrap = document.createElement('div');
-              var _gBubble = document.createElement('div'); _gBubble.className = 'msg-bubble';
-              var _gTime = document.createElement('div'); _gTime.className = 'msg-time';
-              _gTime.textContent = new Date().toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
-              _gWrap.appendChild(_gBubble); _gWrap.appendChild(_gTime);
-              _gRow.appendChild(_gAv); _gRow.appendChild(_gWrap);
-              chatWindow.appendChild(_gRow);
-              var gHtml = buildGraphExplanation(gi.label, gi.expr);
-              streamHTML(_gBubble, gHtml, 10, function() {
-                smartScroll('smooth');
-                isBusy = false; sendBtn.disabled = false;
-                finalizeBotBubble(_gBubble);
-              });
-            }, 160);
-            return;
-          }
-          
-          if (megaMode) useMega();
-          showThinking();
-          
-          var _row = document.createElement('div'); _row.className = 'msg-row bot' + (megaMode ? ' mega' : '');
-          var _av = document.createElement('div'); _av.className = 'msg-avatar ' + (megaMode ? 'mega-av' : 'bot-av'); _av.textContent = megaMode ? '🧠' : '🤖';
-          var _wrap = document.createElement('div'); var _bubble = document.createElement('div'); _bubble.className = 'msg-bubble';
-          var _time = document.createElement('div'); _time.className = 'msg-time'; _time.textContent = new Date().toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
-          _wrap.appendChild(_bubble); _wrap.appendChild(_time); _row.appendChild(_av); _row.appendChild(_wrap);
-          
-          if (megaMode) {
-            try {
-              var systemPrompt = isEN()
-                ? "You are a top-tier math and physics teacher. Explain solutions step-by-step, clearly, and in detail. Use LaTeX notation for mathematical expressions: wrap block formulas in $$ ... $$ and inline formulas in $ ... $. Structure your response using markdown headers, lists, and bold text. For cyclic rational expressions with variables a,b,c (like (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))), use the 'anchor method': keep one bracket, expand the rest, group terms, factor, and cancel common factors."
-                : "Ты — высококлассный учитель математики и физики. Объясняй решения задач пошагово, понятно и подробно. Используй LaTeX разметку для математических выражений: блоки формул оборачивай в $$ ... $$, а строчные выражения в $ ... $. Структурируй ответ с помощью заголовков, списков и жирного текста. Для циклических рациональных выражений с переменными a,b,c (например (a^3(b-c)+b^3(c-a)+c^3(a-b))/(a^2(b-c)+b^2(c-a)+c^2(a-b))) используй метод 'якоря': оставь одну скобку, раскрой остальные, сгруппируй, вынеси общие множители и сократи.";
-        
         var gmn = gmmr[1].split(/[\s,]+/).map(Number).filter(function (n) { return !isNaN(n) && n > 0 }); if (gmn.length > 0) {
           var gmp = 1; for (var gmi = 0; gmi < gmn.length; gmi++)gmp *= gmn[gmi]; var gmres = Math.pow(gmp, 1 / gmn.length);
           return '<b>' + (isEN() ? 'Geometric Mean' : 'Ср. геометрическое') + '</b><br><span style="color:var(--g);font-weight:700">✓ GM=' + gmres.toFixed(4) + '</span>';
@@ -11386,12 +11233,7 @@
     // ══════════════════════════════════════════════════════
     // TEXT-TO-SPEECH (TTS) & EXPLANATION UTILITIES
     // ══════════════════════════════════════════════════════
-    function wantsExplain(text) {
-      var phrases = isEN() ? ['explain', 'detail', 'why', 'how to', 'step by step', 'breakdown', 'concept']
-                           : ['объясни', 'подробн', 'почему', 'как решить', 'пошагов', 'теория', 'суть'];
-      var t = text.toLowerCase();
-      return phrases.some(function(p) { return t.indexOf(p) !== -1; });
-    }
+// wantsExplain defined earlier
 
     function getBubbleText(bubble) {
       var clone = bubble.cloneNode(true);
