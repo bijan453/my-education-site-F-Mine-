@@ -467,6 +467,96 @@
       outline: none;
     }
 
+    /* ══ INFO POPUP (clue info card) ══ */
+    .info-popup {
+      position: fixed;
+      z-index: 600;
+      bottom: 20px;
+      right: 20px;
+      width: clamp(260px, 88vw, 360px);
+      background: linear-gradient(145deg, #0e1024, #17123a);
+      border: 1.5px solid rgba(167, 139, 250, 0.45);
+      border-radius: var(--r);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.8), 0 0 32px rgba(167,139,250,0.18);
+      overflow: hidden;
+      display: none;
+      animation: popupIn 0.28s cubic-bezier(0.22,0.61,0.36,1);
+    }
+
+    .info-popup.open { display: block; }
+
+    @keyframes popupIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+
+    .info-popup-img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+      background: #0d0f20;
+    }
+
+    .info-popup-img-placeholder {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #121630, #1e1840);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+
+    .info-popup-body {
+      padding: 14px 16px 16px;
+    }
+
+    .info-popup-word {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--violet);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .info-popup-desc {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text2);
+      margin-bottom: 10px;
+    }
+
+    .info-popup-footer {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .info-popup-link {
+      font-size: 12px;
+      color: var(--sky);
+      text-decoration: none;
+      flex: 1;
+      font-weight: 600;
+    }
+
+    .info-popup-link:hover { text-decoration: underline; }
+
+    .info-popup-close {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--ease);
+    }
+
+    .info-popup-close:hover { background: rgba(255,255,255,0.14); color: var(--text); }
+
     /* ══ MODALS ══ */
     .modal-overlay {
       position: fixed;
@@ -678,6 +768,21 @@
 
   <input type="text" id="hiddenInput" autocomplete="off" />
 
+  <!-- INFO POPUP -->
+  <div class="info-popup" id="infoPopup">
+    <div id="infoPopupMedia">
+      <div class="info-popup-img-placeholder" id="infoImgPlaceholder">🔍</div>
+    </div>
+    <div class="info-popup-body">
+      <div class="info-popup-word" id="infoPopupWord">—</div>
+      <div class="info-popup-desc" id="infoPopupDesc">...</div>
+      <div class="info-popup-footer">
+        <a class="info-popup-link" id="infoSearchLink" href="#" target="_blank" rel="noopener">🔎 Поиск в Google Images</a>
+        <button class="info-popup-close" onclick="closeInfoPopup()">✕ Закрыть</button>
+      </div>
+    </div>
+  </div>
+
   <!-- LEVEL SELECTOR MODAL -->
   <div class="modal-overlay" id="levelsModal">
     <div class="modal-card">
@@ -859,7 +964,59 @@
         activeDirection = word.direction;
         selectLetterCell(word.start.r, word.start.c);
         updateBanner(word.clueText, word.direction);
+        showInfoPopup(word);
       }
+    }
+
+    async function showInfoPopup(word) {
+      const popup = document.getElementById('infoPopup');
+      const wordEl = document.getElementById('infoPopupWord');
+      const descEl = document.getElementById('infoPopupDesc');
+      const mediaEl = document.getElementById('infoPopupMedia');
+      const linkEl = document.getElementById('infoSearchLink');
+
+      const term = word.answer || '';
+      wordEl.textContent = `${word.clueText} (${term})`;
+      descEl.textContent = `Загрузка подробной информации из Википедии...`;
+      mediaEl.innerHTML = `<div class="info-popup-img-placeholder">🔍</div>`;
+      linkEl.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(term + ' ' + word.clueText)}`;
+
+      popup.classList.add('open');
+
+      // Fetch overview & image from Wikipedia API (Russian)
+      try {
+        const queryTerm = term.length >= 3 ? term : word.clueText;
+        const res = await fetch(`https://ru.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(queryTerm)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.extract) {
+            // Trim extract to 2-3 sentences
+            const sentences = data.extract.split(/(?<=[.!?])\s+/).slice(0, 3).join(' ');
+            descEl.textContent = sentences || data.extract;
+          } else {
+            descEl.textContent = `Понятие «${term}» — ${word.clueText.toLowerCase()}. Угадайте слово из ${term.length} букв!`;
+          }
+
+          if (data.thumbnail && data.thumbnail.source) {
+            mediaEl.innerHTML = `<img src="${data.thumbnail.source}" class="info-popup-img" alt="${term}" onerror="this.outerHTML='<div class=\\'info-popup-img-placeholder\\'>🖼️</div>'" />`;
+          } else if (data.originalimage && data.originalimage.source) {
+            mediaEl.innerHTML = `<img src="${data.originalimage.source}" class="info-popup-img" alt="${term}" onerror="this.outerHTML='<div class=\\'info-popup-img-placeholder\\'>🖼️</div>'" />`;
+          } else {
+            mediaEl.innerHTML = `<div class="info-popup-img-placeholder">💡</div>`;
+          }
+        } else {
+          descEl.textContent = `Подсказка: ${word.clueText}. Слово состоит из ${term.length} букв.`;
+          mediaEl.innerHTML = `<div class="info-popup-img-placeholder">💡</div>`;
+        }
+      } catch(e) {
+        descEl.textContent = `Подсказка: ${word.clueText}. Слово состоит из ${term.length} букв.`;
+        mediaEl.innerHTML = `<div class="info-popup-img-placeholder">💡</div>`;
+      }
+    }
+
+    function closeInfoPopup() {
+      const popup = document.getElementById('infoPopup');
+      popup.classList.remove('open');
     }
 
     function selectLetterCell(r, c) {
