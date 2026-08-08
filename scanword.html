@@ -975,41 +975,56 @@
       const mediaEl = document.getElementById('infoPopupMedia');
       const linkEl = document.getElementById('infoSearchLink');
 
-      const term = word.answer || '';
-      wordEl.textContent = `${word.clueText} (${term})`;
-      descEl.textContent = `Загрузка подробной информации из Википедии...`;
+      const rawTerm = (word.answer || '').trim();
+      // Format ALL-CAPS 'ЛИМОН' -> 'Лимон' for Wikipedia API compatibility
+      const titleTerm = rawTerm ? (rawTerm.charAt(0).toUpperCase() + rawTerm.slice(1).toLowerCase()) : '';
+      
+      wordEl.textContent = `${word.clueText} (${rawTerm})`;
+      descEl.textContent = `Загрузка подробностей...`;
       mediaEl.innerHTML = `<div class="info-popup-img-placeholder">🔍</div>`;
-      linkEl.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(term + ' ' + word.clueText)}`;
+      linkEl.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(titleTerm + ' ' + word.clueText)}`;
 
       popup.classList.add('open');
 
-      // Fetch overview & image from Wikipedia API (Russian)
-      try {
-        const queryTerm = term.length >= 3 ? term : word.clueText;
-        const res = await fetch(`https://ru.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(queryTerm)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.extract) {
-            // Trim extract to 2-3 sentences
-            const sentences = data.extract.split(/(?<=[.!?])\s+/).slice(0, 3).join(' ');
-            descEl.textContent = sentences || data.extract;
-          } else {
-            descEl.textContent = `Понятие «${term}» — ${word.clueText.toLowerCase()}. Угадайте слово из ${term.length} букв!`;
-          }
+      let articleTitle = titleTerm;
+      let data = null;
 
-          if (data.thumbnail && data.thumbnail.source) {
-            mediaEl.innerHTML = `<img src="${data.thumbnail.source}" class="info-popup-img" alt="${term}" onerror="this.outerHTML='<div class=\\'info-popup-img-placeholder\\'>🖼️</div>'" />`;
-          } else if (data.originalimage && data.originalimage.source) {
-            mediaEl.innerHTML = `<img src="${data.originalimage.source}" class="info-popup-img" alt="${term}" onerror="this.outerHTML='<div class=\\'info-popup-img-placeholder\\'>🖼️</div>'" />`;
-          } else {
-            mediaEl.innerHTML = `<div class="info-popup-img-placeholder">💡</div>`;
-          }
+      // Try 1: Direct summary fetch for Titlecase term (e.g., 'Лимон')
+      try {
+        let res = await fetch(`https://ru.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(articleTitle)}`);
+        if (res.ok) {
+          data = await res.json();
         } else {
-          descEl.textContent = `Подсказка: ${word.clueText}. Слово состоит из ${term.length} букв.`;
+          // Try 2: Wikipedia Search API to find exact article title
+          const searchRes = await fetch(`https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(titleTerm || word.clueText)}&format=json&origin=*`);
+          if (searchRes.ok) {
+            const searchData = await searchRes.json();
+            if (searchData.query && searchData.query.search && searchData.query.search.length > 0) {
+              articleTitle = searchData.query.search[0].title;
+              res = await fetch(`https://ru.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(articleTitle)}`);
+              if (res.ok) data = await res.json();
+            }
+          }
+        }
+      } catch(e) {}
+
+      if (data && (data.extract || data.thumbnail || data.originalimage)) {
+        if (data.extract) {
+          // Extract 2-3 clean sentences
+          const sentences = data.extract.split(/(?<=[.!?])\s+/).slice(0, 3).join(' ');
+          descEl.textContent = sentences || data.extract;
+        } else {
+          descEl.textContent = `«${titleTerm}» — ${word.clueText.toLowerCase()}. Слово из ${rawTerm.length} букв.`;
+        }
+
+        const imgSrc = (data.thumbnail && data.thumbnail.source) || (data.originalimage && data.originalimage.source);
+        if (imgSrc) {
+          mediaEl.innerHTML = `<img src="${imgSrc}" class="info-popup-img" alt="${titleTerm}" onerror="this.outerHTML='<div class=\\'info-popup-img-placeholder\\'>🖼️</div>'" />`;
+        } else {
           mediaEl.innerHTML = `<div class="info-popup-img-placeholder">💡</div>`;
         }
-      } catch(e) {
-        descEl.textContent = `Подсказка: ${word.clueText}. Слово состоит из ${term.length} букв.`;
+      } else {
+        descEl.textContent = `Подсказка: ${word.clueText}. Слово состоит из ${rawTerm.length} букв.`;
         mediaEl.innerHTML = `<div class="info-popup-img-placeholder">💡</div>`;
       }
     }
