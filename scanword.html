@@ -457,10 +457,14 @@
 
     /* Hidden native input for mobile touch */
     #hiddenInput {
-      position: absolute;
+      position: fixed;
+      left: -9999px;
+      top: 50%;
       opacity: 0;
-      pointer-events: none;
-      top: -100px;
+      width: 1px;
+      height: 1px;
+      border: none;
+      outline: none;
     }
 
     /* ══ MODALS ══ */
@@ -863,7 +867,8 @@
       if (cellData.type !== 'letter') return;
 
       if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
-        if (cellData.wordIds.length > 1) {
+        // Same cell clicked again: toggle direction if cell belongs to multiple words
+        if (cellData.wordIds && cellData.wordIds.length > 1) {
           const nextWordId = cellData.wordIds.find(id => id !== activeWordId) || cellData.wordIds[0];
           const nextWord = levelData.words.find(w => w.id === nextWordId);
           if (nextWord) {
@@ -873,7 +878,7 @@
         }
       } else {
         selectedCell = { r, c };
-        if (cellData.wordIds.length > 0) {
+        if (cellData.wordIds && cellData.wordIds.length > 0) {
           if (!activeWordId || !cellData.wordIds.includes(activeWordId)) {
             activeWordId = cellData.wordIds[0];
             const word = levelData.words.find(w => w.id === activeWordId);
@@ -885,8 +890,12 @@
       highlightActiveWord();
       updateBannerForSelectedCell(r, c);
 
-      const input = document.getElementById('hiddenInput');
-      input.focus();
+      // Focus the hidden input to capture physical keyboard on mobile
+      try {
+        const input = document.getElementById('hiddenInput');
+        input.value = '';
+        input.focus();
+      } catch(e) {}
     }
 
     function updateBannerForSelectedCell(r, c) {
@@ -994,21 +1003,37 @@
     }
 
     function setupKeyboardListeners() {
+      // Physical keyboard support
       document.addEventListener('keydown', (e) => {
+        if (!selectedCell) return;
         if (e.key === 'Backspace') {
           handleBackspace();
           e.preventDefault();
         } else if (e.key === 'ArrowRight') {
-          moveSelection(0, 1);
+          moveSelection(0, 1); e.preventDefault();
         } else if (e.key === 'ArrowLeft') {
-          moveSelection(0, -1);
+          moveSelection(0, -1); e.preventDefault();
         } else if (e.key === 'ArrowDown') {
-          moveSelection(1, 0);
+          moveSelection(1, 0); e.preventDefault();
         } else if (e.key === 'ArrowUp') {
-          moveSelection(-1, 0);
+          moveSelection(-1, 0); e.preventDefault();
         } else if (/^[а-яА-ЯёЁ]$/.test(e.key)) {
           typeKey(e.key.toUpperCase());
+          e.preventDefault();
+        } else if (/^[a-zA-Z]$/.test(e.key)) {
+          // Ignore latin letters
+          e.preventDefault();
         }
+      });
+
+      // Mobile input via hidden text field (handles IME / virtual keyboard)
+      const inp = document.getElementById('hiddenInput');
+      inp.addEventListener('input', (e) => {
+        const val = inp.value;
+        inp.value = '';
+        if (!selectedCell || !val) return;
+        const ch = val.slice(-1).toUpperCase();
+        if (/^[А-ЯЁ]$/.test(ch)) typeKey(ch);
       });
     }
 
