@@ -8,138 +8,149 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <style>
-:root{--bg:#f4f6fb;--surface:#fff;--surface2:#f8f9fe;--surface3:#eef0f7;--border:rgba(0,0,0,.06);--border2:rgba(0,0,0,.1);--indigo:#6366f1;--indigo2:#4f46e5;--text:#1e2235;--muted:#7b7fa0;--danger:#f43f5e;--green:#22c55e;--cyan:#06b6d4;--gold:#f59e0b;--radius:16px;--shadow-sm:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.03);--shadow:0 4px 14px rgba(0,0,0,.06),0 1px 4px rgba(0,0,0,.03);--shadow-lg:0 10px 40px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);--shadow-xl:0 20px 60px rgba(0,0,0,.1),0 4px 12px rgba(0,0,0,.05)}
+:root{--bg:#f4fafc;--surface:#fff;--surface2:#eef7fa;--surface3:#dfeef3;--border:rgba(8,80,110,.08);--border2:rgba(8,80,110,.16);--cyan:#0891b2;--cyan2:#0e7490;--orange:#f97316;--text:#122a33;--muted:#64808b;--danger:#dc2626;--green:#16a34a;--radius:16px;--shadow-sm:0 1px 3px rgba(8,80,110,.05);--shadow:0 4px 14px rgba(8,80,110,.07);--shadow-lg:0 10px 40px rgba(8,80,110,.1);--shadow-xl:0 20px 60px rgba(8,80,110,.14)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(99,102,241,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(6,182,212,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.82);backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(0,0,0,.04)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(8,145,178,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(249,115,22,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(8,80,110,.05)}
 .logo{font-weight:800;font-size:20px;letter-spacing:-.5px;cursor:pointer}
-.logo-f{background:linear-gradient(135deg,var(--indigo),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-f{background:linear-gradient(135deg,var(--cyan),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo-rest{color:var(--text)}
+.header-right{display:flex;gap:8px;align-items:center}
 .header-nav{display:flex;gap:8px;align-items:center}
 .nav-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s}
-.nav-btn:hover{border-color:var(--indigo);color:var(--indigo);background:rgba(99,102,241,.04)}
-.nav-btn.active{background:var(--indigo);color:white;border-color:var(--indigo);box-shadow:0 2px 10px rgba(99,102,241,.3)}
+.nav-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.nav-btn.active{background:var(--cyan);color:white;border-color:var(--cyan)}
+.nav-btn.draw{background:var(--orange);color:#fff;border-color:var(--orange);box-shadow:0 2px 10px rgba(249,115,22,.3)}
 .view{display:none;position:relative;z-index:1;min-height:calc(100vh - 54px)}
 .view.active{display:block}
 #gradeView{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px}
-.grade-title{font-size:36px;font-weight:800;margin-bottom:8px;text-align:center;color:var(--text)}
+.grade-title{font-size:36px;font-weight:800;margin-bottom:8px;text-align:center}
 .grade-sub{color:var(--muted);font-size:15px;margin-bottom:40px;text-align:center}
-.grade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;max-width:600px;width:100%}
+.grade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;max-width:720px;width:100%}
 .grade-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 16px;text-align:center;cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
-.grade-card:hover{border-color:var(--indigo);transform:translateY(-4px);box-shadow:var(--shadow-lg),0 0 0 1px rgba(99,102,241,.1)}
-.grade-card .grade-num{font-size:42px;font-weight:800;background:linear-gradient(135deg,var(--indigo),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.grade-card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.grade-card .grade-num{font-size:42px;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .grade-card .grade-label{font-size:13px;color:var(--muted);margin-top:4px}
-.grade-card .grade-badge{position:absolute;top:10px;right:10px;background:var(--indigo);color:white;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px}
-.grade-card.locked{opacity:.4;cursor:not-allowed}
-.grade-card.locked:hover{transform:none;box-shadow:var(--shadow-sm);border-color:var(--border)}
+.grade-card .grade-badge{position:absolute;top:10px;right:10px;background:var(--cyan);color:white;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px}
 #topicView{padding:30px 24px;max-width:900px;margin:0 auto}
 .topic-head{margin-bottom:28px}
 .topic-head h1{font-size:28px;font-weight:800;margin-bottom:4px}
 .topic-head p{color:var(--muted);font-size:14px}
-.topic-progress-bar{height:6px;background:var(--surface3);border-radius:6px;margin-top:14px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.04)}
-.topic-progress-fill{height:100%;background:linear-gradient(90deg,var(--indigo),var(--cyan));border-radius:6px;transition:width .4s;box-shadow:0 1px 4px rgba(99,102,241,.3)}
+.topic-progress-bar{height:6px;background:var(--surface3);border-radius:6px;margin-top:14px;overflow:hidden}
+.topic-progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--orange));border-radius:6px;transition:width .4s}
 .topic-list{display:flex;flex-direction:column;gap:10px}
 .topic-card{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;cursor:pointer;transition:all .2s ease;box-shadow:var(--shadow-sm)}
-.topic-card:hover{border-color:var(--indigo);background:rgba(99,102,241,.03);box-shadow:var(--shadow);transform:translateX(3px)}
-.topic-card.done{border-color:rgba(34,197,94,.3)}
-.topic-num{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--muted);transition:all .2s}
-.topic-card.done .topic-num{background:rgba(34,197,94,.1);color:var(--green)}
-.topic-card:hover .topic-num{background:rgba(99,102,241,.1);color:var(--indigo)}
+.topic-card:hover{border-color:var(--cyan);background:rgba(8,145,178,.03);transform:translateX(3px)}
+.topic-card.done{border-color:rgba(22,163,74,.3)}
+.topic-num{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--muted)}
+.topic-card.done .topic-num{background:rgba(22,163,74,.1);color:var(--green)}
+.topic-card:hover .topic-num{background:rgba(8,145,178,.1);color:var(--cyan)}
 .topic-info{flex:1;min-width:0}
 .topic-name{font-size:14px;font-weight:600}
-.topic-arrow{color:var(--muted);font-size:16px;flex-shrink:0;transition:transform .2s}
-.topic-card:hover .topic-arrow{transform:translateX(3px);color:var(--indigo)}
+.topic-arrow{color:var(--muted);font-size:16px}
 #lessonView.active{display:flex;height:calc(100vh - 54px)}
 .lesson-back{position:fixed;top:64px;left:16px;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit;display:none;box-shadow:var(--shadow)}
-#lessonView.active ~ .lesson-back{display:block}
 .lesson-theory{flex:1;overflow-y:auto;padding:28px 32px 120px;border-right:1px solid var(--border)}
 .lesson-practice{width:380px;flex-shrink:0;overflow-y:auto;padding:24px 20px 120px;background:var(--surface)}
 .theory-section{margin-bottom:28px}
 .theory-section h2{font-size:18px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .theory-section h2 .section-icon{font-size:20px}
-.theory-section h3{font-size:15px;font-weight:600;margin:16px 0 8px;color:var(--indigo)}
-.theory-section p,.theory-section li{font-size:14px;line-height:1.7;color:#4a4e6a}
-.theory-section ul{padding-left:20px;margin:8px 0}
+.theory-section p,.theory-section li{font-size:14px;line-height:1.7;color:#33525e}
+.theory-section ul,.theory-section ol{padding-left:20px;margin:8px 0}
 .theory-section li{margin-bottom:4px}
-.theory-section .highlight-box{background:rgba(99,102,241,.05);border:1px solid rgba(99,102,241,.12);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow-sm)}
-.theory-section .highlight-box.green{background:rgba(34,197,94,.05);border-color:rgba(34,197,94,.12)}
-.theory-section .highlight-box.gold{background:rgba(245,158,11,.05);border-color:rgba(245,158,11,.12)}
-.formula-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:10px 0;text-align:center;font-size:18px;overflow-x:auto;box-shadow:var(--shadow-sm)}
-.example-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:12px 0;box-shadow:var(--shadow-sm)}
+.theory-section .highlight-box{background:rgba(8,145,178,.05);border:1px solid rgba(8,145,178,.12);border-radius:12px;padding:14px 18px;margin:12px 0}
+.theory-section .highlight-box.gold{background:rgba(249,115,22,.06);border-color:rgba(249,115,22,.15)}
+.theory-section .highlight-box.green{background:rgba(22,163,74,.05);border-color:rgba(22,163,74,.12)}
+.formula-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:10px 0;text-align:center;font-size:18px;overflow-x:auto}
+.example-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:12px 0}
+.example-block h3{color:var(--cyan);font-size:14px;margin-bottom:12px}
 .example-block .step{display:flex;gap:10px;margin-bottom:10px;font-size:13px;line-height:1.7}
-.example-block .step-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:var(--indigo);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;box-shadow:0 2px 6px rgba(99,102,241,.3)}
-.example-block .step-rule{color:var(--gold);font-size:11px;font-weight:600;display:block;margin-top:2px}
-.context-box{background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(6,182,212,.04));border:1px solid rgba(99,102,241,.12);border-radius:var(--radius);padding:18px 20px;margin-bottom:24px;box-shadow:var(--shadow-sm)}
+.example-block .step-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:var(--cyan);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.example-block .step-rule{color:var(--orange);font-size:11px;font-weight:600;display:block;margin-top:2px}
+.context-box{background:linear-gradient(135deg,rgba(8,145,178,.06),rgba(249,115,22,.04));border:1px solid rgba(8,145,178,.12);border-radius:var(--radius);padding:18px 20px;margin-bottom:24px}
 .context-box h3{font-size:13px;font-weight:700;color:var(--cyan);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-.context-box p{font-size:14px;line-height:1.7;color:#4a4e6a}
+.context-box p{font-size:14px;line-height:1.7;color:#33525e}
+.draw-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#0d2a55,#123a75);border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;color:#dff3ff;box-shadow:var(--shadow)}
+.draw-banner button{margin-left:auto;background:var(--orange);border:none;color:#fff;border-radius:10px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+.draw-banner button:hover{filter:brightness(1.1)}
+.lesson-photo{display:none;margin:0 0 22px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface);position:relative}
+.lesson-photo.show{display:block}
+.lesson-photo img{width:100%;height:auto;max-height:430px;object-fit:contain;background:var(--surface3);display:block}
+.photo-cap{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 10px;background:linear-gradient(transparent,rgba(18,42,51,.8));color:#fff;font-size:12px;font-weight:600}
+.photo-skel{height:280px;background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.2s linear infinite}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
 .practice-head{margin-bottom:16px}
 .practice-head h2{font-size:18px;font-weight:700;margin-bottom:4px}
 .practice-head p{font-size:12px;color:var(--muted)}
 .practice-stats{display:flex;gap:8px;margin-bottom:16px}
-.stat-chip{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;box-shadow:var(--shadow-sm)}
+.stat-chip{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center}
 .stat-chip .stat-val{font-size:20px;font-weight:800}
 .stat-chip .stat-label{font-size:10px;color:var(--muted);margin-top:2px}
 .stat-chip.correct .stat-val{color:var(--green)}
 .stat-chip.wrong .stat-val{color:var(--danger)}
 .task-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
 .task-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.task-formula{font-size:20px;text-align:center;padding:14px;background:var(--surface2);border-radius:12px;margin-bottom:14px;font-family:'JetBrains Mono',monospace;min-height:50px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
+.task-formula{font-size:16px;line-height:1.8;text-align:center;padding:14px 16px;background:var(--surface2);border-radius:12px;margin-bottom:14px;min-height:50px;display:flex;align-items:center;justify-content:center}
 .task-input-row{display:flex;gap:8px}
-.task-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:16px;outline:none;text-align:center;transition:all .2s}
-.task-input:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
-.task-input.correct{border-color:var(--green);background:rgba(34,197,94,.05)}
-.task-input.wrong{border-color:var(--danger);background:rgba(244,63,94,.05)}
-.check-btn{background:var(--indigo);color:white;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;box-shadow:0 2px 8px rgba(99,102,241,.3)}
-.check-btn:hover{background:var(--indigo2);box-shadow:0 4px 14px rgba(99,102,241,.4);transform:translateY(-1px)}
-.check-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.next-btn{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;transition:all .15s;margin-top:8px;display:none;box-shadow:var(--shadow-sm)}
-.next-btn:hover{border-color:var(--indigo);color:var(--indigo);box-shadow:var(--shadow)}
+.task-input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;outline:none;text-align:center}
+.task-input:focus{border-color:var(--cyan)}
+.task-input.correct{border-color:var(--green);background:rgba(22,163,74,.05)}
+.task-input.wrong{border-color:var(--danger);background:rgba(220,38,38,.05)}
+.check-btn{background:var(--cyan);color:white;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.check-btn:hover{background:var(--cyan2)}
+.check-btn:disabled{opacity:.4;cursor:not-allowed}
+.next-btn{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;margin-top:8px;display:none}
+.next-btn:hover{border-color:var(--cyan);color:var(--cyan)}
 .task-feedback{margin-top:10px;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;display:none}
-.task-feedback.correct{display:block;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);color:#16a34a}
-.task-feedback.wrong{display:block;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);color:var(--danger)}
+.task-feedback.correct{display:block;background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.15);color:#16a34a}
+.task-feedback.wrong{display:block;background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.15);color:var(--danger)}
 .task-solution{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6}
 .task-type-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
-.task-type-tab{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .12s}
-.task-type-tab.active{background:var(--indigo);color:white;border-color:var(--indigo);box-shadow:0 2px 8px rgba(99,102,241,.25)}
-.task-type-tab:hover:not(.active){border-color:var(--indigo);color:var(--indigo);background:rgba(99,102,241,.03)}
-.hint-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--gold);cursor:pointer;font-family:inherit;margin-top:8px;display:none;transition:all .12s}
-.hint-btn:hover{border-color:var(--gold);background:rgba(245,158,11,.04)}
-.hint-text{display:none;margin-top:8px;padding:10px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.12);border-radius:10px;font-size:12px;color:#b45309;line-height:1.6}
-.ai-fab{position:fixed;bottom:24px;right:24px;z-index:200;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),var(--cyan));border:none;color:white;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,.35),0 2px 4px rgba(0,0,0,.1);transition:transform .2s,box-shadow .2s;display:none;align-items:center;justify-content:center}
-.ai-fab:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(99,102,241,.45),0 2px 6px rgba(0,0,0,.12)}
+.task-type-tab{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:inherit}
+.task-type-tab.active{background:var(--cyan);color:white;border-color:var(--cyan)}
+.hint-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--orange);cursor:pointer;font-family:inherit;margin-top:8px;display:none}
+.hint-text{display:none;margin-top:8px;padding:10px;background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.15);border-radius:10px;font-size:12px;color:#9a3412;line-height:1.6}
+.ai-fab{position:fixed;bottom:24px;right:24px;z-index:200;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--orange));border:none;color:white;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(8,145,178,.35);display:none;align-items:center;justify-content:center}
 #lessonView.active ~ .ai-fab{display:flex}
-.ai-panel{display:none;position:fixed;bottom:88px;right:24px;z-index:199;width:min(380px,calc(100vw - 40px));height:460px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);flex-direction:column;box-shadow:var(--shadow-xl);animation:slideUp .25s ease}
+.ai-panel{display:none;position:fixed;bottom:88px;right:24px;z-index:199;width:min(380px,calc(100vw - 40px));height:460px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);flex-direction:column;box-shadow:var(--shadow-xl)}
 .ai-panel.open{display:flex}
-@keyframes slideUp{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-.ai-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
-.ai-head-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(34,197,94,.4)}
+.ai-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.ai-head-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
 .ai-head span{font-size:13px;font-weight:600;flex:1}
 .ai-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer}
 .ai-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
 .ai-msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6}
-.ai-msg.user{align-self:flex-end;background:var(--indigo);color:white;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(99,102,241,.25)}
-.ai-msg.bot{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px;box-shadow:var(--shadow-sm)}
-.ai-msg.bot .katex{font-size:14px}
+.ai-msg.user{align-self:flex-end;background:var(--cyan);color:white;border-bottom-right-radius:4px}
+.ai-msg.bot{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);border-bottom-left-radius:4px}
 .ai-typing{display:flex;gap:4px;padding:10px 14px}
 .ai-typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:aiDot 1.2s infinite}
-.ai-typing span:nth-child(2){animation-delay:.2s}
-.ai-typing span:nth-child(3){animation-delay:.4s}
+.ai-typing span:nth-child(2){animation-delay:.2s}.ai-typing span:nth-child(3){animation-delay:.4s}
 @keyframes aiDot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
-.ai-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
-.ai-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:all .2s}
-.ai-input:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,.08)}
-.ai-send{background:var(--indigo);color:white;border:none;border-radius:10px;width:38px;height:38px;font-size:15px;cursor:pointer;flex-shrink:0;box-shadow:0 2px 8px rgba(99,102,241,.3);transition:all .15s}
-.ai-send:hover{background:var(--indigo2);box-shadow:0 4px 12px rgba(99,102,241,.4)}
-.ai-send:disabled{opacity:.4}
+.ai-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px}
+.ai-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;font-size:13px;outline:none;font-family:inherit}
+.ai-send{background:var(--cyan);color:white;border:none;border-radius:10px;width:38px;height:38px;font-size:15px;cursor:pointer}
 .ai-quick-btns{display:flex;gap:4px;padding:0 12px 8px;flex-wrap:wrap}
-.ai-quick-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:10px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .12s}
-.ai-quick-btn:hover{border-color:var(--indigo);color:var(--indigo);background:rgba(99,102,241,.03)}
-#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;font-weight:600;color:var(--text);opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s;z-index:300;white-space:nowrap;box-shadow:var(--shadow-lg)}
+.ai-quick-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:10px;color:var(--muted);cursor:pointer;font-family:inherit}
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:300;white-space:nowrap}
 #toast.show{opacity:1;bottom:100px}
-@media(max-width:800px){#lessonView{flex-direction:column}.lesson-theory{border-right:none;border-bottom:1px solid var(--border);max-height:none;padding-bottom:20px}.lesson-practice{width:100%;padding-bottom:20px}.ai-panel{width:calc(100vw - 32px);right:16px;bottom:80px;height:380px}}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#d4d6e3;border-radius:6px}::-webkit-scrollbar-thumb:hover{background:#b8bac8}
+/* ===== ЧЕРТЕЖНИК ===== */
+.draw-modal{position:fixed;inset:0;z-index:400;background:rgba(8,20,40,.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}
+.draw-modal.hidden{display:none}
+.draw-box{width:min(1060px,97vw);height:min(660px,92vh);background:var(--surface);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-xl)}
+.draw-head{padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-bottom:1px solid var(--border)}
+.draw-title{font-weight:800;margin-right:8px}
+.dtool,.dact{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;transition:.15s}
+.dtool.active{background:var(--cyan);color:#fff;border-color:var(--cyan)}
+.dact.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+.draw-actions{margin-left:auto;display:flex;gap:6px}
+.draw-body{flex:1;position:relative}
+#drawCanvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.draw-info{position:absolute;left:12px;bottom:12px;right:12px;background:rgba(8,25,60,.88);color:#dff3ff;border:1px solid rgba(120,200,255,.3);border-radius:12px;padding:10px 14px;font-size:12.5px;line-height:1.5;pointer-events:none}
+@media(max-width:800px){#lessonView.active{flex-direction:column}.lesson-theory{border-right:none;border-bottom:1px solid var(--border);padding-bottom:20px}.lesson-practice{width:100%;padding-bottom:20px}.ai-panel{width:calc(100vw - 32px);right:16px;bottom:80px;height:380px}.draw-actions{margin-left:0}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#bcd8e0;border-radius:6px}
 .katex{font-size:inherit}
 </style>
 </head>
@@ -147,12 +158,15 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.82);backdr
 
 <header>
   <div class="logo" onclick="showGrades()"><span class="logo-f">F</span><span class="logo-rest">-Mine Геометрия</span></div>
-  <div class="header-nav" id="headerNav"></div>
+  <div class="header-right">
+    <div class="header-nav" id="headerNav"></div>
+    <button class="nav-btn draw" onclick="openDraw()">📐 Чертежник</button>
+  </div>
 </header>
 
 <div id="gradeView" class="view active">
   <div class="grade-title">Геометрия</div>
-  <div class="grade-sub">Выбери свой класс, чтобы начать</div>
+  <div class="grade-sub">Выбери класс и черти фигуры в Чертежнике 📐</div>
   <div class="grade-grid" id="gradeGrid"></div>
 </div>
 
@@ -168,9 +182,9 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.82);backdr
     <button class="ai-close" onclick="toggleAi()">✕</button>
   </div>
   <div class="ai-messages" id="aiMessages">
-    <div class="ai-msg bot">Привет! Я помогу с задачами по геометрии. Спроси что угодно 🧠</div>
+    <div class="ai-msg bot">Привет! Я помогу с геометрией. Спроси что угодно 📐</div>
   </div>
-  <div class="ai-quick-btns" id="aiQuickBtns">
+  <div class="ai-quick-btns">
     <button class="ai-quick-btn" onclick="askAi('Объясни последний пример')">💡 Объясни пример</button>
     <button class="ai-quick-btn" onclick="askAi('Дай подсказку к текущей задаче')">🎯 Подсказка</button>
     <button class="ai-quick-btn" onclick="askAi('Покажи ещё один пример')">📝 Ещё пример</button>
@@ -181,86 +195,179 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.82);backdr
   </div>
 </div>
 
+<!-- ===== ЧЕРТЕЖНИК ===== -->
+<div class="draw-modal hidden" id="drawModal">
+  <div class="draw-box">
+    <div class="draw-head">
+      <span class="draw-title">📐 Чертежник</span>
+      <button class="dtool active" data-tool="point">🎯 Точка</button>
+      <button class="dtool" data-tool="segment">📏 Отрезок</button>
+      <button class="dtool" data-tool="line">➖ Прямая</button>
+      <button class="dtool" data-tool="triangle">🔺 Треугольник</button>
+      <button class="dtool" data-tool="rect">⬜ Прямоуг.</button>
+      <button class="dtool" data-tool="circle">⭕ Окружность</button>
+      <button class="dtool" data-tool="angle">📐 Угол</button>
+      <button class="dtool" data-tool="pen">✏️ Карандаш</button>
+      <div class="draw-actions">
+        <button class="dact on" id="gridBtn">▦ Сетка</button>
+        <button class="dact" id="undoBtn">↩ Отменить</button>
+        <button class="dact" id="clearBtn">🗑 Очистить</button>
+        <button class="dact" onclick="closeDraw()">✕</button>
+      </div>
+    </div>
+    <div class="draw-body">
+      <canvas id="drawCanvas"></canvas>
+      <div class="draw-info" id="drawInfo">1 клетка = 1 единица. Выбери инструмент и кликай по полю!</div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="geometry-lessons.js"></script>
 <script>
 const GRADES=[
-  {id:7,label:'7 класс',badge:'Планиметрия'},
-  {id:8,label:'8 класс',badge:'Планиметрия'},
-  {id:9,label:'9 класс',badge:'Анал. геометрия'},
+  {id:7,label:'7 класс',badge:'Начала'},
+  {id:8,label:'8 класс',badge:'Пифагор'},
+  {id:9,label:'9 класс',badge:'Координаты'},
   {id:10,label:'10 класс',badge:'Стереометрия'},
-  {id:11,label:'11 класс',badge:'Продвинутый'}
+  {id:11,label:'11 класс',badge:'Экзамен'}
 ];
 const TOPICS={
   7:[
-    {id:'7.1',name:'Точки, прямые, лучи, отрезки',icon:'📍'},
+    {id:'7.1',name:'Точка, прямая, отрезок, луч',icon:'📏'},
     {id:'7.2',name:'Углы и их виды',icon:'📐'},
-    {id:'7.3',name:'Треугольники: виды и свойства',icon:'🔺'},
-    {id:'7.4',name:'Четырёхугольники',icon:'🔷'},
-    {id:'7.5',name:'Окружность и круг',icon:'⭕'},
-    {id:'7.6',name:'Площади фигур',icon:'📐'},
-    {id:'7.7',name:'Периметр и длина окружности',icon:'📏'},
-    {id:'7.8',name:'Площадь треугольника',icon:'🔺'},
-    {id:'7.9',name:'Площадь параллелограмма и ромба',icon:'🔷'},
-    {id:'7.10',name:'Площадь трапеции',icon:'📊'}
+    {id:'7.3',name:'Треугольник и его элементы',icon:'🔺'},
+    {id:'7.4',name:'Признаки равенства треугольников',icon:'🟰'},
+    {id:'7.5',name:'Равнобедренный треугольник',icon:'🔻'},
+    {id:'7.6',name:'Параллельные прямые',icon:'🛤️'},
+    {id:'7.7',name:'Окружность и круг',icon:'⭕'},
+    {id:'7.8',name:'Сумма углов и неравенство треугольника',icon:'➕'}
   ],
   8:[
-    {id:'8.1',name:'Подобные треугольники',icon:'🔺'},
-    {id:'8.2',name:'Признаки подобия треугольников',icon:'🔍'},
-    {id:'8.3',name:'Медиана, биссектриса, высота',icon:'📏'},
-    {id:'8.4',name:'Прямоугольный треугольник',icon:'📐'},
-    {id:'8.5',name:'Теорема Пифагора',icon:'📏'},
-    {id:'8.6',name:'Метрические соотношения',icon:'📊'},
-    {id:'8.7',name:'Вписанные и описанные фигуры',icon:'⭕'},
-    {id:'8.8',name:'Касательные к окружности',icon:'⭕'},
-    {id:'8.9',name:'Задачи на подобие',icon:'🧩'},
-    {id:'8.10',name:'Тригонометрия в треугольнике',icon:'🔺'}
+    {id:'8.1',name:'Теорема Пифагора',icon:'📐'},
+    {id:'8.2',name:'Параллелограмм',icon:'▱'},
+    {id:'8.3',name:'Прямоугольник, ромб, квадрат, трапеция',icon:'⬜'},
+    {id:'8.4',name:'Площади фигур',icon:'🟩'},
+    {id:'8.5',name:'Подобные треугольники',icon:'🔍'},
+    {id:'8.6',name:'Теорема Фалеса и пропорции',icon:'⚖️'},
+    {id:'8.7',name:'Вписанные углы и касательная',icon:'⭕'},
+    {id:'8.8',name:'Средние линии',icon:'➗'}
   ],
   9:[
-    {id:'9.1',name:'Координаты на плоскости',icon:'📊'},
-    {id:'9.2',name:'Векторы: определение и операции',icon:'➡️'},
-    {id:'9.3',name:'Декомпозиция вектора по базису',icon:'📐'},
-    {id:'9.4',name:'Скалярное произведение векторов',icon:'🔢'},
-    {id:'9.5',name:'Уравнение прямой',icon:'📏'},
-    {id:'9.6',name:'Уравнение окружности',icon:'⭕'},
-    {id:'9.7',name:'Взаимное расположение прямых',icon:'📏'},
-    {id:'9.8',name:'Прямая и окружность',icon:'⭕'},
-    {id:'9.9',name:'Две окружности',icon:'⭕'},
-    {id:'9.10',name:'Расстояние от точки до прямой',icon:'📍'}
+    {id:'9.1',name:'Координаты и расстояние',icon:'🗺️'},
+    {id:'9.2',name:'Уравнения прямой и окружности',icon:'〽️'},
+    {id:'9.3',name:'Векторы',icon:'➡️'},
+    {id:'9.4',name:'Синус, косинус, тангенс',icon:'🌊'},
+    {id:'9.5',name:'Теоремы синусов и косинусов',icon:'🔺'},
+    {id:'9.6',name:'Правильные многоугольники',icon:'⬡'},
+    {id:'9.7',name:'Длина окружности и площадь круга',icon:'⭕'},
+    {id:'9.8',name:'Движения и симметрия',icon:'🪞'}
   ],
   10:[
-    {id:'10.1',name:'Точки, прямые, плоскости',icon:'🧊'},
-    {id:'10.2',name:'Параллельность прямых и плоскостей',icon:'📏'},
-    {id:'10.3',name:'Перпендикулярность',icon:'📐'},
-    {id:'10.4',name:'Призмы',icon:'🧊'},
-    {id:'10.5',name:'Пирамиды',icon:'🔺'},
-    {id:'10.6',name:'Цилиндр, конус, шар',icon:'🔵'},
-    {id:'10.7',name:'Объёмы многогранников',icon:'📐'},
-    {id:'10.8',name:'Объёмы тел вращения',icon:'🔄'},
-    {id:'10.9',name:'Площади поверхностей',icon:'📐'},
-    {id:'10.10',name:'Сечения многогранников',icon:'✂️'}
+    {id:'10.1',name:'Аксиомы стереометрии. Параллельность',icon:'🧊'},
+    {id:'10.2',name:'Перпендикулярность в пространстве',icon:'📏'},
+    {id:'10.3',name:'Призма и параллелепипед',icon:'📦'},
+    {id:'10.4',name:'Пирамида',icon:'🔺'},
+    {id:'10.5',name:'Цилиндр и конус',icon:'🥫'},
+    {id:'10.6',name:'Сфера и шар',icon:'🌐'}
   ],
   11:[
-    {id:'11.1',name:'Координаты в пространстве',icon:'📊'},
-    {id:'11.2',name:'Уравнение плоскости',icon:'📐'},
-    {id:'11.3',name:'Прямая в пространстве',icon:'📏'},
-    {id:'11.4',name:'Прямые и плоскости',icon:'🧊'},
-    {id:'11.5',name:'Две прямые в пространстве',icon:'📏'},
-    {id:'11.6',name:'Две плоскости',icon:'📐'},
-    {id:'11.7',name:'Углы и расстояния',icon:'📐'},
-    {id:'11.8',name:'Перпендикуляр и наклонная',icon:'📏'},
-    {id:'11.9',name:'Тетраэдр',icon:'🔺'},
-    {id:'11.10',name:'Сферические координаты',icon:'🌐'}
+    {id:'11.1',name:'Векторы и координаты в пространстве',icon:'🧭'},
+    {id:'11.2',name:'Углы между прямыми и плоскостями',icon:'📐'},
+    {id:'11.3',name:'Сечения многогранников',icon:'🔪'},
+    {id:'11.4',name:'Вписанные и описанные сферы',icon:'🌐'},
+    {id:'11.5',name:'Планиметрия: повторение к экзамену',icon:'📏'},
+    {id:'11.6',name:'Стереометрия: повторение к экзамену',icon:'🧊'}
   ]
+};
+const WIKI={
+  '7.1':'Отрезок','7.2':'Угол','7.3':'Треугольник','7.4':'Признаки равенства треугольников','7.5':'Равнобедренный треугольник','7.6':'Параллельные прямые','7.7':'Окружность','7.8':'Неравенство треугольника',
+  '8.1':'Теорема Пифагора','8.2':'Параллелограмм','8.3':'Трапеция','8.4':'Площадь','8.5':'Подобие треугольников','8.6':'Теорема Фалеса','8.7':'Вписанный угол','8.8':'Средняя линия',
+  '9.1':'Декартова система координат','9.2':'Уравнение окружности','9.3':'Вектор','9.4':'Тригонометрические функции','9.5':'Теорема косинусов','9.6':'Правильный многоугольник','9.7':'Длина окружности','9.8':'Симметрия',
+  '10.1':'Стереометрия','10.2':'Перпендикулярность','10.3':'Призма','10.4':'Пирамида','10.5':'Конус','10.6':'Сфера',
+  '11.1':'Вектор','11.2':'Двугранный угол','11.3':'Сечение','11.4':'Сфера','11.5':'Планиметрия','11.6':'Стереометрия'
 };
 
 function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
 function renderKatex(el){if(typeof renderMathInElement==='function')renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})}
+function normAns(v){return String(v).toLowerCase().replace(/ё/g,'е').replace(/['’]/g,'').trim().replace(/\s+/g,' ').replace(/[.!?,;:°]+$/,'')}
 
+async function loadLessonPhoto(){
+  const box=document.getElementById('lessonPhoto');if(!box)return;
+  const lesson=LESSONS[currentTopic];
+  function showImg(src,fb,cap){box.classList.add('show');box.innerHTML=`<img src="${src}" alt="${cap}" loading="lazy"><div class="photo-cap">📷 ${cap}</div>`;const img=box.querySelector('img');let s=0;img.addEventListener('error',()=>{s++;if(s===1&&fb)img.src=fb;else box.remove()})}
+  if(lesson&&lesson.img){showImg(lesson.img,null,lesson.title);return}
+  const title=WIKI[currentTopic];if(!title){box.remove();return}
+  try{const r=await fetch('https://ru.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title));if(!r.ok)throw 0;const d=await r.json();const th=d.thumbnail?d.thumbnail.source:null;if(!th)throw 0;const o=d.originalimage||null;const big=th.replace(/\/\d+px-/,'/1200px-');showImg((o&&o.source&&o.width&&o.width<=1000)?o.source:big,th,title)}catch(e){box.remove()}
+}
+
+/* ================= ЧЕРТЕЖНИК ================= */
+const CELL=40;
+let tool='point',gridOn=true,pts=[],shapes=[],penPath=null,mouse=null,labelIdx=0,drawOpen=false;
+const cv=document.getElementById('drawCanvas'),g=cv.getContext('2d');
+function openDraw(){drawOpen=true;document.getElementById('drawModal').classList.remove('hidden');requestAnimationFrame(sizeCanvas)}
+function closeDraw(){drawOpen=false;document.getElementById('drawModal').classList.add('hidden')}
+function sizeCanvas(){const r=cv.parentElement.getBoundingClientRect();cv.width=Math.floor(r.width);cv.height=Math.floor(r.height);render()}
+window.addEventListener('resize',()=>{if(drawOpen)sizeCanvas()});
+document.querySelectorAll('.dtool').forEach(b=>b.onclick=()=>{tool=b.dataset.tool;pts=[];penPath=null;document.querySelectorAll('.dtool').forEach(x=>x.classList.toggle('active',x===b));setInfo(hintFor(tool));render()});
+document.getElementById('gridBtn').onclick=e=>{gridOn=!gridOn;e.target.classList.toggle('on',gridOn);render()};
+document.getElementById('undoBtn').onclick=()=>{if(pts.length)pts=[];else shapes.pop();render()};
+document.getElementById('clearBtn').onclick=()=>{shapes=[];pts=[];labelIdx=0;setInfo('Поле очищено.');render()};
+function hintFor(t){return{point:'Клик — поставить точку (подпишется A, B, C…)',segment:'Кликни 2 точки — построю отрезок и измерю длину',line:'Кликни 2 точки — проведу прямую через них',triangle:'Кликни 3 точки — посчитаю стороны, углы и площадь!',rect:'Кликни 2 противоположных угла',circle:'1-й клик — центр, 2-й — радиус. Посчитаю длину и площадь',angle:'Кликни 3 точки — угол измерится в СРЕДНЕЙ (вершине)',pen:'Зажми мышку и рисуй от руки'}[t]}
+function setInfo(h){document.getElementById('drawInfo').innerHTML=h}
+function pos(e){const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+function snap(p){const s=gridOn?CELL/2:1;return{x:Math.round(p.x/s)*s,y:Math.round(p.y/s)*s}}
+function fmt(n){return Math.round(n*100)/100}
+function dist(a,b){return Math.hypot(b.x-a.x,b.y-a.y)}
+function units(a,b){return fmt(dist(a,b)/CELL)}
+function nextLabel(){return String.fromCharCode(65+(labelIdx++%26))}
+function angAt(B,A,C){const v1={x:A.x-B.x,y:A.y-B.y},v2={x:C.x-B.x,y:C.y-B.y};const d=(v1.x*v2.x+v1.y*v2.y)/(Math.hypot(v1.x,v1.y)*Math.hypot(v2.x,v2.y));return Math.round(Math.acos(Math.max(-1,Math.min(1,d)))*180/Math.PI)}
+cv.addEventListener('pointerdown',e=>{e.preventDefault();const p=snap(pos(e));
+  if(tool==='pen'){penPath=[p];return}
+  pts.push(p);
+  const need={point:1,segment:2,line:2,rect:2,circle:2,triangle:3,angle:3}[tool];
+  if(tool==='point'){const l=nextLabel();shapes.push({type:'point',pts:[p],label:l});setInfo(`🎯 Точка <b>${l}</b>`);pts=[]}
+  else if(pts.length>=need)commit();
+  render()});
+cv.addEventListener('pointermove',e=>{mouse=snap(pos(e));if(penPath)penPath.push(pos(e));render()});
+window.addEventListener('pointerup',()=>{if(penPath&&penPath.length>1)shapes.push({type:'pen',pts:penPath});penPath=null;render()});
+function commit(){
+  const s={type:tool,pts:pts.slice()};
+  if(tool==='segment')setInfo(`📏 Отрезок: длина = <b>${units(pts[0],pts[1])}</b> ед.`);
+  if(tool==='line')setInfo('➖ Прямая проведена через две точки.');
+  if(tool==='rect'){const a=pts[0],b=pts[1];const w=fmt(Math.abs(b.x-a.x)/CELL),h=fmt(Math.abs(b.y-a.y)/CELL);setInfo(`⬜ Прямоугольник ${w} × ${h}. Площадь = <b>${fmt(w*h)}</b>`)}
+  if(tool==='circle'){const R=units(pts[0],pts[1]);setInfo(`⭕ R = <b>${R}</b>. Длина = ${fmt(2*Math.PI*R)}, площадь = ${fmt(Math.PI*R*R)}`)}
+  if(tool==='triangle'){const[a,b,c]=pts;const A=angAt(a,b,c),B=angAt(b,a,c),C=180-A-B;const ar=Math.abs((b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y))/2/CELL/CELL;setInfo(`🔺 Стороны: ${units(a,b)}, ${units(b,c)}, ${units(c,a)}. Углы: ${A}°, ${B}°, ${C}°. Площадь = <b>${fmt(ar)}</b>`)}
+  if(tool==='angle'){const d=angAt(pts[1],pts[0],pts[2]);setInfo(`📐 Угол = <b>${d}°</b> — ${d<90?'острый':d===90?'прямой':'тупой'}`)}
+  shapes.push(s);pts=[];
+}
+function line(a,b){g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke()}
+function dot(p){g.beginPath();g.arc(p.x,p.y,4,0,7);g.fillStyle='#fff';g.fill()}
+function lbl(t,x,y,c){g.fillStyle=c||'#fbbf24';g.font='bold 13px Outfit';g.fillText(t,x,y)}
+function drawShape(s){
+  const P=s.pts;g.lineWidth=2;g.strokeStyle='#7dd3fc';g.fillStyle='rgba(125,211,252,.12)';
+  if(s.type==='point'){dot(P[0]);lbl(s.label,P[0].x+8,P[0].y-8,'#fff')}
+  if(s.type==='segment'){line(P[0],P[1]);dot(P[0]);dot(P[1]);lbl(units(P[0],P[1]),(P[0].x+P[1].x)/2+6,(P[0].y+P[1].y)/2-6)}
+  if(s.type==='line'){const a=P[0],b=P[1];const n=Math.hypot(b.x-a.x,b.y-a.y)||1;const L=3000;g.beginPath();g.moveTo(a.x-(b.x-a.x)/n*L,a.y-(b.y-a.y)/n*L);g.lineTo(a.x+(b.x-a.x)/n*L,a.y+(b.y-a.y)/n*L);g.stroke();dot(a);dot(b)}
+  if(s.type==='rect'){const a=P[0],b=P[1];g.strokeRect(Math.min(a.x,b.x),Math.min(a.y,b.y),Math.abs(b.x-a.x),Math.abs(b.y-a.y));dot(a);dot(b)}
+  if(s.type==='circle'){g.beginPath();g.arc(P[0].x,P[0].y,dist(P[0],P[1]),0,7);g.stroke();dot(P[0]);lbl('R='+units(P[0],P[1]),(P[0].x+P[1].x)/2+6,(P[0].y+P[1].y)/2)}
+  if(s.type==='triangle'){g.beginPath();g.moveTo(P[0].x,P[0].y);g.lineTo(P[1].x,P[1].y);g.lineTo(P[2].x,P[2].y);g.closePath();g.fill();g.stroke();P.forEach(dot);for(let i=0;i<3;i++){const B=P[i],A=P[(i+1)%3],C=P[(i+2)%3];lbl(angAt(B,A,C)+'°',B.x+8,B.y+16)}}
+  if(s.type==='angle'){const[A,B,C]=P;line(B,A);line(B,C);const a1=Math.atan2(A.y-B.y,A.x-B.x),a2=Math.atan2(C.y-B.y,C.x-B.x);let d=a2-a1;while(d<0)d+=2*Math.PI;while(d>=2*Math.PI)d-=2*Math.PI;g.strokeStyle='#fbbf24';g.beginPath();g.arc(B.x,B.y,26,a1,a2,d>Math.PI);g.stroke();g.strokeStyle='#7dd3fc';lbl(angAt(B,A,C)+'°',B.x+30,B.y-10);P.forEach(dot)}
+  if(s.type==='pen'){g.beginPath();P.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.stroke()}
+}
+function render(){
+  const W=cv.width,H=cv.height;
+  g.fillStyle='#0d2a55';g.fillRect(0,0,W,H);
+  if(gridOn){g.strokeStyle='rgba(140,190,255,.14)';g.lineWidth=1;for(let x=0;x<=W;x+=CELL){g.beginPath();g.moveTo(x+.5,0);g.lineTo(x+.5,H);g.stroke()}for(let y=0;y<=H;y+=CELL){g.beginPath();g.moveTo(0,y+.5);g.lineTo(W,y+.5);g.stroke()}}
+  shapes.forEach(drawShape);
+  if(pts.length){pts.forEach(dot);if(mouse){g.setLineDash([6,6]);g.strokeStyle='rgba(251,191,36,.8)';line(pts[pts.length-1],mouse);g.setLineDash([]);g.strokeStyle='#7dd3fc'}}
+  if(penPath){g.beginPath();penPath.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.stroke()}
+}
+
+/* ================= ОСНОВНАЯ ЛОГИКА ================= */
 let currentGrade=null,currentTopic=null,currentTaskType=0,stats={correct:0,wrong:0,streak:0},currentTask=null,aiOpen=false,aiHistory=[];
-
 function showView(id){document.querySelectorAll('.view').forEach(v=>{v.classList.remove('active');v.style.display='none'});const t=document.getElementById(id);t.classList.add('active');t.style.display=''}
 function showGrades(){currentGrade=null;currentTopic=null;document.getElementById('lessonBack').style.display='none';document.getElementById('aiFab').style.display='none';document.getElementById('aiPanel').classList.remove('open');document.getElementById('headerNav').innerHTML='';showView('gradeView')}
 function showTopics(gid){
@@ -269,7 +376,7 @@ function showTopics(gid){
   const done=topics.filter(t=>completed.includes(t.id)).length;
   const pct=topics.length?Math.round(done/topics.length*100):0;
   document.getElementById('topicView').innerHTML=`
-    <div class="topic-head"><h1>${gid} класс — Геометрия</h1><p>${topics.length} тем · Выполнено: ${done}/${topics.length}</p>
+    <div class="topic-head"><h1>${gid} класс — Геометрия</h1><p>${topics.length} тем · Изучено: ${done}/${topics.length}</p>
     <div class="topic-progress-bar"><div class="topic-progress-fill" style="width:${pct}%"></div></div></div>
     <div class="topic-list">${topics.map((t,i)=>`<div class="topic-card ${completed.includes(t.id)?'done':''}" onclick="openLesson('${t.id}')"><div class="topic-num">${completed.includes(t.id)?'✓':i+1}</div><div class="topic-info"><div class="topic-name">${t.icon} ${t.name}</div></div><div class="topic-arrow">›</div></div>`).join('')}</div>`;
   showView('topicView');
@@ -281,59 +388,59 @@ function openLesson(tid){
   stats={correct:0,wrong:0,streak:0};renderLesson(lesson);showView('lessonView');
   document.getElementById('lessonBack').style.display='';
   document.getElementById('aiFab').style.display='flex';
-  document.getElementById('headerNav').innerHTML=`<button class="nav-btn" onclick="showTopics(${currentGrade})">← Темы</button><button class="nav-btn active">${TOPICS[currentGrade]?.find(t=>t.id===tid)?.icon||'📐'} ${lesson.title.slice(0,30)}...</button>`;
+  document.getElementById('headerNav').innerHTML=`<button class="nav-btn" onclick="showTopics(${currentGrade})">← Темы</button><button class="nav-btn active">${TOPICS[currentGrade]?.find(t=>t.id===tid)?.icon||'📐'} ${lesson.title.slice(0,28)}...</button>`;
 }
 function goBack(){if(currentTopic){showTopics(currentGrade)}else{showGrades()}}
-
 function renderLesson(lesson){
   const el=document.getElementById('lessonView');
-  let th=`<div class="context-box"><h3>🌍 Контекст</h3><p>${lesson.context}</p></div>`;
+  let th=`<div class="lesson-photo" id="lessonPhoto"><div class="photo-skel"></div></div>
+  <div class="draw-banner">🎨 Хочешь увидеть своими глазами? Открой Чертежник и построй эту фигуру!<button onclick="openDraw()">📐 Открыть</button></div>
+  <div class="context-box"><h3>🌍 Контекст</h3><p>${lesson.context}</p></div>`;
   lesson.theory.forEach(s=>{th+=`<div class="theory-section"><h2><span class="section-icon">${s.icon}</span> ${s.title}</h2>${s.html}</div>`});
   th+=`<div class="theory-section"><h2><span class="section-icon">📝</span> Разбор примеров</h2>`;
   lesson.examples.forEach(ex=>{th+=`<div class="example-block"><h3>${ex.title}</h3>`;ex.steps.forEach((st,j)=>{th+=`<div class="step"><div class="step-num">${j+1}</div><div>${st.text}<span class="step-rule">${st.rule}</span></div></div>`});th+=`</div>`});
   th+=`</div>`;
-  let pr=`<div class="practice-head"><h2>🎯 Практика</h2><p>Решай задачи и проверяй ответ</p></div>
+  let pr=`<div class="practice-head"><h2>🎯 Практика</h2><p>Решай и проверяй</p></div>
     <div class="practice-stats"><div class="stat-chip correct"><div class="stat-val" id="statCorrect">0</div><div class="stat-label">Верно</div></div><div class="stat-chip wrong"><div class="stat-val" id="statWrong">0</div><div class="stat-label">Ошибки</div></div><div class="stat-chip"><div class="stat-val" id="statStreak">0</div><div class="stat-label">Серия</div></div></div>
-    <div class="task-type-tabs" id="taskTypeTabs">${lesson.taskTypes.map((tt,i)=>`<button class="task-type-tab ${i===0?'active':''}" onclick="switchTaskType(${i})">${tt.icon} ${tt.name}</button>`).join('')}</div>
+    <div class="task-type-tabs">${lesson.taskTypes.map((tt,i)=>`<button class="task-type-tab ${i===0?'active':''}" onclick="switchTaskType(${i})">${tt.icon} ${tt.name}</button>`).join('')}</div>
     <div id="taskArea"></div>`;
   el.innerHTML=`<div class="lesson-theory">${th}</div><div class="lesson-practice">${pr}</div>`;
-  setTimeout(()=>{renderKatex(el);generateTask()},100);
+  setTimeout(()=>{renderKatex(el);generateTask();loadLessonPhoto()},100);
 }
-
 function switchTaskType(i){currentTaskType=i;document.querySelectorAll('.task-type-tab').forEach((t,j)=>t.classList.toggle('active',j===i));generateTask()}
 function generateTask(){
   const lesson=LESSONS[currentTopic];if(!lesson)return;
   const tt=lesson.taskTypes[currentTaskType];const params=tt.generate();
   currentTask={...tt.template(...Object.values(params)),typeIdx:currentTaskType};
   const area=document.getElementById('taskArea');
-  area.innerHTML=`<div class="task-card"><div class="task-label">Задача</div><div class="task-formula" id="taskFormula">${currentTask.text}</div><div class="task-input-row"><input class="task-input" id="taskInput" type="text" placeholder="Ответ..." onkeydown="if(event.key==='Enter')checkAnswer()" autofocus /><button class="check-btn" id="checkBtn" onclick="checkAnswer()">Проверить</button></div><button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Подсказка</button><div class="hint-text" id="hintText"></div><div class="task-feedback" id="taskFeedback"></div><button class="next-btn" id="nextBtn" onclick="generateTask()">Следующая задача →</button></div>`;
+  area.innerHTML=`<div class="task-card"><div class="task-label">Задача</div><div class="task-formula">${currentTask.text}</div><div class="task-input-row"><input class="task-input" id="taskInput" type="text" placeholder="Ответ..." onkeydown="if(event.key==='Enter')checkAnswer()" autofocus /><button class="check-btn" id="checkBtn" onclick="checkAnswer()">Проверить</button></div><button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Подсказка</button><div class="hint-text" id="hintText"></div><div class="task-feedback" id="taskFeedback"></div><button class="next-btn" id="nextBtn" onclick="generateTask()">Следующая →</button></div>`;
   setTimeout(()=>{renderKatex(area);document.getElementById('taskInput')?.focus()},50);
 }
 function checkAnswer(){
-  const input=document.getElementById('taskInput');const val=input.value.trim().replace(/\s/g,'');if(!val)return;
-  const correct=String(currentTask.answer);const ok=val===correct;
+  const input=document.getElementById('taskInput');const val=input.value.trim();if(!val)return;
+  const ans=currentTask.answer;let ok=false;
+  if(Array.isArray(ans)){ok=ans.some(a=>normAns(a)===normAns(val)||(normAns(a).length>2&&normAns(val).includes(normAns(a))))}
+  else{ok=normAns(ans)===normAns(val)||(normAns(ans).length>2&&normAns(val).includes(normAns(ans)))}
   input.classList.remove('correct','wrong');input.classList.add(ok?'correct':'wrong');input.disabled=true;document.getElementById('checkBtn').disabled=true;
   const fb=document.getElementById('taskFeedback');
   if(ok){stats.correct++;stats.streak++;fb.className='task-feedback correct';fb.innerHTML=`✅ Верно! ${stats.streak>2?`🔥 Серия: ${stats.streak}`:''}`}
-  else{stats.wrong++;stats.streak=0;fb.className='task-feedback wrong';fb.innerHTML=`❌ Неверно. Правильный ответ: <b>${currentTask.answer}</b><div class="task-solution">${currentTask.solution}</div>`}
+  else{stats.wrong++;stats.streak=0;fb.className='task-feedback wrong';fb.innerHTML=`❌ Неверно. Правильно: <b>${Array.isArray(ans)?ans[0]:ans}</b><div class="task-solution">${currentTask.solution}</div>`}
   document.getElementById('statCorrect').textContent=stats.correct;document.getElementById('statWrong').textContent=stats.wrong;document.getElementById('statStreak').textContent=stats.streak;
   document.getElementById('nextBtn').style.display='';document.getElementById('hintBtn').style.display='none';
 }
 function showHint(){const ht=document.getElementById('hintText');ht.style.display='block';ht.textContent='💡 '+currentTask.hint}
-
 function toggleAi(){aiOpen=!aiOpen;document.getElementById('aiPanel').classList.toggle('open',aiOpen);if(aiOpen)document.getElementById('aiInput').focus()}
 async function askAi(text){
   addAiMsg(text,'user');showAiTyping();
-  try{const lesson=LESSONS[currentTopic];const ctx=lesson?`Текущая тема: ${lesson.title}. Задача: ${currentTask?.text||'нет'}. Ответ: ${currentTask?.answer||'?'}`:'Геометрия';
-  const r=await fetch('https://my-education-site-f-mine-production.up.railway.app/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:`Ты — репетитор по геометрии. Отвечай кратко. Используй LaTeX ($...$). ${ctx}`},...aiHistory.slice(-6),{role:'user',content:text}]})});
+  try{const lesson=LESSONS[currentTopic];const ctx=lesson?`Тема: ${lesson.title}. Задача: ${currentTask?.text||'нет'}.`:'Геометрия';
+  const r=await fetch('https://my-education-site-f-mine-production.up.railway.app/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:`Ты — репетитор по геометрии. Объясняй с чертежами на словах и формулами. ${ctx}`},...aiHistory.slice(-6),{role:'user',content:text}]})});
   const d=await r.json();removeAiTyping();addAiMsg(d.reply||d.error||'Не могу ответить','bot');aiHistory.push({role:'user',content:text});aiHistory.push({role:'assistant',content:d.reply||''})}
   catch(e){removeAiTyping();addAiMsg('❌ Ошибка соединения с AI','bot')}
 }
 function sendAi(){const i=document.getElementById('aiInput');const v=i.value.trim();if(!v)return;i.value='';askAi(v)}
-function addAiMsg(text,role){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className=`ai-msg ${role}`;d.innerHTML=text;c.appendChild(d);c.scrollTop=c.scrollHeight;setTimeout(()=>renderKatex(d),50)}
+function addAiMsg(t,r){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className=`ai-msg ${r}`;d.innerHTML=t;c.appendChild(d);c.scrollTop=c.scrollHeight;setTimeout(()=>renderKatex(d),50)}
 function showAiTyping(){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className='ai-typing';d.id='aiTyping';d.innerHTML='<span></span><span></span><span></span>';c.appendChild(d);c.scrollTop=c.scrollHeight}
 function removeAiTyping(){document.getElementById('aiTyping')?.remove()}
-
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('gradeGrid').innerHTML=GRADES.map(g=>`<div class="grade-card" onclick="showTopics(${g.id})"><div class="grade-badge">${g.badge}</div><div class="grade-num">${g.id}</div><div class="grade-label">${g.label}</div></div>`).join('');
 });

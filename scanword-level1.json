@@ -6,180 +6,495 @@
     "rows": 8,
     "cols": 8
   },
-  "rewardXp": 100,
-  "rewardCoins": 30,
+  "rewardXp": 90,
+  "rewardCoins": 20,
   "words": [
     {
-      "id": "w_limon",
-      "answer": "ЛИМОН",
-      "clueText": "Желтый цитрус",
+      "id": "l1_w1",
+      "answer": "ДОСКА",
+      "clueText": "Обработанный распиленный деревянный брус",
       "direction": "horizontal",
-      "start": { "r": 0, "c": 1 },
-      "cluePos": { "r": 0, "c": 0 },
+      "start": {
+        "r": 1,
+        "c": 1
+      },
+      "cluePos": {
+        "r": 1,
+        "c": 0
+      },
       "arrow": "right"
     },
     {
-      "id": "w_katok",
+      "id": "l1_w2",
+      "answer": "БАЛЕТ",
+      "clueText": "Театральное искусство танца на пуантах",
+      "direction": "horizontal",
+      "start": {
+        "r": 3,
+        "c": 1
+      },
+      "cluePos": {
+        "r": 3,
+        "c": 0
+      },
+      "arrow": "right"
+    },
+    {
+      "id": "l1_w3",
+      "answer": "КАТЕР",
+      "clueText": "Быстроходное моторное водное судно",
+      "direction": "horizontal",
+      "start": {
+        "r": 5,
+        "c": 1
+      },
+      "cluePos": {
+        "r": 5,
+        "c": 0
+      },
+      "arrow": "right"
+    },
+    {
+      "id": "l1_w4",
+      "answer": "ТАНЕЦ",
+      "clueText": "Красивые пластичные движения под звуки музыки",
+      "direction": "horizontal",
+      "start": {
+        "r": 7,
+        "c": 1
+      },
+      "cluePos": {
+        "r": 7,
+        "c": 0
+      },
+      "arrow": "right"
+    },
+    {
+      "id": "l1_w5",
+      "answer": "ДУБОК",
+      "clueText": "Молодой могучий лесной дубок",
+      "direction": "vertical",
+      "start": {
+        "r": 1,
+        "c": 1
+      },
+      "cluePos": {
+        "r": 0,
+        "c": 1
+      },
+      "arrow": "down"
+    },
+    {
+      "id": "l1_w6",
+      "answer": "САЛЮТ",
+      "clueText": "Разноцветные огненные вспышки в небе",
+      "direction": "vertical",
+      "start": {
+        "r": 1,
+        "c": 3
+      },
+      "cluePos": {
+        "r": 0,
+        "c": 3
+      },
+      "arrow": "down"
+    },
+    {
+      "id": "l1_w7",
+      "answer": "АКТЕР",
+      "clueText": "Исполнитель ролей на театральной сцене",
+      "direction": "vertical",
+      "start": {
+        "r": 1,
+        "c": 5
+      },
+      "cluePos": {
+        "r": 0,
+        "c": 5
+      },
+      "arrow": "down"
+    },
+    {
+      "id": "l1_w8",
       "answer": "КАТОК",
-      "clueText": "Лед для коньков",
-      "direction": "horizontal",
-      "start": { "r": 2, "c": 1 },
-      "cluePos": { "r": 2, "c": 0 },
-      "arrow": "right"
-    },
-    {
-      "id": "w_opera",
-      "answer": "ОПЕРА",
-      "clueText": "Жанр музыки",
-      "direction": "horizontal",
-      "start": { "r": 4, "c": 1 },
-      "cluePos": { "r": 4, "c": 0 },
-      "arrow": "right"
-    },
-    {
-      "id": "w_kanat",
-      "answer": "КАНАТ",
-      "clueText": "Толстый трос",
-      "direction": "horizontal",
-      "start": { "r": 6, "c": 1 },
-      "cluePos": { "r": 6, "c": 0 },
-      "arrow": "right"
-    },
-    {
-      "id": "w_sosna",
-      "answer": "СОСНА",
-      "clueText": "Хвойный лес",
+      "clueText": "Ледовое поле для катания на коньках",
       "direction": "vertical",
-      "start": { "r": 1, "c": 6 },
-      "cluePos": { "r": 0, "c": 6 },
-      "arrow": "down"
-    },
-    {
-      "id": "w_lakomka",
-      "answer": "ЛАКОМКА",
-      "clueText": "Сладкоежка",
-      "direction": "vertical",
-      "start": { "r": 1, "c": 1 },
-      "cluePos": { "r": 1, "c": 0 },
-      "arrow": "right-down"
-    },
-    {
-      "id": "w_stopa",
-      "answer": "СТОПА",
-      "clueText": "Часть ноги",
-      "direction": "vertical",
-      "start": { "r": 1, "c": 2 },
-      "cluePos": { "r": 1, "c": 2 },
-      "arrow": "down"
-    },
-    {
-      "id": "w_okean",
-      "answer": "ОКЕАН",
-      "clueText": "Водный гигант",
-      "direction": "vertical",
-      "start": { "r": 2, "c": 3 },
-      "cluePos": { "r": 1, "c": 3 },
-      "arrow": "down"
-    },
-    {
-      "id": "w_korma",
-      "answer": "КОРМА",
-      "clueText": "Корма судна",
-      "direction": "vertical",
-      "start": { "r": 2, "c": 4 },
-      "cluePos": { "r": 1, "c": 4 },
-      "arrow": "down"
-    },
-    {
-      "id": "w_arbat",
-      "answer": "АРБАТ",
-      "clueText": "Улица Москвы",
-      "direction": "vertical",
-      "start": { "r": 2, "c": 5 },
-      "cluePos": { "r": 1, "c": 5 },
+      "start": {
+        "r": 1,
+        "c": 6
+      },
+      "cluePos": {
+        "r": 0,
+        "c": 6
+      },
       "arrow": "down"
     }
   ],
   "grid": [
     [
-      { "type": "clue", "text": "Желтый цитрус", "arrow": "right", "wordId": "w_limon" },
-      { "type": "letter", "letter": "Л", "wordIds": ["w_limon"] },
-      { "type": "letter", "letter": "И", "wordIds": ["w_limon"] },
-      { "type": "letter", "letter": "М", "wordIds": ["w_limon"] },
-      { "type": "letter", "letter": "О", "wordIds": ["w_limon"] },
-      { "type": "letter", "letter": "Н", "wordIds": ["w_limon"] },
-      { "type": "clue", "text": "Хвойный лес", "arrow": "down", "wordId": "w_sosna" },
-      { "type": "block" }
+      {
+        "type": "block"
+      },
+      {
+        "type": "clue",
+        "text": "Молодой могучий лесной дубок",
+        "arrow": "down",
+        "wordId": "l1_w5"
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "clue",
+        "text": "Разноцветные огненные вспышки в небе",
+        "arrow": "down",
+        "wordId": "l1_w6"
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "clue",
+        "text": "Исполнитель ролей на театральной сцене",
+        "arrow": "down",
+        "wordId": "l1_w7"
+      },
+      {
+        "type": "clue",
+        "text": "Ледовое поле для катания на коньках",
+        "arrow": "down",
+        "wordId": "l1_w8"
+      },
+      {
+        "type": "block"
+      }
     ],
     [
-      { "type": "clue", "text": "Сладкоежка", "arrow": "right-down", "wordId": "w_lakomka" },
-      { "type": "letter", "letter": "Л", "wordIds": ["w_lakomka"] },
-      { "type": "clue", "text": "Часть ноги", "arrow": "down", "wordId": "w_stopa" },
-      { "type": "clue", "text": "Водный гигант", "arrow": "down", "wordId": "w_okean" },
-      { "type": "clue", "text": "Корма судна", "arrow": "down", "wordId": "w_korma" },
-      { "type": "clue", "text": "Улица Москвы", "arrow": "down", "wordId": "w_arbat" },
-      { "type": "letter", "letter": "С", "wordIds": ["w_sosna"] },
-      { "type": "block" }
+      {
+        "type": "clue",
+        "text": "Обработанный распиленный деревянный брус",
+        "arrow": "right",
+        "wordId": "l1_w1"
+      },
+      {
+        "type": "letter",
+        "letter": "Д",
+        "wordIds": [
+          "l1_w1",
+          "l1_w5"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "О",
+        "wordIds": [
+          "l1_w1"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "С",
+        "wordIds": [
+          "l1_w1",
+          "l1_w6"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "К",
+        "wordIds": [
+          "l1_w1"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "А",
+        "wordIds": [
+          "l1_w1",
+          "l1_w7"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "К",
+        "wordIds": [
+          "l1_w8"
+        ]
+      },
+      {
+        "type": "block"
+      }
     ],
     [
-      { "type": "clue", "text": "Лед для коньков", "arrow": "right", "wordId": "w_katok" },
-      { "type": "letter", "letter": "К", "wordIds": ["w_katok", "w_lakomka"] },
-      { "type": "letter", "letter": "А", "wordIds": ["w_katok", "w_stopa"] },
-      { "type": "letter", "letter": "Т", "wordIds": ["w_katok", "w_okean"] },
-      { "type": "letter", "letter": "О", "wordIds": ["w_katok", "w_korma"] },
-      { "type": "letter", "letter": "К", "wordIds": ["w_katok", "w_arbat"] },
-      { "type": "letter", "letter": "О", "wordIds": ["w_sosna"] },
-      { "type": "block" }
+      {
+        "type": "block"
+      },
+      {
+        "type": "letter",
+        "letter": "У",
+        "wordIds": [
+          "l1_w5"
+        ]
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "letter",
+        "letter": "А",
+        "wordIds": [
+          "l1_w6"
+        ]
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "letter",
+        "letter": "К",
+        "wordIds": [
+          "l1_w7"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "А",
+        "wordIds": [
+          "l1_w8"
+        ]
+      },
+      {
+        "type": "block"
+      }
     ],
     [
-      { "type": "block" },
-      { "type": "letter", "letter": "О", "wordIds": ["w_lakomka"] },
-      { "type": "letter", "letter": "О", "wordIds": ["w_stopa"] },
-      { "type": "letter", "letter": "К", "wordIds": ["w_okean"] },
-      { "type": "letter", "letter": "Р", "wordIds": ["w_korma"] },
-      { "type": "letter", "letter": "Р", "wordIds": ["w_arbat"] },
-      { "type": "letter", "letter": "С", "wordIds": ["w_sosna"] },
-      { "type": "block" }
+      {
+        "type": "clue",
+        "text": "Театральное искусство танца на пуантах",
+        "arrow": "right",
+        "wordId": "l1_w2"
+      },
+      {
+        "type": "letter",
+        "letter": "Б",
+        "wordIds": [
+          "l1_w2",
+          "l1_w5"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "А",
+        "wordIds": [
+          "l1_w2"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Л",
+        "wordIds": [
+          "l1_w2",
+          "l1_w6"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Е",
+        "wordIds": [
+          "l1_w2"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Т",
+        "wordIds": [
+          "l1_w2",
+          "l1_w7"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Т",
+        "wordIds": [
+          "l1_w8"
+        ]
+      },
+      {
+        "type": "block"
+      }
     ],
     [
-      { "type": "clue", "text": "Жанр музыки", "arrow": "right", "wordId": "w_opera" },
-      { "type": "letter", "letter": "О", "wordIds": ["w_opera", "w_lakomka"] },
-      { "type": "letter", "letter": "П", "wordIds": ["w_opera", "w_stopa"] },
-      { "type": "letter", "letter": "Е", "wordIds": ["w_opera", "w_okean"] },
-      { "type": "letter", "letter": "Р", "wordIds": ["w_opera", "w_korma"] },
-      { "type": "letter", "letter": "А", "wordIds": ["w_opera", "w_arbat"] },
-      { "type": "letter", "letter": "Н", "wordIds": ["w_sosna"] },
-      { "type": "block" }
+      {
+        "type": "block"
+      },
+      {
+        "type": "letter",
+        "letter": "О",
+        "wordIds": [
+          "l1_w5"
+        ]
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "letter",
+        "letter": "Ю",
+        "wordIds": [
+          "l1_w6"
+        ]
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "letter",
+        "letter": "Е",
+        "wordIds": [
+          "l1_w7"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "О",
+        "wordIds": [
+          "l1_w8"
+        ]
+      },
+      {
+        "type": "block"
+      }
     ],
     [
-      { "type": "block" },
-      { "type": "letter", "letter": "М", "wordIds": ["w_lakomka"] },
-      { "type": "letter", "letter": "А", "wordIds": ["w_stopa"] },
-      { "type": "letter", "letter": "А", "wordIds": ["w_okean"] },
-      { "type": "letter", "letter": "М", "wordIds": ["w_korma"] },
-      { "type": "letter", "letter": "Т", "wordIds": ["w_arbat"] },
-      { "type": "letter", "letter": "А", "wordIds": ["w_sosna"] },
-      { "type": "block" }
+      {
+        "type": "clue",
+        "text": "Быстроходное моторное водное судно",
+        "arrow": "right",
+        "wordId": "l1_w3"
+      },
+      {
+        "type": "letter",
+        "letter": "К",
+        "wordIds": [
+          "l1_w3",
+          "l1_w5"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "А",
+        "wordIds": [
+          "l1_w3"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Т",
+        "wordIds": [
+          "l1_w3",
+          "l1_w6"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Е",
+        "wordIds": [
+          "l1_w3"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Р",
+        "wordIds": [
+          "l1_w3",
+          "l1_w7"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "К",
+        "wordIds": [
+          "l1_w8"
+        ]
+      },
+      {
+        "type": "block"
+      }
     ],
     [
-      { "type": "clue", "text": "Толстый трос", "arrow": "right", "wordId": "w_kanat" },
-      { "type": "letter", "letter": "К", "wordIds": ["w_kanat", "w_lakomka"] },
-      { "type": "letter", "letter": "А", "wordIds": ["w_kanat"] },
-      { "type": "letter", "letter": "Н", "wordIds": ["w_kanat", "w_okean"] },
-      { "type": "letter", "letter": "А", "wordIds": ["w_kanat", "w_korma"] },
-      { "type": "letter", "letter": "Т", "wordIds": ["w_kanat", "w_arbat"] },
-      { "type": "block" },
-      { "type": "block" }
+      {
+        "type": "block"
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "block"
+      }
     ],
     [
-      { "type": "block" },
-      { "type": "letter", "letter": "А", "wordIds": ["w_lakomka"] },
-      { "type": "block" },
-      { "type": "block" },
-      { "type": "block" },
-      { "type": "block" },
-      { "type": "block" },
-      { "type": "block" }
+      {
+        "type": "clue",
+        "text": "Красивые пластичные движения под звуки музыки",
+        "arrow": "right",
+        "wordId": "l1_w4"
+      },
+      {
+        "type": "letter",
+        "letter": "Т",
+        "wordIds": [
+          "l1_w4"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "А",
+        "wordIds": [
+          "l1_w4"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Н",
+        "wordIds": [
+          "l1_w4"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Е",
+        "wordIds": [
+          "l1_w4"
+        ]
+      },
+      {
+        "type": "letter",
+        "letter": "Ц",
+        "wordIds": [
+          "l1_w4"
+        ]
+      },
+      {
+        "type": "block"
+      },
+      {
+        "type": "block"
+      }
     ]
   ]
 }

@@ -467,7 +467,7 @@ function render() {
   if (lr) {
     const sk      = lr.sk;
     const topicNm = SUBJECTS[sk]?.classes[lr.classNum]?.[lr.topic] || lr.topic || "";
-    const scoreColor = (lr.correct >= 7) ? "var(--ok)" : "var(--warn)";
+    const scoreColor = (lr.correct >= 6) ? "var(--ok)" : "var(--warn)";
     lrHtml = `
       <div class="last-result-card fade-up d2">
         <div class="lr-label">Последний результат</div>
@@ -479,7 +479,7 @@ function render() {
         <div class="lr-score">
           <div class="score-big" style="color:${scoreColor}">${lr.correct ?? "?"}/${lr.total ?? 10}</div>
           <div class="score-note">
-            ${lr.correct >= 7 ? "✅ Засчитано" : "❌ Не засчитано"}<br>
+            ${lr.correct >= 6 ? "✅ Засчитано" : "❌ Не засчитано"}<br>
             <span style="font-size:10px;color:var(--muted)">${lr.time ? new Date(lr.time).toLocaleString("ru-RU") : ""}</span>
           </div>
         </div>

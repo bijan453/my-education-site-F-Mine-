@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>F-Mine | Сканворды (20 уровней)</title>
+  <title>F-Mine | Сканворды</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -33,48 +33,42 @@
       --ease: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
-      min-height: 100vh;
+      height: 100vh;
       background: var(--bg);
       color: var(--text);
       font-family: 'Outfit', sans-serif;
-      overflow-x: hidden;
+      overflow: hidden;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background-image:
-        radial-gradient(ellipse 70% 50% at 85% -5%, rgba(167, 139, 250, .09), transparent 58%),
-        radial-gradient(ellipse 55% 40% at 5% 92%, rgba(251, 191, 36, .05), transparent 52%),
-        radial-gradient(ellipse 40% 35% at 50% 45%, rgba(96, 200, 255, .03), transparent 58%);
-      padding-top: 70px;
-      padding-bottom: 30px;
+        radial-gradient(ellipse 70% 50% at 85% -5%, rgba(167, 139, 250, .12), transparent 58%),
+        radial-gradient(ellipse 55% 40% at 5% 92%, rgba(251, 191, 36, .07), transparent 52%),
+        radial-gradient(ellipse 40% 35% at 50% 45%, rgba(96, 200, 255, .05), transparent 58%);
     }
 
-    /* ══ HEADER ══ */
+    /* ══ HEADER (компактный) ══ */
     .hd {
       position: fixed;
       top: 0; left: 0; right: 0;
-      height: 68px;
+      height: 52px;
       z-index: 200;
-      background: rgba(7, 9, 19, 0.88);
+      background: rgba(7, 9, 19, 0.92);
       backdrop-filter: blur(24px);
       border-bottom: 1px solid rgba(167, 139, 250, 0.14);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 clamp(14px, 3vw, 30px);
+      padding: 0 clamp(10px, 2vw, 22px);
     }
 
     .logo {
       font-family: 'Syne', sans-serif;
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -82,209 +76,160 @@
       text-decoration: none;
       color: var(--text);
     }
-
     .logo-f { color: var(--amber); }
-    .logo-dot {
-      width: 5px; height: 5px; background: var(--violet); border-radius: 50%; margin: 0 4px;
-    }
+    .logo-dot { width: 5px; height: 5px; background: var(--violet); border-radius: 50%; margin: 0 4px; }
 
-    .hd-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .hd-right { display: flex; align-items: center; gap: 8px; }
 
     .pill-stat {
       background: var(--surface2);
       border: 1px solid var(--border2);
       border-radius: 99px;
-      padding: 5px 12px;
-      font-size: 13px;
+      padding: 4px 10px;
+      font-size: 12px;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       font-family: 'DM Mono', monospace;
     }
-
     .pill-stat.coins { color: var(--amber); }
     .pill-stat.timer { color: var(--sky); }
 
     .btn-lvl-select {
       background: linear-gradient(135deg, var(--violet), var(--violet2));
-      border: none;
-      color: #fff;
-      border-radius: 10px;
-      padding: 7px 14px;
-      font-size: 13px;
-      font-weight: 700;
+      border: none; color: #fff;
+      border-radius: 9px;
+      padding: 6px 12px;
+      font-size: 12px; font-weight: 700;
       cursor: pointer;
-      transition: var(--ease);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 3px 10px var(--violet-glow);
+      display: flex; align-items: center; gap: 5px;
+      box-shadow: 0 2px 8px var(--violet-glow);
     }
-
-    .btn-lvl-select:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-    }
+    .btn-lvl-select:hover { filter: brightness(1.1); }
 
     .btn-back {
       background: var(--surface2);
       border: 1px solid var(--border2);
       color: var(--text2);
-      border-radius: 10px;
-      padding: 7px 12px;
-      font-size: 13px;
-      font-weight: 700;
+      border-radius: 9px;
+      padding: 6px 10px;
+      font-size: 12px; font-weight: 700;
       cursor: pointer;
-      transition: var(--ease);
       text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      display: flex; align-items: center; gap: 5px;
     }
+    .btn-back:hover { background: var(--surface3); color: var(--text); border-color: var(--violet); }
 
-    .btn-back:hover {
-      background: var(--surface3);
-      color: var(--text);
-      border-color: var(--violet);
-    }
-
-    /* ══ MAIN LAYOUT ══ */
-    .container {
-      max-width: 900px;
+    /* ══ MAIN TWO-COLUMN LAYOUT ══ */
+    .main {
+      position: fixed;
+      top: 52px;
+      left: 0; right: 0; bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 14px;
+      padding: 14px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 16px;
+    }
+
+    /* LEFT: сетка + прогресс */
+    .left-col {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 10px;
+      min-height: 0;
     }
 
-    /* ══ TOP INFO CARD ══ */
-    .game-card-header {
+    .level-header {
       background: linear-gradient(135deg, rgba(14, 17, 34, 0.9), rgba(21, 18, 43, 0.9));
       border: 1px solid rgba(167, 139, 250, 0.2);
       border-radius: var(--r);
-      padding: 16px 20px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
       gap: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      flex-shrink: 0;
     }
 
     .title-group h1 {
       font-family: 'Syne', sans-serif;
-      font-size: 20px;
+      font-size: 16px;
       font-weight: 800;
       color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
     }
+    .title-group p { font-size: 11px; color: var(--text2); margin-top: 1px; }
 
-    .title-group p {
-      font-size: 13px;
-      color: var(--text2);
-      margin-top: 2px;
-    }
-
-    .active-clue-banner {
-      width: 100%;
-      background: rgba(167, 139, 250, 0.1);
+    .progress-pill {
+      background: rgba(167, 139, 250, 0.15);
       border: 1px solid rgba(167, 139, 250, 0.3);
-      border-radius: var(--r-sm);
-      padding: 10px 14px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 44px;
-    }
-
-    .active-clue-banner .dir-tag {
-      background: var(--violet);
-      color: #fff;
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 6px;
+      color: var(--violet);
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-size: 12px;
       font-weight: 700;
-      text-transform: uppercase;
       font-family: 'DM Mono', monospace;
       flex-shrink: 0;
     }
 
-    /* ══ SCANWORD BOARD GRID ══ */
+    /* SCANWORD GRID (auto-size) */
     .board-container {
+      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100%;
+      min-height: 0;
       user-select: none;
     }
 
     .scanword-grid {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      grid-template-rows: repeat(8, 1fr);
-      gap: 4px;
-      width: 100%;
-      max-width: 580px;
+      gap: 3px;
       aspect-ratio: 1;
+      width: auto;
+      height: 100%;
+      max-height: 100%;
+      max-width: 100%;
       background: #060812;
-      padding: 6px;
+      padding: 5px;
       border-radius: var(--r);
       border: 1.5px solid rgba(167, 139, 250, 0.25);
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 30px rgba(167, 139, 250, 0.08);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 24px rgba(167, 139, 250, 0.08);
     }
 
     /* CELLS */
     .cell {
       position: relative;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
       font-weight: 700;
       transition: var(--ease);
       cursor: pointer;
       overflow: hidden;
+      min-width: 0;
+      min-height: 0;
     }
 
-    /* CELL TYPES */
-    .cell.block {
-      background: #090c1a;
-      border: 1px solid rgba(255, 255, 255, 0.02);
-      cursor: default;
-    }
+    .cell.block { background: #090c1a; border: 1px solid rgba(255,255,255,0.02); cursor: default; }
 
     .cell.clue {
       background: linear-gradient(135deg, #1b1638 0%, #11142a 100%);
       border: 1px solid rgba(167, 139, 250, 0.35);
       color: #e0e7ff;
-      padding: 2px 3px;
-      display: flex;
-      flex-direction: column;
+      padding: 1px;
+      display: flex; flex-direction: column;
       justify-content: space-between;
       align-items: center;
       text-align: center;
-      box-shadow: inset 0 0 10px rgba(167, 139, 250, 0.1);
-      overflow: hidden;
+      box-shadow: inset 0 0 8px rgba(167, 139, 250, 0.1);
     }
-
-    .cell.clue:hover {
-      border-color: var(--amber);
-      box-shadow: 0 0 12px var(--amber-glow);
-    }
+    .cell.clue:hover { border-color: var(--amber); box-shadow: 0 0 10px var(--amber-glow); }
 
     .clue-text {
-      font-size: clamp(7.5px, 1.4vw, 10px);
+      font-size: clamp(6px, 1.2vw, 9px);
       line-height: 1.05;
       font-weight: 600;
       color: #dbeafe;
@@ -294,14 +239,15 @@
       margin: auto 0;
       max-width: 100%;
       letter-spacing: -0.1px;
+      overflow: hidden;
     }
 
     .clue-arrow {
-      font-size: clamp(11px, 2vw, 14px);
+      font-size: clamp(8px, 1.5vw, 11px);
       color: var(--amber);
       font-weight: 800;
       line-height: 1;
-      text-shadow: 0 0 6px var(--amber-glow);
+      text-shadow: 0 0 4px var(--amber-glow);
       pointer-events: none;
     }
 
@@ -309,171 +255,178 @@
       background: rgba(255, 255, 255, 0.06);
       border: 1.5px solid var(--border2);
       color: #fff;
-      font-size: clamp(16px, 3.2vw, 24px);
+      font-size: clamp(12px, 2.5vw, 18px);
       font-family: 'Outfit', sans-serif;
       text-transform: uppercase;
     }
+    .cell.letter:hover { background: rgba(255,255,255,0.12); border-color: rgba(167,139,250,0.5); }
 
-    .cell.letter:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(167, 139, 250, 0.5);
-    }
-
-    /* HIGHLIGHT STATES */
-    .cell.letter.in-active-word {
-      background: rgba(167, 139, 250, 0.22);
-      border-color: rgba(167, 139, 250, 0.6);
-    }
-
+    .cell.letter.in-active-word { background: rgba(167, 139, 250, 0.22); border-color: rgba(167, 139, 250, 0.6); }
     .cell.letter.selected {
-      background: var(--violet);
-      color: #fff;
+      background: var(--violet); color: #fff;
       border-color: #fff;
-      box-shadow: 0 0 18px var(--violet-glow);
-      transform: scale(1.04);
+      box-shadow: 0 0 12px var(--violet-glow);
+      transform: scale(1.06);
       z-index: 10;
     }
-
-    .cell.letter.correct {
-      background: rgba(52, 211, 153, 0.25);
-      border-color: var(--emerald);
-      color: var(--emerald);
-    }
-
+    .cell.letter.correct { background: rgba(52,211,153,0.25); border-color: var(--emerald); color: var(--emerald); }
     .cell.letter.wrong {
-      background: rgba(251, 113, 133, 0.25);
-      border-color: var(--rose);
-      color: var(--rose);
+      background: rgba(251,113,133,0.25);
+      border-color: var(--rose); color: var(--rose);
       animation: shake 0.3s ease;
     }
-
-    .cell.letter.preset {
-      color: var(--amber);
-    }
+    .cell.letter.preset { color: var(--amber); }
 
     @keyframes shake {
-      0%, 100% { transform: translateX(0); }
+      0%,100% { transform: translateX(0); }
       25% { transform: translateX(-3px); }
       75% { transform: translateX(3px); }
     }
 
-    /* ══ CONTROLS ROW ══ */
-    .controls-row {
+    /* ══ RIGHT COLUMN ══ */
+    .right-col {
       display: flex;
+      flex-direction: column;
       gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ACTIVE CLUE PANEL (главный элемент справа) */
+    .clue-panel {
+      background: linear-gradient(145deg, #13102e, #1b153d);
+      border: 1.5px solid rgba(167, 139, 250, 0.35);
+      border-radius: var(--r);
+      padding: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 0 20px rgba(167,139,250,0.05);
+      flex-shrink: 0;
+    }
+
+    .clue-panel-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dir-tag {
+      background: var(--violet);
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .clue-panel-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+    }
+
+    .clue-panel-meta {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+    }
+    .clue-panel-meta .word-letters { color: var(--amber); font-weight: 700; }
+
+    /* KEYBOARD */
+    .keyboard {
+      background: linear-gradient(145deg, rgba(14, 17, 34, 0.6), rgba(21, 18, 43, 0.6));
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .kbd-row { display: flex; justify-content: center; gap: 3px; }
+
+    .kbd-key {
+      flex: 1;
+      aspect-ratio: 1;
+      max-width: 38px;
+      border-radius: 7px;
+      border: 1px solid var(--border2);
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: var(--ease);
+      user-select: none;
+    }
+    .kbd-key:hover { background: rgba(167,139,250,0.3); border-color: var(--violet); }
+    .kbd-key:active { transform: scale(0.9); }
+    .kbd-key.wide {
+      aspect-ratio: auto;
+      max-width: none;
+      padding: 0 10px;
+      background: rgba(251, 113, 133, 0.15);
+      border-color: rgba(251,113,133,0.3);
+      font-size: 11px;
+    }
+
+    /* CONTROLS */
+    .controls-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     .btn-act {
-      padding: 10px 18px;
+      padding: 10px 8px;
       border-radius: var(--r-sm);
       border: 1px solid var(--border2);
       background: var(--surface2);
       color: var(--text);
       font-family: inherit;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12px; font-weight: 700;
       cursor: pointer;
       transition: var(--ease);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 5px;
     }
-
-    .btn-act:hover {
-      background: var(--surface3);
-      border-color: var(--violet);
-      transform: translateY(-1px);
-    }
-
+    .btn-act:hover { background: var(--surface3); border-color: var(--violet); transform: translateY(-1px); }
     .btn-act.primary {
-      background: linear-gradient(135deg, var(--violet), var(--violet2));
-      border: none;
-      color: #fff;
-      box-shadow: 0 4px 14px var(--violet-glow);
+      background: linear-gradient(135deg, var(--emerald), #059669);
+      border: none; color: #fff;
+      box-shadow: 0 3px 10px var(--emerald-glow);
+      grid-column: span 2;
     }
-
-    .btn-act.primary:hover {
-      filter: brightness(1.1);
-    }
-
     .btn-act.amber {
       background: linear-gradient(135deg, var(--amber), #f59e0b);
-      border: none;
-      color: #111;
-      box-shadow: 0 4px 14px var(--amber-glow);
+      border: none; color: #111;
+      box-shadow: 0 3px 10px var(--amber-glow);
     }
 
-    /* ══ VIRTUAL KEYBOARD ══ */
-    .keyboard {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-width: 600px;
-      margin: 0 auto;
-      width: 100%;
-    }
+    /* Hidden native input for mobile */
+    #hiddenInput { position: fixed; left: -9999px; top: 50%; opacity: 0; width: 1px; height: 1px; border: none; outline: none; }
 
-    .kbd-row {
-      display: flex;
-      justify-content: center;
-      gap: 4px;
-    }
-
-    .kbd-key {
-      flex: 1;
-      max-width: 44px;
-      height: 44px;
-      border-radius: 8px;
-      border: 1px solid var(--border2);
-      background: rgba(255, 255, 255, 0.07);
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: var(--ease);
-      user-select: none;
-    }
-
-    .kbd-key:hover {
-      background: rgba(167, 139, 250, 0.3);
-      border-color: var(--violet);
-    }
-
-    .kbd-key:active {
-      transform: scale(0.92);
-    }
-
-    .kbd-key.wide {
-      max-width: 70px;
-      background: rgba(167, 139, 250, 0.15);
-      font-size: 13px;
-    }
-
-    /* Hidden native input for mobile touch */
-    #hiddenInput {
-      position: fixed;
-      left: -9999px;
-      top: 50%;
-      opacity: 0;
-      width: 1px;
-      height: 1px;
-      border: none;
-      outline: none;
-    }
-
-    /* ══ INFO POPUP (clue info card) ══ */
+    /* ══ INFO POPUP ══ */
     .info-popup {
       position: fixed;
       z-index: 600;
-      bottom: 20px;
-      right: 20px;
-      width: clamp(260px, 88vw, 360px);
+      bottom: 20px; left: 20px;
+      width: clamp(260px, 30vw, 340px);
       background: linear-gradient(145deg, #0e1024, #17123a);
       border: 1.5px solid rgba(167, 139, 250, 0.45);
       border-radius: var(--r);
@@ -482,7 +435,6 @@
       display: none;
       animation: popupIn 0.28s cubic-bezier(0.22,0.61,0.36,1);
     }
-
     .info-popup.open { display: block; }
 
     @keyframes popupIn {
@@ -490,97 +442,55 @@
       to   { opacity: 1; transform: translateY(0)    scale(1); }
     }
 
-    .info-popup-img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      display: block;
-      background: #0d0f20;
-    }
-
+    .info-popup-img { width: 100%; height: 110px; object-fit: cover; display: block; background: #0d0f20; }
     .info-popup-img-placeholder {
-      width: 100%;
-      height: 140px;
+      width: 100%; height: 110px;
       background: linear-gradient(135deg, #121630, #1e1840);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 48px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
     }
 
-    .info-popup-body {
-      padding: 14px 16px 16px;
-    }
-
+    .info-popup-body { padding: 10px 12px 12px; }
     .info-popup-word {
       font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 800;
+      font-size: 14px; font-weight: 800;
       color: var(--violet);
       letter-spacing: 0.5px;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
-
-    .info-popup-desc {
-      font-size: 13px;
-      line-height: 1.55;
-      color: var(--text2);
-      margin-bottom: 10px;
-    }
-
-    .info-popup-footer {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .info-popup-link {
-      font-size: 12px;
-      color: var(--sky);
-      text-decoration: none;
-      flex: 1;
-      font-weight: 600;
-    }
-
+    .info-popup-desc { font-size: 12px; line-height: 1.5; color: var(--text2); margin-bottom: 8px; }
+    .info-popup-footer { display: flex; gap: 6px; align-items: center; }
+    .info-popup-link { font-size: 11px; color: var(--sky); text-decoration: none; flex: 1; font-weight: 600; }
     .info-popup-link:hover { text-decoration: underline; }
-
     .info-popup-close {
       background: rgba(255,255,255,0.08);
       border: 1px solid var(--border2);
       color: var(--text2);
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 12px;
+      border-radius: 7px;
+      padding: 3px 9px;
+      font-size: 11px;
       cursor: pointer;
-      transition: var(--ease);
     }
-
     .info-popup-close:hover { background: rgba(255,255,255,0.14); color: var(--text); }
 
     /* ══ MODALS ══ */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(14px);
       z-index: 500;
       display: none;
-      align-items: center;
-      justify-content: center;
+      align-items: center; justify-content: center;
       padding: 16px;
     }
-
-    .modal-overlay.open {
-      display: flex;
-    }
+    .modal-overlay.open { display: flex; }
 
     .modal-card {
       background: linear-gradient(145deg, #0e1122, #181330);
       border: 1.5px solid rgba(167, 139, 250, 0.3);
       border-radius: var(--r);
-      padding: 28px 24px;
-      max-width: 460px;
-      width: 100%;
+      padding: 24px 22px;
+      max-width: 460px; width: 100%;
       text-align: center;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 40px rgba(167, 139, 250, 0.2);
       animation: modalIn 0.3s ease;
@@ -593,86 +503,62 @@
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    .modal-icon { font-size: 48px; margin-bottom: 8px; }
-    .modal-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px; }
-    .modal-desc { font-size: 14px; color: var(--text2); margin-bottom: 20px; line-height: 1.4; }
+    .modal-icon { font-size: 42px; margin-bottom: 6px; }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .modal-desc { font-size: 13px; color: var(--text2); margin-bottom: 18px; line-height: 1.4; }
 
-    /* LEVEL SELECTOR MODAL GRID */
     .levels-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
     .lvl-item {
       background: rgba(255, 255, 255, 0.05);
       border: 1.5px solid var(--border2);
-      border-radius: 12px;
-      padding: 12px 6px;
+      border-radius: 10px;
+      padding: 10px 4px;
       cursor: pointer;
       transition: var(--ease);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 3px;
     }
+    .lvl-item:hover { background: rgba(167,139,250,0.2); border-color: var(--violet); transform: translateY(-2px); }
+    .lvl-item.active { background: var(--violet); border-color: #fff; color: #fff; box-shadow: 0 0 14px var(--violet-glow); }
+    .lvl-item.done { border-color: var(--emerald); }
+    .lvl-item .lvl-num { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; }
+    .lvl-item .lvl-badge { font-size: 9px; color: var(--amber); }
 
-    .lvl-item:hover {
-      background: rgba(167, 139, 250, 0.2);
-      border-color: var(--violet);
-      transform: translateY(-2px);
-    }
-
-    .lvl-item.active {
-      background: var(--violet);
-      border-color: #fff;
-      color: #fff;
-      box-shadow: 0 0 14px var(--violet-glow);
-    }
-
-    .lvl-item.done {
-      border-color: var(--emerald);
-    }
-
-    .lvl-item .lvl-num { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; }
-    .lvl-item .lvl-badge { font-size: 10px; color: var(--amber); }
-
-    .modal-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .m-stat {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border2);
-      border-radius: 10px;
-      padding: 10px;
-    }
-
-    .m-stat-val {
-      font-family: 'DM Mono', monospace;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--amber);
-    }
-
-    .m-stat-lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .modal-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .m-stat { background: rgba(255,255,255,0.05); border: 1px solid var(--border2); border-radius: 10px; padding: 10px; }
+    .m-stat-val { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 700; color: var(--amber); }
+    .m-stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
 
     .modal-btns { display: flex; gap: 10px; }
-    .modal-btns button {
-      flex: 1; padding: 12px; border-radius: 10px; font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; transition: var(--ease); border: none;
-    }
+    .modal-btns button { flex: 1; padding: 11px; border-radius: 10px; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; transition: var(--ease); border: none; }
     .btn-m-primary { background: linear-gradient(135deg, var(--emerald), #059669); color: #fff; box-shadow: 0 4px 14px var(--emerald-glow); }
     .btn-m-secondary { background: var(--surface2); border: 1px solid var(--border2) !important; color: var(--text); }
 
-    /* RESPONSIVE */
+    /* RESPONSIVE: на планшете и мобильном — одна колонка, скролл */
+    @media(max-width: 900px) {
+      html, body { overflow-y: auto; height: auto; }
+      body { padding-bottom: 30px; }
+      .main {
+        position: static;
+        grid-template-columns: 1fr;
+        max-width: 640px;
+      }
+      .scanword-grid { max-width: 500px; width: 100%; aspect-ratio: 1; height: auto; }
+      .kbd-key { max-width: 44px; aspect-ratio: auto; height: 44px; }
+      .levels-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
     @media(max-width: 500px) {
-      .scanword-grid { gap: 3px; padding: 4px; }
-      .kbd-key { height: 38px; font-size: 13px; }
+      .scanword-grid { gap: 2px; padding: 3px; }
+      .kbd-key { height: 38px; font-size: 12px; }
       .levels-grid { grid-template-columns: repeat(3, 1fr); }
+      .info-popup { width: calc(100vw - 32px); left: 16px; right: 16px; bottom: 16px; }
     }
   </style>
 </head>
@@ -691,79 +577,87 @@
     </div>
   </header>
 
-  <div class="container">
-    
-    <!-- GAME HEADER CARD -->
-    <div class="game-card-header">
-      <div class="title-group">
-        <h1 id="levelTitle">Сканворд №1 <span id="levelDiffBadge" style="font-size:11px;background:var(--violet);padding:2px 8px;border-radius:6px;">Легкий</span></h1>
-        <p id="levelSubtitle">Разгадай все пересекающиеся слова!</p>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <span class="pill-stat" style="color:var(--violet)" id="progressDisplay">0 / 8 слов</span>
+  <!-- MAIN TWO-COLUMN LAYOUT -->
+  <div class="main">
+
+    <!-- LEFT: сетка -->
+    <div class="left-col">
+      <div class="level-header">
+        <div class="title-group">
+          <h1 id="levelTitle">Сканворд №1 <span id="levelDiffBadge" style="font-size:10px;background:var(--violet);padding:2px 7px;border-radius:5px;">Легкий</span></h1>
+          <p id="levelSubtitle">Разгадай все пересекающиеся слова</p>
+        </div>
+        <span class="progress-pill" id="progressDisplay">0 / 8 слов</span>
       </div>
 
-      <div class="active-clue-banner" id="clueBanner">
-        <span class="dir-tag" id="bannerDir">Сканворд</span>
-        <span id="bannerText">Нажми на любую ячейку с буквой или вопросом</span>
+      <div class="board-container">
+        <div class="scanword-grid" id="gridBoard"></div>
       </div>
     </div>
 
-    <!-- SCANWORD GRID -->
-    <div class="board-container">
-      <div class="scanword-grid" id="gridBoard"></div>
+    <!-- RIGHT: вопрос + клавиатура + кнопки -->
+    <div class="right-col">
+      <div class="clue-panel">
+        <div class="clue-panel-label">
+          <span>🎯 Текущий вопрос</span>
+          <span class="dir-tag" id="bannerDir">—</span>
+        </div>
+        <div class="clue-panel-text" id="bannerText">Нажми на букву или вопрос</div>
+        <div class="clue-panel-meta">
+          <span id="wordInfo">Слово не выбрано</span>
+          <span class="word-letters" id="wordLetters">—</span>
+        </div>
+      </div>
+
+      <div class="keyboard" id="vKeyboard">
+        <div class="kbd-row">
+          <div class="kbd-key" onclick="typeKey('Й')">Й</div>
+          <div class="kbd-key" onclick="typeKey('Ц')">Ц</div>
+          <div class="kbd-key" onclick="typeKey('У')">У</div>
+          <div class="kbd-key" onclick="typeKey('К')">К</div>
+          <div class="kbd-key" onclick="typeKey('Е')">Е</div>
+          <div class="kbd-key" onclick="typeKey('Н')">Н</div>
+          <div class="kbd-key" onclick="typeKey('Г')">Г</div>
+          <div class="kbd-key" onclick="typeKey('Ш')">Ш</div>
+          <div class="kbd-key" onclick="typeKey('Щ')">Щ</div>
+          <div class="kbd-key" onclick="typeKey('З')">З</div>
+          <div class="kbd-key" onclick="typeKey('Х')">Х</div>
+          <div class="kbd-key" onclick="typeKey('Ъ')">Ъ</div>
+        </div>
+        <div class="kbd-row">
+          <div class="kbd-key" onclick="typeKey('Ф')">Ф</div>
+          <div class="kbd-key" onclick="typeKey('Ы')">Ы</div>
+          <div class="kbd-key" onclick="typeKey('В')">В</div>
+          <div class="kbd-key" onclick="typeKey('А')">А</div>
+          <div class="kbd-key" onclick="typeKey('П')">П</div>
+          <div class="kbd-key" onclick="typeKey('Р')">Р</div>
+          <div class="kbd-key" onclick="typeKey('О')">О</div>
+          <div class="kbd-key" onclick="typeKey('Л')">Л</div>
+          <div class="kbd-key" onclick="typeKey('Д')">Д</div>
+          <div class="kbd-key" onclick="typeKey('Ж')">Ж</div>
+          <div class="kbd-key" onclick="typeKey('Э')">Э</div>
+        </div>
+        <div class="kbd-row">
+          <div class="kbd-key" onclick="typeKey('Я')">Я</div>
+          <div class="kbd-key" onclick="typeKey('Ч')">Ч</div>
+          <div class="kbd-key" onclick="typeKey('С')">С</div>
+          <div class="kbd-key" onclick="typeKey('М')">М</div>
+          <div class="kbd-key" onclick="typeKey('И')">И</div>
+          <div class="kbd-key" onclick="typeKey('Т')">Т</div>
+          <div class="kbd-key" onclick="typeKey('Ь')">Ь</div>
+          <div class="kbd-key" onclick="typeKey('Б')">Б</div>
+          <div class="kbd-key" onclick="typeKey('Ю')">Ю</div>
+          <div class="kbd-key wide" onclick="handleBackspace()">⌫ Стереть</div>
+        </div>
+      </div>
+
+      <div class="controls-row">
+        <button class="btn-act primary" onclick="checkAnswers()">✓ Проверить всё</button>
+        <button class="btn-act amber" onclick="useLetterHint()">💡 Буква (-10🪙)</button>
+        <button class="btn-act" onclick="useWordHint()">📖 Слово (-25🪙)</button>
+      </div>
     </div>
 
-    <!-- CONTROLS -->
-    <div class="controls-row">
-      <button class="btn-act primary" onclick="checkAnswers()">✓ Проверить</button>
-      <button class="btn-act amber" onclick="useLetterHint()">💡 Буква (-10🪙)</button>
-      <button class="btn-act" onclick="useWordHint()">📖 Слово (-25🪙)</button>
-      <button class="btn-act" onclick="resetGrid()">↺ Сброс</button>
-    </div>
-
-    <!-- VIRTUAL KEYBOARD -->
-    <div class="keyboard" id="vKeyboard">
-      <div class="kbd-row">
-        <div class="kbd-key" onclick="typeKey('Й')">Й</div>
-        <div class="kbd-key" onclick="typeKey('Ц')">Ц</div>
-        <div class="kbd-key" onclick="typeKey('У')">У</div>
-        <div class="kbd-key" onclick="typeKey('К')">К</div>
-        <div class="kbd-key" onclick="typeKey('Е')">Е</div>
-        <div class="kbd-key" onclick="typeKey('Н')">Н</div>
-        <div class="kbd-key" onclick="typeKey('Г')">Г</div>
-        <div class="kbd-key" onclick="typeKey('Ш')">Ш</div>
-        <div class="kbd-key" onclick="typeKey('Щ')">Щ</div>
-        <div class="kbd-key" onclick="typeKey('З')">З</div>
-        <div class="kbd-key" onclick="typeKey('Х')">Х</div>
-        <div class="kbd-key" onclick="typeKey('Ъ')">Ъ</div>
-      </div>
-      <div class="kbd-row">
-        <div class="kbd-key" onclick="typeKey('Ф')">Ф</div>
-        <div class="kbd-key" onclick="typeKey('Ы')">Ы</div>
-        <div class="kbd-key" onclick="typeKey('В')">В</div>
-        <div class="kbd-key" onclick="typeKey('А')">А</div>
-        <div class="kbd-key" onclick="typeKey('П')">П</div>
-        <div class="kbd-key" onclick="typeKey('Р')">Р</div>
-        <div class="kbd-key" onclick="typeKey('О')">О</div>
-        <div class="kbd-key" onclick="typeKey('Л')">Л</div>
-        <div class="kbd-key" onclick="typeKey('Д')">Д</div>
-        <div class="kbd-key" onclick="typeKey('Ж')">Ж</div>
-        <div class="kbd-key" onclick="typeKey('Э')">Э</div>
-      </div>
-      <div class="kbd-row">
-        <div class="kbd-key" onclick="typeKey('Я')">Я</div>
-        <div class="kbd-key" onclick="typeKey('Ч')">Ч</div>
-        <div class="kbd-key" onclick="typeKey('С')">С</div>
-        <div class="kbd-key" onclick="typeKey('М')">М</div>
-        <div class="kbd-key" onclick="typeKey('И')">И</div>
-        <div class="kbd-key" onclick="typeKey('Т')">Т</div>
-        <div class="kbd-key" onclick="typeKey('Ь')">Ь</div>
-        <div class="kbd-key" onclick="typeKey('Б')">Б</div>
-        <div class="kbd-key" onclick="typeKey('Ю')">Ю</div>
-        <div class="kbd-key wide" onclick="handleBackspace()">⌫ Стирание</div>
-      </div>
-    </div>
   </div>
 
   <input type="text" id="hiddenInput" autocomplete="off" />
@@ -777,7 +671,7 @@
       <div class="info-popup-word" id="infoPopupWord">—</div>
       <div class="info-popup-desc" id="infoPopupDesc">...</div>
       <div class="info-popup-footer">
-        <a class="info-popup-link" id="infoSearchLink" href="#" target="_blank" rel="noopener">🔎 Поиск в Google Images</a>
+        <a class="info-popup-link" id="infoSearchLink" href="#" target="_blank" rel="noopener">🔎 Google Images</a>
         <button class="info-popup-close" onclick="closeInfoPopup()">✕ Закрыть</button>
       </div>
     </div>
@@ -789,11 +683,7 @@
       <div class="modal-icon">📚</div>
       <h2 class="modal-title">Выберите уровень (1–50)</h2>
       <p class="modal-desc">Пройди все 50 сканвордов и получи звание Великого Эрудита!</p>
-      
-      <div class="levels-grid" id="levelsGrid">
-        <!-- Rendered by JS -->
-      </div>
-
+      <div class="levels-grid" id="levelsGrid"></div>
       <button class="btn-m-secondary" onclick="closeLevelsModal()" style="width:100%;">Закрыть</button>
     </div>
   </div>
@@ -804,18 +694,10 @@
       <div class="modal-icon">🎉</div>
       <h2 class="modal-title">Сканворд пройден!</h2>
       <p class="modal-desc">Поздравляем! Вы отлично справились со всеми словами!</p>
-      
       <div class="modal-stats">
-        <div class="m-stat">
-          <div class="m-stat-val" id="resTime">01:45</div>
-          <div class="m-stat-lbl">Время</div>
-        </div>
-        <div class="m-stat">
-          <div class="m-stat-val" id="resXp">+100 XP</div>
-          <div class="m-stat-lbl">Награда</div>
-        </div>
+        <div class="m-stat"><div class="m-stat-val" id="resTime">01:45</div><div class="m-stat-lbl">Время</div></div>
+        <div class="m-stat"><div class="m-stat-val" id="resXp">+100 XP</div><div class="m-stat-lbl">Награда</div></div>
       </div>
-
       <div class="modal-btns">
         <button class="btn-m-secondary" onclick="location.reload()">↺ Заново</button>
         <button class="btn-m-primary" onclick="nextLevel()">Следующий ➡</button>
@@ -824,27 +706,19 @@
   </div>
 
   <script>
-    // ══ STATE ══
     let allLevels = [];
     let currentLevelIndex = 0;
     let levelData = null;
-    let userAnswers = {}; // key: "r_c", value: "буква"
-    let selectedCell = null; // {r, c}
-    let activeDirection = 'horizontal'; // 'horizontal' | 'vertical'
+    let userAnswers = {};
+    let selectedCell = null;
+    let activeDirection = 'horizontal';
     let activeWordId = null;
     let timerStart = Date.now();
     let timerInterval = null;
     let userCoins = 30;
 
-    const ARROWS = {
-      'right': '➡️',
-      'down': '⬇️',
-      'right-down': '↘️',
-      'left-down': '↙️',
-      'down-right': '↘️'
-    };
+    const ARROWS = { 'right': '➡️', 'down': '⬇️', 'right-down': '↘️', 'left-down': '↙️', 'down-right': '↘️' };
 
-    // ══ AUDIO SYNTHESIS ══
     let audioCtx = null;
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -863,12 +737,10 @@
         osc.start(); osc.stop(audioCtx.currentTime + dur);
       } catch(e){}
     }
-
     function soundKey() { playTone(600, 'sine', 0.05); }
     function soundCorrect() { playTone(587.33, 'sine', 0.1); setTimeout(() => playTone(880, 'sine', 0.2), 100); }
     function soundWrong() { playTone(220, 'sawtooth', 0.25); }
 
-    // ══ INIT ══
     window.addEventListener('DOMContentLoaded', async () => {
       await loadLevels();
       startTimer();
@@ -883,13 +755,16 @@
         currentLevelIndex = (savedLvl >= 0 && savedLvl < allLevels.length) ? savedLvl : 0;
         loadCurrentLevel();
       } catch(e) {
-        console.error('Error loading 20 levels:', e);
-        // Fallback to single level config
-        const fallbackRes = await fetch('scanword-level1.json');
-        const fallbackData = await fallbackRes.json();
-        allLevels = [fallbackData];
-        currentLevelIndex = 0;
-        loadCurrentLevel();
+        console.error('Error loading levels:', e);
+        try {
+          const fallbackRes = await fetch('scanword-level1.json');
+          const fallbackData = await fallbackRes.json();
+          allLevels = [fallbackData];
+          currentLevelIndex = 0;
+          loadCurrentLevel();
+        } catch(e2) {
+          alert('Не удалось загрузить уровни. Убедитесь, что файлы scanword-levels.json или scanword-level1.json лежат рядом.');
+        }
       }
     }
 
@@ -914,15 +789,18 @@
       }, 1000);
     }
 
-    // ══ RENDER GRID ══
     function renderGrid() {
       const board = document.getElementById('gridBoard');
       board.innerHTML = '';
       
-      document.getElementById('levelTitle').innerHTML = `${levelData.title} <span id="levelDiffBadge" style="font-size:11px;background:var(--violet);padding:2px 8px;border-radius:6px;">${levelData.difficulty || 'Легкий'}</span>`;
+      document.getElementById('levelTitle').innerHTML = `${levelData.title} <span id="levelDiffBadge" style="font-size:10px;background:var(--violet);padding:2px 7px;border-radius:5px;">${levelData.difficulty || 'Легкий'}</span>`;
       document.getElementById('coinsDisplay').textContent = `🪙 ${userCoins}`;
 
       const { rows, cols } = levelData.gridSize;
+
+      // Динамически задаём grid-template
+      board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -936,14 +814,11 @@
             const txt = document.createElement('div');
             txt.className = 'clue-text';
             txt.textContent = cellData.text;
-
             const arrow = document.createElement('div');
             arrow.className = 'clue-arrow';
             arrow.textContent = ARROWS[cellData.arrow] || '➡️';
-
             div.appendChild(txt);
             div.appendChild(arrow);
-
             div.onclick = () => selectClueCell(cellData);
           } else if (cellData.type === 'letter') {
             const key = `${r}_${c}`;
@@ -956,14 +831,13 @@
       }
     }
 
-    // ══ SELECTION & HIGHLIGHTING ══
     function selectClueCell(clueData) {
       const word = levelData.words.find(w => w.id === clueData.wordId);
       if (word) {
         activeWordId = word.id;
         activeDirection = word.direction;
         selectLetterCell(word.start.r, word.start.c);
-        updateBanner(word.clueText, word.direction);
+        updateBanner(word);
         showInfoPopup(word);
       }
     }
@@ -976,62 +850,54 @@
       const linkEl = document.getElementById('infoSearchLink');
 
       const rawTerm = (word.answer || '').trim();
-      // Format ALL-CAPS 'ЛИМОН' -> 'Лимон' for Wikipedia API compatibility
       const titleTerm = rawTerm ? (rawTerm.charAt(0).toUpperCase() + rawTerm.slice(1).toLowerCase()) : '';
+      const clue = (word.clueText || '').trim();
       
-      wordEl.textContent = `${word.clueText} (${rawTerm})`;
-      descEl.textContent = `Загрузка подробностей...`;
+      wordEl.textContent = `${clue} (${rawTerm})`;
+      descEl.textContent = `Загрузка...`;
       mediaEl.innerHTML = `<div class="info-popup-img-placeholder">🔍</div>`;
-      linkEl.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(titleTerm + ' ' + word.clueText)}`;
+      linkEl.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(clue + ' ' + titleTerm)}`;
 
       popup.classList.add('open');
 
-      let articleTitle = titleTerm;
       let data = null;
-
-      // Try 1: Direct summary fetch for Titlecase term (e.g., 'Лимон')
       try {
-        let res = await fetch(`https://ru.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(articleTitle)}`);
-        if (res.ok) {
-          data = await res.json();
-        } else {
-          // Try 2: Wikipedia Search API to find exact article title
-          const searchRes = await fetch(`https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(titleTerm || word.clueText)}&format=json&origin=*`);
-          if (searchRes.ok) {
-            const searchData = await searchRes.json();
-            if (searchData.query && searchData.query.search && searchData.query.search.length > 0) {
-              articleTitle = searchData.query.search[0].title;
-              res = await fetch(`https://ru.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(articleTitle)}`);
-              if (res.ok) data = await res.json();
-            }
+        const searchRes = await fetch(`https://ru.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(clue)}&format=json&origin=*`);
+        if (searchRes.ok) {
+          const searchData = await searchRes.json();
+          if (searchData.query && searchData.query.search && searchData.query.search.length > 0) {
+            const articleTitle = searchData.query.search[0].title;
+            const res = await fetch(`https://ru.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(articleTitle)}`);
+            if (res.ok) data = await res.json();
           }
+        }
+        if (!data && titleTerm) {
+          const res = await fetch(`https://ru.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(titleTerm)}`);
+          if (res.ok) data = await res.json();
         }
       } catch(e) {}
 
       if (data && (data.extract || data.thumbnail || data.originalimage)) {
         if (data.extract) {
-          // Extract 2-3 clean sentences
           const sentences = data.extract.split(/(?<=[.!?])\s+/).slice(0, 3).join(' ');
           descEl.textContent = sentences || data.extract;
         } else {
-          descEl.textContent = `«${titleTerm}» — ${word.clueText.toLowerCase()}. Слово из ${rawTerm.length} букв.`;
+          descEl.textContent = `«${clue}» (${titleTerm}). Слово из ${rawTerm.length} букв.`;
         }
-
         const imgSrc = (data.thumbnail && data.thumbnail.source) || (data.originalimage && data.originalimage.source);
         if (imgSrc) {
-          mediaEl.innerHTML = `<img src="${imgSrc}" class="info-popup-img" alt="${titleTerm}" onerror="this.outerHTML='<div class=\\'info-popup-img-placeholder\\'>🖼️</div>'" />`;
+          mediaEl.innerHTML = `<img src="${imgSrc}" class="info-popup-img" alt="${clue}" onerror="this.outerHTML='<div class=\\'info-popup-img-placeholder\\'>🌲</div>'" />`;
         } else {
           mediaEl.innerHTML = `<div class="info-popup-img-placeholder">💡</div>`;
         }
       } else {
-        descEl.textContent = `Подсказка: ${word.clueText}. Слово состоит из ${rawTerm.length} букв.`;
+        descEl.textContent = `Подсказка: ${clue}. Слово из ${rawTerm.length} букв.`;
         mediaEl.innerHTML = `<div class="info-popup-img-placeholder">💡</div>`;
       }
     }
 
     function closeInfoPopup() {
-      const popup = document.getElementById('infoPopup');
-      popup.classList.remove('open');
+      document.getElementById('infoPopup').classList.remove('open');
     }
 
     function selectLetterCell(r, c) {
@@ -1039,7 +905,6 @@
       if (cellData.type !== 'letter') return;
 
       if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
-        // Same cell clicked again: toggle direction if cell belongs to multiple words
         if (cellData.wordIds && cellData.wordIds.length > 1) {
           const nextWordId = cellData.wordIds.find(id => id !== activeWordId) || cellData.wordIds[0];
           const nextWord = levelData.words.find(w => w.id === nextWordId);
@@ -1062,7 +927,6 @@
       highlightActiveWord();
       updateBannerForSelectedCell(r, c);
 
-      // Focus the hidden input to capture physical keyboard on mobile
       try {
         const input = document.getElementById('hiddenInput');
         input.value = '';
@@ -1072,23 +936,21 @@
 
     function updateBannerForSelectedCell(r, c) {
       const word = levelData.words.find(w => w.id === activeWordId);
-      if (word) {
-        updateBanner(word.clueText, word.direction);
-      }
+      if (word) updateBanner(word);
     }
 
-    function updateBanner(text, dir) {
-      document.getElementById('bannerText').textContent = text;
-      document.getElementById('bannerDir').textContent = dir === 'horizontal' ? 'По гориз.' : 'По вертик.';
+    function updateBanner(word) {
+      document.getElementById('bannerText').textContent = word.clueText;
+      document.getElementById('bannerDir').textContent = word.direction === 'horizontal' ? 'Гориз.' : 'Вертик.';
+      document.getElementById('wordInfo').textContent = `Ответ: ${'_ '.repeat(word.answer.length)}`;
+      document.getElementById('wordLetters').textContent = `${word.answer.length} букв`;
     }
 
     function highlightActiveWord() {
       document.querySelectorAll('.cell.letter').forEach(el => {
         el.classList.remove('selected', 'in-active-word');
       });
-
       if (!selectedCell) return;
-
       const selDiv = document.querySelector(`.cell[data-r="${selectedCell.r}"][data-c="${selectedCell.c}"]`);
       if (selDiv) selDiv.classList.add('selected');
 
@@ -1109,23 +971,19 @@
       }
     }
 
-    // ══ INPUT HANDLING ══
     function typeKey(char) {
       if (!selectedCell) return;
       soundKey();
-
       const r = selectedCell.r;
       const c = selectedCell.c;
       const key = `${r}_${c}`;
-
-      userAnswers[key] = char.toUpperCase();
-
+      const normChar = char.toUpperCase().replace(/Ё/g, 'Е');
+      userAnswers[key] = normChar;
       const cellDiv = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
       if (cellDiv) {
-        cellDiv.textContent = char.toUpperCase();
+        cellDiv.textContent = normChar;
         cellDiv.classList.remove('wrong');
       }
-
       advanceFocus(1);
       updateProgress();
       checkAutoCompletion();
@@ -1134,11 +992,9 @@
     function handleBackspace() {
       if (!selectedCell) return;
       soundKey();
-
       const r = selectedCell.r;
       const c = selectedCell.c;
       const key = `${r}_${c}`;
-
       if (userAnswers[key]) {
         delete userAnswers[key];
         const cellDiv = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
@@ -1149,56 +1005,37 @@
       } else {
         advanceFocus(-1);
       }
-
       updateProgress();
     }
 
     function advanceFocus(step) {
       if (!selectedCell || !activeWordId) return;
-
       const word = levelData.words.find(w => w.id === activeWordId);
       if (!word) return;
-
       let dr = word.direction === 'vertical' ? 1 : 0;
       let dc = word.direction === 'horizontal' ? 1 : 0;
-
       let nextR = selectedCell.r + dr * step;
       let nextC = selectedCell.c + dc * step;
-
       const indexInWord = word.direction === 'vertical' 
         ? nextR - word.start.r 
         : nextC - word.start.c;
-
       if (indexInWord >= 0 && indexInWord < word.answer.length) {
         selectLetterCell(nextR, nextC);
       }
     }
 
     function setupKeyboardListeners() {
-      // Physical keyboard support
       document.addEventListener('keydown', (e) => {
         if (!selectedCell) return;
-        if (e.key === 'Backspace') {
-          handleBackspace();
-          e.preventDefault();
-        } else if (e.key === 'ArrowRight') {
-          moveSelection(0, 1); e.preventDefault();
-        } else if (e.key === 'ArrowLeft') {
-          moveSelection(0, -1); e.preventDefault();
-        } else if (e.key === 'ArrowDown') {
-          moveSelection(1, 0); e.preventDefault();
-        } else if (e.key === 'ArrowUp') {
-          moveSelection(-1, 0); e.preventDefault();
-        } else if (/^[а-яА-ЯёЁ]$/.test(e.key)) {
-          typeKey(e.key.toUpperCase());
-          e.preventDefault();
-        } else if (/^[a-zA-Z]$/.test(e.key)) {
-          // Ignore latin letters
-          e.preventDefault();
-        }
+        if (e.key === 'Backspace') { handleBackspace(); e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { moveSelection(0, 1); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft') { moveSelection(0, -1); e.preventDefault(); }
+        else if (e.key === 'ArrowDown') { moveSelection(1, 0); e.preventDefault(); }
+        else if (e.key === 'ArrowUp') { moveSelection(-1, 0); e.preventDefault(); }
+        else if (/^[а-яА-ЯёЁ]$/.test(e.key)) { typeKey(e.key.toUpperCase()); e.preventDefault(); }
+        else if (/^[a-zA-Z]$/.test(e.key)) { e.preventDefault(); }
       });
 
-      // Mobile input via hidden text field (handles IME / virtual keyboard)
       const inp = document.getElementById('hiddenInput');
       inp.addEventListener('input', (e) => {
         const val = inp.value;
@@ -1213,23 +1050,17 @@
       if (!selectedCell) return;
       let newR = selectedCell.r + dr;
       let newC = selectedCell.c + dc;
-
       if (newR >= 0 && newR < levelData.gridSize.rows && newC >= 0 && newC < levelData.gridSize.cols) {
         const target = levelData.grid[newR][newC];
-        if (target.type === 'letter') {
-          selectLetterCell(newR, newC);
-        }
+        if (target.type === 'letter') selectLetterCell(newR, newC);
       }
     }
 
-    // ══ VERIFICATION & AUTO CHECK ══
     function checkAnswers() {
       let allCorrect = true;
       let totalLetters = 0;
       let correctLetters = 0;
-
       const { rows, cols } = levelData.gridSize;
-
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const cell = levelData.grid[r][c];
@@ -1237,13 +1068,9 @@
             totalLetters++;
             const key = `${r}_${c}`;
             const div = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-
             if (userAnswers[key] === cell.letter) {
               correctLetters++;
-              if (div) {
-                div.classList.add('correct');
-                div.classList.remove('wrong');
-              }
+              if (div) { div.classList.add('correct'); div.classList.remove('wrong'); }
             } else if (userAnswers[key]) {
               allCorrect = false;
               if (div) div.classList.add('wrong');
@@ -1253,15 +1080,9 @@
           }
         }
       }
-
-      if (allCorrect && correctLetters === totalLetters) {
-        soundCorrect();
-        showVictoryModal();
-      } else if (correctLetters > 0) {
-        soundKey();
-      } else {
-        soundWrong();
-      }
+      if (allCorrect && correctLetters === totalLetters) { soundCorrect(); showVictoryModal(); }
+      else if (correctLetters > 0) { soundKey(); }
+      else { soundWrong(); }
     }
 
     function checkAutoCompletion() {
@@ -1274,9 +1095,7 @@
           }
         }
       }
-      if (full) {
-        checkAnswers();
-      }
+      if (full) checkAnswers();
     }
 
     function updateProgress() {
@@ -1285,43 +1104,28 @@
         let wordCorrect = true;
         let dr = w.direction === 'vertical' ? 1 : 0;
         let dc = w.direction === 'horizontal' ? 1 : 0;
-
         for (let i = 0; i < w.answer.length; i++) {
           const r = w.start.r + dr * i;
           const c = w.start.c + dc * i;
-          if (userAnswers[`${r}_${c}`] !== w.answer[i]) {
-            wordCorrect = false;
-            break;
-          }
+          if (userAnswers[`${r}_${c}`] !== w.answer[i]) { wordCorrect = false; break; }
         }
         if (wordCorrect) solvedWords++;
       });
-
       document.getElementById('progressDisplay').textContent = `${solvedWords} / ${levelData.words.length} слов`;
     }
 
-    // ══ HINTS ══
     function useLetterHint() {
       if (!selectedCell) return;
-      if (userCoins < 10) {
-        alert('Недостаточно монет! Нужны 10🪙');
-        return;
-      }
-
+      if (userCoins < 10) { alert('Недостаточно монет! Нужно 10🪙'); return; }
       const r = selectedCell.r;
       const c = selectedCell.c;
       const cellData = levelData.grid[r][c];
-
       if (cellData.type === 'letter') {
         userCoins -= 10;
         document.getElementById('coinsDisplay').textContent = `🪙 ${userCoins}`;
-
         userAnswers[`${r}_${c}`] = cellData.letter;
         const div = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-        if (div) {
-          div.textContent = cellData.letter;
-          div.classList.add('correct', 'preset');
-        }
+        if (div) { div.textContent = cellData.letter; div.classList.add('correct', 'preset'); }
         soundCorrect();
         updateProgress();
         checkAutoCompletion();
@@ -1330,31 +1134,20 @@
 
     function useWordHint() {
       if (!activeWordId) return;
-      if (userCoins < 25) {
-        alert('Недостаточно монет! Нужны 25🪙');
-        return;
-      }
-
+      if (userCoins < 25) { alert('Недостаточно монет! Нужно 25🪙'); return; }
       const word = levelData.words.find(w => w.id === activeWordId);
       if (!word) return;
-
       userCoins -= 25;
       document.getElementById('coinsDisplay').textContent = `🪙 ${userCoins}`;
-
       let dr = word.direction === 'vertical' ? 1 : 0;
       let dc = word.direction === 'horizontal' ? 1 : 0;
-
       for (let i = 0; i < word.answer.length; i++) {
         const r = word.start.r + dr * i;
         const c = word.start.c + dc * i;
         userAnswers[`${r}_${c}`] = word.answer[i];
         const div = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-        if (div) {
-          div.textContent = word.answer[i];
-          div.classList.add('correct');
-        }
+        if (div) { div.textContent = word.answer[i]; div.classList.add('correct'); }
       }
-
       soundCorrect();
       updateProgress();
       checkAutoCompletion();
@@ -1368,17 +1161,13 @@
       }
     }
 
-    // ══ LEVEL SELECTOR MODAL ══
     function openLevelsModal() {
       const grid = document.getElementById('levelsGrid');
       grid.innerHTML = '';
-
       const completed = JSON.parse(localStorage.getItem('scanword_completed_levels') || '[]');
-
       allLevels.forEach((lvl, idx) => {
         const isDone = completed.includes(idx);
         const isActive = idx === currentLevelIndex;
-
         const item = document.createElement('div');
         item.className = `lvl-item ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}`;
         item.innerHTML = `
@@ -1393,7 +1182,6 @@
         };
         grid.appendChild(item);
       });
-
       document.getElementById('levelsModal').classList.add('open');
     }
 
@@ -1401,36 +1189,27 @@
       document.getElementById('levelsModal').classList.remove('open');
     }
 
-    // ══ VICTORY & NEXT LEVEL ══
     function showVictoryModal() {
       clearInterval(timerInterval);
       const sec = Math.floor((Date.now() - timerStart) / 1000);
       const m = String(Math.floor(sec / 60)).padStart(2, '0');
       const s = String(sec % 60).padStart(2, '0');
-
       document.getElementById('resTime').textContent = `${m}:${s}`;
       document.getElementById('resXp').textContent = `+${levelData.rewardXp || 100} XP`;
       document.getElementById('victoryModal').classList.add('open');
-
-      // Save completed level state
       let completed = JSON.parse(localStorage.getItem('scanword_completed_levels') || '[]');
       if (!completed.includes(currentLevelIndex)) {
         completed.push(currentLevelIndex);
         localStorage.setItem('scanword_completed_levels', JSON.stringify(completed));
       }
-
-      // Update XP in localStorage
       let currentXp = parseInt(localStorage.getItem('fmine_xp') || '0');
       localStorage.setItem('fmine_xp', currentXp + (levelData.rewardXp || 100));
     }
 
     function nextLevel() {
       document.getElementById('victoryModal').classList.remove('open');
-      if (currentLevelIndex + 1 < allLevels.length) {
-        currentLevelIndex++;
-      } else {
-        currentLevelIndex = 0; // Wrap around to level 1 if reached end
-      }
+      if (currentLevelIndex + 1 < allLevels.length) currentLevelIndex++;
+      else currentLevelIndex = 0;
       localStorage.setItem('scanword_current_level', currentLevelIndex);
       loadCurrentLevel();
     }

@@ -3,52 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F-Mine | Английский</title>
+<title>F-Mine | Химия</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <style>
-:root{--bg:#f5f7fd;--surface:#fff;--surface2:#f0f3fb;--surface3:#e3e8f5;--border:rgba(30,58,138,.08);--border2:rgba(30,58,138,.15);--blue:#2563eb;--blue2:#1d4ed8;--red:#e11d48;--gold:#f59e0b;--text:#182136;--muted:#6b7590;--danger:#dc2626;--green:#16a34a;--radius:16px;--shadow-sm:0 1px 3px rgba(30,58,138,.05),0 1px 2px rgba(30,58,138,.04);--shadow:0 4px 14px rgba(30,58,138,.07),0 1px 4px rgba(30,58,138,.04);--shadow-lg:0 10px 40px rgba(30,58,138,.1),0 2px 8px rgba(30,58,138,.05);--shadow-xl:0 20px 60px rgba(30,58,138,.12),0 4px 12px rgba(30,58,138,.06)}
+:root{--bg:#f7f5fd;--surface:#fff;--surface2:#f2effb;--surface3:#e7e2f6;--border:rgba(88,28,135,.08);--border2:rgba(88,28,135,.16);--violet:#7c3aed;--violet2:#6d28d9;--teal:#0d9488;--gold:#f59e0b;--text:#241a35;--muted:#756b8a;--danger:#dc2626;--green:#16a34a;--radius:16px;--shadow-sm:0 1px 3px rgba(88,28,135,.05);--shadow:0 4px 14px rgba(88,28,135,.07);--shadow-lg:0 10px 40px rgba(88,28,135,.1);--shadow-xl:0 20px 60px rgba(88,28,135,.12)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(37,99,235,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(225,29,72,.04) 0%,transparent 50%);pointer-events:none;z-index:0}
-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(30,58,138,.05)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(124,58,237,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(13,148,136,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(88,28,135,.05)}
 .logo{font-weight:800;font-size:20px;letter-spacing:-.5px;cursor:pointer}
-.logo-f{background:linear-gradient(135deg,var(--blue),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-f{background:linear-gradient(135deg,var(--violet),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo-rest{color:var(--text)}
 .header-nav{display:flex;gap:8px;align-items:center}
 .nav-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s}
-.nav-btn:hover{border-color:var(--blue);color:var(--blue);background:rgba(37,99,235,.04)}
-.nav-btn.active{background:var(--blue);color:white;border-color:var(--blue);box-shadow:0 2px 10px rgba(37,99,235,.3)}
+.nav-btn:hover{border-color:var(--violet);color:var(--violet)}
+.nav-btn.active{background:var(--violet);color:white;border-color:var(--violet);box-shadow:0 2px 10px rgba(124,58,237,.3)}
 .view{display:none;position:relative;z-index:1;min-height:calc(100vh - 54px)}
 .view.active{display:block}
 #gradeView{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px}
 .grade-title{font-size:36px;font-weight:800;margin-bottom:8px;text-align:center}
 .grade-sub{color:var(--muted);font-size:15px;margin-bottom:40px;text-align:center}
-.grade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;max-width:720px;width:100%}
+.grade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;max-width:640px;width:100%}
 .grade-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 16px;text-align:center;cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
-.grade-card:hover{border-color:var(--blue);transform:translateY(-4px);box-shadow:var(--shadow-lg),0 0 0 1px rgba(37,99,235,.1)}
-.grade-card .grade-num{font-size:42px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.grade-card:hover{border-color:var(--violet);transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.grade-card .grade-num{font-size:42px;font-weight:800;background:linear-gradient(135deg,var(--violet),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .grade-card .grade-label{font-size:13px;color:var(--muted);margin-top:4px}
-.grade-card .grade-badge{position:absolute;top:10px;right:10px;background:var(--blue);color:white;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px}
+.grade-card .grade-badge{position:absolute;top:10px;right:10px;background:var(--violet);color:white;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px}
 #topicView{padding:30px 24px;max-width:900px;margin:0 auto}
 .topic-head{margin-bottom:28px}
 .topic-head h1{font-size:28px;font-weight:800;margin-bottom:4px}
 .topic-head p{color:var(--muted);font-size:14px}
 .topic-progress-bar{height:6px;background:var(--surface3);border-radius:6px;margin-top:14px;overflow:hidden}
-.topic-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--red));border-radius:6px;transition:width .4s}
+.topic-progress-fill{height:100%;background:linear-gradient(90deg,var(--violet),var(--teal));border-radius:6px;transition:width .4s}
 .topic-list{display:flex;flex-direction:column;gap:10px}
 .topic-card{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;cursor:pointer;transition:all .2s ease;box-shadow:var(--shadow-sm)}
-.topic-card:hover{border-color:var(--blue);background:rgba(37,99,235,.03);box-shadow:var(--shadow);transform:translateX(3px)}
+.topic-card:hover{border-color:var(--violet);background:rgba(124,58,237,.03);box-shadow:var(--shadow);transform:translateX(3px)}
 .topic-card.done{border-color:rgba(22,163,74,.3)}
 .topic-num{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--muted);transition:all .2s}
 .topic-card.done .topic-num{background:rgba(22,163,74,.1);color:var(--green)}
-.topic-card:hover .topic-num{background:rgba(37,99,235,.1);color:var(--blue)}
+.topic-card:hover .topic-num{background:rgba(124,58,237,.1);color:var(--violet)}
 .topic-info{flex:1;min-width:0}
 .topic-name{font-size:14px;font-weight:600}
 .topic-arrow{color:var(--muted);font-size:16px;flex-shrink:0;transition:transform .2s}
-.topic-card:hover .topic-arrow{transform:translateX(3px);color:var(--blue)}
+.topic-card:hover .topic-arrow{transform:translateX(3px);color:var(--violet)}
 #lessonView.active{display:flex;height:calc(100vh - 54px)}
 .lesson-back{position:fixed;top:64px;left:16px;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit;display:none;box-shadow:var(--shadow)}
 .lesson-theory{flex:1;overflow-y:auto;padding:28px 32px 120px;border-right:1px solid var(--border)}
@@ -56,27 +57,27 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdr
 .theory-section{margin-bottom:28px}
 .theory-section h2{font-size:18px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .theory-section h2 .section-icon{font-size:20px}
-.theory-section h3{font-size:15px;font-weight:600;margin:16px 0 8px;color:var(--blue)}
-.theory-section p,.theory-section li{font-size:14px;line-height:1.7;color:#3c4763}
-.theory-section ul{padding-left:20px;margin:8px 0}
+.theory-section h3{font-size:15px;font-weight:600;margin:16px 0 8px;color:var(--violet)}
+.theory-section p,.theory-section li{font-size:14px;line-height:1.7;color:#463a5e}
+.theory-section ul,.theory-section ol{padding-left:20px;margin:8px 0}
 .theory-section li{margin-bottom:4px}
-.theory-section .highlight-box{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.12);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow-sm)}
+.theory-section .highlight-box{background:rgba(124,58,237,.05);border:1px solid rgba(124,58,237,.12);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow-sm)}
 .theory-section .highlight-box.green{background:rgba(22,163,74,.05);border-color:rgba(22,163,74,.12)}
 .theory-section .highlight-box.gold{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.15)}
-.formula-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:10px 0;text-align:center;font-size:17px;box-shadow:var(--shadow-sm);font-family:'JetBrains Mono',monospace}
+.formula-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:10px 0;text-align:center;font-size:18px;overflow-x:auto;box-shadow:var(--shadow-sm)}
 .example-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:12px 0;box-shadow:var(--shadow-sm)}
-.example-block h3{color:var(--blue);font-size:14px;margin-bottom:12px}
+.example-block h3{color:var(--violet);font-size:14px;margin-bottom:12px}
 .example-block .step{display:flex;gap:10px;margin-bottom:10px;font-size:13px;line-height:1.7}
-.example-block .step-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:var(--blue);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.example-block .step-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:var(--violet);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
 .example-block .step-rule{color:var(--gold);font-size:11px;font-weight:600;display:block;margin-top:2px}
-.context-box{background:linear-gradient(135deg,rgba(37,99,235,.06),rgba(225,29,72,.04));border:1px solid rgba(37,99,235,.12);border-radius:var(--radius);padding:18px 20px;margin-bottom:24px;box-shadow:var(--shadow-sm)}
-.context-box h3{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-.context-box p{font-size:14px;line-height:1.7;color:#3c4763}
+.context-box{background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(13,148,136,.04));border:1px solid rgba(124,58,237,.12);border-radius:var(--radius);padding:18px 20px;margin-bottom:24px;box-shadow:var(--shadow-sm)}
+.context-box h3{font-size:13px;font-weight:700;color:var(--violet);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.context-box p{font-size:14px;line-height:1.7;color:#463a5e}
 .lesson-photo{display:none;margin:0 0 22px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);position:relative}
 .lesson-photo.show{display:block;animation:photoIn .5s ease}
 @keyframes photoIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .lesson-photo img{width:100%;height:auto;max-height:430px;object-fit:contain;background:var(--surface3);display:block}
-.photo-cap{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 10px;background:linear-gradient(transparent,rgba(24,33,54,.8));color:#fff;font-size:12px;font-weight:600}
+.photo-cap{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 10px;background:linear-gradient(transparent,rgba(36,26,53,.8));color:#fff;font-size:12px;font-weight:600}
 .photo-skel{height:300px;background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.2s linear infinite}
 @keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
 .practice-head{margin-bottom:16px}
@@ -90,41 +91,40 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdr
 .stat-chip.wrong .stat-val{color:var(--danger)}
 .task-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
 .task-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.task-formula{font-size:15px;line-height:1.8;text-align:center;padding:14px 16px;background:var(--surface2);border-radius:12px;margin-bottom:14px;min-height:50px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
+.task-formula{font-size:16px;line-height:1.8;text-align:center;padding:14px 16px;background:var(--surface2);border-radius:12px;margin-bottom:14px;min-height:50px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
 .task-input-row{display:flex;gap:8px}
 .task-input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;outline:none;text-align:center;transition:all .2s}
-.task-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.task-input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(124,58,237,.1)}
 .task-input.correct{border-color:var(--green);background:rgba(22,163,74,.05)}
 .task-input.wrong{border-color:var(--danger);background:rgba(220,38,38,.05)}
-.check-btn{background:var(--blue);color:white;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;box-shadow:0 2px 8px rgba(37,99,235,.3)}
-.check-btn:hover{background:var(--blue2);box-shadow:0 4px 14px rgba(37,99,235,.4);transform:translateY(-1px)}
+.check-btn{background:var(--violet);color:white;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;box-shadow:0 2px 8px rgba(124,58,237,.3);transition:all .15s}
+.check-btn:hover{background:var(--violet2);transform:translateY(-1px)}
 .check-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.next-btn{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;transition:all .15s;margin-top:8px;display:none;box-shadow:var(--shadow-sm)}
-.next-btn:hover{border-color:var(--blue);color:var(--blue);box-shadow:var(--shadow)}
+.next-btn{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;margin-top:8px;display:none;box-shadow:var(--shadow-sm);transition:all .15s}
+.next-btn:hover{border-color:var(--violet);color:var(--violet)}
 .task-feedback{margin-top:10px;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;display:none}
 .task-feedback.correct{display:block;background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.15);color:#16a34a}
 .task-feedback.wrong{display:block;background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.15);color:var(--danger)}
 .task-solution{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6}
 .task-type-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
 .task-type-tab{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .12s}
-.task-type-tab.active{background:var(--blue);color:white;border-color:var(--blue);box-shadow:0 2px 8px rgba(37,99,235,.25)}
-.task-type-tab:hover:not(.active){border-color:var(--blue);color:var(--blue);background:rgba(37,99,235,.03)}
-.hint-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--gold);cursor:pointer;font-family:inherit;margin-top:8px;display:none;transition:all .12s}
-.hint-btn:hover{border-color:var(--gold);background:rgba(245,158,11,.05)}
+.task-type-tab.active{background:var(--violet);color:white;border-color:var(--violet)}
+.task-type-tab:hover:not(.active){border-color:var(--violet);color:var(--violet)}
+.hint-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--gold);cursor:pointer;font-family:inherit;margin-top:8px;display:none}
 .hint-text{display:none;margin-top:8px;padding:10px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:10px;font-size:12px;color:#92400e;line-height:1.6}
-.ai-fab{position:fixed;bottom:24px;right:24px;z-index:200;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--red));border:none;color:white;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.35);transition:transform .2s;display:none;align-items:center;justify-content:center}
+.ai-fab{position:fixed;bottom:24px;right:24px;z-index:200;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--teal));border:none;color:white;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,.35);display:none;align-items:center;justify-content:center;transition:transform .2s}
 .ai-fab:hover{transform:scale(1.08)}
 #lessonView.active ~ .ai-fab{display:flex}
 .ai-panel{display:none;position:fixed;bottom:88px;right:24px;z-index:199;width:min(380px,calc(100vw - 40px));height:460px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);flex-direction:column;box-shadow:var(--shadow-xl);animation:slideUp .25s ease}
 .ai-panel.open{display:flex}
-@keyframes slideUp{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
 .ai-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
-.ai-head-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(22,163,74,.4)}
+.ai-head-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
 .ai-head span{font-size:13px;font-weight:600;flex:1}
 .ai-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer}
 .ai-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
 .ai-msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6}
-.ai-msg.user{align-self:flex-end;background:var(--blue);color:white;border-bottom-right-radius:4px}
+.ai-msg.user{align-self:flex-end;background:var(--violet);color:white;border-bottom-right-radius:4px}
 .ai-msg.bot{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px}
 .ai-typing{display:flex;gap:4px;padding:10px 14px}
 .ai-typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:aiDot 1.2s infinite}
@@ -133,28 +133,28 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdr
 @keyframes aiDot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
 .ai-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
 .ai-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;color:var(--text);font-family:inherit;font-size:13px;outline:none}
-.ai-input:focus{border-color:var(--blue)}
-.ai-send{background:var(--blue);color:white;border:none;border-radius:10px;width:38px;height:38px;font-size:15px;cursor:pointer;flex-shrink:0}
-.ai-send:hover{background:var(--blue2)}
+.ai-input:focus{border-color:var(--violet)}
+.ai-send{background:var(--violet);color:white;border:none;border-radius:10px;width:38px;height:38px;font-size:15px;cursor:pointer;flex-shrink:0}
 .ai-quick-btns{display:flex;gap:4px;padding:0 12px 8px;flex-wrap:wrap}
 .ai-quick-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:10px;color:var(--muted);cursor:pointer;font-family:inherit}
-.ai-quick-btn:hover{border-color:var(--blue);color:var(--blue)}
-#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;font-weight:600;color:var(--text);opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s;z-index:300;white-space:nowrap;box-shadow:var(--shadow-lg)}
+.ai-quick-btn:hover{border-color:var(--violet);color:var(--violet)}
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:300;white-space:nowrap;box-shadow:var(--shadow-lg)}
 #toast.show{opacity:1;bottom:100px}
-@media(max-width:800px){#lessonView.active{flex-direction:column}.lesson-theory{border-right:none;border-bottom:1px solid var(--border);max-height:none;padding-bottom:20px}.lesson-practice{width:100%;padding-bottom:20px}.ai-panel{width:calc(100vw - 32px);right:16px;bottom:80px;height:380px}}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#c3cbe3;border-radius:6px}
+@media(max-width:800px){#lessonView.active{flex-direction:column}.lesson-theory{border-right:none;border-bottom:1px solid var(--border);padding-bottom:20px}.lesson-practice{width:100%;padding-bottom:20px}.ai-panel{width:calc(100vw - 32px);right:16px;bottom:80px;height:380px}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#cfc4e8;border-radius:6px}
+.katex{font-size:inherit}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo" onclick="showGrades()"><span class="logo-f">F</span><span class="logo-rest">-Mine Английский</span></div>
+  <div class="logo" onclick="showGrades()"><span class="logo-f">F</span><span class="logo-rest">-Mine Химия</span></div>
   <div class="header-nav" id="headerNav"></div>
 </header>
 
 <div id="gradeView" class="view active">
-  <div class="grade-title">Английский язык</div>
-  <div class="grade-sub">Выбери свой класс, чтобы начать · Choose your grade 🇬🇧</div>
+  <div class="grade-title">Химия</div>
+  <div class="grade-sub">Выбери свой класс, чтобы начать ⚗️</div>
   <div class="grade-grid" id="gradeGrid"></div>
 </div>
 
@@ -170,94 +170,83 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdr
     <button class="ai-close" onclick="toggleAi()">✕</button>
   </div>
   <div class="ai-messages" id="aiMessages">
-    <div class="ai-msg bot">Привет! I'll help you with English. Спроси что угодно 🧠</div>
+    <div class="ai-msg bot">Привет! Я помогу с химией. Спроси что угодно 🧪</div>
   </div>
   <div class="ai-quick-btns">
-    <button class="ai-quick-btn" onclick="askAi('Объясни это правило проще')">💡 Объясни правило</button>
-    <button class="ai-quick-btn" onclick="askAi('Дай подсказку к текущему заданию')">🎯 Подсказка</button>
+    <button class="ai-quick-btn" onclick="askAi('Объясни последний пример')">💡 Объясни пример</button>
+    <button class="ai-quick-btn" onclick="askAi('Дай подсказку к текущей задаче')">🎯 Подсказка</button>
     <button class="ai-quick-btn" onclick="askAi('Покажи ещё один пример')">📝 Ещё пример</button>
   </div>
   <div class="ai-input-row">
-    <input class="ai-input" id="aiInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendAi()" />
+    <input class="ai-input" id="aiInput" placeholder="Задай вопрос..." onkeydown="if(event.key==='Enter')sendAi()" />
     <button class="ai-send" onclick="sendAi()">→</button>
   </div>
 </div>
 
 <div id="toast"></div>
 
-<script src="english-lessons.js"></script>
+<script src="chemistry-lessons.js"></script>
 <script>
 const GRADES=[
-  {id:7,label:'7 класс',badge:'Basics'},
-  {id:8,label:'8 класс',badge:'Elementary'},
-  {id:9,label:'9 класс',badge:'Intermediate'},
-  {id:10,label:'10 класс',badge:'Upper-Int'},
-  {id:11,label:'11 класс',badge:'Exam Prep'}
+  {id:8,label:'8 класс',badge:'Начала химии'},
+  {id:9,label:'9 класс',badge:'Неорганика'},
+  {id:10,label:'10 класс',badge:'Органика'},
+  {id:11,label:'11 класс',badge:'Экзамен'}
 ];
 const TOPICS={
-  7:[
-    {id:'7.1',name:'To be и местоимения',icon:'👋'},
-    {id:'7.2',name:'Present Simple',icon:'☀️'},
-    {id:'7.3',name:'Present Continuous',icon:'⏳'},
-    {id:'7.4',name:'Past Simple',icon:'⏪'},
-    {id:'7.5',name:'Артикли a / an / the',icon:'📰'},
-    {id:'7.6',name:'Countable / Uncountable, множественное',icon:'🍎'},
-    {id:'7.7',name:'Предлоги in / on / at',icon:'📍'},
-    {id:'7.8',name:'Wh- вопросы',icon:'❓'}
-  ],
   8:[
-    {id:'8.1',name:'Future: will / be going to',icon:'🔮'},
-    {id:'8.2',name:'Past Continuous',icon:'🕰️'},
-    {id:'8.3',name:'Present Perfect',icon:'✅'},
-    {id:'8.4',name:'Степени сравнения',icon:'📏'},
-    {id:'8.5',name:'Модальные глаголы',icon:'⚙️'},
-    {id:'8.6',name:'Some / any / much / many',icon:'🧮'},
-    {id:'8.7',name:'Наречия частоты и образа действия',icon:''},
-    {id:'8.8',name:'Первые фразовые глаголы',icon:'🧩'}
+    {id:'8.1',name:'Что изучает химия',icon:'⚗️'},
+    {id:'8.2',name:'Атомы и молекулы. Элементы',icon:''},
+    {id:'8.3',name:'Простые и сложные вещества',icon:'🧩'},
+    {id:'8.4',name:'Валентность и формулы',icon:'🔢'},
+    {id:'8.5',name:'Типы химических реакций',icon:'🔄'},
+    {id:'8.6',name:'Моль и молярная масса',icon:'⚖️'},
+    {id:'8.7',name:'Воздух и кислород. Горение',icon:'🔥'},
+    {id:'8.8',name:'Вода и растворы',icon:'💧'}
   ],
   9:[
-    {id:'9.1',name:'Passive Voice',icon:'🏗️'},
-    {id:'9.2',name:'Conditionals 0, 1, 2',icon:'🔀'},
-    {id:'9.3',name:'Third Conditional',icon:'⏮️'},
-    {id:'9.4',name:'Reported Speech',icon:'🗣️'},
-    {id:'9.5',name:'Gerund vs Infinitive',icon:'🔄'},
-    {id:'9.6',name:'Relative clauses',icon:'🔗'},
-    {id:'9.7',name:'Used to / be used to',icon:'🕰️'},
-    {id:'9.8',name:'Present Perfect vs Past Simple',icon:'⚖️'}
+    {id:'9.1',name:'Периодическая таблица Менделеева',icon:'📊'},
+    {id:'9.2',name:'Строение атома',icon:''},
+    {id:'9.3',name:'Химическая связь',icon:'🔗'},
+    {id:'9.4',name:'Оксиды',icon:'🌫️'},
+    {id:'9.5',name:'Кислоты',icon:'🍋'},
+    {id:'9.6',name:'Основания и щёлочи',icon:'🧼'},
+    {id:'9.7',name:'Соли и нейтрализация',icon:'🧂'},
+    {id:'9.8',name:'Электролитическая диссоциация',icon:'⚡'}
   ],
   10:[
-    {id:'10.1',name:'Perfect Continuous',icon:'⏳'},
-    {id:'10.2',name:'Wish / If only',icon:'🌠'},
-    {id:'10.3',name:'Causative: have/get smth done',icon:'🛠️'},
-    {id:'10.4',name:'Inversion',icon:'🙃'},
-    {id:'10.5',name:'Mixed Conditionals',icon:'🌀'},
-    {id:'10.6',name:'Word Formation',icon:'🏗️'},
-    {id:'10.7',name:'Phrasal verbs и идиомы',icon:'🧩'},
-    {id:'10.8',name:'Formal & Informal letters',icon:'✉️'}
+    {id:'10.1',name:'Органическая химия. Углерод',icon:''},
+    {id:'10.2',name:'Алканы (метан)',icon:'🔥'},
+    {id:'10.3',name:'Алкены (этилен)',icon:'♊'},
+    {id:'10.4',name:'Алкины (ацетилен)',icon:'🔗'},
+    {id:'10.5',name:'Арены (бензол)',icon:'⭕'},
+    {id:'10.6',name:'Спирты',icon:'🍷'},
+    {id:'10.7',name:'Карбоновые кислоты',icon:'🍋'},
+    {id:'10.8',name:'Эфиры, жиры, полимеры',icon:'🧴'}
   ],
   11:[
-    {id:'11.1',name:'Все времена: повторение',icon:''},
-    {id:'11.2',name:'Conditionals & Wish: advanced',icon:'🌠'},
-    {id:'11.3',name:'Word Formation: advanced',icon:'🏗️'},
-    {id:'11.4',name:'Reading: стратегии',icon:'📖'},
-    {id:'11.5',name:'Writing: essay & article',icon:'✍️'},
-    {id:'11.6',name:'Speaking & экзамены',icon:'🎤'},
-    {id:'11.7',name:'Idioms & collocations',icon:'💬'},
-    {id:'11.8',name:'Итоговый повтор',icon:''}
+    {id:'11.1',name:'Изомерия и гомологи',icon:''},
+    {id:'11.2',name:'Скорость реакций',icon:'⏱️'},
+    {id:'11.3',name:'Химическое равновесие',icon:'⚖️'},
+    {id:'11.4',name:'ОВР: окисление и восстановление',icon:'🔋'},
+    {id:'11.5',name:'Металлы',icon:'⚙️'},
+    {id:'11.6',name:'Неметаллы',icon:'💨'},
+    {id:'11.7',name:'Химия в жизни',icon:'🏠'},
+    {id:'11.8',name:'Итоговое повторение',icon:'🎯'}
   ]
 };
 
 const WIKI={
-  '7.1':'Английский язык','7.2':'Present Simple','7.3':'Present Continuous','7.4':'Past Simple','7.5':'Артикль','7.6':'Множественное число','7.7':'Предлог','7.8':'Английский язык',
-  '8.1':'Future Simple','8.2':'Past Continuous','8.3':'Present Perfect','8.4':'Степени сравнения прилагательных','8.5':'Модальные глаголы','8.6':'Местоимение','8.7':'Наречие','8.8':'Фразовый глагол',
-  '9.1':'Страдательный залог','9.2':'Условное предложение','9.3':'Сослагательное наклонение','9.4':'Косвенная речь','9.5':'Герундий','9.6':'Местоимение','9.7':'Инфинитив','9.8':'Present Perfect',
-  '10.1':'Present Perfect Continuous','10.2':'Сослагательное наклонение','10.3':'Английский язык','10.4':'Инверсия','10.5':'Условное предложение','10.6':'Словообразование','10.7':'Фразовый глагол','10.8':'Письмо',
-  '11.1':'Английский язык','11.2':'Сослагательное наклонение','11.3':'Словообразование','11.4':'Чтение','11.5':'Эссе','11.6':'IELTS','11.7':'Идиома','11.8':'Английский язык'
+  '8.1':'Химия','8.2':'Атом','8.3':'Вещество','8.4':'Валентность','8.5':'Химическая реакция','8.6':'Моль','8.7':'Воздух','8.8':'Вода',
+  '9.1':'Периодическая система химических элементов','9.2':'Атом','9.3':'Химическая связь','9.4':'Оксиды','9.5':'Кислота','9.6':'Основания','9.7':'Соли','9.8':'Электролитическая диссоциация',
+  '10.1':'Органическая химия','10.2':'Алканы','10.3':'Алкены','10.4':'Алкины','10.5':'Бензол','10.6':'Спирты','10.7':'Карбоновые кислоты','10.8':'Жиры',
+  '11.1':'Изомерия','11.2':'Скорость химической реакции','11.3':'Химическое равновесие','11.4':'Окислительно-восстановительные реакции','11.5':'Металлы','11.6':'Неметаллы','11.7':'Пищевые добавки','11.8':'Химия'
 };
 
 function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
-function normAns(v){return String(v).toLowerCase().replace(/ё/g,'е').trim().replace(/\s+/g,' ').replace(/[.!?,;:]+$/,'')}
+function renderKatex(el){if(typeof renderMathInElement==='function')renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})}
+function normAns(v){return String(v).toLowerCase().replace(/ё/g,'е').replace(/['’]/g,'').trim().replace(/\s+/g,' ').replace(/[.!?,;:]+$/,'')}
 
 async function loadLessonPhoto(){
   const box=document.getElementById('lessonPhoto');if(!box)return;
@@ -289,11 +278,11 @@ function showView(id){document.querySelectorAll('.view').forEach(v=>{v.classList
 function showGrades(){currentGrade=null;currentTopic=null;document.getElementById('lessonBack').style.display='none';document.getElementById('aiFab').style.display='none';document.getElementById('aiPanel').classList.remove('open');document.getElementById('headerNav').innerHTML='';showView('gradeView')}
 function showTopics(gid){
   currentGrade=gid;const topics=TOPICS[gid]||[];
-  const completed=JSON.parse(localStorage.getItem('fmine_eng_topics')||'[]');
+  const completed=JSON.parse(localStorage.getItem('fmine_chem_topics')||'[]');
   const done=topics.filter(t=>completed.includes(t.id)).length;
   const pct=topics.length?Math.round(done/topics.length*100):0;
   document.getElementById('topicView').innerHTML=`
-    <div class="topic-head"><h1>${gid} класс — English</h1><p>${topics.length} тем · Изучено: ${done}/${topics.length}</p>
+    <div class="topic-head"><h1>${gid} класс — Химия</h1><p>${topics.length} тем · Изучено: ${done}/${topics.length}</p>
     <div class="topic-progress-bar"><div class="topic-progress-fill" style="width:${pct}%"></div></div></div>
     <div class="topic-list">${topics.map((t,i)=>`<div class="topic-card ${completed.includes(t.id)?'done':''}" onclick="openLesson('${t.id}')"><div class="topic-num">${completed.includes(t.id)?'✓':i+1}</div><div class="topic-info"><div class="topic-name">${t.icon} ${t.name}</div></div><div class="topic-arrow">›</div></div>`).join('')}</div>`;
   showView('topicView');
@@ -305,7 +294,7 @@ function openLesson(tid){
   stats={correct:0,wrong:0,streak:0};renderLesson(lesson);showView('lessonView');
   document.getElementById('lessonBack').style.display='';
   document.getElementById('aiFab').style.display='flex';
-  document.getElementById('headerNav').innerHTML=`<button class="nav-btn" onclick="showTopics(${currentGrade})">← Темы</button><button class="nav-btn active">${TOPICS[currentGrade]?.find(t=>t.id===tid)?.icon||'🇬🇧'} ${lesson.title.slice(0,30)}...</button>`;
+  document.getElementById('headerNav').innerHTML=`<button class="nav-btn" onclick="showTopics(${currentGrade})">← Темы</button><button class="nav-btn active">${TOPICS[currentGrade]?.find(t=>t.id===tid)?.icon||'⚗️'} ${lesson.title.slice(0,30)}...</button>`;
 }
 function goBack(){if(currentTopic){showTopics(currentGrade)}else{showGrades()}}
 
@@ -316,12 +305,12 @@ function renderLesson(lesson){
   th+=`<div class="theory-section"><h2><span class="section-icon">📝</span> Разбор примеров</h2>`;
   lesson.examples.forEach(ex=>{th+=`<div class="example-block"><h3>${ex.title}</h3>`;ex.steps.forEach((st,j)=>{th+=`<div class="step"><div class="step-num">${j+1}</div><div>${st.text}<span class="step-rule">${st.rule}</span></div></div>`});th+=`</div>`});
   th+=`</div>`;
-  let pr=`<div class="practice-head"><h2>🎯 Practice</h2><p>Проверь свои знания</p></div>
+  let pr=`<div class="practice-head"><h2>🎯 Практика</h2><p>Решай задачи и проверяй ответ</p></div>
     <div class="practice-stats"><div class="stat-chip correct"><div class="stat-val" id="statCorrect">0</div><div class="stat-label">Верно</div></div><div class="stat-chip wrong"><div class="stat-val" id="statWrong">0</div><div class="stat-label">Ошибки</div></div><div class="stat-chip"><div class="stat-val" id="statStreak">0</div><div class="stat-label">Серия</div></div></div>
     <div class="task-type-tabs" id="taskTypeTabs">${lesson.taskTypes.map((tt,i)=>`<button class="task-type-tab ${i===0?'active':''}" onclick="switchTaskType(${i})">${tt.icon} ${tt.name}</button>`).join('')}</div>
     <div id="taskArea"></div>`;
   el.innerHTML=`<div class="lesson-theory">${th}</div><div class="lesson-practice">${pr}</div>`;
-  setTimeout(()=>{generateTask();loadLessonPhoto()},100);
+  setTimeout(()=>{renderKatex(el);generateTask();loadLessonPhoto()},100);
 }
 
 function switchTaskType(i){currentTaskType=i;document.querySelectorAll('.task-type-tab').forEach((t,j)=>t.classList.toggle('active',j===i));generateTask()}
@@ -330,8 +319,8 @@ function generateTask(){
   const tt=lesson.taskTypes[currentTaskType];const params=tt.generate();
   currentTask={...tt.template(...Object.values(params)),typeIdx:currentTaskType};
   const area=document.getElementById('taskArea');
-  area.innerHTML=`<div class="task-card"><div class="task-label">Exercise</div><div class="task-formula" id="taskFormula">${currentTask.text}</div><div class="task-input-row"><input class="task-input" id="taskInput" type="text" placeholder="Answer..." onkeydown="if(event.key==='Enter')checkAnswer()" autofocus /><button class="check-btn" id="checkBtn" onclick="checkAnswer()">Check</button></div><button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Подсказка</button><div class="hint-text" id="hintText"></div><div class="task-feedback" id="taskFeedback"></div><button class="next-btn" id="nextBtn" onclick="generateTask()">Next →</button></div>`;
-  setTimeout(()=>{document.getElementById('taskInput')?.focus()},50);
+  area.innerHTML=`<div class="task-card"><div class="task-label">Задача</div><div class="task-formula" id="taskFormula">${currentTask.text}</div><div class="task-input-row"><input class="task-input" id="taskInput" type="text" placeholder="Ответ..." onkeydown="if(event.key==='Enter')checkAnswer()" autofocus /><button class="check-btn" id="checkBtn" onclick="checkAnswer()">Проверить</button></div><button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Подсказка</button><div class="hint-text" id="hintText"></div><div class="task-feedback" id="taskFeedback"></div><button class="next-btn" id="nextBtn" onclick="generateTask()">Следующая задача →</button></div>`;
+  setTimeout(()=>{renderKatex(area);document.getElementById('taskInput')?.focus()},50);
 }
 function checkAnswer(){
   const input=document.getElementById('taskInput');const val=input.value.trim();if(!val)return;
@@ -340,8 +329,8 @@ function checkAnswer(){
   else{ok=normAns(ans)===normAns(val)||(normAns(ans).length>2&&normAns(val).includes(normAns(ans)))}
   input.classList.remove('correct','wrong');input.classList.add(ok?'correct':'wrong');input.disabled=true;document.getElementById('checkBtn').disabled=true;
   const fb=document.getElementById('taskFeedback');
-  if(ok){stats.correct++;stats.streak++;fb.className='task-feedback correct';fb.innerHTML=`✅ Correct! ${stats.streak>2?`🔥 Серия: ${stats.streak}`:''}`}
-  else{stats.wrong++;stats.streak=0;fb.className='task-feedback wrong';fb.innerHTML=`❌ Неверно. Правильно: <b>${Array.isArray(ans)?ans[0]:ans}</b><div class="task-solution">${currentTask.solution}</div>`}
+  if(ok){stats.correct++;stats.streak++;fb.className='task-feedback correct';fb.innerHTML=`✅ Верно! ${stats.streak>2?`🔥 Серия: ${stats.streak}`:''}`}
+  else{stats.wrong++;stats.streak=0;fb.className='task-feedback wrong';fb.innerHTML=`❌ Неверно. Правильный ответ: <b>${Array.isArray(ans)?ans[0]:ans}</b><div class="task-solution">${currentTask.solution}</div>`}
   document.getElementById('statCorrect').textContent=stats.correct;document.getElementById('statWrong').textContent=stats.wrong;document.getElementById('statStreak').textContent=stats.streak;
   document.getElementById('nextBtn').style.display='';document.getElementById('hintBtn').style.display='none';
 }
@@ -350,13 +339,13 @@ function showHint(){const ht=document.getElementById('hintText');ht.style.displa
 function toggleAi(){aiOpen=!aiOpen;document.getElementById('aiPanel').classList.toggle('open',aiOpen);if(aiOpen)document.getElementById('aiInput').focus()}
 async function askAi(text){
   addAiMsg(text,'user');showAiTyping();
-  try{const lesson=LESSONS[currentTopic];const ctx=lesson?`Текущая тема: ${lesson.title}. Задание: ${currentTask?.text||'нет'}.`:'Английский язык';
-  const r=await fetch('https://my-education-site-f-mine-production.up.railway.app/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:`Ты — репетитор по английскому языку для школьников. Объясняй правила просто, с примерами и переводом. Отвечай на языке вопроса. ${ctx}`},...aiHistory.slice(-6),{role:'user',content:text}]})});
+  try{const lesson=LESSONS[currentTopic];const ctx=lesson?`Текущая тема: ${lesson.title}. Задача: ${currentTask?.text||'нет'}. Ответ: ${currentTask?.answer||'?'}`:'Химия';
+  const r=await fetch('https://my-education-site-f-mine-production.up.railway.app/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:`Ты — репетитор по химии. Отвечай кратко и ясно, используй химические формулы. ${ctx}`},...aiHistory.slice(-6),{role:'user',content:text}]})});
   const d=await r.json();removeAiTyping();addAiMsg(d.reply||d.error||'Не могу ответить','bot');aiHistory.push({role:'user',content:text});aiHistory.push({role:'assistant',content:d.reply||''})}
   catch(e){removeAiTyping();addAiMsg('❌ Ошибка соединения с AI','bot')}
 }
 function sendAi(){const i=document.getElementById('aiInput');const v=i.value.trim();if(!v)return;i.value='';askAi(v)}
-function addAiMsg(text,role){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className=`ai-msg ${role}`;d.innerHTML=text;c.appendChild(d);c.scrollTop=c.scrollHeight}
+function addAiMsg(text,role){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className=`ai-msg ${role}`;d.innerHTML=text;c.appendChild(d);c.scrollTop=c.scrollHeight;setTimeout(()=>renderKatex(d),50)}
 function showAiTyping(){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className='ai-typing';d.id='aiTyping';d.innerHTML='<span></span><span></span><span></span>';c.appendChild(d);c.scrollTop=c.scrollHeight}
 function removeAiTyping(){document.getElementById('aiTyping')?.remove()}
 
