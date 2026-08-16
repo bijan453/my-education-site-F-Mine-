@@ -116,8 +116,16 @@ header {
 }
 .msg.bot {
   align-self:flex-start; background:var(--surface2); border:1px solid var(--border); color:var(--text);
-  border-bottom-left-radius:4px; box-shadow: var(--shadow-sm);
+  border-bottom-left-radius:4px; box-shadow: var(--shadow-sm); word-break:break-word;
 }
+.ai-step-hdr { font-weight:700; font-size:14px; color:var(--indigo); margin:10px 0 4px 0; padding-bottom:2px; border-bottom:1px solid rgba(99,102,241,.15); display:flex; align-items:center; gap:6px; }
+.ai-step-hdr.main { font-size:16px; color:var(--text); }
+.ai-step-badge { display:inline-flex; align-items:center; gap:4px; background:linear-gradient(135deg,var(--indigo),var(--cyan)); color:white; font-weight:700; font-size:11px; padding:3px 9px; border-radius:12px; margin:6px 4px 4px 0; box-shadow:0 2px 6px rgba(99,102,241,.25); }
+.ai-list-item { display:flex; align-items:flex-start; gap:6px; margin:4px 0; line-height:1.5; }
+.ai-bullet { font-size:12px; flex-shrink:0; margin-top:2px; }
+.ai-bullet-num { font-weight:700; color:var(--indigo); flex-shrink:0; background:rgba(99,102,241,.08); padding:1px 6px; border-radius:6px; font-size:11px; }
+.ai-code { background:rgba(99,102,241,.08); color:var(--indigo2); padding:2px 6px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:12px; }
+.ai-gap { height:8px; }
 .msg.bot p { margin-bottom:8px; }
 .msg.bot p:last-child { margin-bottom:0; }
 .msg.bot ul, .msg.bot ol { padding-left:20px; margin:6px 0; }
@@ -293,12 +301,12 @@ let isGenerating = false;
 let currentController = null;
 
 const SYSTEM_PROMPTS = {
-  default: `Ты — умный и дружелюбный AI-помощник от F-Mine. Отвечай на русском языке (если пользователь пишет на английском — отвечай на английском). Объясняй просто и понятно. Используй LaTeX для формул ($...$ для inline, $$...$$ для блочных). Будь полезным, давай примеры и пошаговые объяснения.`,
-  math: `Ты — репетитор по математике от F-Mine. Объясняй математические концепции просто и наглядно. Всегда используй LaTeX для формул ($...$ для inline, $$...$$ для блочных). Решай задачи пошагово, показывая каждый шаг. Если ошибся — признай и исправь.`,
-  physics: `Ты — репетитор по физике от F-Mine. Объясняй физические явления простым языком с примерами из жизни. Используй LaTeX для формул. Приводи реальные числовые примеры.`,
-  chemistry: `Ты — репетитор по химии от F-Mine. Объясняй химические реакции и свойства веществ. Используй формулы и уравнения реакций в LaTeX.`,
-  biology: `Ты — репетитор по биологии от F-Mine. Объясняй биологические процессы доступным языком. Используй терминологии, но всегда объясняй их meaning.`,
-  cs: `Ты — помощник по программированию от F-Mine. Отвечай на вопросы по коду, объясняй алгоритмы. Используй блоки кода с подсветкой синтаксиса.`,
+  default: `Ты — умный и дружелюбный AI-помощник от F-Mine. Объясняй пошагово (Шаг 1, Шаг 2...), структурируй ответы списком, используй эмодзи (💡, 🚀, 📌, 🎯), жирный шрифт и LaTeX ($...$ для inline, $$...$$ для блочных формул).`,
+  math: `Ты — репетитор по математике от F-Mine. Объясняй пошагово (Шаг 1, Шаг 2...), с наглядным разбором, эмодзи (📐, 📏, 💡, 🎯) и LaTeX-формулами ($...$ и $$...$$).`,
+  physics: `Ты — экспертный репетитор по физике от F-Mine. Разбирай задачи и концепции пошагово (Шаг 1, Шаг 2...), пиши формулы ($...$), используй эмодзи (⚡, 🔬, 💡, 🎯) и жирный шрифт.`,
+  chemistry: `Ты — репетитор по химии от F-Mine. Объясняй пошагово (Шаг 1, Шаг 2...), приводи уравнения реакций ($...$), коэффициенты, используй эмодзи (🧪, ⚗️, 💡) и выделения.`,
+  biology: `Ты — репетитор по биологии от F-Mine. Объясняй процессы пошагово (Шаг 1, Шаг 2...), структурируй ответы, используй научную терминологию с понятными пояснениями и эмодзи (🌱, 🔬, 🧬, 💡).`,
+  cs: `Ты — репетитор по программированию от F-Mine. Объясняй код пошагово (Step 1, Step 2...), давай понятные примеры, блоки кода и полезные советы.`,
 };
 
 const SUBJECTS = [
@@ -402,17 +410,21 @@ function addStreamMessage() {
 }
 
 function parseMarkdown(text) {
-  // Code blocks
-  text = text.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => `<pre><code>${escapeHtml(code.trim())}</code></pre>`);
-  // Inline code
-  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-  // Bold
-  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  // Italic
-  text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  // Line breaks to paragraphs
-  text = text.split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('');
-  return text;
+  if(!text) return '';
+  let s = String(text);
+  s = s.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => `<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+  s = s.replace(/^###?\s+(.+)$/gm, '<div class="ai-step-hdr">📌 $1</div>');
+  s = s.replace(/^#\s+(.+)$/gm, '<div class="ai-step-hdr main">🌟 $1</div>');
+  s = s.replace(/(?:(?:\*\*|\b)(Шаг|Step)\s*(\d+)(?:\:\s*|\.\s*|\s*—\s*)(?:\*\*|))/gim, '<div class="ai-step-badge">🚀 Шаг $2</div> ');
+  s = s.replace(/^[•\-\*]\s+(.+)$/gm, '<div class="ai-list-item"><span class="ai-bullet">🔹</span><span>$1</span></div>');
+  s = s.replace(/^(\d+)\.\s+(.+)$/gm, '<div class="ai-list-item"><span class="ai-bullet-num">$1.</span><span>$2</span></div>');
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/__(.+?)__/g, '<strong>$1</strong>');
+  s = s.replace(/(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
+  s = s.replace(/`([^`]+)`/g, '<code class="ai-code">$1</code>');
+  s = s.replace(/\n\n+/g, '<div class="ai-gap"></div>');
+  s = s.replace(/\n/g, '<br>');
+  return s;
 }
 
 function escapeHtml(s) {
