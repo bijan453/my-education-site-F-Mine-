@@ -133,10 +133,11 @@ header {
 /* ---- BOARD & EVAL ---- */
 .board-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
-  padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px;
+  padding: 20px 16px 36px 36px; box-shadow: var(--shadow); margin-bottom: 16px;
+  overflow: visible;
 }
-.board-wrapper { display: flex; gap: 16px; align-items: stretch; }
-.board-frame { position: relative; width: min(520px, 100%); aspect-ratio: 1; flex-shrink: 0; }
+.board-wrapper { display: flex; gap: 12px; align-items: stretch; }
+.board-frame { position: relative; width: min(500px, 100%); aspect-ratio: 1; flex-shrink: 0; }
 #board {
   display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr);
   width: 100%; height: 100%; border-radius: 8px; overflow: hidden;
@@ -180,9 +181,9 @@ header {
 
 /* Eval bar */
 .eval-bar {
-  width: 14px; background: #2b2b2b; border-radius: 8px; overflow: hidden;
-  display: flex; flex-direction: column; position: relative; min-height: 200px;
-  border: 1px solid var(--border); box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+  width: 12px; background: #2b2b2b; border-radius: 6px; overflow: hidden;
+  display: flex; flex-direction: column; position: relative; align-self: stretch;
+  border: 1px solid rgba(0,0,0,0.1); box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); flex-shrink: 0;
 }
 .eval-bar .white-part { background: #fdfdfd; transition: height 0.5s ease; width: 100%; }
 .eval-bar .black-part { background: #262626; transition: height 0.5s ease; width: 100%; }
