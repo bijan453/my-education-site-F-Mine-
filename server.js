@@ -257,6 +257,10 @@ app.post("/api/chat", async (req, res) => {
       if (!reply) throw new Error(groqErr ? `Groq: ${groqErr.message}` : "No API key configured on server.");
     }
 
+    if (reply) {
+      reply = reply.replace(/^(User Safety|Safety Assessment):\s*(safe|ok)\s*/i, "").trim();
+    }
+
     res.json({ reply: reply || "Пустой ответ" });
   } catch (err) {
     console.error(err);
