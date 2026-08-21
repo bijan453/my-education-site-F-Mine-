@@ -10,365 +10,357 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f4f6fb;
-  --bg2: rgba(255, 255, 255, 0.85);
-  --bg3: rgba(240, 242, 248, 0.9);
-  --surface: rgba(255, 255, 255, 0.8);
-  --surface2: rgba(240, 242, 248, 0.9);
-  --surface3: rgba(228, 231, 242, 0.9);
-  --border: rgba(0, 0, 0, 0.07);
-  --border2: rgba(0, 0, 0, 0.1);
-  --text: #1e2235;
-  --text2: #5a5d72;
-  --text3: #888ba3;
-  --purple: #6E56CF;
-  --purple-dim: rgba(110, 86, 207, 0.08);
-  --emerald: #059669;
+  --bg: #f8f6f0;
+  --bg-subtle: #f2efe9;
+  --surface: #ffffff;
+  --surface-hover: #faf8f5;
+  --border: #e6e2d8;
+  --border-subtle: #f0ebe1;
+  --text: #1f2024;
+  --text2: #5c5f6a;
+  --text3: #8c8f9a;
+  --purple: #6d5bd0;
+  --purple-hover: #5b49be;
+  --purple-light: #f0edfb;
+  --purple-border: #d4ccf7;
+  --emerald: #16a34a;
+  --emerald-bg: #e8f7ed;
+  --emerald-border: #bbf0cb;
   --rose: #e11d48;
+  --rose-bg: #ffeef2;
   --gold: #d97706;
-  --r: 12px;
-  --ease: 0.25s ease;
-  --blur: blur(16px);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
-  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-md: 0 4px 6px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.03);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,.05), 0 4px 6px rgba(0,0,0,.03);
+  --gold-bg: #fff8eb;
+  --r: 16px;
+  --r-sm: 10px;
+  --r-pill: 999px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow: 0 4px 16px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --shadow-md: 0 8px 24px rgba(109,91,208,0.08), 0 2px 6px rgba(0,0,0,0.03);
+  --ease: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
-  background-image: radial-gradient(circle at 80% 20%, rgba(110, 86, 207, 0.04) 0%, transparent 40%),
-                    radial-gradient(circle at 10% 90%, rgba(110, 86, 207, 0.03) 0%, transparent 30%);
-  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
+  line-height: 1.5;
 }
 
 /* ---- HEADER ---- */
 header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 32px;
-  background: var(--bg2);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
+  padding: 14px 32px;
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  box-shadow: var(--shadow-sm);
 }
-header h1 {
-  font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text); letter-spacing: 0.5px;
+.logo-box {
+  display: flex; align-items: center; gap: 12px;
 }
-header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
-.header-right { display: flex; gap: 10px; align-items: center; font-size: 12px; font-weight: 600; }
-.header-right .elo {
-  background: var(--surface); border: 1px solid var(--border);
-  padding: 6px 12px; border-radius: 20px; color: var(--text);
-  display: flex; align-items: center; gap: 4px;
+.logo-icon {
+  width: 38px; height: 38px; border-radius: var(--r-sm);
+  background: var(--purple-light); border: 1px solid var(--purple-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: var(--purple); font-weight: 700;
 }
-.header-right .streak {
-  background: var(--surface); border: 1px solid var(--border);
-  padding: 6px 12px; border-radius: 20px; color: var(--gold);
-  display: flex; align-items: center; gap: 4px;
-}
-.header-right .lives {
-  background: var(--surface); border: 1px solid var(--border);
-  padding: 6px 12px; border-radius: 20px; color: var(--rose);
-  display: none; align-items: center; gap: 4px;
-}
-#langToggle {
-  background: var(--surface) !important; border: 1px solid var(--border) !important;
-  border-radius: 20px !important; padding: 6px 12px !important;
-  color: var(--text2) !important; font-family: inherit; font-weight: 600; font-size: 12px !important;
-  cursor: pointer; transition: var(--ease);
-}
-#langToggle:hover { background: var(--surface2) !important; color: #fff !important; }
+.logo-text { display: flex; flex-direction: column; }
+.logo-text h1 { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; line-height: 1.1; }
+.logo-text span { font-size: 11px; font-weight: 500; color: var(--text3); }
 
-/* ---- LAYOUT ---- */
-.main { display: flex; gap: 32px; max-width: 1240px; margin: 24px auto; padding: 0 32px; align-items: flex-start; }
-.col-left { flex: 7; min-width: 0; }
-.col-right {
-  flex: 3; min-width: 280px; max-width: 380px; max-height: calc(100vh - 80px);
-  overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent; padding-bottom: 40px;
+.header-right { display: flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 600; }
+.pill-badge {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: var(--r-pill); color: var(--text);
+  display: flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600;
+  box-shadow: var(--shadow-sm); transition: var(--ease);
 }
+.pill-badge.streak { color: var(--gold); background: var(--gold-bg); border-color: #fde68a; }
+.pill-badge.lives { color: var(--rose); background: var(--rose-bg); border-color: #fecdd3; }
+.btn-pill {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-pill); padding: 6px 14px; color: var(--text2);
+  font-family: inherit; font-weight: 600; font-size: 12.5px; cursor: pointer;
+  transition: var(--ease); text-decoration: none; display: flex; align-items: center; gap: 5px;
+  box-shadow: var(--shadow-sm);
+}
+.btn-pill:hover { background: var(--purple-light); color: var(--purple); border-color: var(--purple-border); }
+.btn-icon-pill {
+  width: 34px; height: 34px; border-radius: 50%; background: var(--surface);
+  border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: var(--ease); font-size: 14px; color: var(--text2);
+  box-shadow: var(--shadow-sm);
+}
+.btn-icon-pill:hover { background: var(--purple-light); color: var(--purple); border-color: var(--purple-border); }
+
+/* ---- MAIN LAYOUT ---- */
+.main { display: flex; gap: 28px; max-width: 1240px; margin: 28px auto; padding: 0 28px; align-items: flex-start; }
+.col-left { flex: 7; min-width: 0; }
+.col-right { flex: 4; min-width: 320px; max-width: 400px; display: flex; flex-direction: column; gap: 16px; }
 
 /* ---- FILTERS ROW ---- */
-.filters { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.filters {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 8px 12px; box-shadow: var(--shadow-sm);
+}
 .filters select, .filters input {
   font-family: inherit; font-size: 13px; font-weight: 500; color: var(--text);
-  background: var(--surface); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
-  border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px;
-  outline: none; transition: var(--ease); appearance: none; -webkit-appearance: none;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 12px; outline: none; transition: var(--ease);
+  -webkit-appearance: none; appearance: none;
 }
 .filters select {
-  cursor: pointer; min-width: 180px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23686880'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+  cursor: pointer; flex: 1; min-width: 140px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238c8f9a'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px;
 }
-.filters select:focus, .filters input:focus { border-color: var(--purple); background: var(--surface2); }
-.filters input[type=number] { text-align: center; width: 70px; -moz-appearance: textfield; }
+.filters select:focus, .filters input:focus { border-color: var(--purple); background: var(--surface); }
+.filters input[type=number] { text-align: center; width: 64px; -moz-appearance: textfield; }
 .filters input[type=number]::-webkit-outer-spin-button, .filters input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.range-group { display: flex; align-items: center; gap: 8px; }
-.range-group span { color: var(--text3); font-weight: 500; }
+.range-group { display: flex; align-items: center; gap: 6px; }
+.range-group span { color: var(--text3); font-weight: 500; font-size: 12px; }
 .filters .btn-new {
-  flex: 1; padding: 10px 20px; border: none; border-radius: 8px;
+  padding: 8px 16px; border: none; border-radius: 8px;
   font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--ease);
-  background: var(--purple); color: #fff; letter-spacing: 0.3px; display: flex; align-items: center; justify-content: center; gap: 8px;
-  box-shadow: 0 4px 12px rgba(110, 86, 207, 0.25);
+  background: var(--purple); color: #fff; display: flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: 0 2px 8px rgba(109, 91, 208, 0.25); white-space: nowrap;
 }
-.filters .btn-new:hover { background: #7C66DC; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(110, 86, 207, 0.3); }
+.filters .btn-new:hover { background: var(--purple-hover); transform: translateY(-1px); }
 
-/* ---- BOARD ---- */
-.board-wrapper { display: flex; gap: 16px; align-items: stretch; margin-bottom: 12px; }
-.board-frame { position: relative; width: min(540px, 100%); aspect-ratio: 1; flex-shrink: 0; max-width: 100%; }
+/* ---- BOARD & EVAL ---- */
+.board-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px;
+}
+.board-wrapper { display: flex; gap: 16px; align-items: stretch; }
+.board-frame { position: relative; width: min(520px, 100%); aspect-ratio: 1; flex-shrink: 0; }
 #board {
   display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr);
-  width: 100%; height: 100%; border-radius: 4px; overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  width: 100%; height: 100%; border-radius: 8px; overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
 }
-.square { display: flex; align-items: center; justify-content: center; font-size: 44px; cursor: pointer; user-select: none; position: relative; }
-/* Refined wood colors */
-.square.light { background: #D9B382; }
-.square.dark { background: #966138; }
-.square .pw { color: #fff; text-shadow: 0 1.5px 3px rgba(0,0,0,0.5); }
-.square .pb { color: #111; text-shadow: 0 1px 1px rgba(255,255,255,0.1); }
+.square { display: flex; align-items: center; justify-content: center; font-size: 42px; cursor: pointer; user-select: none; position: relative; }
+/* Warm wooden chessboard colors */
+.square.light { background: #f0d9b5; }
+.square.dark { background: #b58863; }
+.square .pw { color: #ffffff; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+.square .pb { color: #1e1e1e; text-shadow: 0 1px 1px rgba(255,255,255,0.2); }
 
 .square::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; }
-.square.selected::before { background: rgba(110, 86, 207, 0.4); }
-.square.last-from::before, .square.last-to::before { background: rgba(154, 205, 50, 0.45); }
-.square.hint-move::before { background: rgba(245, 158, 11, 0.35); animation: pulse 1.2s ease infinite; }
-@keyframes pulse { 0%, 100% { background: rgba(245, 158, 11, 0.25); } 50% { background: rgba(245, 158, 11, 0.5); } }
+.square.selected::before { background: rgba(109, 91, 208, 0.4); }
+.square.last-from::before, .square.last-to::before { background: rgba(130, 200, 80, 0.55); }
+.square.hint-move::before { background: rgba(245, 158, 11, 0.4); animation: pulse 1.2s ease infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
 .square.legal-hint::after {
-  content: ''; position: absolute; top: 50%; left: 50%; width: 26%; aspect-ratio: 1;
-  transform: translate(-50%, -50%); border-radius: 50%; background: rgba(0, 0, 0, 0.2); pointer-events: none; z-index: 1;
+  content: ''; position: absolute; top: 50%; left: 50%; width: 24%; aspect-ratio: 1;
+  transform: translate(-50%, -50%); border-radius: 50%; background: rgba(0, 0, 0, 0.22); pointer-events: none; z-index: 1;
 }
 .square span { position: relative; z-index: 2; pointer-events: none; }
 .square.incorrect { animation: flash 0.35s ease; }
-@keyframes flash { 0% { background: rgba(244, 63, 94, 0.6); } 100% { background: inherit; } }
+@keyframes flash { 0% { background: rgba(225, 29, 72, 0.6); } 100% { background: inherit; } }
 
-/* Rank & file labels */
 .board-frame > .rank-labels {
-  display: flex; position: absolute; left: -20px; top: 0; height: 100%;
-  flex-direction: column; justify-content: stretch; padding: 2px 0; pointer-events: none;
+  display: flex; position: absolute; left: -18px; top: 0; height: 100%;
+  flex-direction: column; justify-content: stretch; pointer-events: none;
 }
 .board-frame > .rank-labels span {
-  font-size: 11px; font-weight: 500; color: var(--text3); display: flex; align-items: center; justify-content: center; flex: 1;
+  font-size: 11px; font-weight: 600; color: var(--text3); display: flex; align-items: center; justify-content: center; flex: 1;
 }
 .board-frame > .file-labels {
-  display: flex; position: absolute; bottom: -22px; left: 0; width: 100%;
-  justify-content: stretch; padding: 0 2px; pointer-events: none;
+  display: flex; position: absolute; bottom: -18px; left: 0; width: 100%;
+  justify-content: stretch; pointer-events: none;
 }
 .board-frame > .file-labels span {
-  font-size: 11px; font-weight: 500; color: var(--text3); flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--text3); flex: 1; display: flex; align-items: center; justify-content: center;
 }
 
 /* Eval bar */
 .eval-bar {
-  width: 16px; background: var(--bg3); border-radius: 10px; overflow: hidden;
+  width: 14px; background: #2b2b2b; border-radius: 8px; overflow: hidden;
   display: flex; flex-direction: column; position: relative; min-height: 200px;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 2px 8px rgba(0,0,0,0.6);
+  border: 1px solid var(--border); box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
-.eval-bar .white-part { background: #f0f0f0; transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; }
-.eval-bar .black-part { background: #222; transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; }
+.eval-bar .white-part { background: #fdfdfd; transition: height 0.5s ease; width: 100%; }
+.eval-bar .black-part { background: #262626; transition: height 0.5s ease; width: 100%; }
 .eval-bar .label { display: none; }
 
-/* Puzzle info below board */
-.puzzle-info { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: 11px; color: var(--text2); font-weight: 500; }
-.puzzle-info span { background: var(--surface); border: 1px solid var(--border); padding: 4px 10px; border-radius: 16px; }
-#timerDisplay { color: var(--gold); font-variant-numeric: tabular-nums; }
-
-/* Status Bar */
-.status {
-  text-align: center; padding: 12px; border-radius: var(--r); font-size: 14px; font-weight: 500;
-  margin: 12px 0; background: var(--surface); border: 1px solid var(--border); min-height: 44px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+/* Puzzle Info Chips Row */
+.puzzle-info-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px;
 }
-.status.correct { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border-color: rgba(16, 185, 129, 0.2); }
-.status.incorrect { background: rgba(244, 63, 94, 0.1); color: var(--rose); border-color: rgba(244, 63, 94, 0.2); }
-.status.hint { background: rgba(245, 158, 11, 0.1); color: var(--gold); border-color: rgba(245, 158, 11, 0.2); }
+.chip {
+  background: var(--bg); border: 1px solid var(--border); padding: 5px 12px;
+  border-radius: var(--r-pill); font-size: 12px; font-weight: 600; color: var(--text2);
+  display: flex; align-items: center; gap: 4px;
+}
+.chip.purple-chip { background: var(--purple-light); color: var(--purple); border-color: var(--purple-border); }
+.chip.gold-chip { background: var(--gold-bg); color: var(--gold); border-color: #fde68a; }
+
+/* Status Banner */
+.status {
+  width: 100%; text-align: center; padding: 14px 18px; border-radius: var(--r);
+  font-size: 14.5px; font-weight: 600; margin-bottom: 14px; background: var(--surface);
+  border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: var(--shadow-sm); transition: var(--ease);
+}
+.status.correct { background: var(--emerald-bg); color: var(--emerald); border-color: var(--emerald-border); }
+.status.incorrect { background: var(--rose-bg); color: var(--rose); border-color: #fecdd3; }
+.status.hint { background: var(--gold-bg); color: var(--gold); border-color: #fde68a; }
 
 /* ---- ACTION BUTTONS ---- */
-.ladder { display: flex; gap: 8px; margin: 0 0 8px 0; }
-.ladder button {
-  flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: var(--r);
-  font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
-  background: var(--surface); color: var(--text2); transition: var(--ease);
-}
-.ladder button:hover:not(:disabled) { background: var(--surface2); color: var(--text); border-color: var(--border2); }
-.ladder button:disabled { opacity: 0.3; cursor: not-allowed; }
+.actions-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 
-.actions { display: flex; gap: 8px; }
-.actions button {
-  flex: 1; padding: 12px; border: none; border-radius: var(--r);
-  font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--ease);
+.btn-primary-purple {
+  width: 100%; padding: 14px; border: none; border-radius: var(--r);
+  font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: var(--ease);
+  background: var(--purple); color: #ffffff; display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: var(--shadow-md);
 }
-#btnNew2 { background: var(--purple); color: #fff; box-shadow: 0 4px 12px rgba(110, 86, 207, 0.2); }
-#btnNew2:hover:not(:disabled) { background: #7C66DC; transform: translateY(-1px); }
-.actions .hint-btn { background: var(--surface); color: var(--text2); border: 1px solid var(--border); }
-.actions .hint-btn:hover:not(:disabled) { background: var(--surface2); color: var(--text); border-color: var(--border2); }
-.actions button:disabled { opacity: 0.3; cursor: not-allowed; }
-.analyze-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 16px; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
-.analyze-panel .coach-msg { font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; }
+.btn-primary-purple:hover:not(:disabled) { background: var(--purple-hover); transform: translateY(-1px); }
 
-/* ---- RIGHT COLUMN ---- */
-.col-right .section-title {
-  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-  color: var(--text3); margin-bottom: 12px;
+.secondary-row { display: flex; gap: 10px; }
+.btn-secondary {
+  flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: var(--r);
+  font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+  background: var(--surface); color: var(--text); transition: var(--ease);
+  display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: var(--shadow-sm);
 }
+.btn-secondary:hover:not(:disabled) { background: var(--surface-hover); border-color: var(--purple-border); color: var(--purple); }
 
-/* Mode list */
-.modes-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
-.mode-card {
-  display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--r);
-  cursor: pointer; transition: var(--ease); background: var(--surface); border: 1px solid var(--border);
-  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+.tertiary-row { display: flex; gap: 8px; align-items: center; }
+.tertiary-row .chip-btn {
+  flex: 1; padding: 9px; border: 1px solid var(--border); border-radius: var(--r-pill);
+  font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  background: var(--surface); color: var(--text2); transition: var(--ease); text-align: center;
+  box-shadow: var(--shadow-sm);
 }
-.mode-card:hover { background: var(--surface2); border-color: var(--border2); }
-.mode-card.active { background: rgba(110, 86, 207, 0.1); border-color: rgba(110, 86, 207, 0.4); }
-.mode-card .mode-icon {
-  font-size: 18px; width: 32px; height: 32px; border-radius: 8px; background: var(--bg3);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+.tertiary-row .chip-btn:hover:not(:disabled) { background: var(--purple-light); color: var(--purple); border-color: var(--purple-border); }
+.btn-icon-square {
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text2); display: flex; align-items: center; justify-content: center;
+  font-size: 14px; cursor: pointer; transition: var(--ease); flex-shrink: 0; box-shadow: var(--shadow-sm);
 }
-.mode-card.active .mode-icon { background: var(--purple); color: #fff; }
-.mode-card .mode-text h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
-.mode-card .mode-text p { font-size: 11px; color: var(--text3); line-height: 1.3; }
-.mode-card .stat { font-size: 16px; font-weight: 700; color: var(--text); margin-left: auto; }
+.btn-icon-square:hover:not(:disabled) { background: var(--purple-light); color: var(--purple); border-color: var(--purple-border); }
+button:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
 
-/* Daily puzzle */
-.daily-card {
+.analyze-panel {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
-  padding: 16px; margin-bottom: 24px; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  padding: 14px 18px; margin-top: 10px; box-shadow: var(--shadow-sm);
 }
-.daily-inner { display: flex; align-items: center; gap: 14px; }
-.daily-icon-wrap {
-  font-size: 24px; width: 48px; height: 48px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--bg3), var(--surface2));
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
-}
-.daily-info { flex: 1; min-width: 0; }
-.daily-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 4px; }
-.daily-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
-.daily-desc { font-size: 12px; color: var(--text2); display: none; }
-.daily-timer { font-size: 11px; color: var(--gold); margin-top: 4px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
-.daily-done-badge { font-size: 13px; font-weight: 600; color: var(--emerald); text-align: center; padding: 10px 0 0; }
-#dailyCta { margin-top: 12px; }
-#dailyCta button {
-  width: 100%; padding: 10px; border: none; border-radius: 8px; background: var(--purple);
-  color: #fff; font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--ease);
-}
-#dailyCta button:hover { background: #7C66DC; }
 
-/* AI Coach */
-.coach {
+/* ---- RIGHT COLUMN CARDS ---- */
+.card-rounded {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
-  padding: 0; overflow: hidden; margin-bottom: 24px; display: flex; flex-direction: column;
-  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  padding: 20px; box-shadow: var(--shadow);
 }
+
+/* Daily Card */
+.daily-card { display: flex; flex-direction: column; gap: 12px; }
+.daily-card .card-badge {
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gold);
+}
+.daily-card .daily-title { font-size: 17px; font-weight: 800; color: var(--text); }
+.daily-card .daily-timer { font-size: 12.5px; font-weight: 600; color: var(--gold); display: flex; align-items: center; gap: 4px; }
+.daily-card .btn-daily-start {
+  width: 100%; padding: 12px; border: none; border-radius: var(--r-sm);
+  background: var(--purple); color: #fff; font-family: inherit; font-weight: 700; font-size: 14px;
+  cursor: pointer; transition: var(--ease); box-shadow: var(--shadow-sm); text-align: center;
+}
+.daily-card .btn-daily-start:hover { background: var(--purple-hover); }
+
+/* AI Coach Card */
+.coach-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
 .coach-header {
-  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
-  border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.1);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--surface-hover);
 }
-.coach-avatar {
-  width: 28px; height: 28px; border-radius: 6px; background: var(--purple);
-  display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+.coach-user-info { display: flex; align-items: center; gap: 10px; }
+.coach-avatar-purple {
+  width: 32px; height: 32px; border-radius: 8px; background: var(--purple);
+  color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px;
 }
-.coach-header-text h3 { font-size: 13px; font-weight: 600; color: var(--text); margin: 0; }
-.coach-header-text span { font-size: 10px; color: var(--emerald); font-weight: 500; }
+.coach-title-group h3 { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.online-badge {
+  font-size: 10px; font-weight: 700; color: var(--emerald); background: var(--emerald-bg);
+  border: 1px solid var(--emerald-border); padding: 2px 8px; border-radius: var(--r-pill); text-transform: uppercase;
+}
+
 .coach-log {
-  min-height: 120px; max-height: 200px; overflow-y: auto; padding: 12px 16px;
-  display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.08) transparent;
+  min-height: 140px; max-height: 220px; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin;
 }
 .coach-msg {
-  font-size: 12.5px; line-height: 1.5; padding: 10px 14px; border-radius: 12px;
-  max-width: 90%; word-wrap: break-word; white-space: pre-wrap; animation: fadeIn .25s ease;
+  font-size: 13px; line-height: 1.5; padding: 10px 14px; border-radius: 14px;
+  max-width: 92%; word-wrap: break-word; white-space: pre-wrap;
 }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-.coach-msg.bot { background: var(--surface2); color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; }
+.coach-msg.bot { background: var(--bg); color: var(--text); border: 1px solid var(--border-subtle); align-self: flex-start; border-bottom-left-radius: 4px; }
 .coach-msg.user { background: var(--purple); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-.coach-msg .meta { display: block; font-size: 9px; color: var(--text3); margin-top: 6px; font-family: 'DM Mono', monospace; }
-.coach-actions { display: flex; gap: 6px; padding: 8px 16px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.05); }
-.coach-actions button {
-  flex: 1; padding: 8px 4px; border: none; border-radius: 6px; font-family: inherit; font-size: 11px; font-weight: 600;
-  cursor: pointer; background: var(--surface3); color: var(--text2); transition: var(--ease);
-}
-.coach-actions button:hover { background: var(--purple-dim); color: var(--purple); }
-.coach-input-row { display: flex; gap: 8px; padding: 0 16px 16px; background: rgba(0,0,0,0.05); }
+
+.coach-footer { padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; gap: 8px; }
+.coach-model-tag { font-size: 10.5px; font-family: 'DM Mono', monospace; color: var(--text3); }
+.coach-input-row { display: flex; gap: 8px; }
 .coach-input-row input {
   flex: 1; font-family: inherit; font-size: 13px; color: var(--text); background: var(--bg);
-  border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; outline: none; transition: var(--ease);
+  border: 1px solid var(--border); border-radius: var(--r-pill); padding: 8px 16px; outline: none; transition: var(--ease);
 }
-.coach-input-row input:focus { border-color: var(--purple); }
-.coach-input-row input::placeholder { color: var(--text3); }
+.coach-input-row input:focus { border-color: var(--purple); background: var(--surface); }
 .coach-input-row button {
-  width: 38px; padding: 0; border: none; border-radius: 8px; background: var(--purple);
-  color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--ease);
+  width: 36px; height: 36px; border: none; border-radius: 50%; background: var(--purple);
+  color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--ease); flex-shrink: 0;
 }
-.coach-input-row button:hover { background: #7C66DC; }
-.coach-input-row button svg { width: 16px; height: 16px; fill: currentColor; }
-.coach.busy { opacity: 0.8; pointer-events: none; }
+.coach-input-row button:hover { background: var(--purple-hover); }
+.coach-input-row button svg { width: 15px; height: 15px; fill: currentColor; }
 
-/* Stats */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.stat-item {
-  background: var(--surface); border: 1px solid var(--border); padding: 16px;
-  border-radius: var(--r); text-align: center; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+/* Casual Mode Card */
+.casual-card {
+  display: flex; align-items: center; gap: 12px; font-size: 13.5px; font-weight: 600; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; box-shadow: var(--shadow-sm);
 }
-.stat-item .num { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-.stat-item .lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-
-/* Flying piece */
-.flying-piece { position: fixed; z-index: 200; pointer-events: none; display: flex; align-items: center; justify-content: center; transition: transform .2s cubic-bezier(.2,.8,.2,1); }
-.square span.anim-hide { opacity: 0; }
 
 /* Toast */
 .toast {
   position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(16px);
-  background: var(--bg2); border: 1px solid var(--border2); border-radius: 8px; padding: 12px 24px;
-  font-size: 14px; font-weight: 500; color: #fff; z-index: 999; opacity: 0; transition: all .35s ease; pointer-events: none;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  background: #1f2024; color: #fff; border-radius: var(--r-pill); padding: 10px 20px;
+  font-size: 13.5px; font-weight: 600; z-index: 999; opacity: 0; transition: all .3s ease; pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* Responsive */
-@media(max-width: 860px) {
-  .main { flex-direction: column; gap: 24px; padding: 0 16px; }
-  .col-left, .col-right { flex: auto; width: 100%; min-width: 0; max-width: 100%; max-height: none; overflow-y: visible; }
-  header { flex-direction: column; gap: 8px; padding: 12px 16px; }
-  header h1 { font-size: 16px; }
-  .header-right { flex-wrap: wrap; justify-content: center; }
-  .filters { flex-wrap: wrap; }
-  .filters select { min-width: 140px; width: 100%; }
-  .filters .range-group { width: 100%; }
-  .filters .btn-new { width: 100%; }
-  .board-wrapper { flex-direction: row; align-items: stretch; justify-content: center; overflow: visible; padding-left: 4px; }
-  .board-frame { width: min(540px, calc(100vw - 56px)); }
-  .board-frame > .rank-labels { display: none; }
-  .board-frame > .file-labels { display: none; }
-  .eval-bar { min-height: unset; height: auto; width: 14px; flex-shrink: 0; }
-  .coach-actions { flex-wrap: wrap; }
+@media(max-width: 900px) {
+  .main { flex-direction: column; gap: 20px; padding: 0 16px; }
+  .col-left, .col-right { width: 100%; max-width: 100%; }
+  header { flex-direction: column; gap: 10px; padding: 12px 16px; }
 }
+
 </style>
 </head>
 <body>
 <header>
-  <h1 id="headerTitle"><span class="rook">♖</span> F-MINE <span style="font-weight:400;color:var(--text3)">Шахматный тренажёр</span></h1>
+  <div class="logo-box">
+    <div class="logo-icon">♔</div>
+    <div class="logo-text">
+      <h1 id="headerTitle">F-MINE</h1>
+      <span>Шахматный тренажёр</span>
+    </div>
+  </div>
   <div class="header-right">
-    <span class="elo" id="eloDisplay">♛ 1200</span>
-    <span class="streak" id="streakDisplay">🔥 0</span>
-    <span class="lives" id="livesDisplay" style="display:none">❤️ 3</span>
-    <button id="langToggle" onclick="toggleLang()">EN</button>
-    <button id="soundToggle" onclick="toggleSound()" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;transition:var(--ease);">🔊</button>
-    <a href="puzzle-history.html" id="historyLink" style="background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;transition:var(--ease);">📋 История</a>
-    <a href="personal-trainer.html" style="background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;transition:var(--ease);">🎯 Тренер</a>
+    <span class="pill-badge" id="eloDisplay">👑 1219</span>
+    <span class="pill-badge streak" id="streakDisplay">🔥 2</span>
+    <span class="pill-badge lives" id="livesDisplay" style="display:none">❤️ 3</span>
+    <button class="btn-pill" id="langToggle" onclick="toggleLang()">EN</button>
+    <button class="btn-icon-pill" id="soundToggle" onclick="toggleSound()">🔊</button>
+    <a href="puzzle-history.html" class="btn-pill" id="historyLink">📋 История</a>
+    <a href="personal-trainer.html" class="btn-pill">🎯 Тренер</a>
   </div>
 </header>
 
 <div class="main">
+  <!-- LEFT COLUMN (MAIN) -->
   <div class="col-left">
     <div class="filters">
       <select id="themeSelect">
@@ -395,109 +387,124 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
         <span>—</span>
         <input type="number" id="maxRating" value="2400" min="400" max="3000" step="100">
       </div>
-      <button class="btn-new" id="btnNew">Новая задача</button>
+      <button class="btn-new" id="btnNew">🔄 Новая задача</button>
     </div>
 
-    <div class="board-wrapper">
-      <div class="board-frame">
-        <div id="board"></div>
-        <div class="rank-labels" id="rankLabels"></div>
-        <div class="file-labels" id="fileLabels"></div>
+    <div class="board-card">
+      <div class="board-wrapper">
+        <div class="board-frame">
+          <div id="board"></div>
+          <div class="rank-labels" id="rankLabels"></div>
+          <div class="file-labels" id="fileLabels"></div>
+        </div>
+        <div class="eval-bar" id="evalBar">
+          <div class="white-part" id="evalWhite" style="height:50%"></div>
+          <div class="black-part" id="evalBlack" style="height:50%"></div>
+          <div class="label" id="evalLabel">0.0</div>
+        </div>
       </div>
-      <div class="eval-bar" id="evalBar">
-        <div class="white-part" id="evalWhite" style="height:50%"></div>
-        <div class="black-part" id="evalBlack" style="height:50%"></div>
-        <div class="label" id="evalLabel">0.0</div>
+
+      <div class="puzzle-info-row">
+        <div class="chip purple-chip" id="themeDisplay">advantage, fork, middlegame, short</div>
+        <div class="chip" id="ratingDisplay">ELO 1237</div>
+        <div class="chip" id="movesDisplay">Ход 4/4</div>
+        <div class="chip gold-chip" id="timerDisplay">⏱ 0:08</div>
       </div>
     </div>
 
-    <div class="puzzle-info">
-      <span id="themeDisplay">—</span>
-      <span id="ratingDisplay">—</span>
-      <span id="movesDisplay">Ход 0</span>
-      <span id="timerDisplay">⏱ 0:00</span>
-    </div>
-
-    <div class="status" id="statusDisplay">Нажмите «Новая задача»</div>
+    <!-- Status Banner -->
+    <div class="status correct" id="statusDisplay">✅ Задача решена! Свободная игра</div>
     <div class="idea-chip" id="ideaChip" style="display:none"></div>
-    <div class="ladder" id="hintLadder">
-      <button type="button" id="btnSoftIdea" disabled>🎯 Идея</button>
-      <button type="button" id="btnSoftPiece" disabled>♟️ Фигура</button>
-      <button type="button" id="btnSoftSquare" disabled>📍 Куда</button>
+
+    <!-- Clear Button Hierarchy -->
+    <div class="actions-container">
+      <button class="btn-primary-purple" id="btnNew2">🔄 Новая задача</button>
+      
+      <div class="secondary-row">
+        <button class="btn-secondary" id="btnHint" disabled>💡 Подсказка</button>
+        <button class="btn-secondary" id="btnSolution" disabled>👁 Решение</button>
+      </div>
+
+      <div class="tertiary-row">
+        <button class="chip-btn" id="btnSoftIdea" disabled>📈 Идея</button>
+        <button class="chip-btn" id="btnSoftPiece" disabled>♟ Фигура</button>
+        <button class="chip-btn" id="btnSoftSquare" disabled>⭕ Куда</button>
+        <button class="btn-icon-square" id="btnAnalyze" disabled title="Анализ ИИ">🔍</button>
+        <button class="btn-icon-square" id="btnShare" disabled title="Поделиться">🔗</button>
+      </div>
     </div>
 
-    <div class="actions">
-      <button id="btnNew2">Новая задача</button>
-      <button id="btnHint" class="hint-btn" disabled>💡 Идея</button>
-      <button id="btnSolution" class="hint-btn" disabled>👁 Решение</button>
-      <button id="btnAnalyze" class="hint-btn" disabled style="flex:0.6;">🔍</button>
-      <button id="btnShare" class="hint-btn" disabled style="flex:0.6;">🔗</button>
-    </div>
-    <div class="analyze-panel" id="analyzePanel" style="display:none;margin-top:10px;">
+    <div class="analyze-panel" id="analyzePanel" style="display:none;">
       <div class="coach-msg bot" id="analyzeContent"></div>
     </div>
   </div>
 
+  <!-- RIGHT COLUMN (SIDEBAR) -->
   <div class="col-right">
-    <div class="section-title" id="modeLabel">Режимы</div>
-    <div class="modes-list">
-      <div class="mode-card active" data-mode="normal" id="modeNormal">
-        <div class="mode-icon">🎯</div>
-        <div class="mode-text"><h4>Обычный</h4><p>Решайте в своём темпе</p></div>
-      </div>
-      <div class="mode-card" data-mode="rush" id="modeRush">
-        <div class="mode-icon">⚡</div>
-        <div class="mode-text"><h4>Puzzle Rush</h4><p>3 жизни, продержитесь дольше</p></div>
-        <div class="stat" id="rushScore">0</div>
-      </div>
-    </div>
+    <!-- Hidden element hooks to preserve script compatibility -->
+    <div id="modeLabel" style="display:none">Режимы</div>
+    <div id="statsLabel" style="display:none">Статистика</div>
+    <div id="modeNormal" class="active" data-mode="normal" style="display:none"></div>
+    <div id="modeRush" data-mode="rush" style="display:none"><span id="rushScore">0</span></div>
+    <div id="statSolved" style="display:none">0</div>
+    <div id="statStreak" style="display:none">0</div>
+    <div id="statRating" style="display:none">1200</div>
+    <div id="statAttempts" style="display:none">0</div>
+    <div id="statAccuracy" style="display:none">0%</div>
+    <div id="statLabel0" style="display:none"></div>
+    <div id="statLabel1" style="display:none"></div>
+    <div id="statLabel2" style="display:none"></div>
+    <div id="statLabel3" style="display:none"></div>
+    <div id="statLabel4" style="display:none"></div>
 
-    <div class="daily-card" id="dailyCard">
-      <div class="daily-inner">
-        <div class="daily-icon-wrap" id="dailyIconWrap">🧩</div>
-        <div class="daily-info">
-          <div class="daily-tag">Дейли Пазл</div>
-          <div class="daily-title" id="dailyTitle">Загрузка...</div>
-          <div class="daily-desc" id="dailyDesc">Реши задачу дня!</div>
-          <div class="daily-timer" id="dailyTimer">⏳ --:--:--</div>
-        </div>
-      </div>
+    <!-- 1) DAILY PUZZLE CARD -->
+    <div class="card-rounded daily-card" id="dailyCard">
+      <div class="card-badge">🔥 ДЕЙЛИ ПАЗЛ</div>
+      <div style="display:none" id="dailyIconWrap">🧩</div>
+      <div style="display:none" id="dailyDesc"></div>
+      <div class="daily-title" id="dailyTitle">🔥 Mate in 2 Blitz</div>
+      <div class="daily-timer" id="dailyTimer">⏳ Resets in: 02:15:15</div>
       <div id="dailyCta">
-        <button id="btnDaily">Начать</button>
+        <button class="btn-daily-start" id="btnDaily">Начать</button>
       </div>
     </div>
 
-    <div class="coach" id="coachPanel">
+    <!-- 2) AI ТРЕНЕР CHAT CARD -->
+    <div class="card-rounded coach-card" id="coachPanel">
       <div class="coach-header">
-        <div class="coach-avatar">🤖</div>
-        <div class="coach-header-text">
-          <h3 id="coachTitle">AI Тренер</h3>
-          <span>онлайн</span>
+        <div class="coach-user-info">
+          <div class="coach-avatar-purple">🤖</div>
+          <div class="coach-title-group">
+            <h3 id="coachTitle">AI Тренер</h3>
+          </div>
+        </div>
+        <span class="online-badge">ОНЛАЙН</span>
+      </div>
+
+      <div class="coach-log" id="coachLog">
+        <div class="coach-msg bot">hello! I am your AI trener i can help you with puzzles</div>
+        <div class="coach-msg bot">🎯 Воспользуйтесь возможностью форка, чтобы быстро усилить давление и взять инициативу в середине партии!</div>
+      </div>
+
+      <div class="coach-footer">
+        <div style="display:none">
+          <button type="button" id="btnCoachIdea"></button>
+          <button type="button" id="btnCoachNudge"></button>
+          <button type="button" id="btnCoachAsk"></button>
+        </div>
+        <div class="coach-model-tag">model: openai/gpt-oss-20b:free</div>
+        <div class="coach-input-row">
+          <input id="coachInput" type="text" placeholder="Спроси тренера..." maxlength="240">
+          <button type="button" id="btnCoachSend">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
         </div>
       </div>
-      <div class="coach-log" id="coachLog"></div>
-      <div class="coach-actions">
-        <button type="button" id="btnCoachIdea">🎯 Идея</button>
-        <button type="button" id="btnCoachNudge">💬 Подтолкни</button>
-        <button type="button" id="btnCoachAsk">❓ Спросить</button>
-      </div>
-      <div class="coach-input-row">
-        <input id="coachInput" type="text" placeholder="Спроси тренера..." maxlength="240">
-        <button type="button" id="btnCoachSend">
-          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
-      </div>
     </div>
 
-    <div class="stats-section">
-      <div class="section-title" id="statsLabel">Статистика</div>
-      <div class="stats-grid">
-        <div class="stat-item"><div class="num" id="statSolved">0</div><div class="lbl" id="statLabel0">Решено</div></div>
-        <div class="stat-item"><div class="num" id="statStreak">0</div><div class="lbl" id="statLabel1">Серия</div></div>
-        <div class="stat-item"><div class="num" id="statRating">1200</div><div class="lbl" id="statLabel2">Рейтинг</div></div>
-        <div class="stat-item"><div class="num" id="statAttempts">0</div><div class="lbl" id="statLabel3">Попыток</div></div>
-        <div class="stat-item"><div class="num" id="statAccuracy">—</div><div class="lbl" id="statLabel4">Точность</div></div>
-      </div>
+    <!-- 3) CASUAL CARD -->
+    <div class="casual-card">
+      🎯 Casual — Решайте в своём темпе. Подсказки доступны.
     </div>
   </div>
 </div>
