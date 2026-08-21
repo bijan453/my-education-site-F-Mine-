@@ -366,7 +366,7 @@ async function askAi(text){
   addAiMsg(text,'user');showAiTyping();
   try{const lesson=LESSONS[currentTopic];const ctx=lesson?`Текущая тема: ${lesson.title}. Задача: ${currentTask?.text||'нет'}. Ответ: ${currentTask?.answer||'?'}`:'Химия';
   const sysPrompt=`Ты — экспертный репетитор по химии. Объясняй пошагово (Шаг 1, Шаг 2...), расписывай химические реакции, коэффициенты, формулы ($...$), используй эмодзи (🧪, ⚗️, 💡, 🎯) и жирный шрифт. ${ctx}`;
-  const r=await fetch('https://my-education-site-f-mine-production.up.railway.app/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemPrompt:sysPrompt,messages:[{role:'system',content:sysPrompt},...aiHistory.slice(-6),{role:'user',content:text}]})});
+  const r=await fetch('https://my-education-site-f-mine.onrender.com/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemPrompt:sysPrompt,messages:[{role:'system',content:sysPrompt},...aiHistory.slice(-6),{role:'user',content:text}]})});
   const d=await r.json();removeAiTyping();addAiMsg(d.reply||d.error||'Не могу ответить','bot');aiHistory.push({role:'user',content:text});aiHistory.push({role:'assistant',content:d.reply||''})}
   catch(e){removeAiTyping();addAiMsg('❌ Ошибка соединения с AI','bot')}
 }

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="https://skulpt.org/js/skulpt.min.js"></script>
+<script src="https://skulpt.org/js/skulpt-stdlib.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F-Mine | Информатика</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<style>
+:root{--bg:#f2fbf9;--surface:#fff;--surface2:#eaf7f4;--surface3:#d9efe9;--border:rgba(13,148,136,.08);--border2:rgba(13,148,136,.16);--teal:#0d9488;--teal2:#0f766e;--pink:#f472b6;--gold:#f59e0b;--text:#0f2a26;--muted:#5f7a75;--danger:#dc2626;--green:#16a34a;--code-bg:#0b1220;--code-tx:#d6e2ff;--r:16px;--shadow-sm:0 1px 3px rgba(13,148,136,.05);--shadow:0 4px 14px rgba(13,148,136,.07);--shadow-lg:0 10px 40px rgba(13,148,136,.1);--shadow-xl:0 20px 60px rgba(13,148,136,.14)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(13,148,136,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(244,114,182,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:20px;letter-spacing:-.5px;cursor:pointer}
+.logo-f{background:linear-gradient(135deg,var(--teal),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-rest{color:var(--text)}
+.header-right{display:flex;gap:8px;align-items:center}
+.header-nav{display:flex;gap:8px;align-items:center}
+.nav-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;transition:.15s}
+.nav-btn:hover{border-color:var(--teal);color:var(--teal)}
+.nav-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.view{display:none;position:relative;z-index:1;min-height:calc(100vh - 54px)}
+.view.active{display:block}
+#gradeView{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px}
+.grade-title{font-size:36px;font-weight:800;margin-bottom:8px;text-align:center}
+.grade-sub{color:var(--muted);font-size:15px;margin-bottom:40px;text-align:center}
+.grade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;max-width:640px;width:100%}
+.grade-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px 16px;text-align:center;cursor:pointer;transition:.25s;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
+.grade-card:hover{border-color:var(--teal);transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.grade-card .grade-num{font-size:42px;font-weight:800;background:linear-gradient(135deg,var(--teal),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.grade-card .grade-label{font-size:13px;color:var(--muted);margin-top:4px}
+.grade-card .grade-badge{position:absolute;top:10px;right:10px;background:var(--teal);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px}
+#topicView{padding:30px 24px;max-width:900px;margin:0 auto}
+.topic-head{margin-bottom:28px}
+.topic-head h1{font-size:28px;font-weight:800;margin-bottom:4px}
+.topic-head p{color:var(--muted);font-size:14px}
+.topic-progress-bar{height:6px;background:var(--surface3);border-radius:6px;margin-top:14px;overflow:hidden}
+.topic-progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--pink));border-radius:6px;transition:width .4s}
+.topic-list{display:flex;flex-direction:column;gap:10px}
+.topic-card{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;cursor:pointer;transition:.2s;box-shadow:var(--shadow-sm)}
+.topic-card:hover{border-color:var(--teal);background:rgba(13,148,136,.03);transform:translateX(3px)}
+.topic-card.done{border-color:rgba(22,163,74,.3)}
+.topic-num{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--muted)}
+.topic-card.done .topic-num{background:rgba(22,163,74,.1);color:var(--green)}
+.topic-card:hover .topic-num{background:rgba(13,148,136,.1);color:var(--teal)}
+.topic-info{flex:1}.topic-name{font-size:14px;font-weight:600}.topic-arrow{color:var(--muted)}
+#lessonView.active{display:flex;height:calc(100vh - 54px)}
+.lesson-back{position:fixed;top:64px;left:16px;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit;display:none;box-shadow:var(--shadow)}
+.lesson-theory{flex:1;overflow-y:auto;padding:28px 32px 120px;border-right:1px solid var(--border)}
+.lesson-practice{width:400px;flex-shrink:0;overflow-y:auto;padding:24px 20px 120px;background:var(--surface)}
+.theory-section{margin-bottom:28px}
+.theory-section h2{font-size:20px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.theory-section h2 .section-icon{font-size:20px}
+.theory-section p,.theory-section li{font-size:15.5px;line-height:1.8;color:#28443f}
+.theory-section ul,.theory-section ol{padding-left:20px;margin:8px 0}
+.theory-section li{margin-bottom:5px}
+.theory-section .highlight-box{background:rgba(13,148,136,.05);border:1px solid rgba(13,148,136,.12);border-radius:12px;padding:14px 18px;margin:12px 0;font-size:15px}
+.theory-section .highlight-box.gold{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.15)}
+.theory-section .highlight-box.pink{background:rgba(244,114,182,.06);border-color:rgba(244,114,182,.15)}
+.formula-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:10px 0;text-align:center;font-size:17px;overflow-x:auto;font-family:'JetBrains Mono',monospace}
+.code-sample{background:var(--code-bg);color:var(--code-tx);border-radius:12px;padding:14px 16px;margin:10px 0;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;overflow-x:auto;white-space:pre}
+.code-sample .c{color:#7d8cae}.code-sample .k{color:#7dd3fc}.code-sample .s{color:#86efac}.code-sample .n{color:#fbbf24}
+.example-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:12px 0}
+.example-block h3{color:var(--teal);font-size:15px;margin-bottom:12px}
+.example-block .step{display:flex;gap:10px;margin-bottom:10px;font-size:14.5px;line-height:1.7}
+.example-block .step-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.example-block .step-rule{color:var(--gold);font-size:11px;font-weight:600;display:block;margin-top:2px}
+.context-box{background:linear-gradient(135deg,rgba(13,148,136,.06),rgba(244,114,182,.04));border:1px solid rgba(13,148,136,.12);border-radius:var(--r);padding:18px 20px;margin-bottom:24px}
+.context-box h3{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.context-box p{font-size:15.5px;line-height:1.8;color:#28443f}
+.lesson-photo{display:none;margin:0 0 22px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);background:var(--surface);position:relative}
+.lesson-photo.show{display:block}
+.lesson-photo img{width:100%;height:auto;max-height:380px;object-fit:contain;background:var(--surface3);display:block}
+.photo-cap{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 10px;background:linear-gradient(transparent,rgba(15,42,38,.8));color:#fff;font-size:12px;font-weight:600}
+.photo-skel{height:260px;background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.2s linear infinite}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.practice-head{margin-bottom:16px}.practice-head h2{font-size:18px;font-weight:700}.practice-head p{font-size:12px;color:var(--muted)}
+.practice-stats{display:flex;gap:8px;margin-bottom:16px}
+.stat-chip{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center}
+.stat-chip .stat-val{font-size:20px;font-weight:800}.stat-chip .stat-label{font-size:10px;color:var(--muted);margin-top:2px}
+.stat-chip.correct .stat-val{color:var(--green)}.stat-chip.wrong .stat-val{color:var(--danger)}
+.task-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.task-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.task-formula{font-size:16px;line-height:1.7;padding:14px 16px;background:var(--surface2);border-radius:12px;margin-bottom:14px;min-height:50px;display:flex;align-items:center;justify-content:center;text-align:center}
+.task-input-row{display:flex;gap:8px}
+.task-input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;outline:none;text-align:center}
+.task-input:focus{border-color:var(--teal)}
+.task-input.correct{border-color:var(--green);background:rgba(22,163,74,.05)}
+.task-input.wrong{border-color:var(--danger);background:rgba(220,38,38,.05)}
+.check-btn{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.check-btn:hover{background:var(--teal2)}.check-btn:disabled{opacity:.4;cursor:not-allowed}
+.next-btn{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;margin-top:8px;display:none}
+.next-btn:hover{border-color:var(--teal);color:var(--teal)}
+.task-feedback{margin-top:10px;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;display:none}
+.task-feedback.correct{display:block;background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.15);color:#16a34a}
+.task-feedback.wrong{display:block;background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.15);color:var(--danger)}
+.task-solution{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6}
+.task-type-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.task-type-tab{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:inherit}
+.task-type-tab.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.hint-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--gold);cursor:pointer;font-family:inherit;margin-top:8px;display:none}
+.hint-text{display:none;margin-top:8px;padding:10px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:10px;font-size:12px;color:#92400e;line-height:1.6}
+/* КОД-ЗАДАЧИ */
+.code-sec{margin-top:20px}
+.code-sec h3{font-size:15px;margin-bottom:10px}
+.code-task-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.code-task-card b{font-size:13px;display:block}
+.code-task-card p{font-size:12px;color:var(--muted);margin-top:2px}
+.code-task-card.solved{border-color:var(--green)}
+.btn-code{background:linear-gradient(135deg,var(--teal),var(--teal2));border:none;color:#fff;border-radius:9px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+/* РЕДАКТОР КОДА */
+.code-modal{position:fixed;inset:0;z-index:400;background:rgba(5,15,20,.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:14px}
+.code-modal.hidden{display:none}
+.code-box{width:min(1100px,97vw);height:min(700px,94vh);background:var(--surface);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-xl)}
+.code-head{padding:10px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.code-head .cm-title{font-weight:800;font-size:15px;margin-right:auto}
+.cm-lang{background:var(--code-bg);color:#7dd3fc;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px}
+.cm-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.cm-btn.run{background:linear-gradient(135deg,var(--green),#15803d);border:none;color:#fff}
+.cm-btn:hover{filter:brightness(1.08)}
+.code-body{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:0}
+.code-left{overflow-y:auto;padding:14px;border-right:1px solid var(--border);background:var(--surface2)}
+.code-task-text{font-size:14px;line-height:1.7;margin-bottom:12px}
+.code-results{display:flex;flex-direction:column;gap:8px}
+.res-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;font-family:'JetBrains Mono',monospace}
+.res-item.ok{border-color:var(--green);color:#15803d}
+.res-item.bad{border-color:var(--danger);color:#b91c1c}
+.cm-preview{margin-top:10px;border:1px solid var(--border);border-radius:10px;background:#fff;width:100%;height:200px}
+#cmEditor{width:100%;height:100%;background:var(--code-bg);color:var(--code-tx);border:none;outline:none;resize:none;padding:16px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.7;tab-size:4;white-space:pre;overflow:auto}
+/* AI */
+.ai-fab{position:fixed;bottom:24px;right:24px;z-index:200;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--pink));border:none;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(13,148,136,.35);display:none;align-items:center;justify-content:center}
+#lessonView.active ~ .ai-fab{display:flex}
+.ai-panel{display:none;position:fixed;bottom:88px;right:24px;z-index:199;width:min(400px,calc(100vw - 40px));height:480px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);flex-direction:column;box-shadow:var(--shadow-xl)}
+.ai-panel.open{display:flex}
+.ai-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.ai-head-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.ai-head span{font-size:13px;font-weight:600;flex:1}
+.ai-close{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer}
+.ai-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.ai-msg{max-width:90%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6}
+.ai-msg.user{align-self:flex-end;background:var(--teal);color:#fff;border-bottom-right-radius:4px}
+.ai-msg.bot{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);border-bottom-left-radius:4px}
+.ai-code{margin:6px 0;border-radius:10px;overflow:hidden;border:1px solid #1e293b;max-width:100%}
+.ai-code-head{background:#1e293b;color:#94a3b8;font-size:10px;font-weight:700;padding:4px 10px;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace}
+.copy-code{background:#334155;border:none;color:#e2e8f0;border-radius:5px;padding:2px 8px;font-size:10px;cursor:pointer;font-family:inherit}
+.copy-code:hover{background:#475569}
+.ai-code pre{background:var(--code-bg);color:var(--code-tx);padding:10px 12px;font-size:12px;line-height:1.6;overflow-x:auto;font-family:'JetBrains Mono',monospace;margin:0;white-space:pre}
+.ai-typing{display:flex;gap:4px;padding:10px 14px}
+.ai-typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:aiDot 1.2s infinite}
+.ai-typing span:nth-child(2){animation-delay:.2s}.ai-typing span:nth-child(3){animation-delay:.4s}
+@keyframes aiDot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+.ai-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px}
+.ai-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;font-size:13px;outline:none;font-family:inherit}
+.ai-send{background:var(--teal);color:#fff;border:none;border-radius:10px;width:38px;height:38px;font-size:15px;cursor:pointer}
+.ai-quick-btns{display:flex;gap:4px;padding:0 12px 8px;flex-wrap:wrap}
+.ai-quick-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:10px;color:var(--muted);cursor:pointer;font-family:inherit}
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:8px 18px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:300;white-space:nowrap}
+#toast.show{opacity:1;bottom:100px}
+@media(max-width:900px){#lessonView.active{flex-direction:column}.lesson-theory{border-right:none;border-bottom:1px solid var(--border);padding-bottom:20px}.lesson-practice{width:100%;padding-bottom:20px}.code-body{grid-template-columns:1fr}.ai-panel{width:calc(100vw - 32px);right:16px;bottom:80px;height:400px}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#b8dcd4;border-radius:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="showGrades()"><span class="logo-f">F</span><span class="logo-rest">-Mine Информатика</span></div>
+  <div class="header-right"><div class="header-nav" id="headerNav"></div></div>
+</header>
+
+<div id="gradeView" class="view active">
+  <div class="grade-title">Информатика 💻</div>
+  <div class="grade-sub">От устройства компьютера до JavaScript — с редактором кода и проверкой!</div>
+  <div class="grade-grid" id="gradeGrid"></div>
+</div>
+
+<div id="topicView" class="view"></div>
+<div id="lessonView" class="view"></div>
+<button class="lesson-back" id="lessonBack" onclick="goBack()">← Назад</button>
+
+<button class="ai-fab" id="aiFab" onclick="toggleAi()">🤖</button>
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-head">
+    <div class="ai-head-dot"></div>
+    <span>F-Mine AI Помощник</span>
+    <button class="ai-close" onclick="toggleAi()">✕</button>
+  </div>
+  <div class="ai-messages" id="aiMessages">
+    <div class="ai-msg bot">Привет! Я помогу с информатикой и напишу код — его можно скопировать 🤖</div>
+  </div>
+  <div class="ai-quick-btns">
+    <button class="ai-quick-btn" onclick="askAi('Объясни тему простыми словами')">💡 Объясни</button>
+    <button class="ai-quick-btn" onclick="askAi('Напиши пример кода по теме')">💻 Пример кода</button>
+    <button class="ai-quick-btn" onclick="askAi('Дай подсказку к текущей задаче')">🎯 Подсказка</button>
+  </div>
+  <div class="ai-input-row">
+    <input class="ai-input" id="aiInput" placeholder="Задай вопрос или попроси код..." onkeydown="if(event.key==='Enter')sendAi()" />
+    <button class="ai-send" onclick="sendAi()">→</button>
+  </div>
+</div>
+
+<!-- РЕДАКТОР КОДА -->
+<div class="code-modal hidden" id="codeModal">
+  <div class="code-box">
+    <div class="code-head">
+      <span class="cm-title" id="cmTitle">Задача</span>
+      <span class="cm-lang" id="cmLang">JS</span>
+      <button class="cm-btn run" onclick="checkCode()">▶ Проверить</button>
+      <button class="cm-btn" id="previewBtn" onclick="showPreview()" style="display:none">👁 Предпросмотр</button>
+      <button class="cm-btn" onclick="copyEditor()">📋 Копировать</button>
+      <button class="cm-btn" onclick="closeCode()">✕</button>
+    </div>
+    <div class="code-body">
+      <div class="code-left">
+        <div class="code-task-text" id="cmTask"></div>
+        <div class="code-results" id="cmResults"></div>
+        <iframe class="cm-preview" id="cmPreview" style="display:none" sandbox="allow-scripts"></iframe>
+      </div>
+      <textarea id="cmEditor" spellcheck="false"></textarea>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="informatics-lessons.js"></script>
+<script>
+const GRADES=[
+  {id:7,label:'7 класс',badge:'Компьютер'},
+  {id:8,label:'8 класс',badge:'HTML+CSS'},
+  {id:9,label:'9 класс',badge:'JavaScript'},
+  {id:10,label:'10 класс',badge:'Python'},
+  {id:11,label:'11 класс',badge:'C++'}
+];
+const TOPICS={
+  7:[
+    {id:'7.1',name:'Как устроен компьютер',icon:'🖥️'},
+    {id:'7.2',name:'Процессор: мозг машины',icon:'🧠'},
+    {id:'7.3',name:'Память и единицы информации',icon:'💾'},
+    {id:'7.4',name:'Двоичный код и системы счисления',icon:'🔢'},
+    {id:'7.5',name:'Логика: И, ИЛИ, НЕ',icon:'🚦'},
+    {id:'7.6',name:'Как работает интернет',icon:'🌐'}
+  ],
+  8:[
+    {id:'8.1',name:'HTML: скелет страницы',icon:'📄'},
+    {id:'8.2',name:'Текст, списки, ссылки, картинки',icon:'✍️'},
+    {id:'8.3',name:'Таблицы и формы',icon:'🧮'},
+    {id:'8.4',name:'CSS: селекторы, цвета, единицы',icon:'🎨'},
+    {id:'8.5',name:'CSS: бокс-модель',icon:'📦'},
+    {id:'8.6',name:'CSS: Flexbox и Grid',icon:'🧘'},
+    {id:'8.7',name:'CSS: hover, анимации, позиция',icon:'✨'},
+    {id:'8.8',name:'Адаптивность + мини-проект',icon:'📱'}
+  ],
+  9:[
+    {id:'9.1',name:'JS: переменные и типы',icon:'⚡'},
+    {id:'9.2',name:'Операторы и условия',icon:'🚦'},
+    {id:'9.3',name:'Циклы',icon:'🔁'},
+    {id:'9.4',name:'Функции',icon:'🧰'},
+    {id:'9.5',name:'Массивы и объекты',icon:'📚'},
+    {id:'9.6',name:'DOM: страница оживает',icon:'🎭'},
+    {id:'9.7',name:'Проект: калькулятор',icon:'🧮'}
+  ],
+  10:[
+    {id:'10.1',name:'Python: старт, print, переменные',icon:'🐍'},
+    {id:'10.2',name:'Операторы и input()',icon:'🧮'},
+    {id:'10.3',name:'Условия if / elif / else',icon:'🚦'},
+    {id:'10.4',name:'Циклы for и while',icon:'🔁'},
+    {id:'10.5',name:'Функции def и return',icon:'🧰'},
+    {id:'10.6',name:'Списки и словари',icon:'📚'},
+    {id:'10.7',name:'Строки и методы',icon:'🔤'},
+    {id:'10.8',name:'Проект: угадай число',icon:'🎯'}
+  ],
+  11:[
+    {id:'11.1',name:'C++: структура, cout/cin',icon:'⚙️'},
+    {id:'11.2',name:'Переменные и типы',icon:'🧮'},
+    {id:'11.3',name:'Условия и switch',icon:'🚦'},
+    {id:'11.4',name:'Циклы for и while',icon:'🔁'},
+    {id:'11.5',name:'Функции',icon:'🧰'},
+    {id:'11.6',name:'Массивы и vector',icon:'📚'},
+    {id:'11.7',name:'Проект: итоговая задача',icon:'🏆'}
+  ]
+};
+const WIKI={
+  '7.1':'Компьютер','7.2':'Центральный процессор','7.3':'Оперативная память','7.4':'Двоичная система счисления','7.5':'Логический вентиль','7.6':'Интернет',
+  '8.1':'HTML','8.2':'HTML','8.3':'Веб-форма','8.4':'CSS','8.5':'CSS','8.6':'Flexbox','8.7':'CSS','8.8':'Адаптивный веб-дизайн',
+  '9.1':'JavaScript','9.2':'JavaScript','9.3':'Цикл (программирование)','9.4':'Функция (программирование)','9.5':'Массив (программирование)','9.6':'DOM','9.7':'JavaScript',
+  '10.1':'Python','10.2':'Python','10.3':'Python','10.4':'Цикл (программирование)','10.5':'Функция (программирование)','10.6':'Python','10.7':'Строка','10.8':'Python',
+  '11.1':'C++','11.2':'C++','11.3':'C++','11.4':'Цикл (программирование)','11.5':'Функция (программирование)','11.6':'Vector (C++)','11.7':'C++'
+};
+
+function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function normAns(v){return String(v).toLowerCase().replace(/ё/g,'е').replace(/['’]/g,'').trim().replace(/\s+/g,' ').replace(/[.!?,;:]+$/,'')}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+async function loadLessonPhoto(){
+  const box=document.getElementById('lessonPhoto');if(!box)return;
+  const lesson=LESSONS[currentTopic];
+  function showImg(src,fb,cap){box.classList.add('show');box.innerHTML=`<img src="${src}" alt="${cap}" loading="lazy"><div class="photo-cap">📷 ${cap}</div>`;const img=box.querySelector('img');let s=0;img.addEventListener('error',()=>{s++;if(s===1&&fb)img.src=fb;else box.remove()})}
+  if(lesson&&lesson.img){showImg(lesson.img,null,lesson.title);return}
+  const title=WIKI[currentTopic];if(!title){box.remove();return}
+  try{const r=await fetch('https://ru.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title));if(!r.ok)throw 0;const d=await r.json();const th=d.thumbnail?d.thumbnail.source:null;if(!th)throw 0;showImg(th,th,title)}catch(e){box.remove()}
+}
+
+/* ══════════ РЕДАКТОР + УМНАЯ ПРОВЕРКА ══════════ */
+let curCodeTask=null;
+function openCode(i){
+  curCodeTask=LESSONS[currentTopic].code[i];curCodeTask._idx=i;
+  document.getElementById('cmTitle').textContent=curCodeTask.title;
+  document.getElementById('cmLang').textContent=(curCodeTask.lang||'js').toUpperCase();
+  document.getElementById('cmTask').innerHTML=curCodeTask.taskText;
+  document.getElementById('cmEditor').value=curCodeTask.starter||'';
+  document.getElementById('cmResults').innerHTML='';
+  document.getElementById('cmPreview').style.display='none';
+  document.getElementById('previewBtn').style.display=(curCodeTask.lang==='html'||curCodeTask.lang==='css')?'':'none';
+  document.getElementById('codeModal').classList.remove('hidden');
+  document.getElementById('cmEditor').focus();
+}
+function closeCode(){document.getElementById('codeModal').classList.add('hidden')}
+function copyEditor(){navigator.clipboard.writeText(document.getElementById('cmEditor').value);showToast('📋 Код скопирован!')}
+document.getElementById('cmEditor').addEventListener('keydown',e=>{
+  if(e.key==='Tab'){e.preventDefault();const el=e.target;const s=el.selectionStart;el.value=el.value.slice(0,s)+'    '+el.value.slice(el.selectionEnd);el.selectionStart=el.selectionEnd=s+4}
+});
+function showPreview(){const f=document.getElementById('cmPreview');f.style.display='';f.srcdoc=document.getElementById('cmEditor').value}
+
+function runJsTests(code,tests){
+  return tests.map(t=>{
+    try{
+      const fn=new Function(code+'\n;return ('+t.call+');');
+      const val=fn();
+      return{label:t.label||t.call,ok:JSON.stringify(val)===JSON.stringify(t.expected),got:val,exp:t.expected};
+    }catch(e){return{label:t.label||t.call,ok:false,error:String(e)}}
+  });
+}
+function runHtmlChecks(code,checks){
+  const doc=new DOMParser().parseFromString(code,'text/html');
+  return checks.map(ch=>{
+    const els=[...doc.querySelectorAll(ch.sel)];
+    let ok=els.length>=(ch.min||1);
+    if(ok&&ch.text)ok=els.some(el=>(el.textContent||'').toLowerCase().includes(ch.text.toLowerCase()));
+    if(ok&&ch.attr)ok=els.some(el=>{const v=el.getAttribute(ch.attr);return v!==null&&v!==''});
+    return{label:ch.label||('⟨'+ch.sel+'⟩'),ok};
+  });
+}
+function runInjectTask(task,code,cb){
+  const frame=document.createElement('iframe');frame.style.display='none';
+  frame.srcdoc=task.html+'\n'+code+'\n<scr'+'ipt>window.addEventListener("load",function(){try{window.__res=('+task.verify+');var el=document.querySelector(".box")||document.querySelector("h1")||document.body;var cs=getComputedStyle(el);window.__dbg="padding="+cs.paddingTop+" | borderW="+cs.borderTopWidth+" | borderS="+cs.borderTopStyle;}catch(e){window.__err=String(e)}})<\/scr'+'ipt>';
+  document.body.appendChild(frame);
+  frame.onload=function(){setTimeout(()=>{
+    const w=frame.contentWindow;let out=[];
+    if(w.__err){out=[{label:'Выполнение',ok:false,error:w.__err}]}
+    else{const v=w.__res;
+      if(Array.isArray(v)){out=v.map((ok,i)=>({label:(task.labels&&task.labels[i])||('Проверка '+(i+1)),ok:!!ok,error:(!ok&&w.__dbg)?('debug: '+w.__dbg):undefined}))}
+      else{out=[{label:(task.labels&&task.labels[0])||'Проверка',ok:!!v,error:(!v&&w.__dbg)?('debug: '+w.__dbg):undefined}]}
+    }
+    cb(out);frame.remove();
+  },80)};
+}
+function runPythonTests(code,tests,cb){
+  if(!window.Sk){ // офлайн-фолбэк: проверяем, что функция объявлена
+    cb(tests.map(t=>{const fn=(t.call||'').split('(')[0];return{label:t.label||t.call+' (офлайн)',ok:new RegExp('def\\s+'+fn).test(code),exp:t.expected}}));
+    return;
+  }
+  const res=[];let i=0;
+  const next=()=>{
+    if(i>=tests.length){cb(res);return}
+    const t=tests[i];
+    Sk.configure({output:()=>{}});
+    Sk.misceval.asyncToPromise(()=>Sk.importMainWithBody('<stdin>',false,code+'\n__res__='+t.call,true))
+      .then(m=>{const val=Sk.ffi.remapToJs(m.$d['__res__']);res.push({label:t.label||t.call,ok:JSON.stringify(val)===JSON.stringify(t.expected),got:val,exp:t.expected});i++;next()})
+      .catch(e=>{res.push({label:t.label||t.call,ok:false,error:String(e)});i++;next()});
+  };
+  next();
+}
+function runCppChecks(code,pats){
+  return pats.map(p=>{
+    const ok=p.re?new RegExp(p.re).test(code):code.includes(p.need);
+    return{label:p.label,ok};
+  });
+}
+function checkCode(){
+  const code=document.getElementById('cmEditor').value.replace(/\u00a0/g,' ').replace(/[\u200b-\u200d\ufeff]/g,'');
+  const t=curCodeTask;const box=document.getElementById('cmResults');
+  const finish=res=>{
+    box.innerHTML=res.map(r=>{
+      let extra='';
+      if(!r.ok){extra=r.error?(' — '+esc(r.error)):(r.got!==undefined?(' — получилось: '+esc(JSON.stringify(r.got))+' , надо: '+esc(JSON.stringify(r.exp))):' — требование не выполнено')}
+      return `<div class="res-item ${r.ok?'ok':'bad'}">${r.ok?'✅':'❌'} ${esc(r.label)}${extra}</div>`;
+    }).join('');
+    if(res.every(r=>r.ok)){stats.correct++;updateStatChips();showToast('🎉 Все проверки пройдены!');
+      const card=document.querySelector(`.code-task-card[data-idx="${t._idx}"]`);if(card)card.classList.add('solved');
+    }else{stats.wrong++;updateStatChips()}
+  };
+  if(t.lang==='py'){runPythonTests(code,t.tests,finish)}
+  else if(t.lang==='cpp'){finish(runCppChecks(code,t.patterns))}
+  else if(t.inject){runInjectTask(t,code,finish)}
+  else if(t.lang==='html'){finish(runHtmlChecks(code,t.checks))}
+  else{finish(runJsTests(code,t.tests))}
+}
+
+/* ══════════ ОСНОВНАЯ ЛОГИКА ══════════ */
+let currentGrade=null,currentTopic=null,currentTaskType=0,stats={correct:0,wrong:0,streak:0},currentTask=null,aiOpen=false,aiHistory=[];
+function updateStatChips(){document.getElementById('statCorrect').textContent=stats.correct;document.getElementById('statWrong').textContent=stats.wrong;document.getElementById('statStreak').textContent=stats.streak}
+function showView(id){document.querySelectorAll('.view').forEach(v=>{v.classList.remove('active');v.style.display='none'});const t=document.getElementById(id);t.classList.add('active');t.style.display=''}
+function showGrades(){currentGrade=null;currentTopic=null;document.getElementById('lessonBack').style.display='none';document.getElementById('aiFab').style.display='none';document.getElementById('aiPanel').classList.remove('open');document.getElementById('headerNav').innerHTML='';showView('gradeView')}
+function showTopics(gid){
+  currentGrade=gid;const topics=TOPICS[gid]||[];
+  const completed=JSON.parse(localStorage.getItem('fmine_inf_topics')||'[]');
+  const done=topics.filter(t=>completed.includes(t.id)).length;
+  const pct=topics.length?Math.round(done/topics.length*100):0;
+  document.getElementById('topicView').innerHTML=`
+    <div class="topic-head"><h1>${gid} класс — Информатика</h1><p>${topics.length} тем · Изучено: ${done}/${topics.length}</p>
+    <div class="topic-progress-bar"><div class="topic-progress-fill" style="width:${pct}%"></div></div></div>
+    <div class="topic-list">${topics.map((t,i)=>`<div class="topic-card ${completed.includes(t.id)?'done':''}" onclick="openLesson('${t.id}')"><div class="topic-num">${completed.includes(t.id)?'✓':i+1}</div><div class="topic-info"><div class="topic-name">${t.icon} ${t.name}</div></div><div class="topic-arrow">›</div></div>`).join('')}</div>`;
+  showView('topicView');
+  document.getElementById('headerNav').innerHTML=`<button class="nav-btn" onclick="showGrades()">← Классы</button>`;
+}
+function openLesson(tid){
+  currentTopic=tid;const lesson=LESSONS[tid];
+  if(!lesson){showToast('⚠️ Тема в разработке');return}
+  stats={correct:0,wrong:0,streak:0};renderLesson(lesson);showView('lessonView');
+  document.getElementById('lessonBack').style.display='';
+  document.getElementById('aiFab').style.display='flex';
+  document.getElementById('headerNav').innerHTML=`<button class="nav-btn" onclick="showTopics(${currentGrade})">← Темы</button><button class="nav-btn active">${TOPICS[currentGrade]?.find(t=>t.id===tid)?.icon||'💻'} ${lesson.title.slice(0,26)}...</button>`;
+}
+function goBack(){if(currentTopic){showTopics(currentGrade)}else{showGrades()}}
+function renderLesson(lesson){
+  const el=document.getElementById('lessonView');
+  let th=`<div class="lesson-photo" id="lessonPhoto"><div class="photo-skel"></div></div>
+  <div class="context-box"><h3>🌍 Контекст</h3><p>${lesson.context}</p></div>`;
+  lesson.theory.forEach(s=>{th+=`<div class="theory-section"><h2><span class="section-icon">${s.icon}</span> ${s.title}</h2>${s.html}</div>`});
+  th+=`<div class="theory-section"><h2><span class="section-icon">📝</span> Разбор примеров</h2>`;
+  lesson.examples.forEach(ex=>{th+=`<div class="example-block"><h3>${ex.title}</h3>`;ex.steps.forEach((st,j)=>{th+=`<div class="step"><div class="step-num">${j+1}</div><div>${st.text}<span class="step-rule">${st.rule}</span></div></div>`});th+=`</div>`});
+  th+=`</div>`;
+  let codeSec='';
+  if(lesson.code&&lesson.code.length){
+    codeSec=`<div class="code-sec"><h3>💻 Код-задачи (с проверкой)</h3>`+lesson.code.map((c,i)=>`<div class="code-task-card" data-idx="${i}"><div><b>${c.title}</b><p>${(c.taskText||'').replace(/<[^>]+>/g,'').slice(0,60)}…</p></div><button class="btn-code" onclick="openCode(${i})">💻 Решить</button></div>`).join('')+`</div>`;
+  }
+  let pr=`<div class="practice-head"><h2>🎯 Практика</h2><p>Тесты + настоящий код с проверкой</p></div>
+    <div class="practice-stats"><div class="stat-chip correct"><div class="stat-val" id="statCorrect">0</div><div class="stat-label">Верно</div></div><div class="stat-chip wrong"><div class="stat-val" id="statWrong">0</div><div class="stat-label">Ошибки</div></div><div class="stat-chip"><div class="stat-val" id="statStreak">0</div><div class="stat-label">Серия</div></div></div>
+    <div class="task-type-tabs">${lesson.taskTypes.map((tt,i)=>`<button class="task-type-tab ${i===0?'active':''}" onclick="switchTaskType(${i})">${tt.icon} ${tt.name}</button>`).join('')}</div>
+    <div id="taskArea"></div>${codeSec}`;
+  el.innerHTML=`<div class="lesson-theory">${th}</div><div class="lesson-practice">${pr}</div>`;
+  setTimeout(()=>{generateTask();loadLessonPhoto()},100);
+}
+function switchTaskType(i){currentTaskType=i;document.querySelectorAll('.task-type-tab').forEach((t,j)=>t.classList.toggle('active',j===i));generateTask()}
+function generateTask(){
+  const lesson=LESSONS[currentTopic];if(!lesson)return;
+  const tt=lesson.taskTypes[currentTaskType];const params=tt.generate();
+  const vals=Object.values(params);
+  const singleObj=vals.length===1&&typeof vals[0]==='object'&&vals[0]!==null;
+  let task;
+  if(!tt.template){task=params}
+  else if(tt.template.length===1&&!singleObj){task=tt.template(params)}
+  else{task=tt.template(...vals)}
+  currentTask={...task,typeIdx:currentTaskType};
+  const area=document.getElementById('taskArea');
+  area.innerHTML=`<div class="task-card"><div class="task-label">Вопрос</div><div class="task-formula">${currentTask.text}</div><div class="task-input-row"><input class="task-input" id="taskInput" type="text" placeholder="Ответ..." onkeydown="if(event.key==='Enter')checkAnswer()" autofocus /><button class="check-btn" id="checkBtn" onclick="checkAnswer()">Проверить</button></div><button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Подсказка</button><div class="hint-text" id="hintText"></div><div class="task-feedback" id="taskFeedback"></div><button class="next-btn" id="nextBtn" onclick="generateTask()">Следующий →</button></div>`;
+  setTimeout(()=>{document.getElementById('taskInput')?.focus()},50);
+}
+function checkAnswer(){
+  const input=document.getElementById('taskInput');const val=input.value.trim();if(!val)return;
+  const ans=currentTask.answer;const arr=Array.isArray(ans)?ans:[ans];
+  const ok=arr.some(a=>normAns(a)===normAns(val)||(normAns(a).length>2&&normAns(val).includes(normAns(a))));
+  input.classList.remove('correct','wrong');input.classList.add(ok?'correct':'wrong');input.disabled=true;document.getElementById('checkBtn').disabled=true;
+  const fb=document.getElementById('taskFeedback');
+  if(ok){stats.correct++;stats.streak++;fb.className='task-feedback correct';fb.innerHTML=`✅ Верно! ${stats.streak>2?`🔥 Серия: ${stats.streak}`:''}`}
+  else{stats.wrong++;stats.streak=0;fb.className='task-feedback wrong';fb.innerHTML=`❌ Неверно. Правильно: <b>${arr[0]}</b><div class="task-solution">${currentTask.solution}</div>`}
+  updateStatChips();
+  document.getElementById('nextBtn').style.display='';document.getElementById('hintBtn').style.display='none';
+}
+function showHint(){const ht=document.getElementById('hintText');ht.style.display='block';ht.textContent='💡 '+currentTask.hint}
+
+/* ══════════ AI С КОДОМ И КОПИРОВАНИЕМ ══════════ */
+function fmtAi(raw){
+  const re=/```(\w*)\n?([\s\S]*?)```/g;let m,last=0,out='';
+  const inline=s=>esc(s).replace(/\n/g,'<br>');
+  while((m=re.exec(raw))){
+    out+=inline(raw.slice(last,m.index));
+    out+=`<div class="ai-code"><div class="ai-code-head"><span>${m[1]||'code'}</span><button class="copy-code" onclick="copyCode(this)">📋 Копировать</button></div><pre>${esc(m[2])}</pre></div>`;
+    last=m.index+m[0].length;
+  }
+  out+=inline(raw.slice(last));
+  return out;
+}
+function copyCode(btn){
+  const pre=btn.closest('.ai-code').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='✅ Скопировано';setTimeout(()=>btn.textContent='📋 Копировать',1500)});
+}
+function toggleAi(){aiOpen=!aiOpen;document.getElementById('aiPanel').classList.toggle('open',aiOpen);if(aiOpen)document.getElementById('aiInput').focus()}
+async function askAi(text){
+  addAiMsg(text,'user');showAiTyping();
+  try{const lesson=LESSONS[currentTopic];const ctx=lesson?`Тема: ${lesson.title}.`:'Информатика';
+  const r=await fetch('https://my-education-site-f-mine.onrender.com/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:`Ты — учитель информатики. Объясняй просто, с аналогиями и ПОДРОБНО. Если нужен код — давай ПОЛНЫЙ готовый код внутри \`\`\` (укажи язык: js/html/css/python/cpp), с комментариями, чтобы его можно было скопировать и запустить. ${ctx}`},...aiHistory.slice(-6),{role:'user',content:text}]})});
+  const d=await r.json();removeAiTyping();addAiMsg(d.reply||d.error||'Не могу ответить','bot');aiHistory.push({role:'user',content:text});aiHistory.push({role:'assistant',content:d.reply||''})}
+  catch(e){removeAiTyping();addAiMsg('❌ Ошибка соединения с AI','bot')}
+}
+function sendAi(){const i=document.getElementById('aiInput');const v=i.value.trim();if(!v)return;i.value='';askAi(v)}
+function addAiMsg(t,r){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className=`ai-msg ${r}`;d.innerHTML=(r==='bot')?fmtAi(t):esc(t);c.appendChild(d);c.scrollTop=c.scrollHeight}
+function showAiTyping(){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className='ai-typing';d.id='aiTyping';d.innerHTML='<span></span><span></span><span></span>';c.appendChild(d);c.scrollTop=c.scrollHeight}
+function removeAiTyping(){document.getElementById('aiTyping')?.remove()}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('gradeGrid').innerHTML=GRADES.map(g=>`<div class="grade-card" onclick="showTopics(${g.id})"><div class="grade-badge">${g.badge}</div><div class="grade-num">${g.id}</div><div class="grade-label">${g.label}</div></div>`).join('');
+});
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@ algebra-helper/
 ├── static/
 │   └── index.html        ← Веб-интерфейс
 ├── requirements.txt      ← Зависимости Python
-├── Procfile             ← Команда запуска для Railway
+├── Procfile             ← Команда запуска для Render
 ├── .gitignore           ← Исключения для Git
 └── README.md            ← Описание проекта
 ```

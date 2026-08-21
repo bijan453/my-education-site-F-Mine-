@@ -50,8 +50,8 @@ try { dotenv.config({ path: path.join(__dirname, '.env') }); } catch {}
 
 const app = express();
 
-// Health Check Endpoint for Railway
-app.get('/', (req, res) => res.send('Backend is running!'));
+// Health Check Endpoint for Render
+app.get('/health', (req, res) => { res.send('Backend is running!'); });
 
 // Dynamic CORS configuration
 const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
@@ -94,7 +94,7 @@ async function getSmtpHostIp(host) {
   return host;
 }
 
-// Brevo HTTP API sender (bypasses SMTP port blocks on Railway)
+// Brevo HTTP API sender (bypasses SMTP port blocks on Render)
 async function sendBrevoEmail({ to, subject, htmlContent, senderName, senderEmail }) {
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) throw new Error('BREVO_API_KEY is not configured');
@@ -305,7 +305,7 @@ app.post("/api/register", async (req, res) => {
     return res.json({ success: true, ok: true, message: "Код подтверждения отправлен на вашу почту!", code: otpCode });
   } catch (error) {
     console.error("[Brevo API Error] /api/register failure:", error.message);
-    return res.status(500).json({ success: false, ok: false, error: "Ошибка отправки письма. Проверьте BREVO_API_KEY в Railway." });
+    return res.status(500).json({ success: false, ok: false, error: "Ошибка отправки письма. Проверьте BREVO_API_KEY в Render." });
   }
 });
 
@@ -370,7 +370,7 @@ app.post("/api/send-code", async (req, res) => {
     return res.status(500).json({
       success: false,
       ok: false,
-      error: "Failed to send email via Brevo API. Check BREVO_API_KEY in Railway."
+      error: "Failed to send email via Brevo API. Check BREVO_API_KEY in Render."
     });
   }
 });

@@ -4,11 +4,11 @@ This project is ready for deployment to a Python cloud hosting provider.
 
 ## Recommended hosts
 
+- Render (Primary)
 - Heroku
-- Railway
-- Render
 - PythonAnywhere
 - Fly
+
 
 ## Requirements
 

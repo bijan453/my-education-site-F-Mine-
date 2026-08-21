@@ -203,7 +203,7 @@ header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
 
 <script>
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-const API_BASE = IS_LOCAL ? 'http://localhost:3000' : 'https://my-education-site-f-mine-production.up.railway.app';
+const API_BASE = IS_LOCAL ? 'http://localhost:3000' : 'https://my-education-site-f-mine.onrender.com';
 
 const history = JSON.parse(localStorage.getItem('fmine_history') || '[]');
 const rating = parseInt(localStorage.getItem('fmine_rating') || '1200');

@@ -10579,7 +10579,7 @@
     }
 
     var IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    var API_BASE = IS_LOCAL ? '' : 'https://my-education-site-f-mine-production.up.railway.app';
+    var API_BASE = IS_LOCAL ? '' : 'https://my-education-site-f-mine.onrender.com';
 
     async function fetchOpenRouterWithFallback(messages, modelIndex, modelsToTry) {
       var currentModel = modelsToTry[modelIndex];
@@ -10726,7 +10726,7 @@
       _wrap.appendChild(_bubble); _wrap.appendChild(_time); _row.appendChild(_av); _row.appendChild(_wrap);
       
       if (megaMode) {
-        // Server API key used via Railway proxy
+        // Server API key used via Render proxy
         
         try {
           var systemPrompt = isEN()
