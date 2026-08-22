@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>F-Mine | Шахматный тренажёр</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f6fb;
+  --bg2: rgba(255, 255, 255, 0.85);
+  --bg3: rgba(240, 242, 248, 0.9);
+  --surface: rgba(255, 255, 255, 0.8);
+  --surface2: rgba(240, 242, 248, 0.9);
+  --surface3: rgba(228, 231, 242, 0.9);
+  --border: rgba(0, 0, 0, 0.07);
+  --border2: rgba(0, 0, 0, 0.1);
+  --text: #1e2235;
+  --text2: #5a5d72;
+  --text3: #888ba3;
+  --purple: #6E56CF;
+  --purple-dim: rgba(110, 86, 207, 0.08);
+  --emerald: #059669;
+  --rose: #e11d48;
+  --gold: #d97706;
+  --r: 12px;
+  --ease: 0.25s ease;
+  --blur: blur(16px);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.03);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,.05), 0 4px 6px rgba(0,0,0,.03);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(circle at 80% 20%, rgba(110, 86, 207, 0.04) 0%, transparent 40%),
+                    radial-gradient(circle at 10% 90%, rgba(110, 86, 207, 0.03) 0%, transparent 30%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ---- HEADER ---- */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 32px;
+  background: var(--bg2);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+header h1 {
+  font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text); letter-spacing: 0.5px;
+}
+header h1 .rook { font-size: 18px; filter: grayscale(1) brightness(2); }
+.header-right { display: flex; gap: 10px; align-items: center; font-size: 12px; font-weight: 600; }
+.header-right .elo {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 6px 12px; border-radius: 20px; color: var(--text);
+  display: flex; align-items: center; gap: 4px;
+}
+.header-right .streak {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 6px 12px; border-radius: 20px; color: var(--gold);
+  display: flex; align-items: center; gap: 4px;
+}
+.header-right .lives {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 6px 12px; border-radius: 20px; color: var(--rose);
+  display: none; align-items: center; gap: 4px;
+}
+#langToggle {
+  background: var(--surface) !important; border: 1px solid var(--border) !important;
+  border-radius: 20px !important; padding: 6px 12px !important;
+  color: var(--text2) !important; font-family: inherit; font-weight: 600; font-size: 12px !important;
+  cursor: pointer; transition: var(--ease);
+}
+#langToggle:hover { background: var(--surface2) !important; color: #fff !important; }
+
+/* ---- LAYOUT ---- */
+.main { display: flex; gap: 32px; max-width: 1240px; margin: 24px auto; padding: 0 32px; align-items: flex-start; }
+.col-left { flex: 7; min-width: 0; }
+.col-right {
+  flex: 3; min-width: 280px; max-width: 380px; max-height: calc(100vh - 80px);
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent; padding-bottom: 40px;
+}
+
+/* ---- FILTERS ROW ---- */
+.filters { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.filters select, .filters input {
+  font-family: inherit; font-size: 13px; font-weight: 500; color: var(--text);
+  background: var(--surface); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px;
+  outline: none; transition: var(--ease); appearance: none; -webkit-appearance: none;
+}
+.filters select {
+  cursor: pointer; min-width: 180px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23686880'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+}
+.filters select:focus, .filters input:focus { border-color: var(--purple); background: var(--surface2); }
+.filters input[type=number] { text-align: center; width: 70px; -moz-appearance: textfield; }
+.filters input[type=number]::-webkit-outer-spin-button, .filters input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.range-group { display: flex; align-items: center; gap: 8px; }
+.range-group span { color: var(--text3); font-weight: 500; }
+.filters .btn-new {
+  flex: 1; padding: 10px 20px; border: none; border-radius: 8px;
+  font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--ease);
+  background: var(--purple); color: #fff; letter-spacing: 0.3px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 4px 12px rgba(110, 86, 207, 0.25);
+}
+.filters .btn-new:hover { background: #7C66DC; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(110, 86, 207, 0.3); }
+
+/* ---- BOARD ---- */
+.board-wrapper { display: flex; gap: 16px; align-items: stretch; margin-bottom: 12px; }
+.board-frame { position: relative; width: min(540px, 100%); aspect-ratio: 1; flex-shrink: 0; max-width: 100%; }
+#board {
+  display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr);
+  width: 100%; height: 100%; border-radius: 4px; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+.square { display: flex; align-items: center; justify-content: center; font-size: 44px; cursor: pointer; user-select: none; position: relative; }
+/* Refined wood colors */
+.square.light { background: #D9B382; }
+.square.dark { background: #966138; }
+.square .pw { color: #fff; text-shadow: 0 1.5px 3px rgba(0,0,0,0.5); }
+.square .pb { color: #111; text-shadow: 0 1px 1px rgba(255,255,255,0.1); }
+
+.square::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.square.selected::before { background: rgba(110, 86, 207, 0.4); }
+.square.last-from::before, .square.last-to::before { background: rgba(154, 205, 50, 0.45); }
+.square.hint-move::before { background: rgba(245, 158, 11, 0.35); animation: pulse 1.2s ease infinite; }
+@keyframes pulse { 0%, 100% { background: rgba(245, 158, 11, 0.25); } 50% { background: rgba(245, 158, 11, 0.5); } }
+
+.square.legal-hint::after {
+  content: ''; position: absolute; top: 50%; left: 50%; width: 26%; aspect-ratio: 1;
+  transform: translate(-50%, -50%); border-radius: 50%; background: rgba(0, 0, 0, 0.2); pointer-events: none; z-index: 1;
+}
+.square span { position: relative; z-index: 2; pointer-events: none; }
+.square.incorrect { animation: flash 0.35s ease; }
+@keyframes flash { 0% { background: rgba(244, 63, 94, 0.6); } 100% { background: inherit; } }
+
+/* Rank & file labels */
+.board-frame > .rank-labels {
+  display: flex; position: absolute; left: -20px; top: 0; height: 100%;
+  flex-direction: column; justify-content: stretch; padding: 2px 0; pointer-events: none;
+}
+.board-frame > .rank-labels span {
+  font-size: 11px; font-weight: 500; color: var(--text3); display: flex; align-items: center; justify-content: center; flex: 1;
+}
+.board-frame > .file-labels {
+  display: flex; position: absolute; bottom: -22px; left: 0; width: 100%;
+  justify-content: stretch; padding: 0 2px; pointer-events: none;
+}
+.board-frame > .file-labels span {
+  font-size: 11px; font-weight: 500; color: var(--text3); flex: 1; display: flex; align-items: center; justify-content: center;
+}
+
+/* Eval bar */
+.eval-bar {
+  width: 16px; background: var(--bg3); border-radius: 10px; overflow: hidden;
+  display: flex; flex-direction: column; position: relative; min-height: 200px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 2px 8px rgba(0,0,0,0.6);
+}
+.eval-bar .white-part { background: #f0f0f0; transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; }
+.eval-bar .black-part { background: #222; transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; }
+.eval-bar .label { display: none; }
+
+/* Puzzle info below board */
+.puzzle-info { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: 11px; color: var(--text2); font-weight: 500; }
+.puzzle-info span { background: var(--surface); border: 1px solid var(--border); padding: 4px 10px; border-radius: 16px; }
+#timerDisplay { color: var(--gold); font-variant-numeric: tabular-nums; }
+
+/* Status Bar */
+.status {
+  text-align: center; padding: 12px; border-radius: var(--r); font-size: 14px; font-weight: 500;
+  margin: 12px 0; background: var(--surface); border: 1px solid var(--border); min-height: 44px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.status.correct { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border-color: rgba(16, 185, 129, 0.2); }
+.status.incorrect { background: rgba(244, 63, 94, 0.1); color: var(--rose); border-color: rgba(244, 63, 94, 0.2); }
+.status.hint { background: rgba(245, 158, 11, 0.1); color: var(--gold); border-color: rgba(245, 158, 11, 0.2); }
+
+/* ---- ACTION BUTTONS ---- */
+.ladder { display: flex; gap: 8px; margin: 0 0 8px 0; }
+.ladder button {
+  flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: var(--r);
+  font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+  background: var(--surface); color: var(--text2); transition: var(--ease);
+}
+.ladder button:hover:not(:disabled) { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+.ladder button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.actions { display: flex; gap: 8px; }
+.actions button {
+  flex: 1; padding: 12px; border: none; border-radius: var(--r);
+  font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--ease);
+}
+#btnNew2 { background: var(--purple); color: #fff; box-shadow: 0 4px 12px rgba(110, 86, 207, 0.2); }
+#btnNew2:hover:not(:disabled) { background: #7C66DC; transform: translateY(-1px); }
+.actions .hint-btn { background: var(--surface); color: var(--text2); border: 1px solid var(--border); }
+.actions .hint-btn:hover:not(:disabled) { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+.actions button:disabled { opacity: 0.3; cursor: not-allowed; }
+.analyze-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 16px; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
+.analyze-panel .coach-msg { font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; }
+
+/* ---- RIGHT COLUMN ---- */
+.col-right .section-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text3); margin-bottom: 12px;
+}
+
+/* Mode list */
+.modes-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.mode-card {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--r);
+  cursor: pointer; transition: var(--ease); background: var(--surface); border: 1px solid var(--border);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.mode-card:hover { background: var(--surface2); border-color: var(--border2); }
+.mode-card.active { background: rgba(110, 86, 207, 0.1); border-color: rgba(110, 86, 207, 0.4); }
+.mode-card .mode-icon {
+  font-size: 18px; width: 32px; height: 32px; border-radius: 8px; background: var(--bg3);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.mode-card.active .mode-icon { background: var(--purple); color: #fff; }
+.mode-card .mode-text h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.mode-card .mode-text p { font-size: 11px; color: var(--text3); line-height: 1.3; }
+.mode-card .stat { font-size: 16px; font-weight: 700; color: var(--text); margin-left: auto; }
+
+/* Daily puzzle */
+.daily-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 16px; margin-bottom: 24px; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.daily-inner { display: flex; align-items: center; gap: 14px; }
+.daily-icon-wrap {
+  font-size: 24px; width: 48px; height: 48px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--bg3), var(--surface2));
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+}
+.daily-info { flex: 1; min-width: 0; }
+.daily-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 4px; }
+.daily-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.daily-desc { font-size: 12px; color: var(--text2); display: none; }
+.daily-timer { font-size: 11px; color: var(--gold); margin-top: 4px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+.daily-done-badge { font-size: 13px; font-weight: 600; color: var(--emerald); text-align: center; padding: 10px 0 0; }
+#dailyCta { margin-top: 12px; }
+#dailyCta button {
+  width: 100%; padding: 10px; border: none; border-radius: 8px; background: var(--purple);
+  color: #fff; font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--ease);
+}
+#dailyCta button:hover { background: #7C66DC; }
+
+/* AI Coach */
+.coach {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 0; overflow: hidden; margin-bottom: 24px; display: flex; flex-direction: column;
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.coach-header {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.1);
+}
+.coach-avatar {
+  width: 28px; height: 28px; border-radius: 6px; background: var(--purple);
+  display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+}
+.coach-header-text h3 { font-size: 13px; font-weight: 600; color: var(--text); margin: 0; }
+.coach-header-text span { font-size: 10px; color: var(--emerald); font-weight: 500; }
+.coach-log {
+  min-height: 120px; max-height: 200px; overflow-y: auto; padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.08) transparent;
+}
+.coach-msg {
+  font-size: 12.5px; line-height: 1.5; padding: 10px 14px; border-radius: 12px;
+  max-width: 90%; word-wrap: break-word; white-space: pre-wrap; animation: fadeIn .25s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.coach-msg.bot { background: var(--surface2); color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; }
+.coach-msg.user { background: var(--purple); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.coach-msg .meta { display: block; font-size: 9px; color: var(--text3); margin-top: 6px; font-family: 'DM Mono', monospace; }
+.coach-actions { display: flex; gap: 6px; padding: 8px 16px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.05); }
+.coach-actions button {
+  flex: 1; padding: 8px 4px; border: none; border-radius: 6px; font-family: inherit; font-size: 11px; font-weight: 600;
+  cursor: pointer; background: var(--surface3); color: var(--text2); transition: var(--ease);
+}
+.coach-actions button:hover { background: var(--purple-dim); color: var(--purple); }
+.coach-input-row { display: flex; gap: 8px; padding: 0 16px 16px; background: rgba(0,0,0,0.05); }
+.coach-input-row input {
+  flex: 1; font-family: inherit; font-size: 13px; color: var(--text); background: var(--bg);
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; outline: none; transition: var(--ease);
+}
+.coach-input-row input:focus { border-color: var(--purple); }
+.coach-input-row input::placeholder { color: var(--text3); }
+.coach-input-row button {
+  width: 38px; padding: 0; border: none; border-radius: 8px; background: var(--purple);
+  color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--ease);
+}
+.coach-input-row button:hover { background: #7C66DC; }
+.coach-input-row button svg { width: 16px; height: 16px; fill: currentColor; }
+.coach.busy { opacity: 0.8; pointer-events: none; }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-item {
+  background: var(--surface); border: 1px solid var(--border); padding: 16px;
+  border-radius: var(--r); text-align: center; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.stat-item .num { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.stat-item .lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+/* Flying piece */
+.flying-piece { position: fixed; z-index: 200; pointer-events: none; display: flex; align-items: center; justify-content: center; transition: transform .2s cubic-bezier(.2,.8,.2,1); }
+.square span.anim-hide { opacity: 0; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(16px);
+  background: var(--bg2); border: 1px solid var(--border2); border-radius: 8px; padding: 12px 24px;
+  font-size: 14px; font-weight: 500; color: #fff; z-index: 999; opacity: 0; transition: all .35s ease; pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Responsive */
+@media(max-width: 860px) {
+  .main { flex-direction: column; gap: 24px; padding: 0 16px; }
+  .col-left, .col-right { flex: auto; width: 100%; min-width: 0; max-width: 100%; max-height: none; overflow-y: visible; }
+  header { flex-direction: column; gap: 8px; padding: 12px 16px; }
+  header h1 { font-size: 16px; }
+  .header-right { flex-wrap: wrap; justify-content: center; }
+  .filters { flex-wrap: wrap; }
+  .filters select { min-width: 140px; width: 100%; }
+  .filters .range-group { width: 100%; }
+  .filters .btn-new { width: 100%; }
+  .board-wrapper { flex-direction: row; align-items: stretch; justify-content: center; overflow: visible; padding-left: 4px; }
+  .board-frame { width: min(540px, calc(100vw - 56px)); }
+  .board-frame > .rank-labels { display: none; }
+  .board-frame > .file-labels { display: none; }
+  .eval-bar { min-height: unset; height: auto; width: 14px; flex-shrink: 0; }
+  .coach-actions { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="headerTitle"><span class="rook">♖</span> F-MINE <span style="font-weight:400;color:var(--text3)">Шахматный тренажёр</span></h1>
+  <div class="header-right">
+    <span class="elo" id="eloDisplay">♛ 1200</span>
+    <span class="streak" id="streakDisplay">🔥 0</span>
+    <span class="lives" id="livesDisplay" style="display:none">❤️ 3</span>
+    <button id="langToggle" onclick="toggleLang()">EN</button>
+    <button id="soundToggle" onclick="toggleSound()" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--text2);font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;transition:var(--ease);">🔊</button>
+    <a href="puzzle-history.html" id="historyLink" style="background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;transition:var(--ease);">📋 История</a>
+    <a href="personal-trainer.html" style="background:var(--surface);border:1px solid var(--border);padding:6px 12px;border-radius:20px;color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;transition:var(--ease);">🎯 Тренер</a>
+  </div>
+</header>
+
+<div class="main">
+  <div class="col-left">
+    <div class="filters">
+      <select id="themeSelect">
+        <option value="">Все темы</option>
+        <option value="mate">Мат</option>
+        <option value="mateIn2">Мат в 2</option>
+        <option value="mateIn3">Мат в 3</option>
+        <option value="mateIn4">Мат в 4</option>
+        <option value="fork">Вилка</option>
+        <option value="pin">Связка</option>
+        <option value="skewer">Сквозной удар</option>
+        <option value="sacrifice">Жертва</option>
+        <option value="endgame">Эндшпиль</option>
+        <option value="deflection">Отвлечение</option>
+        <option value="attraction">Завлечение</option>
+        <option value="discoveredAttack">Вскрытое нападение</option>
+        <option value="intermezzo">Промежуточный ход</option>
+        <option value="advancedPawn">Проходная пешка</option>
+        <option value="opening">Дебют</option>
+        <option value="middlegame">Миттельшпиль</option>
+      </select>
+      <div class="range-group">
+        <input type="number" id="minRating" value="800" min="400" max="2800" step="100">
+        <span>—</span>
+        <input type="number" id="maxRating" value="2400" min="400" max="3000" step="100">
+      </div>
+      <button class="btn-new" id="btnNew">Новая задача</button>
+    </div>
+
+    <div class="board-wrapper">
+      <div class="board-frame">
+        <div id="board"></div>
+        <div class="rank-labels" id="rankLabels"></div>
+        <div class="file-labels" id="fileLabels"></div>
+      </div>
+      <div class="eval-bar" id="evalBar">
+        <div class="white-part" id="evalWhite" style="height:50%"></div>
+        <div class="black-part" id="evalBlack" style="height:50%"></div>
+        <div class="label" id="evalLabel">0.0</div>
+      </div>
+    </div>
+
+    <div class="puzzle-info">
+      <span id="themeDisplay">—</span>
+      <span id="ratingDisplay">—</span>
+      <span id="movesDisplay">Ход 0</span>
+      <span id="timerDisplay">⏱ 0:00</span>
+    </div>
+
+    <div class="status" id="statusDisplay">Нажмите «Новая задача»</div>
+    <div class="idea-chip" id="ideaChip" style="display:none"></div>
+    <div class="ladder" id="hintLadder">
+      <button type="button" id="btnSoftIdea" disabled>🎯 Идея</button>
+      <button type="button" id="btnSoftPiece" disabled>♟️ Фигура</button>
+      <button type="button" id="btnSoftSquare" disabled>📍 Куда</button>
+    </div>
+
+    <div class="actions">
+      <button id="btnNew2">Новая задача</button>
+      <button id="btnHint" class="hint-btn" disabled>💡 Идея</button>
+      <button id="btnSolution" class="hint-btn" disabled>👁 Решение</button>
+      <button id="btnAnalyze" class="hint-btn" disabled style="flex:0.6;">🔍</button>
+      <button id="btnShare" class="hint-btn" disabled style="flex:0.6;">🔗</button>
+    </div>
+    <div class="analyze-panel" id="analyzePanel" style="display:none;margin-top:10px;">
+      <div class="coach-msg bot" id="analyzeContent"></div>
+    </div>
+  </div>
+
+  <div class="col-right">
+    <div class="section-title" id="modeLabel">Режимы</div>
+    <div class="modes-list">
+      <div class="mode-card active" data-mode="normal" id="modeNormal">
+        <div class="mode-icon">🎯</div>
+        <div class="mode-text"><h4>Обычный</h4><p>Решайте в своём темпе</p></div>
+      </div>
+      <div class="mode-card" data-mode="rush" id="modeRush">
+        <div class="mode-icon">⚡</div>
+        <div class="mode-text"><h4>Puzzle Rush</h4><p>3 жизни, продержитесь дольше</p></div>
+        <div class="stat" id="rushScore">0</div>
+      </div>
+    </div>
+
+    <div class="daily-card" id="dailyCard">
+      <div class="daily-inner">
+        <div class="daily-icon-wrap" id="dailyIconWrap">🧩</div>
+        <div class="daily-info">
+          <div class="daily-tag">Дейли Пазл</div>
+          <div class="daily-title" id="dailyTitle">Загрузка...</div>
+          <div class="daily-desc" id="dailyDesc">Реши задачу дня!</div>
+          <div class="daily-timer" id="dailyTimer">⏳ --:--:--</div>
+        </div>
+      </div>
+      <div id="dailyCta">
+        <button id="btnDaily">Начать</button>
+      </div>
+    </div>
+
+    <div class="coach" id="coachPanel">
+      <div class="coach-header">
+        <div class="coach-avatar">🤖</div>
+        <div class="coach-header-text">
+          <h3 id="coachTitle">AI Тренер</h3>
+          <span>онлайн</span>
+        </div>
+      </div>
+      <div class="coach-log" id="coachLog"></div>
+      <div class="coach-actions">
+        <button type="button" id="btnCoachIdea">🎯 Идея</button>
+        <button type="button" id="btnCoachNudge">💬 Подтолкни</button>
+        <button type="button" id="btnCoachAsk">❓ Спросить</button>
+      </div>
+      <div class="coach-input-row">
+        <input id="coachInput" type="text" placeholder="Спроси тренера..." maxlength="240">
+        <button type="button" id="btnCoachSend">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <div class="section-title" id="statsLabel">Статистика</div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="num" id="statSolved">0</div><div class="lbl" id="statLabel0">Решено</div></div>
+        <div class="stat-item"><div class="num" id="statStreak">0</div><div class="lbl" id="statLabel1">Серия</div></div>
+        <div class="stat-item"><div class="num" id="statRating">1200</div><div class="lbl" id="statLabel2">Рейтинг</div></div>
+        <div class="stat-item"><div class="num" id="statAttempts">0</div><div class="lbl" id="statLabel3">Попыток</div></div>
+        <div class="stat-item"><div class="num" id="statAccuracy">—</div><div class="lbl" id="statLabel4">Точность</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+// ---- STATE ----
+let rating = parseInt(localStorage.getItem('fmine_rating') || '1200');
+let streak = parseInt(localStorage.getItem('fmine_streak') || '0');
+let totalSolved = parseInt(localStorage.getItem('fmine_solved') || '0');
+let totalAttempts = parseInt(localStorage.getItem('fmine_attempts') || '0');
+
+let game = null;
+let puzzleId = null;
+let puzzleRating = 1200;
+let puzzleThemes = '';
+let moveIndex = 0;
+let totalMoves = 0;
+let isFlipped = false;
+let puzzleFen = '';
+let incorrectAttempt = false;
+let moving = false;
+let selSq = null;
+let possMoves = [];
+let lastFrom = null;
+let lastTo = null;
+let mode = 'normal';
+let lives = 3;
+let rushScore = 0;
+let solvedThisRush = false;
+let hintUsed = false;
+let solved = false;
+let timerInterval = null;
+let timerStart = 0;
+let timerElapsed = 0;
+let soundEnabled = localStorage.getItem('fmine_sound') !== 'off';
+
+const $ = id => document.getElementById(id);
+const SYM = { w:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'}, b:{k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'} };
+
+// ---- SOUND ENGINE ----
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+}
+document.addEventListener('click', () => { initAudio(); }, { once: true });
+document.addEventListener('touchstart', () => { initAudio(); }, { once: true });
+function synthTone(freq, type, dur, delay) {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (delay||0));
+    gain.gain.setValueAtTime(0.25, audioCtx.currentTime + (delay||0));
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (delay||0) + dur);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime + (delay||0));
+    osc.stop(audioCtx.currentTime + (delay||0) + dur);
+  } catch(e) {}
+}
+function sndMove() { synthTone(600, 'triangle', 0.07); }
+function sndCapture() { synthTone(350, 'sawtooth', 0.1); synthTone(220, 'sawtooth', 0.08, 0.03); }
+function sndCorrect() { synthTone(520, 'sine', 0.12); synthTone(660, 'sine', 0.15, 0.08); }
+function sndIncorrect() { synthTone(200, 'square', 0.15); synthTone(160, 'square', 0.2, 0.05); }
+function sndSolved() { synthTone(523, 'sine', 0.2); synthTone(659, 'sine', 0.2, 0.12); synthTone(784, 'sine', 0.35, 0.24); }
+function sndGameOver() { synthTone(440, 'sine', 0.25); synthTone(349, 'sine', 0.25, 0.1); synthTone(261, 'sine', 0.4, 0.2); }
+
+// ---- TIMER ----
+function startTimer() {
+  stopTimer();
+  timerStart = Date.now();
+  timerElapsed = 0;
+  $('timerDisplay').textContent = '⏱ 0:00';
+  timerInterval = setInterval(() => {
+    timerElapsed = Math.floor((Date.now() - timerStart) / 1000);
+    const m = Math.floor(timerElapsed / 60);
+    const s = timerElapsed % 60;
+    $('timerDisplay').textContent = '⏱ ' + m + ':' + String(s).padStart(2, '0');
+  }, 200);
+}
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+function getTimerSeconds() {
+  return timerElapsed;
+}
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+// ---- PIECE MOVE ANIMATION ----
+function animateMove(fromSq, toSq, cb) {
+  const fromEl = document.querySelector('[data-sq="' + fromSq + '"]');
+  const toEl = document.querySelector('[data-sq="' + toSq + '"]');
+  if (!fromEl || !toEl || !fromEl.querySelector('span')) { if (cb) cb(); return; }
+  const pieceSpan = fromEl.querySelector('span');
+  const fromRect = fromEl.getBoundingClientRect();
+  const toRect = toEl.getBoundingClientRect();
+  const fly = document.createElement('div');
+  fly.className = 'flying-piece';
+  fly.textContent = pieceSpan.textContent;
+  fly.style.fontSize = window.getComputedStyle(pieceSpan).fontSize;
+  fly.style.left = fromRect.left + 'px';
+  fly.style.top = fromRect.top + 'px';
+  fly.style.width = fromRect.width + 'px';
+  fly.style.height = fromRect.height + 'px';
+  fly.style.display = 'flex';
+  fly.style.alignItems = 'center';
+  fly.style.justifyContent = 'center';
+  fly.style.color = pieceSpan.classList.contains('pw') ? '#fff' : '#1a1a1a';
+  document.body.appendChild(fly);
+  pieceSpan.classList.add('anim-hide');
+  requestAnimationFrame(() => {
+    fly.style.left = toRect.left + 'px';
+    fly.style.top = toRect.top + 'px';
+  });
+  setTimeout(() => { fly.remove(); if (cb) cb(); }, 220);
+}
+
+// ---- EVAL BAR HELPER (flip advantage when solver is black) ----
+function playerAdvantage(raw) {
+  return isFlipped ? -raw : raw;
+}
+
+// ---- LOCALIZATION ----
+let lang = localStorage.getItem('fmine_lang');
+if (lang !== 'ru' && lang !== 'en') lang = 'ru';
+const T = {
+  ru: {
+    title:'F-Mine | Шахматный тренажёр', headerTitle:'<span class="rook">♖</span> F-MINE <span style="font-weight:400;color:var(--text3)">Шахматный тренажёр</span>',
+    newPuzzle:'🎲 Новая задача', hint:'💡 Подсказка', solution:'👁 Решение',
+    allThemes:'Все темы', normal:'🎯 Обычный', normalDesc:'Решайте в своём темпе. Подсказки доступны.',
+    rush:'⚡ Puzzle Rush', rushDesc:'3 жизни. Каждая ошибка отнимает жизнь. Продержитесь как можно дольше!',
+    solved:'Решено', streak:'Серия', rating:'Рейтинг', attempts:'Попыток',
+    accuracy:'Точность', mode:'Режимы', stats:'📊 Статистика',
+    waiting:'Нажмите «Новая задача»', loading:'Загрузка...', noFilter:'Нет задач по такому фильтру',
+    yourTurn:'Ваш ход', correct:'✓ Верно!', opponentMove:'Ход соперника...',
+    solvedFree:'✅ Задача решена! Свободная игра', incorrect:'✗ Неверный ход',
+    gameOver:'💀 Игра окончена! Решено: ', rushStart:'⚡ Режим Rush! 3 жизни.',
+    hintLabel:'💡 Подсказка: ', solutionLabel:'👁 Решение: ',
+    noHint:'Нет подсказки', serverError:'Ошибка сервера', loadError:'Ошибка загрузки',
+    move:'Ход', lives:'❤️', elo:'♛',
+    rushScore:'Счёт', theme:'Тема', rating:'Рейтинг',
+    mate:'Мат', mateIn2:'Мат в 2', mateIn3:'Мат в 3', mateIn4:'Мат в 4',
+    fork:'Вилка', pin:'Связка', skewer:'Сквозной удар',
+    sacrifice:'Жертва', endgame:'Эндшпиль', deflection:'Отвлечение',
+    attraction:'Завлечение', discoveredAttack:'Вскрытое нападение',
+    intermezzo:'Промежуточный ход', advancedPawn:'Проходная пешка',
+    opening:'Дебют', middlegame:'Миттельшпиль',
+    coachTitle:'🤖 AI Тренер', coachIdea:'🎯 Идея', coachNudge:'💬 Подтолкни', coachAsk:'❓ Спросить',
+    softIdea:'🎯 Идея', softPiece:'♟️ Фигура', softSquare:'📍 Куда',
+    coachPlaceholder:'Спроси тренера...', coachThinking:'🧠 Думаю...', coachError:'😅 Тренер сейчас недоступен',
+    greetingFixed:'hello! I am your AI trener i can help you with puzzels',
+    dailyTag:'Задание дня', dailyDone:'✅ Решено сегодня!', dailyStart:'🎯 Начать',
+    history:'📋 История',
+  },
+  en:{
+    title:'F-Mine | Chess Trainer', headerTitle:'<span class="rook">♖</span> F-MINE <span style="font-weight:400;color:var(--text3)">Chess Trainer</span>',
+    newPuzzle:'🎲 New Puzzle', hint:'💡 Hint', solution:'👁 Solution',
+    allThemes:'All Themes', normal:'🎯 Normal', normalDesc:'Solve at your own pace. Hints available.',
+    rush:'⚡ Puzzle Rush', rushDesc:'3 lives. Mistakes cost a life. Survive as long as you can!',
+    solved:'Solved', streak:'Streak', rating:'Rating', attempts:'Attempts',
+    accuracy:'Accuracy', mode:'Modes', stats:'📊 Stats',
+    waiting:'Press "New Puzzle"', loading:'Loading...', noFilter:'No puzzles match your filter',
+    yourTurn:'Your turn', correct:'✓ Correct!', opponentMove:'Opponent\'s move...',
+    solvedFree:'✅ Puzzle solved! Free play', incorrect:'✗ Incorrect move',
+    gameOver:'💀 Game over! Score: ', rushStart:'⚡ Rush mode! 3 lives.',
+    hintLabel:'💡 Hint: ', solutionLabel:'👁 Solution: ',
+    noHint:'No hint available', serverError:'Server error', loadError:'Load error',
+    move:'Move', lives:'❤️', elo:'♛',
+    rushScore:'Score', theme:'Theme', rating:'Rating',
+    mate:'Mate', mateIn2:'Mate in 2', mateIn3:'Mate in 3', mateIn4:'Mate in 4',
+    fork:'Fork', pin:'Pin', skewer:'Skewer',
+    sacrifice:'Sacrifice', endgame:'Endgame', deflection:'Deflection',
+    attraction:'Attraction', discoveredAttack:'Discovered Attack',
+    intermezzo:'Intermezzo', advancedPawn:'Advanced Pawn',
+    opening:'Opening', middlegame:'Middlegame',
+    coachTitle:'🤖 AI Trainer', coachIdea:'🎯 Idea', coachNudge:'💬 Nudge me', coachAsk:'❓ Ask',
+    softIdea:'🎯 Idea', softPiece:'♟️ Piece', softSquare:'📍 Where',
+    coachPlaceholder:'Ask the trainer...', coachThinking:'🧠 Thinking...', coachError:'😅 Trainer is unavailable',
+    greetingFixed:'hello! I am your AI trener i can help you with puzzels',
+    history:'📋 History',
+  }
+};
+const t = key => (T[lang] ? T[lang][key] : null) || key;
+function applyLang() {
+  document.title = t('title');
+  $('headerTitle').innerHTML = t('headerTitle');
+  $('btnNew').textContent = t('newPuzzle');
+  $('btnNew2').textContent = t('newPuzzle');
+  $('btnHint').textContent = t('hint');
+  $('btnSolution').textContent = t('solution');
+  $('modeNormal').querySelector('h4').textContent = t('normal');
+  $('modeNormal').querySelector('p').textContent = t('normalDesc');
+  $('modeRush').querySelector('h4').textContent = t('rush');
+  $('modeRush').querySelector('p').textContent = t('rushDesc');
+  $('statLabel0').textContent = t('solved');
+  $('statLabel1').textContent = t('streak');
+  $('statLabel2').textContent = t('rating');
+  $('statLabel3').textContent = t('attempts');
+  $('statLabel4').textContent = t('accuracy');
+  $('modeLabel').textContent = t('mode');
+  $('statsLabel').textContent = t('stats');
+  if ($('coachTitle')) $('coachTitle').textContent = t('coachTitle');
+  if ($('btnCoachIdea')) $('btnCoachIdea').textContent = t('coachIdea');
+  if ($('btnCoachNudge')) $('btnCoachNudge').textContent = t('coachNudge');
+  if ($('btnCoachAsk')) $('btnCoachAsk').textContent = t('coachAsk');
+  if ($('btnSoftIdea')) $('btnSoftIdea').textContent = t('softIdea');
+  if ($('btnSoftPiece')) $('btnSoftPiece').textContent = t('softPiece');
+  if ($('btnSoftSquare')) $('btnSoftSquare').textContent = t('softSquare');
+  if ($('coachInput')) $('coachInput').placeholder = t('coachPlaceholder');
+  Array.from($('themeSelect').options).forEach(o => {
+    const v = o.value;
+    o.textContent = v ? t(v) : t('allThemes');
+  });
+  if ($('historyLink')) $('historyLink').textContent = t('history');
+}
+function toggleLang() {
+  lang = lang === 'ru' ? 'en' : 'ru';
+  localStorage.setItem('fmine_lang', lang);
+  applyLang();
+  $('langToggle').textContent = lang === 'ru' ? 'EN' : 'RU';
+}
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('fmine_sound', soundEnabled ? 'on' : 'off');
+  $('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+  $('soundToggle').style.color = soundEnabled ? 'var(--text2)' : 'var(--rose)';
+}
+function updateSoundIcon() {
+  $('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+  $('soundToggle').style.color = soundEnabled ? 'var(--text2)' : 'var(--rose)';
+}
+
+// ---- PER-PUZZLE ATTEMPT TRACKING ----
+let puzzleAttempts = JSON.parse(localStorage.getItem('fmine_puzzle_attempts') || '{}');
+function recordAttempt(success) {
+  if (!puzzleId) return;
+  puzzleAttempts[puzzleId] = { success, date: new Date().toISOString().split('T')[0], themes: puzzleThemes };
+  localStorage.setItem('fmine_puzzle_attempts', JSON.stringify(puzzleAttempts));
+}
+function calcAccuracy() {
+  const ids = Object.keys(puzzleAttempts);
+  if (!ids.length) return 0;
+  return Math.round((ids.filter(id => puzzleAttempts[id].success).length / ids.length) * 100);
+}
+
+// ---- PUZZLE HISTORY ----
+let puzzleHistory = JSON.parse(localStorage.getItem('fmine_history') || '[]');
+function savePuzzleHistory(entry) {
+  puzzleHistory.unshift(entry);
+  if (puzzleHistory.length > 200) puzzleHistory = puzzleHistory.slice(0, 200);
+  localStorage.setItem('fmine_history', JSON.stringify(puzzleHistory));
+}
+function getHistoryStats() {
+  const h = puzzleHistory;
+  const solved = h.filter(e => e.solved).length;
+  const total = h.length;
+  const avgTime = total ? Math.round(h.reduce((s, e) => s + (e.time || 0), 0) / total) : 0;
+  const bestTime = h.length ? Math.min(...h.filter(e => e.solved).map(e => e.time).concat([Infinity])) : 0;
+  return { total, solved, accuracy: total ? Math.round((solved / total) * 100) : 0, avgTime, bestTime: bestTime === Infinity ? 0 : bestTime };
+}
+
+function saveState() {
+  localStorage.setItem('fmine_rating', rating);
+  localStorage.setItem('fmine_streak', streak);
+  localStorage.setItem('fmine_solved', totalSolved);
+  localStorage.setItem('fmine_attempts', totalAttempts);
+}
+
+function ratingLevel(r) {
+  if (r <= 900) return 'easy';
+  if (r <= 1300) return 'medium-easy';
+  if (r <= 1700) return 'medium';
+  if (r <= 2100) return 'medium-hard';
+  return 'hard';
+}
+
+function showToast(msg, dur) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._to);
+  el._to = setTimeout(() => el.classList.remove('show'), dur || 2000);
+}
+
+// ---- RENDER BOARD ----
+function renderBoard() {
+  const el = $('board');
+  if (!game) { el.innerHTML = '<div style="grid-column:1/-1;display:flex;align-items:center;justify-content:center;color:#6d78a8;font-size:14px">' + t('waiting') + '</div>'; return; }
+  el.innerHTML = '';
+  const filesStr = 'abcdefgh';
+  for (let r = 0; r < 8; r++) {
+    const rank = isFlipped ? r : (7 - r);
+    for (let f = 0; f < 8; f++) {
+      const file = isFlipped ? (7 - f) : f;
+      const sq = filesStr[file] + (rank + 1);
+      const d = document.createElement('div');
+      d.className = 'square ' + ((file + rank) % 2 ? 'dark' : 'light');
+      d.dataset.sq = sq;
+      const piece = game.get(sq);
+      if (piece) { const s = document.createElement('span'); s.className = piece.color === 'w' ? 'pw' : 'pb'; s.textContent = SYM[piece.color][piece.type] || ''; d.appendChild(s) }
+      if (sq === lastFrom) d.classList.add('last-from');
+      if (sq === lastTo) d.classList.add('last-to');
+      if (selSq === sq) d.classList.add('selected');
+      if (selSq && possMoves.includes(sq)) d.classList.add('legal-hint');
+      d.onclick = () => handleClick(sq);
+      el.appendChild(d);
+    }
+  }
+
+  // Rank labels
+  const rankEl = $('rankLabels');
+  rankEl.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement('span');
+    s.textContent = isFlipped ? (i + 1) : (8 - i);
+    rankEl.appendChild(s);
+  }
+
+  // File labels
+  const fileEl = $('fileLabels');
+  fileEl.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement('span');
+    s.textContent = isFlipped ? 'hgfedcba'[i] : 'abcdefgh'[i];
+    fileEl.appendChild(s);
+  }
+}
+
+function updateEvalBar(advantage) {
+  const white = $('evalWhite');
+  const black = $('evalBlack');
+  const label = $('evalLabel');
+  let pct;
+  if (advantage === null || advantage === undefined) { pct = 50; label.textContent = '—'; }
+  else {
+    const clamped = Math.max(-5, Math.min(5, advantage));
+    pct = 50 + clamped * 10;
+    label.textContent = (advantage > 0 ? '+' : '') + advantage.toFixed(1);
+  }
+  white.style.height = Math.max(0, Math.min(100, pct)) + '%';
+  black.style.height = Math.max(0, Math.min(100, 100 - pct)) + '%';
+}
+
+function updateUI() {
+  $('eloDisplay').textContent = '♛ ' + rating;
+  $('streakDisplay').textContent = '🔥 ' + streak;
+  $('statRating').textContent = rating;
+  $('statSolved').textContent = totalSolved;
+  $('statStreak').textContent = streak;
+  $('statAttempts').textContent = totalAttempts;
+  $('statAccuracy').textContent = calcAccuracy() + '%';
+  $('movesDisplay').textContent = t('move') + ' ' + (moveIndex || 0) + (totalMoves ? '/' + totalMoves : '');
+  if (mode === 'rush') {
+    $('livesDisplay').style.display = '';
+    $('livesDisplay').textContent = '❤️ '.repeat(lives);
+    $('rushScore').textContent = rushScore;
+  } else {
+    $('livesDisplay').style.display = 'none';
+  }
+}
+
+// ---- CLICK HANDLING ----
+function handleClick(sq) {
+  if (!game || moving) return;
+  const piece = game.get(sq);
+  if (!selSq) {
+    if (piece && piece.color === game.turn()) {
+      selSq = sq;
+      possMoves = game.moves({ square: sq, verbose: true }).map(m => m.to);
+      renderBoard();
+    }
+    return;
+  }
+  if (possMoves.includes(sq)) {
+    makeMove(selSq, sq);
+    selSq = null; possMoves = [];
+  } else if (piece && piece.color === game.turn()) {
+    // Reselect another own piece instead of clearing
+    selSq = sq;
+    possMoves = game.moves({ square: sq, verbose: true }).map(m => m.to);
+    renderBoard();
+  } else {
+    selSq = null; possMoves = [];
+    renderBoard();
+  }
+}
+
+function getPromotion(from, to) {
+  const piece = game.get(from);
+  if (piece && piece.type === 'p' && (to[1] === '8' || to[1] === '1')) return 'q';
+  return undefined;
+}
+
+function applyUciMove(uci) {
+  if (!uci || uci.length < 4) return null;
+  const move = { from: uci.slice(0, 2), to: uci.slice(2, 4) };
+  if (uci[4]) move.promotion = uci[4];
+  return game.move(move);
+}
+
+// ---- MAKE MOVE ----
+async function makeMove(from, to) {
+  if (moving) return;
+
+  // Free play after solved — no server validation
+  if (solved) {
+    const promo = getPromotion(from, to);
+    const moveObj = { from, to };
+    if (promo) moveObj.promotion = promo;
+    try { game.move(moveObj); } catch(e) { return; }
+    lastFrom = from; lastTo = to;
+    renderBoard(); updateUI();
+    return;
+  }
+
+  moving = true;
+  hintUsed = false;
+  $('btnHint').disabled = true;
+  $('btnSolution').disabled = true;
+  $('btnSoftIdea').disabled = true;
+  $('btnSoftPiece').disabled = true;
+  $('btnSoftSquare').disabled = true;
+
+  const promo = getPromotion(from, to);
+
+  try {
+    const r = await fetch(API_BASE + '/api/puzzle/move', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ puzzleId, userMove: from + to + (promo || ''), moveIndex })
+    });
+    const data = await r.json();
+
+    if (data.correct) {
+      const moveObj = { from, to };
+      if (promo) moveObj.promotion = promo;
+      game.move(moveObj);
+      moveIndex = (typeof data.moveIndex === 'number') ? data.moveIndex : moveIndex + 1;
+      lastFrom = from;
+      lastTo = to;
+      sndMove();
+      animateMove(from, to, () => { renderBoard(); });
+      updateEvalBar(playerAdvantage(1 + moveIndex * 0.5));
+
+      if (data.completed) {
+        if (data.nextOpponentMove) {
+          $('statusDisplay').textContent = t('opponentMove');
+          await new Promise(r => setTimeout(r, 500));
+          const m = data.nextOpponentMove;
+          applyUciMove(m);
+          lastFrom = m.slice(0, 2);
+          lastTo = m.slice(2, 4);
+          sndCapture();
+          animateMove(lastFrom, lastTo, () => { renderBoard(); });
+        }
+        await onSolved();
+        moving = false;
+        return;
+      }
+
+      $('statusDisplay').className = 'status';
+      $('statusDisplay').textContent = t('correct');
+      sndCorrect();
+
+      if (data.nextOpponentMove) {
+        $('statusDisplay').textContent = t('opponentMove');
+        await new Promise(r => setTimeout(r, 500));
+        const m = data.nextOpponentMove;
+        applyUciMove(m);
+        moveIndex = (typeof data.moveIndex === 'number') ? data.moveIndex : moveIndex + 1;
+        lastFrom = m.slice(0, 2);
+        lastTo = m.slice(2, 4);
+        sndCapture();
+        animateMove(lastFrom, lastTo, () => { renderBoard(); });
+
+        // Server already said not completed; if game somehow ended in draw/stalemate, count as solved
+        if (game.game_over()) {
+          moving = false;
+          await onSolved();
+          return;
+        }
+
+        moving = false;
+        $('statusDisplay').textContent = t('yourTurn');
+        $('btnHint').disabled = false;
+        $('btnSolution').disabled = false;
+        $('btnSoftIdea').disabled = false;
+        $('btnSoftPiece').disabled = false;
+        $('btnSoftSquare').disabled = false;
+        updateUI();
+        return;
+      }
+
+      moving = false;
+      $('statusDisplay').textContent = t('yourTurn');
+      $('btnHint').disabled = false;
+      $('btnSolution').disabled = false;
+      $('btnSoftIdea').disabled = false;
+      $('btnSoftPiece').disabled = false;
+      $('btnSoftSquare').disabled = false;
+      updateUI();
+      return;
+    } else {
+      onIncorrect(from, to);
+    }
+  } catch(e) {
+    $('statusDisplay').textContent = t('serverError');
+    console.error(e);
+  }
+  updateUI();
+  moving = false;
+}
+
+async function onSolved(opts) {
+  opts = opts || {};
+  if (solved) return;
+  solved = true;
+  stopTimer();
+  const solveTime = getTimerSeconds();
+  if (!incorrectAttempt && !opts.fromSolution) { totalSolved++; streak++; }
+  totalAttempts++;
+  solvedThisRush = true;
+  if (mode === 'rush' && !opts.fromSolution) rushScore++;
+  recordAttempt(!opts.fromSolution);
+
+  // Save to history
+  savePuzzleHistory({
+    id: puzzleId,
+    rating: puzzleRating,
+    themes: puzzleThemes,
+    solved: !opts.fromSolution && !incorrectAttempt,
+    solutionViewed: !!opts.fromSolution,
+    hadMistake: incorrectAttempt,
+    time: solveTime,
+    date: new Date().toISOString(),
+    mode: mode
+  });
+
+  // Only update ELO on a clean solve (no prior mistake / solution peek)
+  if (!incorrectAttempt && !opts.fromSolution) {
+    try {
+      const r = await fetch(API_BASE + '/api/puzzle/rating', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentRating: rating, level: ratingLevel(puzzleRating), solved: true })
+      });
+      const data = await r.json();
+      if (typeof data.newRating === 'number') rating = data.newRating;
+    } catch(e) { rating += 8; }
+  }
+
+  saveState();
+  $('statusDisplay').className = 'status correct';
+  sndSolved();
+  if (opts.fromSolution) {
+    // keep solution moves text if already set; otherwise generic
+    if (!$('statusDisplay').textContent || $('statusDisplay').textContent === t('loading')) {
+      $('statusDisplay').textContent = t('solutionLabel');
+    }
+  } else if (incorrectAttempt) {
+    $('statusDisplay').textContent = (lang === 'ru' ? 'Решено (после ошибки, без ELO)' : 'Solved (after mistake, no ELO)');
+  } else {
+    $('statusDisplay').textContent = t('solvedFree');
+  }
+  $('btnHint').disabled = true;
+  $('btnSolution').disabled = true;
+  $('btnSoftIdea').disabled = true;
+  $('btnSoftPiece').disabled = true;
+  $('btnSoftSquare').disabled = true;
+  updateUI();
+  updateEvalBar(playerAdvantage(5));
+}
+
+function onIncorrect(from, to) {
+  totalAttempts++;
+  recordAttempt(false);
+  incorrectAttempt = true;
+  sndIncorrect();
+  // Wrong move was never applied to `game` — keep current progress (do NOT reset to start FEN)
+  const sqEl = document.querySelector('[data-sq="' + to + '"]');
+  if (sqEl) { sqEl.classList.add('incorrect'); setTimeout(() => sqEl.classList.remove('incorrect'), 400); }
+  $('statusDisplay').className = 'status incorrect';
+  $('statusDisplay').textContent = t('incorrect');
+  selSq = null; possMoves = [];
+  renderBoard();
+
+  if (mode === 'rush') {
+    lives--;
+    if (lives <= 0) {
+      sndGameOver();
+      showToast(t('gameOver') + rushScore, 3000);
+      mode = 'normal';
+      $('modeNormal').classList.add('active');
+      $('modeRush').classList.remove('active');
+      lives = 3;
+      rushScore = 0;
+      $('livesDisplay').style.display = 'none';
+      newPuzzle();
+      updateUI();
+      return;
+    }
+  }
+
+  streak = 0;
+  saveState();
+  $('btnHint').disabled = false;
+  $('btnSolution').disabled = false;
+  updateUI();
+}
+
+// ---- NEW PUZZLE ----
+async function newPuzzle(sharedId) {
+  solved = false; moving = false; selSq = null; possMoves = [];
+  lastFrom = null; lastTo = null;
+  hintUsed = false;
+  $('statusDisplay').className = 'status';
+  $('statusDisplay').textContent = t('loading');
+  $('btnNew').disabled = true;
+  $('btnNew2').disabled = true;
+  $('btnHint').disabled = true;
+  $('btnSolution').disabled = true;
+  $('btnShare').disabled = true;
+  $('btnAnalyze').disabled = true;
+  $('btnSoftIdea').disabled = true;
+  $('btnSoftPiece').disabled = true;
+  $('btnSoftSquare').disabled = true;
+  $('analyzePanel').style.display = 'none';
+  // Clear coach log
+  const coachLog = $('coachLog');
+  if (coachLog) coachLog.innerHTML = '';
+
+  const theme = $('themeSelect').value;
+  const minR = parseInt($('minRating').value) || 800;
+  const maxR = parseInt($('maxRating').value) || 2400;
+
+  try {
+    let url;
+    if (sharedId) {
+      url = API_BASE + '/api/puzzle/' + encodeURIComponent(sharedId);
+    } else {
+      url = API_BASE + '/api/puzzle/random?minRating=' + minR + '&maxRating=' + maxR;
+      if (theme) url += '&theme=' + encodeURIComponent(theme);
+    }
+
+    const r = await fetch(url);
+    if (!r.ok) { $('statusDisplay').textContent = t('noFilter'); $('btnNew').disabled = false; $('btnNew2').disabled = false; return; }
+    const data = await r.json();
+
+    incorrectAttempt = false;
+    puzzleId = data.id;
+    puzzleRating = data.rating;
+    puzzleThemes = (data.themes || []).join(', ');
+    totalMoves = data.totalMoves || 0;
+    game = new Chess(data.fen);
+
+    // Lichess format: firstMove is the opponent's setup; player is the other side
+    const setup = data.firstMove;
+    moveIndex = (typeof data.initialIndex === 'number') ? data.initialIndex : 0;
+    if (moveIndex >= 1 && setup && applyUciMove(setup)) {
+      lastFrom = setup.slice(0, 2);
+      lastTo = setup.slice(2, 4);
+    } else {
+      moveIndex = (typeof data.initialIndex === 'number') ? data.initialIndex : 0;
+      lastFrom = null;
+      lastTo = null;
+    }
+    puzzleFen = game.fen();
+    // Flip so the solving side is at the bottom
+    isFlipped = (data.playerColor ? data.playerColor === 'b' : game.turn() === 'b');
+
+    $('themeDisplay').textContent = puzzleThemes || '—';
+    $('ratingDisplay').textContent = 'ELO ' + puzzleRating;
+    $('statusDisplay').textContent = t('yourTurn');
+    $('btnHint').disabled = false;
+    $('btnSolution').disabled = false;
+    $('btnShare').disabled = false;
+    $('btnAnalyze').disabled = false;
+    $('btnSoftIdea').disabled = false;
+    $('btnSoftPiece').disabled = false;
+    $('btnSoftSquare').disabled = false;
+    softHintStep = 0;
+
+    updateEvalBar(0);
+    startTimer();
+    renderBoard();
+    updateUI();
+
+    // AI Coach greeting
+    addCoachMsg(t('greetingFixed'), 'bot');
+    callCoach('greet');
+
+    if (mode === 'rush') {
+      solvedThisRush = false;
+    }
+  } catch(e) {
+    $('statusDisplay').textContent = t('loadError');
+    console.error(e);
+  }
+  $('btnNew').disabled = false;
+  $('btnNew2').disabled = false;
+}
+
+// ---- SHARE PUZZLE ----
+function sharePuzzle() {
+  if (!puzzleId) return;
+  const url = window.location.origin + window.location.pathname + '?puzzle=' + puzzleId;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast(lang === 'ru' ? '🔗 Ссылка скопирована!' : '🔗 Link copied!', 2000);
+    }).catch(() => {
+      prompt(lang === 'ru' ? 'Скопируйте ссылку:' : 'Copy the link:', url);
+    });
+  } else {
+    prompt(lang === 'ru' ? 'Скопируйте ссылку:' : 'Copy the link:', url);
+  }
+}
+
+// ---- AI ANALYZE ----
+async function analyzePuzzle() {
+  if (!puzzleId || !game) return;
+  $('btnAnalyze').disabled = true;
+  const panel = $('analyzePanel');
+  const content = $('analyzeContent');
+  panel.style.display = 'block';
+  content.textContent = lang === 'ru' ? '🧠 Анализирую позицию...' : '🧠 Analyzing position...';
+
+  try {
+    const r = await fetch(API_BASE + '/api/puzzle/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fen: game.fen(), themes: puzzleThemes, lang: lang })
+    });
+    const data = await r.json();
+    if (data.ok && data.reply) {
+      content.textContent = data.reply;
+    } else {
+      content.textContent = t('coachError');
+    }
+  } catch(e) {
+    content.textContent = t('coachError');
+  }
+  $('btnAnalyze').disabled = false;
+}
+
+// ---- HINT & SOLUTION ----
+async function showHint() {
+  if (!puzzleId || solved || moving) return;
+  $('btnHint').disabled = true;
+  $('statusDisplay').textContent = t('loading');
+  try {
+    const r = await fetch(API_BASE + '/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + moveIndex);
+    const data = await r.json();
+    if (data.nextMove) {
+      const from = data.nextMove.slice(0,2);
+      const to = data.nextMove.slice(2,4);
+      const sqFrom = document.querySelector('[data-sq="' + from + '"]');
+      const sqTo = document.querySelector('[data-sq="' + to + '"]');
+      if (sqFrom) sqFrom.classList.add('hint-move');
+      if (sqTo) sqTo.classList.add('hint-move');
+      setTimeout(() => { if (sqFrom) sqFrom.classList.remove('hint-move'); if (sqTo) sqTo.classList.remove('hint-move'); }, 3000);
+      $('statusDisplay').className = 'status hint';
+      $('statusDisplay').textContent = t('hintLabel') + data.nextMove;
+      hintUsed = true;
+    } else {
+      $('statusDisplay').textContent = t('noHint');
+    }
+  } catch(e) {
+    $('statusDisplay').textContent = t('serverError');
+    console.error('Hint fetch failed:', e);
+  }
+  $('btnHint').disabled = false;
+}
+
+async function showSolution() {
+  if (!puzzleId || solved || moving) return;
+  $('btnSolution').disabled = true;
+  $('btnHint').disabled = true;
+  moving = true;
+
+  let idx = moveIndex;
+  let moves = [];
+  try {
+    while (true) {
+      const r = await fetch(API_BASE + '/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + idx);
+      const data = await r.json();
+      if (!data.nextMove) break;
+      moves.push(data.nextMove);
+      idx = (typeof data.moveIndex === 'number') ? data.moveIndex : idx + 1;
+    }
+  } catch(e) {
+    $('statusDisplay').textContent = t('serverError');
+    console.error(e);
+    moving = false;
+    $('btnSolution').disabled = false;
+    $('btnHint').disabled = false;
+    return;
+  }
+
+  if (moves.length === 0) {
+    $('statusDisplay').textContent = t('noHint');
+    moving = false;
+    $('btnSolution').disabled = false;
+    $('btnHint').disabled = false;
+    return;
+  }
+
+  $('statusDisplay').className = 'status hint';
+  $('statusDisplay').textContent = t('solutionLabel') + moves.join(' ');
+  incorrectAttempt = true; // viewing solution = no ELO credit
+
+  for (let i = 0; i < moves.length; i++) {
+    const m = moves[i];
+    try {
+      if (applyUciMove(m)) {
+        lastFrom = m.slice(0, 2);
+        lastTo = m.slice(2, 4);
+        renderBoard();
+        updateUI();
+        if (i < moves.length - 1) await new Promise(r => setTimeout(r, 450));
+      }
+    } catch(e) { break; }
+  }
+
+  moveIndex = idx;
+  moving = false;
+  await onSolved({ fromSolution: true });
+}
+
+// ---- MODES ----
+function setMode(m) {
+  if (m === 'rush') {
+    mode = 'rush';
+    lives = 3;
+    rushScore = 0;
+    $('modeNormal').classList.remove('active');
+    $('modeRush').classList.add('active');
+    showToast(t('rushStart'), 2000);
+  } else {
+    mode = 'normal';
+    lives = 3;
+    $('modeNormal').classList.add('active');
+    $('modeRush').classList.remove('active');
+  }
+  updateUI();
+  newPuzzle();
+}
+
+// ---- AI COACH ----
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API_BASE = IS_LOCAL ? '' : 'https://my-education-site-f-mine.onrender.com';
+const COACH_SERVER = IS_LOCAL ? 'http://localhost:3000' : API_BASE;
+
+function addCoachMsg(text, type) {
+  const log = $('coachLog');
+  if (!log) return;
+  const d = document.createElement('div');
+  d.className = 'coach-msg ' + (type || 'bot');
+  d.textContent = text;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+function addCoachMeta(text) {
+  const log = $('coachLog');
+  if (!log) return;
+  const d = document.createElement('div');
+  d.className = 'coach-msg bot';
+  const meta = document.createElement('span');
+  meta.className = 'meta';
+  meta.textContent = text;
+  d.appendChild(meta);
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+async function callCoach(mode, extra) {
+  if (!puzzleId || $('coachPanel').classList.contains('busy')) return;
+  $('coachPanel').classList.add('busy');
+  addCoachMsg(t('coachThinking'), 'bot');
+  try {
+    const body = {
+      mode: mode,
+      puzzleId: puzzleId,
+      fen: game ? game.fen() : '',
+      themes: puzzleThemes,
+      rating: puzzleRating,
+      lang: lang,
+      lastMove: lastTo || '',
+      ...(extra || {})
+    };
+    const r = await fetch(COACH_SERVER + '/api/puzzle/coach', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await r.json();
+    // Remove "thinking" message
+    const log = $('coachLog');
+    if (log && log.lastChild) log.removeChild(log.lastChild);
+    if (data.ok && data.reply) {
+      let reply = data.reply;
+      // Client-side fallback: strip any leftover thinking blocks
+      reply = reply.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      reply = reply.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').trim();
+      if (reply) {
+        addCoachMsg(reply, 'bot');
+      } else {
+        addCoachMsg(t('coachError'), 'bot');
+      }
+      if (data.model) addCoachMeta('model: ' + data.model);
+    } else {
+      addCoachMsg(t('coachError'), 'bot');
+    }
+  } catch(e) {
+    const log = $('coachLog');
+    if (log && log.lastChild) log.removeChild(log.lastChild);
+    addCoachMsg(t('coachError'), 'bot');
+    console.error('Coach error:', e);
+  }
+  $('coachPanel').classList.remove('busy');
+}
+
+$('btnCoachIdea').onclick = () => callCoach('idea');
+$('btnCoachNudge').onclick = () => callCoach('nudge');
+$('btnCoachAsk').onclick = () => {
+  const inp = $('coachInput');
+  if (inp && inp.value.trim()) {
+    addCoachMsg(inp.value.trim(), 'user');
+    callCoach('ask', { userMessage: inp.value.trim() });
+    inp.value = '';
+  }
+};
+$('btnCoachSend').onclick = () => {
+  const inp = $('coachInput');
+  if (inp && inp.value.trim()) {
+    addCoachMsg(inp.value.trim(), 'user');
+    callCoach('ask', { userMessage: inp.value.trim() });
+    inp.value = '';
+  }
+};
+if ($('coachInput')) {
+  $('coachInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const inp = $('coachInput');
+      if (inp && inp.value.trim()) {
+        addCoachMsg(inp.value.trim(), 'user');
+        callCoach('ask', { userMessage: inp.value.trim() });
+        inp.value = '';
+      }
+    }
+  });
+}
+
+// ---- SOFT HINT LADDER ----
+let softHintStep = 0;
+
+$('btnSoftIdea').onclick = () => callCoach('idea');
+$('btnSoftPiece').onclick = () => {
+  if (!puzzleId || solved || moving) return;
+  // Show the piece to move (first square of next expected move)
+  fetch(API_BASE + '/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + moveIndex)
+    .then(r => r.json())
+    .then(data => {
+      if (data.nextMove) {
+        const from = data.nextMove.slice(0, 2);
+        const sqEl = document.querySelector('[data-sq="' + from + '"]');
+        if (sqEl) { sqEl.classList.add('hint-move'); setTimeout(() => sqEl.classList.remove('hint-move'), 3000); }
+        $('statusDisplay').className = 'status hint';
+        $('statusDisplay').textContent = t('hintLabel') + from;
+      }
+    }).catch(() => {});
+};
+$('btnSoftSquare').onclick = () => {
+  if (!puzzleId || solved || moving) return;
+  fetch(API_BASE + '/api/puzzle/solution?puzzleId=' + puzzleId + '&moveIndex=' + moveIndex)
+    .then(r => r.json())
+    .then(data => {
+      if (data.nextMove) {
+        const from = data.nextMove.slice(0, 2);
+        const to = data.nextMove.slice(2, 4);
+        const sqFrom = document.querySelector('[data-sq="' + from + '"]');
+        const sqTo = document.querySelector('[data-sq="' + to + '"]');
+        if (sqFrom) { sqFrom.classList.add('hint-move'); setTimeout(() => sqFrom.classList.remove('hint-move'), 3000); }
+        if (sqTo) { sqTo.classList.add('hint-move'); setTimeout(() => sqTo.classList.remove('hint-move'), 3000); }
+        $('statusDisplay').className = 'status hint';
+        $('statusDisplay').textContent = t('hintLabel') + from + ' → ' + to;
+      }
+    }).catch(() => {});
+};
+
+// ---- DAILY PUZZLE CHALLENGE ----
+function getDailyKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function getDailySeed() {
+  const d = new Date();
+  return d.getFullYear() * 10000 + (d.getMonth()+1) * 100 + d.getDate();
+}
+
+function isDailyDone() {
+  const key = 'fmine_daily_' + getDailyKey();
+  return localStorage.getItem(key) === 'done';
+}
+
+function markDailyDone() {
+  localStorage.setItem('fmine_daily_' + getDailyKey(), 'done');
+}
+
+const DAILY_TITLES = [
+  '⚔️ Tactical Warfare', '👑 Royal Fork', '💥 Sacrifice Storm',
+  '🎯 Pin Master', '🔪 Skewer Strike', '🏰 Endgame Fortress',
+  '🌀 Deflection Dance', '🧲 Attraction Trap', '💣 Discovery Bomb',
+  '🔥 Mate in 2 Blitz', '⚡ Lightning Attack', '🧩 Puzzle Marathon'
+];
+const DAILY_DESCS = [
+  'A tactical puzzle to sharpen your calculation!',
+  'Can you find the winning fork?',
+  'A beautiful sacrifice leads to victory!',
+  'Pin it to win it!',
+  'Pierce through with a deadly skewer!',
+  'Navigate the endgame to checkmate!'
+];
+
+function getDailyPuzzleInfo() {
+  const seed = getDailySeed();
+  const titleIdx = seed % DAILY_TITLES.length;
+  const descIdx = (seed * 7 + 3) % DAILY_DESCS.length;
+  const icons = ['🎯','⚔️','👑','💥','🔪','🏰','🌀','🧲','💣','🔥','⚡','🧩'];
+  return {
+    title: DAILY_TITLES[titleIdx],
+    desc: DAILY_DESCS[descIdx],
+    icon: icons[titleIdx]
+  };
+}
+
+function updateDailyCard() {
+  const info = getDailyPuzzleInfo();
+  const done = isDailyDone();
+  $('dailyIconWrap').textContent = info.icon;
+  $('dailyTitle').textContent = info.title;
+  $('dailyDesc').textContent = info.desc;
+
+  if (done) {
+    $('dailyCta').innerHTML = '<div class="daily-done-badge">✅ Completed today!</div>';
+  } else {
+    $('btnDaily').onclick = startDailyPuzzle;
+  }
+
+  updateDailyTimer();
+}
+
+function updateDailyTimer() {
+  const now = new Date();
+  const end = new Date(now);
+  end.setDate(end.getDate() + 1);
+  end.setHours(0, 0, 0, 0);
+  const diff = end - now;
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  $('dailyTimer').textContent = '⏳ Resets in: ' + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+setInterval(updateDailyTimer, 1000);
+
+async function startDailyPuzzle() {
+  if (isDailyDone()) {
+    showToast(lang === 'ru' ? 'Уже решено сегодня!' : 'Already done today!', 2000);
+    return;
+  }
+  mode = 'daily';
+  $('modeNormal').classList.remove('active');
+  $('modeRush').classList.remove('active');
+  await newPuzzle();
+}
+
+// Patch onSolved to mark daily done
+const _origOnSolved = onSolved;
+async function onSolvedWrapper(opts) {
+  await _origOnSolved(opts);
+  if (mode === 'daily' && !incorrectAttempt && !opts.fromSolution) {
+    markDailyDone();
+    updateDailyCard();
+    showToast(lang === 'ru' ? '🎯 Задание дня выполнено!' : '🎯 Daily puzzle completed!', 3000);
+  }
+  if (mode === 'daily') {
+    mode = 'normal';
+    $('modeNormal').classList.add('active');
+    $('modeRush').classList.remove('active');
+  }
+}
+onSolved = onSolvedWrapper;
+
+// ---- INIT ----
+$('btnNew').onclick = () => newPuzzle();
+$('btnNew2').onclick = () => newPuzzle();
+$('btnHint').onclick = showHint;
+$('btnSolution').onclick = showSolution;
+$('btnShare').onclick = sharePuzzle;
+$('btnAnalyze').onclick = analyzePuzzle;
+$('modeNormal').onclick = () => setMode('normal');
+$('modeRush').onclick = () => setMode('rush');
+$('themeSelect').onchange = () => {};
+$('minRating').onchange = () => {};
+$('maxRating').onchange = () => {};
+
+$('btnDaily').onclick = startDailyPuzzle;
+$('langToggle').textContent = lang === 'ru' ? 'EN' : 'RU';
+applyLang();
+updateSoundIcon();
+updateUI();
+updateDailyCard();
+const urlPuzzle = new URLSearchParams(window.location.search).get('puzzle');
+if (urlPuzzle) { newPuzzle(urlPuzzle); } else { newPuzzle(); }
+</script>
+</body>
+</html>

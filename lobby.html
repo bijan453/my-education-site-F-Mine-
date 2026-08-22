@@ -2574,7 +2574,9 @@
               <div class="c-card" onclick="goTo('math-subject.html')"><div class="c-icon">🧮</div>Математика</div>
               <div class="c-card" onclick="goTo('geometry-subject.html')"><div class="c-icon">📐</div>Геометрия</div>
               <div class="c-card" onclick="goTo('physics-subject.html')"><div class="c-icon">⚡</div>Физика</div>
+              <div class="c-card" onclick="goTo('chemistry-subject.html')"><div class="c-icon">🧪</div>Химия</div>
               <div class="c-card" onclick="goTo('biology-subject.html')"><div class="c-icon">🧬</div>Биология</div>
+              <div class="c-card" onclick="goTo('informatics-subject.html')"><div class="c-icon">💻</div>Информатика</div>
               <div class="c-card" onclick="goTo('history-subject.html')"><div class="c-icon">🏛️</div>История</div>
               <div class="c-card" onclick="goTo('english-subject.html')"><div class="c-icon">🇬🇧</div>Английский</div>
             </div>
@@ -2858,8 +2860,10 @@
     const LEVELS_PER_TOPIC = 16;
     const SUBJECTS = {
       math: { label: "Математика", icon: "📐", color: "#a78bfa", classes: { 7: { integers: 1, linear: 1, fractions: 1, powers: 1, roots: 1, mixed: 1 }, 8: { linear2: 1, brackets: 1, fractions2: 1, powers2: 1, roots2: 1, mixed2: 1 }, 9: { quadratic: 1, factor: 1, functions: 1, powers3: 1, roots3: 1, mixed3: 1 }, 10: { inequalities: 1, quadratic2: 1, trig: 1, logs: 1, exponents: 1, mixed4: 1 } } },
+      chemistry: { label: "Химия", icon: "🧪", color: "#a78bfa", classes: { 8: { chem1: 1 }, 9: { chem2: 1 }, 10: { chem3: 1 }, 11: { chem4: 1 } } },
       biology: { label: "Биология", icon: "🌿", color: "#34d399", classes: { 7: { cell: 1, plants: 1, animals: 1, mixed7: 1 }, 8: { humanBody: 1, digestion: 1, breathing: 1, mixed8: 1 }, 9: { genetics: 1, ecology: 1, evolution: 1, mixed9: 1 }, 10: { microbiology: 1, cellProcesses: 1, biosphere: 1, mixed10: 1 } } },
       physics: { label: "Физика", icon: "⚡", color: "#60c8ff", classes: { 7: { motion: 1, density: 1, force: 1, mixed7: 1 }, 8: { pressure: 1, work: 1, heat: 1, mixed8: 1 }, 9: { electricity: 1, circuits: 1, optics: 1, mixed9: 1 }, 10: { mechanics: 1, electricAdv: 1, waves: 1, mixed10: 1 } } },
+      informatics: { label: "Информатика", icon: "💻", color: "#5eead4", classes: { 7: { inf1: 1 }, 8: { inf2: 1 }, 9: { inf3: 1 }, 10: { inf4: 1 }, 11: { inf5: 1 } } },
       history: { label: "История", icon: "📜", color: "#fbbf24", classes: { 7: { ancientWorld: 1, ancientGreece: 1, ancientRome: 1, mixed7: 1 }, 8: { middleAges: 1, oldRus: 1, discoveries: 1, mixed8: 1 }, 9: { renaissance: 1, empire: 1, industrial: 1, mixed9: 1 }, 10: { ww1: 1, ww2: 1, coldWar: 1, mixed10: 1 } } }
     };
     const SKS = Object.keys(SUBJECTS), CLSS = ["7", "8", "9", "10"];
@@ -2931,7 +2935,7 @@
     
     function renderSubjects() {
       const grid = document.getElementById("subjGrid");
-      const pages = { math: "math.html", biology: "biology.html", physics: "physics.html", history: "history.html" };
+      const pages = { math: "math.html", chemistry: "chemistry-subject.html", biology: "biology.html", physics: "physics.html", informatics: "informatics-subject.html", history: "history.html" };
       const C = 2 * Math.PI * 24;
       grid.innerHTML = SKS.map(sk => {
         const subj = SUBJECTS[sk], done = subjectTopicsDone(sk), total = subjectTotalTopics(sk), pct = total ? Math.round(done / total * 100) : 0;
@@ -2968,7 +2972,7 @@
     
     window.startDailyChallenge = async () => {
       const c = getDailyChallenge(), today = getDailyKey();
-      const pages = { math: "math.html", biology: "biology.html", physics: "physics.html", history: "history.html" };
+      const pages = { math: "math.html", chemistry: "chemistry-subject.html", biology: "biology.html", physics: "physics.html", informatics: "informatics-subject.html", history: "history.html" };
       if (!fd.dailyCompleted) fd.dailyCompleted = {};
       if (!fd.dailyCompleted[today]) {
         fd.dailyCompleted[today] = Date.now();
@@ -3117,7 +3121,7 @@
     }
 
     window.continueLastLesson = () => {
-      const pages = { math: "math.html", biology: "biology.html", physics: "physics.html", history: "history.html" };
+      const pages = { math: "math.html", chemistry: "chemistry-subject.html", biology: "biology.html", physics: "physics.html", informatics: "informatics-subject.html", history: "history.html" };
       const items = Object.entries(fd?.lastResults || {}).filter(([, v]) => v && v.time).map(([sk, v]) => ({ sk, ...v }));
       if (!items.length) return showToast("Сначала пройди хотя бы один уровень!");
       const last = items.sort((a, b) => b.time - a.time)[0]; goTo(pages[last.sk] || "lobby.html");

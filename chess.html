@@ -4,46 +4,63 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>F-Mine | Шахматная Арена</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #070913;
-      --bg2: #0d1022;
-      --bg3: #12162d;
-      --surface: rgba(255, 255, 255, .04);
-      --surface2: rgba(255, 255, 255, .075);
-      --surface3: rgba(255, 255, 255, .12);
-      --border: rgba(255, 255, 255, .09);
-      --border2: rgba(255, 255, 255, .16);
-      
-      --text: #f3f6ff;
-      --text2: #abb4d6;
-      --text3: #6d78a8;
-      
-      --violet: #a78bfa;
-      --violet2: #7c5cf6;
-      --violet-glow: rgba(167, 139, 250, .4);
-      --cyan: #00f3ff;
-      --cyan-glow: rgba(0, 243, 255, .3);
-      --emerald: #34d399;
-      --rose: #fb7185;
-      --rose-glow: rgba(251, 113, 133, .35);
-      
-      --r: 16px;
+      /* === PALETTE === */
+      --bg:       #0A0B0F;
+      --bg2:      #12141B;
+      --bg3:      #1A1D26;
+      --surface:  #12141B;
+      --surface2: #1A1D26;
+      --surface3: rgba(255,255,255,.12);
+      --border:   rgba(255,255,255,.07);
+      --border2:  rgba(255,255,255,.13);
+
+      --text:  #E8EAF2;
+      --text2: #B0B8CF;
+      --text3: #8A94A7;
+
+      /* ONE accent family — violet */
+      --accent:       #8B5CF6;
+      --accent2:      #6D4AFF;
+      --accent-grad:  linear-gradient(135deg, #8B5CF6, #6D4AFF);
+      --accent-soft:  rgba(139,92,246,.11);
+      --accent-border: rgba(139,92,246,.55);
+      --violet:       #8B5CF6;
+      --violet2:      #6D4AFF;
+      --violet-glow:  rgba(139,92,246,.35);
+
+      /* Keep cyan only for logo + legacy board elements */
+      --cyan:      #00f3ff;
+      --cyan-glow: rgba(0,243,255,.25);
+      --emerald:   #34d399;
+      --rose:      #fb7185;
+      --rose-glow: rgba(251,113,133,.35);
+
+      /* === SPACING (8px grid) === */
+      --sp1: 8px;  --sp2: 16px; --sp3: 24px;
+      --sp4: 32px; --sp5: 40px;
+
+      /* === RADII === */
+      --r:    20px;
+      --r-md: 16px;
       --r-sm: 12px;
-      --ease: .25s cubic-bezier(.4, 0, .2, 1);
+      --r-cta: 14px;
+      --r-ctrl: 12px;
+
+      --ease: .18s cubic-bezier(.4,0,.2,1);
     }
 
     body.light {
-      --bg: #eceffd;
-      --bg2: #dde1f8;
-      --bg3: #d1d6f2;
-      --surface: rgba(255, 255, 255, .45);
-      --surface2: rgba(255, 255, 255, .65);
-      --surface3: rgba(255, 255, 255, .8);
-      --border: rgba(124, 92, 246, .12);
-      --border2: rgba(124, 92, 246, .2);
-      --text: #171329;
+      --bg:      #F0F1F8;
+      --bg2:     #E4E6F2;
+      --bg3:     #D8DAE8;
+      --surface: rgba(255,255,255,.7);
+      --surface2: rgba(255,255,255,.85);
+      --border:  rgba(100,80,200,.12);
+      --border2: rgba(100,80,200,.22);
+      --text:  #171329;
       --text2: #4a4670;
       --text3: #827ea8;
     }
@@ -55,18 +72,21 @@
     }
 
     body {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Manrope', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
-      padding-top: 80px;
-      padding-bottom: 40px;
+      padding-top: 72px;
+      padding-bottom: 48px;
+      /* ONE soft radial glow at top center, ~10% opacity */
       background-image:
-        radial-gradient(ellipse 70% 50% at 85% -5%, rgba(167, 139, 250, .08), transparent 58%),
-        radial-gradient(ellipse 50% 40% at 5% 92%, rgba(0, 243, 255, .05), transparent 52%);
+        radial-gradient(ellipse 80% 55% at 50% -10%, rgba(139,92,246,.10), transparent 60%);
       -webkit-font-smoothing: antialiased;
       position: relative;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
     }
 
     /* Scanline overlay */
@@ -81,50 +101,45 @@
       padding: 0 16px;
     }
 
-    /* HEADER */
+    /* ── NAVBAR ── */
     .hd {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 200;
-      height: 68px;
-      background: rgba(7, 9, 19, .88);
-      backdrop-filter: blur(28px);
-      border-bottom: 1px solid rgba(167, 139, 250, .14);
+      height: 60px;
+      background: rgba(10,11,15,.82);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 clamp(14px, 3vw, 30px);
-      box-shadow: 0 6px 28px rgba(0, 0, 0, .5);
+      padding: 0 clamp(14px, 3vw, 28px);
     }
     body.light .hd {
-      background: rgba(236, 239, 253, .9);
+      background: rgba(240,241,248,.88);
     }
 
     .logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 24px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 22px;
       font-weight: 800;
       text-decoration: none;
       color: var(--text);
       display: flex;
       align-items: center;
+      letter-spacing: -0.3px;
     }
     .logo-f {
       color: var(--cyan);
-      text-shadow: 0 0 15px var(--cyan-glow);
+      text-shadow: 0 0 12px var(--cyan-glow);
     }
-    .logo-mine {
-      letter-spacing: -1px;
-    }
+    .logo-mine { letter-spacing: -1px; }
     .logo-dot {
-      width: 5px;
-      height: 5px;
-      background: var(--violet);
+      width: 5px; height: 5px;
+      background: var(--accent);
       border-radius: 50%;
       margin: 0 3px 5px 3px;
-      box-shadow: 0 0 10px var(--violet-glow);
     }
 
     .hd-right {
@@ -133,69 +148,64 @@
       gap: 10px;
     }
 
+    /* ── BUTTONS ── */
     .btn {
-      padding: 8px 16px;
+      padding: 0 16px;
+      height: 36px;
       border: none;
-      border-radius: 8px;
+      border-radius: var(--r-sm);
+      font-family: 'Manrope', sans-serif;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
-      transition: var(--ease);
+      transition: background var(--ease), transform var(--ease), filter var(--ease), box-shadow var(--ease);
       display: inline-flex;
       align-items: center;
       gap: 6px;
       text-decoration: none;
+      white-space: nowrap;
     }
-    .btn:active {
-      transform: scale(.95);
-    }
+    .btn:active { transform: scale(.97); }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .btn.primary {
-      background: linear-gradient(135deg, var(--violet), var(--violet2));
+      background: var(--accent-grad);
       color: #fff;
-      box-shadow: 0 4px 14px var(--violet-glow);
+      box-shadow: 0 2px 10px rgba(139,92,246,.28);
     }
-    .btn.primary:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px var(--violet-glow);
-    }
+    .btn.primary:hover { filter: brightness(1.07); transform: translateY(-1px); }
     .btn.ghost {
       background: transparent;
-      border: 1.5px solid var(--border2);
+      border: 1px solid var(--border2);
       color: var(--text2);
     }
     .btn.ghost:hover {
-      background: var(--surface3);
-      border-color: var(--violet);
-      color: var(--violet);
+      background: var(--surface2);
+      border-color: var(--accent-border);
+      color: var(--accent);
     }
     .btn.rose {
       background: linear-gradient(135deg, var(--rose), #e11d48);
       color: #fff;
     }
-    .btn.rose:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-    }
+    .btn.rose:hover { filter: brightness(1.1); transform: translateY(-1px); }
     .btn.cyan {
       background: linear-gradient(135deg, var(--cyan), #00bcd4);
-      color: #070913;
-      box-shadow: 0 4px 14px var(--cyan-glow);
+      color: #0A0B0F;
+      box-shadow: 0 2px 10px var(--cyan-glow);
     }
-    .btn.cyan:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-    }
+    .btn.cyan:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
+    /* ── NAVBAR CONTROLS ── */
     .lang-toggle {
       display: flex;
       background: var(--surface2);
-      border: 1.5px solid var(--border2);
+      border: 1px solid var(--border2);
       border-radius: 999px;
-      padding: 2px;
+      padding: 3px;
     }
     .lang-btn {
-      padding: 4px 10px;
+      padding: 0 10px;
+      height: 30px;
       border: none;
       border-radius: 999px;
       font-family: 'DM Mono', monospace;
@@ -204,46 +214,49 @@
       cursor: pointer;
       background: transparent;
       color: var(--text3);
-      transition: var(--ease);
+      transition: background var(--ease), color var(--ease);
     }
+    .lang-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
     .lang-btn.active {
-      background: linear-gradient(135deg, var(--violet), var(--violet2));
+      background: var(--accent-grad);
       color: #fff;
     }
 
-    /* GAME SETUP SCREEN */
+    /* ── SETUP CARD ── */
     .setup-card {
-      background: linear-gradient(135deg, rgba(22, 19, 43, 0.65) 0%, rgba(10, 8, 22, 0.75) 100%);
-      border: 1px solid rgba(167, 139, 250, .2);
-      border-radius: var(--r);
-      padding: clamp(20px, 4vw, 40px);
-      max-width: 600px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 28px;
+      max-width: 640px;
       margin: 40px auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 40px rgba(167, 139, 250, .05);
-      backdrop-filter: blur(20px);
+      box-shadow: 0 24px 64px rgba(0,0,0,.55);
       text-align: center;
-      animation: fadeUp .4s ease;
+      animation: fadeUp .35s ease;
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
     .setup-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 32px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 28px;
       font-weight: 800;
       letter-spacing: -0.5px;
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 50%, var(--rose) 100%);
+      margin-bottom: 6px;
+      background: var(--accent-grad);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .setup-sub {
       font-size: 14px;
-      color: var(--text2);
-      margin-bottom: 24px;
+      color: var(--text3);
+      margin-bottom: 28px;
+      line-height: 1.5;
     }
 
+    /* ── MODE CARDS ── */
     .mode-switch {
       display: flex;
       gap: 12px;
@@ -251,28 +264,44 @@
     }
     .mode-btn {
       flex: 1;
-      padding: 16px;
-      border: 1.5px solid var(--border2);
+      padding: 18px 16px;
+      border: 1px solid var(--border);
       border-radius: var(--r-sm);
-      background: var(--surface);
+      background: var(--surface2);
       cursor: pointer;
-      transition: var(--ease);
+      transition: border-color var(--ease), background var(--ease);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
+      position: relative;
     }
     .mode-btn:hover {
-      border-color: var(--violet);
-      background: var(--surface2);
+      border-color: var(--accent-border);
+      background: rgba(139,92,246,.06);
     }
+    .mode-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .mode-btn.active {
-      border-color: var(--cyan);
-      background: rgba(0, 243, 255, 0.05);
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+      border-color: var(--accent-border);
+      background: var(--accent-soft);
+    }
+    /* check badge */
+    .mode-btn.active::after {
+      content: '';
+      position: absolute;
+      top: 10px; right: 10px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--accent-grad);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+      background-size: 11px;
+      background-repeat: no-repeat;
+      background-position: center;
     }
     .mode-icon {
-      font-size: 28px;
+      /* replaced by SVG in HTML */
+      display: flex;
+      color: var(--accent);
     }
     .mode-name {
       font-size: 15px;
@@ -284,59 +313,61 @@
       color: var(--text3);
     }
 
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
     .setup-panel {
       display: none;
       text-align: left;
-      animation: fadeIn .25s ease;
+      animation: fadeIn .2s ease;
     }
-    .setup-panel.active {
-      display: block;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    .setup-panel.active { display: block; }
 
-    .field-group {
-      margin-bottom: 20px;
-    }
+    /* ── SECTION DIVIDERS ── */
+    .field-group { margin-bottom: 28px; }
     .field-label {
-      font-family: 'DM Mono', monospace;
+      font-family: 'Manrope', sans-serif;
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text3);
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+      letter-spacing: .1em;
+      margin-bottom: 10px;
       display: block;
     }
 
+    /* ── SEGMENTED CONTROLS ── */
     .option-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      background: var(--surface2);
+      border-radius: var(--r-ctrl);
+      padding: 4px;
+      gap: 4px;
     }
     .option-btn {
-      padding: 10px;
-      border: 1.5px solid var(--border);
+      padding: 0;
+      height: 44px;
+      border: none;
       border-radius: 8px;
-      background: var(--surface);
-      color: var(--text2);
+      background: transparent;
+      color: var(--text3);
+      font-family: 'Manrope', sans-serif;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       text-align: center;
-      transition: var(--ease);
+      transition: background var(--ease), color var(--ease);
     }
     .option-btn:hover {
-      border-color: var(--violet);
+      background: rgba(255,255,255,.06);
       color: var(--text);
     }
+    .option-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
     .option-btn.active {
-      background: linear-gradient(135deg, var(--violet), var(--violet2));
-      border-color: var(--violet);
+      background: var(--accent-grad);
       color: #fff;
-      box-shadow: 0 4px 10px var(--violet-glow);
     }
 
     .input-row {
@@ -346,31 +377,50 @@
     .text-input {
       flex: 1;
       padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      background: rgba(0,0,0,.2);
-      color: #fff;
-      font-family: inherit;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      background: var(--bg3);
+      color: var(--text);
+      font-family: 'Manrope', sans-serif;
       font-size: 14px;
       outline: none;
-      transition: var(--ease);
+      transition: border-color var(--ease), box-shadow var(--ease);
     }
     .text-input:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
+      border-color: var(--accent-border);
+      box-shadow: 0 0 0 3px rgba(139,92,246,.15);
     }
+    .text-input:focus-visible { outline: none; }
 
+    /* ── CTA BUTTON ── */
     .action-btn {
       width: 100%;
-      padding: 14px;
+      height: 52px;
+      padding: 0 24px;
       border: none;
-      border-radius: 10px;
-      font-family: 'Syne', sans-serif;
+      border-radius: var(--r-cta);
+      font-family: 'Manrope', sans-serif;
       font-size: 16px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform var(--ease), filter var(--ease), box-shadow var(--ease);
     }
+    .action-btn.primary {
+      background: var(--accent-grad);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(139,92,246,.30);
+    }
+    .action-btn.primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+    .action-btn.primary:active { transform: scale(.98); filter: brightness(.97); }
+    .action-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
     /* PLAY AREA LAYOUT */
     .arena {
@@ -1036,21 +1086,14 @@
     }
 
     @media (max-width: 920px) {
-      .arena {
-        grid-template-columns: 1fr;
-      }
-      .sidebar {
-        height: auto;
-        min-height: 400px;
-      }
+      .arena { grid-template-columns: 1fr; }
+      .sidebar { height: auto; min-height: 400px; }
     }
     @media (max-width: 480px) {
-      .option-grid {
-        grid-template-columns: 1fr;
-      }
-      .side-footer {
-        flex-direction: column;
-      }
+      .setup-card { padding: 20px; }
+      .mode-switch { flex-direction: column; }
+      .option-grid { grid-template-columns: 1fr 1fr; }
+      .side-footer { flex-direction: column; }
     }
 
     /* Evaluation Bar styles */
@@ -1257,8 +1300,10 @@
         <button class="lang-btn active" id="langRuBtn" onclick="setLang('ru')">RU</button>
         <button class="lang-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
       </div>
-      <button class="btn ghost" onclick="toggleTheme()" style="padding:6px 12px">🌓</button>
-      <button class="btn ghost" onclick="location.href='lobby.html'" id="backLobbyBtn">⬅ Лобби</button>
+      <button class="btn ghost" onclick="toggleTheme()" style="padding:0;width:36px;height:36px;justify-content:center;" title="Тема">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="btn ghost" onclick="location.href='lobby.html'" id="backLobbyBtn">&#8592; Лобби</button>
     </div>
   </header>
 
@@ -1271,12 +1316,32 @@
       
       <div class="mode-switch">
         <button class="mode-btn active" id="btnModeBot" onclick="selectMode('bot')">
-          <span class="mode-icon">🤖</span>
+          <span class="mode-icon">
+            <!-- Bot SVG icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="8" width="18" height="13" rx="2"/>
+              <path d="M9 8V6a3 3 0 0 1 6 0v2"/>
+              <circle cx="9" cy="14" r="1.5"/>
+              <circle cx="15" cy="14" r="1.5"/>
+              <path d="M9.5 17.5h5"/>
+            </svg>
+          </span>
           <span class="mode-name" id="modeNameBot">Битва с ботом</span>
           <span class="mode-desc" id="modeDescBot">Одиночная игра</span>
         </button>
         <button class="mode-btn" id="btnModeMulti" onclick="selectMode('multiplayer')">
-          <span class="mode-icon">⚔️</span>
+          <span class="mode-icon">
+            <!-- Swords SVG icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/>
+              <line x1="13" y1="19" x2="19" y2="13"/>
+              <line x1="16" y1="16" x2="20" y2="20"/>
+              <line x1="19" y1="21" x2="21" y2="19"/>
+              <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/>
+              <line x1="5" y1="11" x2="9" y2="15"/>
+              <line x1="4" y1="8" x2="8" y2="12"/>
+            </svg>
+          </span>
           <span class="mode-name" id="modeNameMulti">Сетевая дуэль</span>
           <span class="mode-desc" id="modeDescMulti">Игра с друзьями</span>
         </button>
@@ -1331,7 +1396,10 @@
           </div>
         </div>
 
-        <button class="btn action-btn primary" onclick="startGame()" id="btnStartBot">▶ Начать бой</button>
+        <button class="btn action-btn primary" onclick="startGame()" id="btnStartBot">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Начать бой
+        </button>
       </div>
 
       <!-- MULTIPLAYER SETUP PANEL -->
@@ -1346,8 +1414,9 @@
 
         <div class="field-group">
           <span class="field-label" id="lblQuickMatch">Поиск случайного соперника онлайн</span>
-          <button class="btn action-btn violet" onclick="startQuickMatch()" id="btnQuickMatch" style="background: linear-gradient(135deg, #a78bfa, #8b5cf6); border: none; box-shadow: 0 0 12px rgba(139, 92, 246, 0.4); font-weight: 700;">
-            🌍 Найти игру (Быстрый старт)
+          <button class="btn action-btn primary" onclick="startQuickMatch()" id="btnQuickMatch">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
+            Найти игру (Быстрый старт)
           </button>
         </div>
 
@@ -1364,7 +1433,10 @@
 
         <div class="field-group">
           <span class="field-label" id="lblCreateRoom">Создать новую приватную комнату</span>
-          <button class="btn action-btn primary" onclick="createRoom()" id="btnCreateRoom">🔑 Создать приватный бой</button>
+          <button class="btn primary" onclick="createRoom()" id="btnCreateRoom">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Создать приватный бой
+          </button>
         </div>
 
         <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
@@ -1373,7 +1445,10 @@
           <span class="field-label" id="lblJoinRoom">Войти по коду комнаты</span>
           <div class="input-row">
             <input type="text" class="text-input" id="roomCodeInput" placeholder="Код комнаты, напр: CH-5683" maxlength="7" style="text-transform: uppercase;">
-            <button class="btn cyan" onclick="joinRoom()" id="btnJoinRoom">⚔️ Войти</button>
+            <button class="btn cyan" onclick="joinRoom()" id="btnJoinRoom">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><path d="M10 14L21 3"/><path d="M21 16v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>
+              Войти
+            </button>
           </div>
         </div>
       </div>

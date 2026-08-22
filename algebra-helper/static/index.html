@@ -1,499 +1,93 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Умный помощник по алгебре</title>
-    
-    <!-- KaTeX для рендеринга LaTeX -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .chat-container {
-            width: 100%;
-            max-width: 800px;
-            height: 90vh;
-            background: #1a1a2e;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 0 20px rgba(240, 147, 251, 0.5);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 0 20px rgba(240, 147, 251, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 30px rgba(240, 147, 251, 0.8);
-            }
-        }
-
-        .header-info {
-            flex: 1;
-        }
-
-        .header-info h1 {
-            color: white;
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        .status {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #4ade80;
-            border-radius: 50%;
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .chat-messages::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .chat-messages::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-        }
-
-        .message {
-            display: flex;
-            gap: 12px;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.user {
-            flex-direction: row-reverse;
-        }
-
-        .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .message-content {
-            max-width: 70%;
-            background: #2a2a3e;
-            padding: 14px 18px;
-            border-radius: 18px;
-            color: #e0e0e0;
-            line-height: 1.6;
-        }
-
-        .message.user .message-content {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-
-        .message-content .step {
-            margin: 8px 0;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            border-left: 3px solid #667eea;
-        }
-
-        .message-content .roots {
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(74, 222, 128, 0.1);
-            border-radius: 8px;
-            border-left: 3px solid #4ade80;
-        }
-
-        .message-content .error {
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(239, 68, 68, 0.1);
-            border-radius: 8px;
-            border-left: 3px solid #ef4444;
-            color: #fca5a5;
-        }
-
-        .chat-input-container {
-            padding: 20px;
-            background: #16213e;
-            border-top: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .chat-input-wrapper {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .chat-input {
-            flex: 1;
-            background: #2a2a3e;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 14px 20px;
-            color: white;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .chat-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-
-        .send-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .send-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
-        }
-
-        .send-button:active {
-            transform: scale(0.95);
-        }
-
-        .loading {
-            display: flex;
-            gap: 4px;
-            padding: 8px 0;
-        }
-
-        .loading-dot {
-            width: 8px;
-            height: 8px;
-            background: #667eea;
-            border-radius: 50%;
-            animation: loading 1.4s infinite;
-        }
-
-        .loading-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .loading-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes loading {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-10px);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .chat-container {
-                height: 100vh;
-                border-radius: 0;
-            }
-
-            .message-content {
-                max-width: 85%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Умный помощник по алгебре</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.chat-container{width:100%;max-width:850px;height:92vh;background:#1a1a2e;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden}
+.chat-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:18px 20px;display:flex;align-items:center;gap:15px}
+.avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;font-size:24px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(240,147,251,.5)}50%{box-shadow:0 0 32px rgba(240,147,251,.85)}}
+.header-info h1{color:#fff;font-size:19px;margin-bottom:4px}
+.status{color:rgba(255,255,255,.85);font-size:13px;display:flex;align-items:center;gap:6px}
+.status-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
+.chat-messages::-webkit-scrollbar{width:8px}
+.chat-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:4px}
+.message{display:flex;gap:12px;animation:slideIn .3s ease-out}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.message.user{flex-direction:row-reverse}
+.message-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.message.user .message-avatar{background:linear-gradient(135deg,#4facfe,#00f2fe)}
+.message-content{max-width:75%;background:#2a2a3e;padding:14px 18px;border-radius:18px;color:#e0e0e0;line-height:1.7}
+.message.user .message-content{background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff}
+.step{margin:8px 0;padding:9px 12px;background:rgba(255,255,255,.05);border-radius:10px;border-left:3px solid #667eea}
+.roots{margin-top:12px;padding:12px;background:rgba(74,222,128,.12);border-radius:10px;border-left:3px solid #4ade80}
+.error{margin-top:12px;padding:12px;background:rgba(239,68,68,.12);border-radius:10px;border-left:3px solid #ef4444;color:#fca5a5}
+.examples{display:flex;gap:8px;overflow-x:auto;padding:10px 20px;background:#16213e;border-top:1px solid rgba(255,255,255,.08)}
+.examples::-webkit-scrollbar{height:5px}
+.examples::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:4px}
+.chip{flex-shrink:0;background:#2a2a3e;color:#b8b8d0;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:6px 12px;font-size:12px;cursor:pointer;transition:.2s}
+.chip:hover{background:#667eea;color:#fff}
+.chat-input-container{padding:16px 20px;background:#16213e;border-top:2px solid rgba(255,255,255,.1)}
+.chat-input-wrapper{display:flex;gap:12px;align-items:center}
+.chat-input{flex:1;background:#2a2a3e;border:2px solid rgba(255,255,255,.1);border-radius:24px;padding:14px 20px;color:#fff;font-size:15px;outline:none;transition:.3s}
+.chat-input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.2)}
+.send-button{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;font-size:19px;cursor:pointer;transition:.3s}
+.send-button:hover{transform:scale(1.1)}
+.loading{display:flex;gap:4px;padding:8px 0}
+.loading-dot{width:8px;height:8px;background:#667eea;border-radius:50%;animation:load 1.4s infinite}
+.loading-dot:nth-child(2){animation-delay:.2s}.loading-dot:nth-child(3){animation-delay:.4s}
+@keyframes load{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-10px)}}
+@media(max-width:768px){.chat-container{height:100vh;border-radius:0}.message-content{max-width:88%}}
+</style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <div class="avatar">🧮</div>
-            <div class="header-info">
-                <h1>Умный помощник по алгебре</h1>
-                <div class="status">
-                    <div class="status-dot"></div>
-                    <span>Онлайн</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="chat-messages" id="chatMessages">
-            <!-- Приветственное сообщение -->
-            <div class="message bot">
-                <div class="message-avatar">🧮</div>
-                <div class="message-content">
-                    Привет, как дела? Давай помогу тебе с алгебраическим решением! 
-                    Напиши уравнение, и я покажу пошаговое решение.
-                </div>
-            </div>
-        </div>
-
-        <div class="chat-input-container">
-            <div class="chat-input-wrapper">
-                <input 
-                    type="text" 
-                    class="chat-input" 
-                    id="chatInput" 
-                    placeholder="Введите уравнение, например: 2x^2 + 3x - 5 = 0"
-                    autocomplete="off"
-                >
-                <button class="send-button" id="sendButton">➤</button>
-            </div>
-        </div>
+<div class="chat-container">
+  <div class="chat-header">
+    <div class="avatar">🧮</div>
+    <div class="header-info">
+      <h1>Умный помощник по алгебре</h1>
+      <div class="status"><div class="status-dot"></div><span>Онлайн</span></div>
     </div>
-
-    <script>
-        const chatMessages = document.getElementById('chatMessages');
-        const chatInput = document.getElementById('chatInput');
-        const sendButton = document.getElementById('sendButton');
-
-        // Функция для рендеринга LaTeX в элементе
-        function renderLatex(element) {
-            if (typeof renderMathInElement === 'function') {
-                renderMathInElement(element, {
-                    delimiters: [
-                        {left: '$$', right: '$$', display: true},
-                        {left: '$', right: '$', display: false}
-                    ],
-                    throwOnError: false
-                });
-            }
-        }
-
-        // Добавление сообщения в чат
-        function addMessage(content, isUser = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
-            
-            const avatarDiv = document.createElement('div');
-            avatarDiv.className = 'message-avatar';
-            avatarDiv.textContent = isUser ? '👤' : '🧮';
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.innerHTML = content;
-            
-            messageDiv.appendChild(avatarDiv);
-            messageDiv.appendChild(contentDiv);
-            chatMessages.appendChild(messageDiv);
-            
-            // Рендерим LaTeX
-            renderLatex(contentDiv);
-            
-            // Прокрутка вниз
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            return contentDiv;
-        }
-
-        // Добавление индикатора загрузки
-        function addLoading() {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message bot';
-            messageDiv.id = 'loading-message';
-            
-            const avatarDiv = document.createElement('div');
-            avatarDiv.className = 'message-avatar';
-            avatarDiv.textContent = '🧮';
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.innerHTML = `
-                <div class="loading">
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
-                </div>
-            `;
-            
-            messageDiv.appendChild(avatarDiv);
-            messageDiv.appendChild(contentDiv);
-            chatMessages.appendChild(messageDiv);
-            
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Удаление индикатора загрузки
-        function removeLoading() {
-            const loading = document.getElementById('loading-message');
-            if (loading) {
-                loading.remove();
-            }
-        }
-
-        // Форматирование ответа от бэкенда
-        function formatResponse(data) {
-            if (data.error) {
-                return `<div class="error">❌ ${data.error}</div>`;
-            }
-
-            let html = `<strong>📐 ${data.type}</strong><br><br>`;
-            
-            if (data.domain) {
-                html += `<div class="step">${data.domain}</div>`;
-            }
-            
-            html += '<div class="steps">';
-            data.steps.forEach((step, index) => {
-                html += `<div class="step"><strong>Шаг ${index + 1}:</strong> ${step}</div>`;
-            });
-            html += '</div>';
-            
-            if (data.roots && data.roots.length > 0) {
-                html += `<div class="roots"><strong>✅ Ответ:</strong> ${data.roots.join(', ')}</div>`;
-            } else if (!data.error) {
-                html += `<div class="roots"><strong>⚠️</strong> Действительных корней нет</div>`;
-            }
-            
-            return html;
-        }
-
-        // Отправка запроса на сервер
-        async function sendQuery(query) {
-            try {
-                const response = await fetch('/api/solve', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ query: query })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                return { error: `Ошибка соединения с сервером: ${error.message}` };
-            }
-        }
-
-        // Обработка отправки сообщения
-        async function handleSend() {
-            const query = chatInput.value.trim();
-            if (!query) return;
-            
-            // Добавляем сообщение пользователя
-            addMessage(query, true);
-            chatInput.value = '';
-            
-            // Показываем индикатор загрузки
-            addLoading();
-            
-            // Отправляем запрос
-            const response = await sendQuery(query);
-            
-            // Убираем индикатор загрузки
-            removeLoading();
-            
-            // Добавляем ответ бота
-            addMessage(formatResponse(response), false);
-        }
-
-        // Обработчики событий
-        sendButton.addEventListener('click', handleSend);
-        
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleSend();
-            }
-        });
-
-        // Фокус на поле ввода при загрузке
-        chatInput.focus();
-    </script>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="message bot">
+      <div class="message-avatar">🧮</div>
+      <div class="message-content">Привет, как дела? Давай помогу тебе с алгебраическим решением! Напиши уравнение — или нажми на пример внизу 👇</div>
+    </div>
+  </div>
+  <div class="examples" id="examples"></div>
+  <div class="chat-input-container">
+    <div class="chat-input-wrapper">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Например: 2x^2 - 5x + 2 = 0" autocomplete="off">
+      <button class="send-button" id="sendButton">➤</button>
+    </div>
+  </div>
+</div>
+<script>
+const chatMessages=document.getElementById('chatMessages'),chatInput=document.getElementById('chatInput'),sendButton=document.getElementById('sendButton');
+// Примеры по всем темам 7–11 классов
+const EXAMPLES=['3x + 7 = 22','2x + y = 7; x - 3y = -7','(2x^2y) * (-3xy^3)','(x + 3)(2x - 5)','x^2 - 9','(x^2 - 4)/(x - 2)','1/x + 2/y','2x^2 - 5x + 2 = 0','x^4 - 5x^2 + 4 = 0','(x + 2)/(x - 1) = 4/x','3x - 5 <= 7','x^2 - 4x + 3 > 0','sqrt(75) - sqrt(12)','sqrt(x - 2) = 4','x^2 + y^2 = 25; x + y = 7','(x - 1)(x + 3)/(x - 5) >= 0','|2x - 3| = 5','|x + 1| < 4','a1=2, d=3, n=10','b1=3, q=2, n=6','x^3 - 3x^2 - 4x + 12 = 0','2^(x+2) + 2^x = 40','3^(2x-1) > 9','log2(x^2 - 3) = 1','log0.5(x - 2) >= -1','sin(x) = sqrt(2)/2','2cos(x)^2 + 3sin(x) - 3 = 0','x^(3/2) = 8','(x^4 - 3x^2 + 5x)\'','∫(4x^3 - 2x + 1)dx','ax^2 + (a+1)x + 1 = 0'];
+const exBox=document.getElementById('examples');
+EXAMPLES.forEach(e=>{const c=document.createElement('div');c.className='chip';c.textContent=e;c.onclick=()=>{chatInput.value=e;handleSend()};exBox.appendChild(c)});
+function renderLatex(el){if(window.renderMathInElement){renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})}}
+function addMessage(html,isUser){const m=document.createElement('div');m.className='message '+(isUser?'user':'bot');const av=document.createElement('div');av.className='message-avatar';av.textContent=isUser?'👤':'';const c=document.createElement('div');c.className='message-content';c.innerHTML=html;m.appendChild(av);m.appendChild(c);chatMessages.appendChild(m);renderLatex(c);chatMessages.scrollTop=chatMessages.scrollHeight;return c}
+function addLoading(){const m=document.createElement('div');m.className='message bot';m.id='loading-message';m.innerHTML='<div class="message-avatar">🧮</div><div class="message-content"><div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>';chatMessages.appendChild(m);chatMessages.scrollTop=chatMessages.scrollHeight}
+function removeLoading(){const l=document.getElementById('loading-message');if(l)l.remove()}
+function formatResponse(d){if(d.error)return'<div class="error">❌ '+d.error+'</div>';let h='<strong>📐 '+d.type+'</strong><br><br>';if(d.domain)h+='<div class="step">'+d.domain+'</div>';d.steps.forEach((s,i)=>{h+='<div class="step"><strong>Шаг '+(i+1)+':</strong> '+s+'</div>'});if(d.roots&&d.roots.length)h+='<div class="roots"><strong>✅ Ответ:</strong> '+d.roots.join('; ')+'</div>';return h}
+async function sendQuery(q){try{const r=await fetch('/api/solve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q})});return await r.json()}catch(e){return{error:'Сервер недоступен: '+e.message}}}
+async function handleSend(){const q=chatInput.value.trim();if(!q)return;addMessage(q.replace(/</g,'&lt;'),true);chatInput.value='';addLoading();const r=await sendQuery(q);removeLoading();addMessage(formatResponse(r),false)}
+sendButton.addEventListener('click',handleSend);
+chatInput.addEventListener('keypress',e=>{if(e.key==='Enter')handleSend()});
+chatInput.focus();
+</script>
 </body>
 </html>
