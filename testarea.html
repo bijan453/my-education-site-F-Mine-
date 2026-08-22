@@ -19,12 +19,10 @@
   --r:#f87171;
   --ease:.22s cubic-bezier(.4,0,.2,1);
   --sbw:270px; --rpw:38vw;
-  --rad:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);overflow:hidden;-webkit-font-smoothing:antialiased}
-/* aurora bg */
 .aurora{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;opacity:.55}
 .au1{width:52vw;height:52vw;top:-20vw;left:-14vw;background:radial-gradient(circle,rgba(124,92,246,.22),transparent 65%);animation:drift1 26s ease-in-out infinite alternate}
 .au2{width:44vw;height:44vw;bottom:-18vw;right:-10vw;background:radial-gradient(circle,rgba(251,113,133,.16),transparent 65%);animation:drift2 32s ease-in-out infinite alternate}
@@ -36,7 +34,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);overfl
 button{font-family:inherit;cursor:pointer}
 /* HEADER */
 .hd{position:relative;z-index:50;display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(5,6,15,.72);backdrop-filter:blur(24px);border-bottom:1px solid rgba(167,139,250,.14)}
-.logo{font-family:'Syne';font-weight:800;font-size:19px;letter-spacing:.02em;display:flex;align-items:center;user-select:none}
+.logo{font-family:'Syne';font-weight:800;font-size:19px;display:flex;align-items:center;user-select:none}
 .logo b{background:linear-gradient(135deg,var(--a),var(--p));-webkit-background-clip:text;background-clip:text;color:transparent}
 .logo i{width:6px;height:6px;border-radius:50%;background:var(--v);margin:0 5px;animation:pd 2s infinite}
 @keyframes pd{50%{box-shadow:0 0 14px var(--vg)}}
@@ -45,20 +43,24 @@ button{font-family:inherit;cursor:pointer}
 .chip:hover{border-color:var(--v);color:#fff}
 .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--gg)}
 .chip .dot.off{background:var(--a);box-shadow:0 0 8px var(--ag)}
-/* thinking switch */
 .sw{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 14px;border:1px solid var(--bd2);border-radius:999px;background:var(--glass);font-size:11.5px;font-weight:800;color:var(--tx3);transition:var(--ease);user-select:none}
 .sw .tr{width:34px;height:18px;border-radius:99px;background:var(--glass3);position:relative;transition:var(--ease)}
 .sw .tr::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--tx2);transition:var(--ease)}
 .sw.on{color:#fff;border-color:var(--v);background:rgba(167,139,250,.12)}
 .sw.on .tr{background:linear-gradient(135deg,var(--v),var(--p))}
 .sw.on .tr::after{left:18px;background:#fff}
-.ib{width:36px;height:36px;border-radius:11px;border:1px solid var(--bd2);background:var(--glass);color:var(--tx2);font-size:15px;transition:var(--ease);display:flex;align-items:center;justify-content:center}
+.ib{width:36px;height:36px;border-radius:11px;border:1px solid var(--bd2);background:var(--glass);color:var(--tx2);font-size:15px;transition:var(--ease);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ib:hover{color:#fff;border-color:var(--p);background:rgba(251,113,133,.1)}
 /* LAYOUT */
 .layout{position:relative;z-index:1;display:grid;grid-template-columns:var(--sbw) 1fr 0px;height:calc(100vh - 57px);transition:grid-template-columns .35s var(--ease)}
 .layout.rp-open{grid-template-columns:var(--sbw) 1fr var(--rpw)}
+@media(min-width:961px){
+  .layout.sbh{grid-template-columns:0px 1fr 0px}
+  .layout.sbh.rp-open{grid-template-columns:0px 1fr var(--rpw)}
+  .layout.sbh .sb{display:none}
+}
 /* SIDEBAR */
-.sb{background:rgba(10,13,28,.6);backdrop-filter:blur(18px);border-right:1px solid var(--bd);overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
+.sb{background:rgba(10,13,28,.6);backdrop-filter:blur(18px);border-right:1px solid var(--bd);overflow-y:auto;min-height:0;padding:14px;display:flex;flex-direction:column;gap:14px}
 .sb-t{font-family:'DM Mono';font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);margin:0 2px 8px}
 .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 .st{background:var(--glass);border:1px solid var(--bd);border-radius:12px;padding:9px 6px;text-align:center}
@@ -73,15 +75,15 @@ button{font-family:inherit;cursor:pointer}
 .card span{font-size:10px;color:var(--tx3)}
 .hist{font-size:11px;color:var(--tx2);padding:8px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--glass);margin-bottom:5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:var(--ease)}
 .hist:hover{border-color:var(--c);color:var(--c)}
-/* CHAT */
-.cm{display:flex;flex-direction:column;min-width:0;position:relative}
-.cw{flex:1;overflow-y:auto;padding:22px clamp(14px,3vw,28px) 118px;display:flex;flex-direction:column;gap:16px}
+/* CHAT — FIXED SCROLL */
+.cm{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;position:relative}
+.cw{flex:1;min-height:0;overflow-y:auto;scroll-behavior:smooth;padding:22px clamp(14px,3vw,28px) 118px;display:flex;flex-direction:column;gap:16px}
 .hero{border:1px solid rgba(167,139,250,.25);border-radius:22px;padding:26px;background:linear-gradient(140deg,rgba(124,92,246,.12),rgba(5,6,15,.4) 55%);position:relative;overflow:hidden;animation:up .5s ease both}
 .hero h1{font-family:'Syne';font-size:clamp(18px,2.6vw,26px);font-weight:800;margin-bottom:8px}
 .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--p),var(--v),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p{font-size:12.5px;color:var(--tx2);line-height:1.7;max-width:640px}
 .hero-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
-.hc{padding:7px 13px;border-radius:999px;border:1px solid;font-size:11px;font-family:'DM Mono';cursor:pointer;transition:var(--ease);background:transparent}
+.hc{padding:7px 13px;border-radius:999px;border:1px solid rgba(167,139,250,.35);color:var(--v);font-size:11px;font-family:'DM Mono';cursor:pointer;transition:var(--ease);background:transparent}
 .hc:hover{transform:translateY(-2px);filter:brightness(1.25)}
 @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1}}
 .msg{display:flex;gap:9px;align-items:flex-end;animation:up .3s ease both}
@@ -94,10 +96,10 @@ button{font-family:inherit;cursor:pointer}
 .msg.u .bub{background:linear-gradient(135deg,rgba(96,200,255,.14),rgba(96,200,255,.05));border:1px solid rgba(96,200,255,.28);border-bottom-right-radius:4px}
 .bub h3,.bub h4{font-family:'Syne';margin:8px 0 4px}
 .bub ul{margin:4px 0 4px 18px}
-.bub .ic-code{font-family:'DM Mono';font-size:12px;background:var(--glass3);padding:1px 6px;border-radius:6px;border:1px solid var(--bd)}
+.ic-code{font-family:'DM Mono';font-size:12px;background:var(--glass3);padding:1px 6px;border-radius:6px;border:1px solid var(--bd)}
 .mt{font-family:'DM Mono';font-size:9px;color:var(--tx3);margin-top:4px}
-/* run card / pipeline */
-.run{border:1px solid rgba(167,139,250,.3);border-radius:18px;background:linear-gradient(160deg,rgba(124,92,246,.08),rgba(5,6,15,.7));padding:14px;max-width:min(92%,820px)}
+/* RUN CARD */
+.run{border:1px solid rgba(167,139,250,.3);border-radius:18px;background:linear-gradient(160deg,rgba(124,92,246,.08),rgba(5,6,15,.7));padding:14px;max-width:min(94%,860px)}
 .run-steps{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .step{display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;border:1px solid var(--bd);background:var(--glass);font-size:10.5px;font-weight:700;color:var(--tx3);transition:var(--ease)}
 .step i{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:9px;background:var(--glass3)}
@@ -112,14 +114,23 @@ button{font-family:inherit;cursor:pointer}
 .run-body .bub{background:none;border:none;box-shadow:none;padding:0;max-width:100%}
 details.spec{margin-top:10px;border:1px solid var(--bd);border-radius:12px;background:var(--glass);padding:8px 12px;font-size:12px}
 details.spec summary{cursor:pointer;font-weight:700;color:var(--v);font-size:11.5px}
-/* code blocks */
+/* CODE BLOCKS — editor style */
 .cb{margin:10px 0;border:1px solid var(--bd2);border-radius:12px;overflow:hidden;background:#0a0e1a}
 .cb-h{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:rgba(255,255,255,.05);border-bottom:1px solid var(--bd);font-family:'DM Mono';font-size:10.5px;color:var(--tx2)}
 .cb-h div{display:flex;gap:6px}
 .cb-b{background:transparent;border:1px solid var(--bd2);color:var(--tx3);padding:3px 9px;border-radius:6px;font-size:10px;font-family:'DM Mono';transition:var(--ease)}
 .cb-b:hover{color:var(--g);border-color:var(--g)}
 .cb-b.runb:hover{color:var(--c);border-color:var(--c)}
-.cb pre{padding:12px;overflow:auto;max-height:380px;font-family:'DM Mono';font-size:11.5px;line-height:1.55;color:#dbe4ff}
+.cb pre{padding:12px 0;overflow:auto;max-height:420px;font-family:'DM Mono';font-size:11.5px;line-height:1.6;color:#dbe4ff;counter-reset:ln}
+.cl{display:block;white-space:pre;padding-left:3.4em;padding-right:14px;position:relative}
+.cl:hover{background:rgba(255,255,255,.03)}
+.cl::before{counter-increment:ln;content:counter(ln);position:absolute;left:0;top:0;width:2.4em;text-align:right;color:#39426b;font-size:10px;line-height:inherit}
+.tok-c{color:#5b6480;font-style:italic}
+.tok-s{color:#7ee2a8}
+.tok-t{color:#60c8ff}
+.tok-k{color:#fb7185}
+.tok-p{color:#8b93b8}
+.tok-n{color:#fbbf24}
 /* actions */
 .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .act{padding:7px 13px;border-radius:10px;border:1px solid var(--bd2);background:var(--glass);color:var(--tx2);font-size:11px;font-weight:700;transition:var(--ease);display:flex;gap:6px;align-items:center}
@@ -135,24 +146,24 @@ details.spec summary{cursor:pointer;font-weight:700;color:var(--v);font-size:11.
 .send:disabled{opacity:.35;pointer-events:none}
 .mode-tag{font-family:'DM Mono';font-size:9px;color:var(--tx3);padding:4px 8px;border:1px solid var(--bd);border-radius:8px;align-self:center;white-space:nowrap}
 /* RIGHT PANEL */
-.rp{position:relative;border-left:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .3s}
+.rp{position:relative;border-left:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;overflow:hidden;min-height:0;opacity:0;pointer-events:none;transition:opacity .3s}
 .layout.rp-open .rp{opacity:1;pointer-events:auto}
 .rp-hd{display:flex;align-items:center;border-bottom:1px solid var(--bd);background:var(--bg3)}
 .rp-tab{flex:1;padding:11px 4px;text-align:center;font-family:'DM Mono';font-size:10.5px;color:var(--tx3);border:none;background:none;border-bottom:2px solid transparent;transition:var(--ease)}
 .rp-tab.on{color:var(--p);border-bottom-color:var(--p);background:rgba(251,113,133,.06)}
 .rp-x{padding:0 12px;border:none;background:none;color:var(--tx3);font-size:14px}
 .rp-x:hover{color:var(--r)}
-.rp-body{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column}
-.pv-stage{flex:1;overflow:auto;background:#1a1d29;display:flex;justify-content:center}
+.rp-body{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.pv-stage{flex:1;min-height:0;overflow:auto;background:#1a1d29;display:flex;justify-content:center}
 .pv-stage iframe{width:100%;height:100%;border:none;background:#fff;transition:width .3s}
 .pv-stage.mob iframe{width:390px;box-shadow:0 0 0 8px #000,0 0 40px rgba(0,0,0,.6);border-radius:22px;margin:14px 0;height:calc(100% - 28px)}
 .pv-tools{display:flex;gap:6px;padding:8px;border-bottom:1px solid var(--bd);background:var(--bg3)}
-.term{flex:1;overflow-y:auto;background:#070a12;font-family:'DM Mono';font-size:11px;padding:12px;color:var(--g);white-space:pre-wrap}
+.term{flex:1;min-height:0;overflow-y:auto;background:#070a12;font-family:'DM Mono';font-size:11px;padding:12px;color:var(--g);white-space:pre-wrap}
 .tl{margin-bottom:3px;animation:up .2s both}
 .tl.err{color:var(--r)}.tl.warn{color:var(--a)}.tl.info{color:var(--c)}.tl.dim{color:var(--tx3)}
-.qa-view,.files-view{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.qa-view,.files-view{flex:1;min-height:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
 .qa-item{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--bd);background:var(--glass);font-size:12px}
-.qa-item .s{width:9px;height:9px;border-radius:50%}
+.qa-item .s{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .qa-item.pass .s{background:var(--g);box-shadow:0 0 10px var(--gg)}
 .qa-item.failp .s{background:var(--r);box-shadow:0 0 10px rgba(248,113,113,.5)}
 .f-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--glass);font-size:12px}
@@ -181,8 +192,8 @@ details.spec summary{cursor:pointer;font-weight:700;color:var(--v);font-size:11.
 #toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(14px);background:#12162e;border:1.5px solid var(--v);border-radius:999px;padding:10px 22px;font-size:12px;font-weight:700;opacity:0;transition:.3s;z-index:300;pointer-events:none;box-shadow:0 12px 40px rgba(0,0,0,.7)}
 #toast.show{opacity:1;transform:translateX(-50%)}
 @media(max-width:960px){
-  .layout,.layout.rp-open{grid-template-columns:1fr}
-  .sb{position:fixed;left:0;top:57px;bottom:0;width:var(--sbw);z-index:80;transform:translateX(-105%);transition:transform .3s}
+  .layout,.layout.rp-open,.layout.sbh,.layout.sbh.rp-open{grid-template-columns:1fr}
+  .sb{position:fixed;left:0;top:57px;bottom:0;width:var(--sbw);z-index:80;transform:translateX(-105%);transition:transform .3s;display:flex}
   .sb.open{transform:none}
   .rp{position:fixed;inset:57px 0 0 0;z-index:70}
 }
@@ -199,7 +210,7 @@ details.spec summary{cursor:pointer;font-weight:700;color:var(--v);font-size:11.
   <button class="ib" id="gearBtn" title="Настройки">⚙️</button>
   <button class="ib" id="dlBtn" title="Скачать текущий код">⬇️</button>
   <button class="ib" id="clearBtn" title="Очистить чат">🗑</button>
-  <button class="ib" id="sbBtn" title="Меню">☰</button>
+  <button class="ib" id="sbBtn" title="Показать/скрыть панель">☰</button>
 </header>
 
 <div class="layout" id="layout">
@@ -248,9 +259,9 @@ details.spec summary{cursor:pointer;font-weight:700;color:var(--v);font-size:11.
       <button class="rp-x" id="rpClose">✕</button>
     </div>
     <div class="pv-tools" id="pvTools">
-      <button class="ib" id="devBtn" title="Десктоп / мобайл" style="width:30px;height:30px">🖥</button>
-      <button class="ib" id="rerunBtn" title="Перезапустить песочницу" style="width:30px;height:30px">🔄</button>
-      <button class="ib" id="openBtn" title="Открыть в новой вкладке" style="width:30px;height:30px">↗</button>
+      <button class="ib" id="devBtn" style="width:30px;height:30px" title="Десктоп / мобайл">🖥</button>
+      <button class="ib" id="rerunBtn" style="width:30px;height:30px" title="Перезапустить песочницу">🔄</button>
+      <button class="ib" id="openBtn" style="width:30px;height:30px" title="Открыть в новой вкладке">↗</button>
     </div>
     <div class="rp-body">
       <div class="pv-stage" id="pvStage"><iframe id="frame" sandbox="allow-scripts allow-modals allow-forms allow-popups"></iframe></div>
@@ -261,10 +272,9 @@ details.spec summary{cursor:pointer;font-weight:700;color:var(--v);font-size:11.
   </section>
 </div>
 
-<!-- SETTINGS -->
 <div class="modal" id="setModal"><div class="m-card">
   <h2>⚙️ Настройки студии</h2>
-  <p>Все запросы идут <b>напрямую из браузера</b> в OpenRouter/Groq — твой сервер не нагружается. Ключи хранятся только в твоём localStorage.</p>
+  <p>Все запросы идут <b>напрямую из браузера</b> в OpenRouter/Groq — сервер не нагружается. Ключи хранятся только в твоём localStorage.</p>
   <div class="f-row"><label>Провайдер</label>
     <select id="setProv"><option value="openrouter">OpenRouter (рекомендуется)</option><option value="groq">Groq</option><option value="demo">🎮 Демо (офлайн, без ключа)</option></select></div>
   <div class="f-row"><label>API ключ</label><input type="password" id="setKey" placeholder="sk-or-v1-… / gsk_…"></div>
@@ -276,10 +286,9 @@ details.spec summary{cursor:pointer;font-weight:700;color:var(--v);font-size:11.
   <div class="m-btns"><button class="mbtn" id="setCancel">Отмена</button><button class="mbtn prime" id="setSave">💾 Сохранить</button></div>
 </div></div>
 
-<!-- ONBOARD -->
 <div class="modal" id="obModal"><div class="m-card">
   <h2>👋 Добро пожаловать в F·MINE Studio</h2>
-  <p>Чтобы нейросеть генерировала код, нужен бесплатный API-ключ <b>OpenRouter</b> или <b>Groq</b> (запросы идут напрямую из браузера).<br><br>🔑 OpenRouter: openrouter.ai → Keys → создать ключ.<br>⚡ Groq: console.groq.com → API Keys.<br><br>Или запусти <b>демо-режим</b> — песочница, авто-фиксы и QA работают без ключа на встроенных шаблонах.</p>
+  <p>Чтобы нейросеть генерировала код, нужен бесплатный API-ключ <b>OpenRouter</b> или <b>Groq</b> (запросы идут напрямую из браузера).<br><br>🔑 OpenRouter: openrouter.ai → Keys.<br>⚡ Groq: console.groq.com → API Keys.<br><br>Или запусти <b>демо-режим</b> — песочница, авто-фиксы и QA работают без ключа.</p>
   <div class="m-btns"><button class="mbtn" id="obDemo">🎮 Демо-режим</button><button class="mbtn prime" id="obSet">🔑 Ввести ключ</button></div>
 </div></div>
 
@@ -287,24 +296,43 @@ details.spec summary{cursor:pointer;font-weight:700;color:var(--v);font-size:11.
 
 <script>
 'use strict';
-/* ═══ utils ═══ */
 const $=id=>document.getElementById(id);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const LS=(k,v)=>v===undefined?JSON.parse(localStorage.getItem(k)||'null'):localStorage.setItem(k,JSON.stringify(v));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),2600)}
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-/* ═══ state ═══ */
 let S=LS('fm_set')||{provider:'openrouter',key:'',model:'meta-llama/llama-3.3-70b-instruct:free',thinkModel:'deepseek/deepseek-r1:free',heal:3,ghToken:'',ghRepo:'',thinking:false};
 let stats=LS('fm_stats')||{msg:0,heal:0,test:0};
 let versions=LS('fm_ver')||[];
 let history=LS('fm_hist')||[];
 let curCode='',busy=false,cbN=0;const CB={};
-
-/* ═══ DOM ═══ */
 const cw=$('cw'),inp=$('inp'),frame=$('frame'),layout=$('layout');
 
-/* ═══ markdown ══ */
+/* ═══ SYNTAX HIGHLIGHTER ═══ */
+function hl(code){
+  const re=/(<!--[\s\S]*?-->)|(\/\*[\s\S]*?\*\/)|(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)|(<\/?[a-zA-Z][\w-]*|\/?>)|(\b(?:const|let|var|function|return|if|else|for|while|do|class|new|await|async|import|from|export|try|catch|finally|throw|switch|case|break|continue|typeof|instanceof|of|in|delete|void|this|super|extends|static|get|set|yield|true|false|null|undefined)\b)|([{}();,])|(\b\d+(?:\.\d+)?(?:px|rem|em|vh|vw|s|ms|%)?\b)/g;
+  let out='',last=0,m;
+  while((m=re.exec(code))){
+    out+=esc(code.slice(last,m.index));
+    let cls='';
+    if(m[1]||m[2]||m[3])cls='tok-c';
+    else if(m[4])cls='tok-s';
+    else if(m[5])cls='tok-t';
+    else if(m[6])cls='tok-k';
+    else if(m[7])cls='tok-p';
+    else if(m[8])cls='tok-n';
+    out+='<span class="'+cls+'">'+esc(m[0])+'</span>';
+    last=m.index+m[0].length;
+  }
+  out+=esc(code.slice(last));
+  return out;
+}
+function beautify(s){
+  return s.replace(/></g,'>\n<').replace(/;\s*/g,';\n').replace(/\{\s*/g,'{\n  ').replace(/\}\s*/g,'}\n');
+}
+
+/* ═══ markdown ═══ */
 function md(src){
   const fences=[];
   src=src.replace(/```([\w-]*)\n?([\s\S]*?)```/g,(m,l,c)=>{fences.push({l,c});return '\u0000'+(fences.length-1)+'\u0000';});
@@ -321,10 +349,13 @@ function md(src){
 }
 function codeBlock(f){
   const id=cbN++;CB[id]=f.c;
-  return '<div class="cb"><div class="cb-h"><span>'+(f.l||'code').toUpperCase()+'</span><div>'+
+  let src=f.c;
+  if((src.match(/\n/g)||[]).length<4)src=beautify(src);
+  const lines=hl(src).split('\n').map(l=>'<span class="cl">'+(l||' ')+'</span>').join('');
+  return '<div class="cb"><div class="cb-h"><span>'+((f.l||'code').toUpperCase())+'</span><div>'+
     '<button class="cb-b" data-copy="'+id+'">📋 копировать</button>'+
     '<button class="cb-b runb" data-run="'+id+'">▶ в песочницу</button></div></div>'+
-    '<pre><code>'+esc(f.c)+'</code></pre></div>';
+    '<pre>'+lines+'</pre></div>';
 }
 cw.addEventListener('click',e=>{
   const c=e.target.closest('[data-copy]'),r=e.target.closest('[data-run]');
@@ -332,7 +363,7 @@ cw.addEventListener('click',e=>{
   if(r){loadToSandbox(CB[r.dataset.run]||'');toast('▶ Загружено в песочницу')}
 });
 
-/* ═══ terminal ═══ */
+/* ═══ terminal ══ */
 function term(msg,cls){
   const v=$('termView'),d=document.createElement('div');
   d.className='tl '+(cls||'');d.textContent='> '+msg;v.appendChild(d);
@@ -340,7 +371,7 @@ function term(msg,cls){
   v.scrollTop=v.scrollHeight;
 }
 
-/* ═══ SANDBOX (self-healing) ═══ */
+/* ═══ SANDBOX ═══ */
 const HARNESS=`(function(){
 function send(d){d.__fmine=true;parent.postMessage(d,'*');}
 window.addEventListener('error',function(e){send({type:'runtime_error',msg:String(e.message),stack:(e.error&&e.error.stack)?e.error.stack:String(e.filename)+':'+e.lineno});});
@@ -367,7 +398,7 @@ window.addEventListener('message',e=>{
   const d=e.data;if(!d||d.__fmine!==true)return;
   if(d.type==='runtime_error'){term('✖ runtime: '+d.msg+(d.stack?' | '+d.stack.split('\n').slice(0,2).join(' '):''),'err');if(SB.session)SB.session.errors.push(d);}
   else if(d.type==='console_error'){term('console: '+d.msg,'warn');}
-  else if(d.type==='qa'){SB.lastQA=d.results;renderQA(d.results);if(SB.session){SB.session.qa=d.results;SB.session.resolve&&SB.session.resolve();}}
+  else if(d.type==='qa'){SB.lastQA=d.results;renderQA(d.results);if(SB.session){SB.session.qa=d.results;if(SB.session.resolve)SB.session.resolve();}}
 });
 function runSandbox(code){
   return new Promise(res=>{
@@ -379,7 +410,8 @@ function runSandbox(code){
   });
 }
 function renderQA(list){
-  const v=$('qaView');if(!list){v.innerHTML='<div class="qa-item failp"><span class="s"></span>Тесты ещё не запускались</div>';return;}
+  const v=$('qaView');
+  if(!list){v.innerHTML='<div class="qa-item failp"><span class="s"></span>Тесты ещё не запускались</div>';return;}
   let pass=0;
   v.innerHTML='<div class="sb-t" style="margin:0">Результат прогона автотестов</div>'+list.map(t=>{
     if(t.pass)pass++;
@@ -402,28 +434,100 @@ async function streamChat(messages,onDelta){
   const cfg=provCfg();
   const res=await fetch(cfg.url,{method:'POST',headers:cfg.h(),body:JSON.stringify({model:curModel(),messages,stream:true,temperature:S.thinking?0.3:0.75})});
   if(!res.ok)throw new Error(await readErr(res));
-  if(!res.body){const d=await res.json();const t=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';onDelta&&onDelta(t);return t;}
+  if(!res.body){const d=await res.json();const t=d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:'';if(onDelta)onDelta(t);return t;}
   const rd=res.body.getReader(),dec=new TextDecoder();let buf='',out='';
   for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});
     let i;while((i=buf.indexOf('\n'))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+1);
       if(!line.startsWith('data:'))continue;const p=line.slice(5).trim();if(p==='[DONE]')continue;
-      try{const j=JSON.parse(p);const pc=j.choices&&j.choices[0]&&j.choices[0].delta?j.choices[0].delta.content:'';if(pc){out+=pc;onDelta&&onDelta(out);}}catch(e){}}}
+      try{const j=JSON.parse(p);const pc=j.choices&&j.choices[0]&&j.choices[0].delta?j.choices[0].delta.content:'';if(pc){out+=pc;if(onDelta)onDelta(out);}}catch(e){}}}
   return out;
 }
-/* demo offline engine */
+/* demo engine — multi-line templates */
+function demoCode(q){
+  if(/kanban|задач|доск|todo/.test(q))return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Kanban (demo)</title>
+<style>
+  body { font-family: sans-serif; background: #0b0e1a; color: #eee; margin: 0; padding: 24px; }
+  h1 { font-size: 20px; }
+  .cols { display: flex; gap: 14px; }
+  .col { flex: 1; background: #151a2e; border: 1px solid #2a3050; border-radius: 14px; padding: 12px; min-height: 300px; }
+  .col h2 { font-size: 13px; color: #8b93b8; margin: 0 0 10px; }
+  .t { background: #1e2440; border: 1px solid #343c66; border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; }
+  .t.done { opacity: .5; text-decoration: line-through; }
+  input, button { border-radius: 10px; border: 1px solid #343c66; background: #1e2440; color: #eee; padding: 9px; margin: 2px; }
+  button { background: linear-gradient(135deg, #fb7185, #db2777); border: none; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>🗂 Kanban (demo)</h1>
+<input id="inp" placeholder="Новая задача…">
+<button id="add">Добавить</button>
+<div class="cols">
+  <div class="col"><h2>СДЕЛАТЬ</h2><div id="c0"></div></div>
+  <div class="col"><h2>В ПРОЦЕССЕ</h2><div id="c1"></div></div>
+  <div class="col"><h2>ГОТОВО</h2><div id="c2"></div></div>
+</div>
+<script>
+  var data = JSON.parse(localStorage.getItem('kb') || '[]');
+  function save() { localStorage.setItem('kb', JSON.stringify(data)); }
+  function render() {
+    for (var i = 0; i < 3; i++) document.getElementById('c' + i).innerHTML = '';
+    data.forEach(function (t) {
+      var d = document.createElement('div');
+      d.className = 't' + (t.done ? ' done' : '');
+      d.textContent = t.text;
+      d.onclick = function () { t.done = !t.done; save(); render(); };
+      document.getElementById('c' + t.col).appendChild(d);
+    });
+  }
+  document.getElementById('add').onclick = function () {
+    var v = document.getElementById('inp').value.trim();
+    if (!v) return;
+    data.push({ text: v, col: 0, done: false });
+    document.getElementById('inp').value = '';
+    save(); render();
+  };
+  render();
+<\/script>
+</body>
+</html>`;
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>NeoSpace</title>
+<style>
+  body { margin: 0; font-family: sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+         text-align: center; color: #fff; background: radial-gradient(ellipse at 20% 0%, #1b1035, #05060f 60%); }
+  h1 { font-size: 44px; background: linear-gradient(90deg, #fb7185, #a78bfa, #60c8ff); -webkit-background-clip: text; color: transparent; }
+  p { color: #9aa3c7; max-width: 480px; margin: 12px auto; }
+  button { padding: 14px 30px; border-radius: 999px; border: none; color: #fff; font-size: 15px; cursor: pointer;
+           background: linear-gradient(135deg, #fb7185, #db2777); box-shadow: 0 8px 30px rgba(251,113,133,.4); transition: .2s; }
+  button:hover { transform: scale(1.06); }
+</style>
+</head>
+<body>
+<div>
+  <h1>NEOSPACE 🚀</h1>
+  <p>Космический туризм нового поколения. Первый коммерческий рейс на орбиту — уже в 2027.</p>
+  <button onclick="alert('Заявка принята! (demo)')">Забронировать полёт</button>
+</div>
+</body>
+</html>`;
+}
 async function demoChat(messages,onDelta){
-  const sys=messages[0]?messages[0].content:'';const usr=messages.map(m=>m.content).join(' ').toLowerCase();
+  const sys=messages[0]?messages[0].content:'';
+  const usr=messages.map(m=>m.content).join(' ').toLowerCase();
   let out;
   if(sys.includes('Planner'))out='**ТЗ (demo):**\n1. Адаптивная вёрстка, тёмная тема\n2. Интерактив на vanilla JS\n3. Хранение состояния в localStorage\n4. Критерии: нет ошибок консоли, кликабельные кнопки';
   else if(sys.includes('hotfix'))out='```html\n'+(curCode||demoCode(usr))+'\n```';
   else if(sys.includes('Coder'))out='```html\n'+demoCode(usr)+'\n```';
   else out='Я в демо-режиме 🎮 — работаю на встроенных шаблонах. Добавь API-ключ в ⚙️, чтобы подключить настоящую модель. Попробуй: «создай kanban» или «сделай лендинг».';
-  if(onDelta){for(let i=0;i<out.length;i+=24){onDelta(out.slice(0,i+24));await sleep(12);} }
+  if(onDelta){for(let i=0;i<out.length;i+=24){onDelta(out.slice(0,i+24));await sleep(10);}}
   return out;
-}
-function demoCode(q){
-  if(/kanban|задач|доск|todo/.test(q))return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:sans-serif;background:#0b0e1a;color:#eee;margin:0;padding:24px}h1{font-size:20px}.cols{display:flex;gap:14px}.col{flex:1;background:#151a2e;border:1px solid #2a3050;border-radius:14px;padding:12px;min-height:300px}.col h2{font-size:13px;color:#8b93b8;margin:0 0 10px}.t{background:#1e2440;border:1px solid #343c66;border-radius:10px;padding:10px;margin-bottom:8px;cursor:pointer}.t.done{opacity:.5;text-decoration:line-through}input,button{border-radius:10px;border:1px solid #343c66;background:#1e2440;color:#eee;padding:9px;margin:2px}button{background:linear-gradient(135deg,#fb7185,#db2777);border:none;cursor:pointer}</style></head><body><h1>🗂 Kanban (demo)</h1><input id="inp" placeholder="Новая задача…"><button id="add">Добавить</button><div class="cols"><div class="col"><h2>СДЕЛАТЬ</h2><div id="c0"></div></div><div class="col"><h2>В ПРОЦЕССЕ</h2><div id="c1"></div></div><div class="col"><h2>ГОТОВО</h2><div id="c2"></div></div></div><script>var data=JSON.parse(localStorage.getItem("kb")||"[]");function save(){localStorage.setItem("kb",JSON.stringify(data))}function render(){for(var i=0;i<3;i++)document.getElementById("c"+i).innerHTML="";data.forEach(function(t,i){var d=document.createElement("div");d.className="t"+(t.done?" done":"");d.textContent=t.text;d.onclick=function(){t.done=!t.done;save();render()};document.getElementById("c"+t.col).appendChild(d)})}document.getElementById("add").onclick=function(){var v=document.getElementById("inp").value.trim();if(!v)return;data.push({text:v,col:0,done:false});document.getElementById("inp").value="";save();render()};render();<\/script></body></html>';
-  return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{margin:0;font-family:sans-serif;background:radial-gradient(ellipse at 20% 0%,#1b1035,#05060f 60%);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center}h1{font-size:44px;background:linear-gradient(90deg,#fb7185,#a78bfa,#60c8ff);-webkit-background-clip:text;color:transparent}p{color:#9aa3c7;max-width:480px;margin:12px auto}button{padding:14px 30px;border-radius:999px;border:none;background:linear-gradient(135deg,#fb7185,#db2777);color:#fff;font-size:15px;cursor:pointer;box-shadow:0 8px 30px rgba(251,113,133,.4)}button:hover{transform:scale(1.05)}</style></head><body><div><h1>NEOSPACE 🚀</h1><p>Космический туризм нового поколения. Первый коммерческий рейс на орбиту — уже в 2027.</p><button onclick="alert(\'Заявка принята! (demo)\')">Забронировать полёт</button></div></body></html>';
 }
 async function chat(messages,onDelta){
   if(S.provider==='demo')return demoChat(messages,onDelta);
@@ -431,7 +535,7 @@ async function chat(messages,onDelta){
   return streamChat(messages,onDelta);
 }
 
-/* ═══ code extraction & RAG index ═══ */
+/* ═══ extract & RAG ═══ */
 function extractCode(t){
   const ms=[...t.matchAll(/```[\w-]*\n([\s\S]*?)```/g)].map(m=>m[1]);
   if(ms.length){ms.sort((a,b)=>b.length-a.length);if(ms[0].trim().startsWith('<'))return ms[0].trim();}
@@ -441,29 +545,32 @@ function extractCode(t){
 }
 function buildIndex(code){
   const ids=[...new Set([...code.matchAll(/id="([^"]+)"/g)].map(m=>m[1]))].slice(0,30);
-  const fns=[...new Set([...code.matchAll(/function\s+([A-Za-z_$][\w$]*)/g)].map(m=>m[1]),...[...code.matchAll(/(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=/g)].map(m=>m[1]))].slice(0,30);
+  const fns=[...new Set([...[...code.matchAll(/function\s+([A-Za-z_$][\w$]*)/g)].map(m=>m[1]),...[...code.matchAll(/(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=/g)].map(m=>m[1]))].slice(0,30);
   return{ids,fns};
 }
 function ctxBlock(){
   if(!versions.length)return '';
-  const v=versions[versions.length-1],ix=v.index||{ids:[],fns:[]};
-  return '\n\n[Контекст проекта / RAG]: предыдущая версия уже содержит функции: ['+ix.fns.slice(0,15).join(', ')+'] и ID: ['+ix.ids.slice(0,15).join(', ')+']. Не дублируй их без необходимости, сохраняй совместимость.';
+  const ix=versions[versions.length-1].index||{ids:[],fns:[]};
+  return '\n\n[Контекст проекта / RAG]: предыдущая версия содержит функции: ['+ix.fns.slice(0,15).join(', ')+'] и ID: ['+ix.ids.slice(0,15).join(', ')+']. Не дублируй без необходимости.';
 }
 
-/* ═══ UI builders ═══ */
+/* ═══ UI ═══ */
 function addMsg(role,html){
   const d=document.createElement('div');d.className='msg '+(role==='user'?'u':'b');
   d.innerHTML='<div class="av '+(role==='user'?'u':'b')+'">'+(role==='user'?'YOU':'✦')+'</div><div><div class="bub">'+html+'</div><div class="mt">'+new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})+'</div></div>';
   cw.appendChild(d);cw.scrollTop=cw.scrollHeight;return d;
 }
 function pushHist(role,text){history.push({role,text:text.slice(0,90),ts:Date.now()});history=history.slice(-30);LS('fm_hist',history);renderHist();}
-function renderHist(){$('histList').innerHTML=history.slice(-8).reverse().map((h,i)=>'<div class="hist" data-h="'+esc(h.text)+'">'+(h.role==='user'?'👤 ':'🤖 ')+esc(h.text)+'</div>').join('')||'<div class="hist" style="opacity:.5">пусто</div>';}
+function renderHist(){$('histList').innerHTML=history.slice(-8).reverse().map(h=>'<div class="hist" data-h="'+esc(h.text)+'">'+(h.role==='user'?'👤 ':'🤖 ')+esc(h.text)+'</div>').join('')||'<div class="hist" style="opacity:.5">пусто</div>';}
 $('histList').addEventListener('click',e=>{const h=e.target.closest('[data-h]');if(h){inp.value=h.dataset.h;inp.focus();}});
 function paintStats(){$('stMsg').textContent=stats.msg;$('stHeal').textContent=stats.heal;$('stTest').textContent=stats.test;}
 function makeRun(){
   const d=document.createElement('div');d.className='run';
   d.innerHTML='<div class="run-steps">'+
-    ['planner|🧭 План','coder|⌨️ Код','sandbox|🧪 Песочница','qa|✅ QA'].map(s=>{const[id,l]=s.split('|');return '<div class="step" data-s="'+id+'"><i>•</i>'+l+'</div><div class="sbar"></div>';}).join('').replace(/<div class="sbar"><\/div>$/,'')+
+    '<div class="step" data-s="planner"><i>•</i>🧭 План</div><div class="sbar"></div>'+
+    '<div class="step" data-s="coder"><i>•</i>⌨️ Код</div><div class="sbar"></div>'+
+    '<div class="step" data-s="sandbox"><i>•</i>🧪 Песочница</div><div class="sbar"></div>'+
+    '<div class="step" data-s="qa"><i>•</i>✅ QA</div>'+
     '</div><div class="run-body"><div class="bub"></div></div>';
   cw.appendChild(d);cw.scrollTop=cw.scrollHeight;return d;
 }
@@ -476,72 +583,71 @@ function setStep(run,id,state){
 const streamTo=bub=>t=>{bub.innerHTML=md(t);cw.scrollTop=cw.scrollHeight;};
 
 /* ═══ PIPELINE ═══ */
-const PLANNER_SYS='Ты — Planner, senior-архитектор ПО. Составь краткое техническое задание: структура страницы, компоненты, список JS-функций, edge-cases (пустые данные, ошибки, переполнение), критерии готовности. Markdown, БЕЗ кода.';
-const CODER_SYS='Ты — Coder, senior frontend-разработчик. Пиши ОДИН самодостаточный index.html (CSS и JS внутри). Современный тёмный дизайн, адаптивность, vanilla JS. Верни ВЕСЬ код строго в одном блоке ```html, после — короткий список реализованного.';
-const FIX_SYS='Ты — Coder в режиме hotfix. Тебе дали код и стектрейс из изолированной песочницы. Найди причину и верни ТОЛЬКО полностью исправленный код в блоке ```html.';
+const PLANNER_SYS='Ты — Planner, senior-архитектор ПО. Составь краткое ТЗ: структура страницы, компоненты, список JS-функций, edge-cases, критерии готовности. Markdown, БЕЗ кода.';
+const CODER_SYS='Ты — Coder, senior frontend. Пиши ОДИН самодостаточный index.html (CSS и JS внутри), красиво отформатированный с переносами строк. Современный тёмный дизайн, адаптивность, vanilla JS. ВЕСЬ код строго в одном блоке ```html, после — короткий список реализованного.';
+const FIX_SYS='Ты — Coder в режиме hotfix. Тебе дали код и стектрейс из песочницы. Найди причину и верни ТОЛЬКО полностью исправленный код в блоке ```html.';
 
 async function pipeline(text){
   busy=true;$('sendBtn').disabled=true;
   const run=makeRun();const bub=run.querySelector('.run-body .bub');
   let code='';
   try{
-    /* 1 Planner */
     setStep(run,'planner','run');term('▸ planner: составление ТЗ…','info');
     const spec=await chat([{role:'system',content:PLANNER_SYS},{role:'user',content:text}]);
     setStep(run,'planner','ok');
     const det=document.createElement('details');det.className='spec';
     det.innerHTML='<summary>🧭 Техническое задание (Planner)</summary><div style="margin-top:8px">'+md(spec)+'</div>';
     run.querySelector('.run-body').appendChild(det);
-    /* 2 Coder */
     setStep(run,'coder','run');term('▸ coder: генерация кода по ТЗ…','info');
     bub.innerHTML='';
     const raw=await chat([{role:'system',content:CODER_SYS},{role:'user',content:'Задача: '+text+'\n\nТЗ от Planner:\n'+spec+ctxBlock()}],streamTo(bub));
     code=extractCode(raw);
-    if(!code)throw new Error('Модель не вернула код. Попробуй переформулировать или смени модель.');
+    if(!code)throw new Error('Модель не вернула код. Переформулируй или смени модель.');
     setStep(run,'coder','ok');
-    /* 3 Sandbox + self-heal */
     setStep(run,'sandbox','run');openRP();curCode=code;
     let rep=await runSandbox(code);let attempt=0;
     while(rep.errors.length&&attempt<(+S.heal||3)){
       attempt++;stats.heal++;LS('fm_stats',stats);paintStats();
-      term('🔧 self-heal: попытка '+attempt+' — отправка стектрейса модели…','warn');
-      bub.innerHTML='<em style="color:var(--a)">🔧 Авто-фикс #'+attempt+': модель чинит баг по стектрейсу…</em>';
+      term('🔧 self-heal: попытка '+attempt+' — стектрейс отправлен модели…','warn');
+      bub.innerHTML='<em style="color:var(--a)">🔧 Авто-фикс #'+attempt+'…</em>';
       const fx=await chat([{role:'system',content:FIX_SYS},{role:'user',content:'Код:\n'+code+'\n\nОшибки из песочницы:\n'+rep.errors.map(e=>e.msg+'\n'+(e.stack||'')).join('\n---\n')}],streamTo(bub));
       const nc=extractCode(fx);if(!nc)break;code=nc;curCode=code;
       rep=await runSandbox(code);
     }
     if(rep.errors.length){setStep(run,'sandbox','fail');term('✖ билд нестабилен после '+attempt+' фиксов','err');}
     else{setStep(run,'sandbox','ok');term('✔ билд успешен'+(attempt?' после '+attempt+' фиксов':''),'');}
-    /* 4 QA */
     setStep(run,'qa','run');
     if(!rep.qa)rep=await runSandbox(code);
     await sleep(900);
     const qa=SB.lastQA;
     setStep(run,'qa',qa&&qa.every(t=>t.pass)?'ok':(qa?'fail':'ok'));
-    /* finish */
     saveVersion(code);
-    const fin=addMsg('bot',md('✅ **Готово.** Код прошёл песочницу'+(attempt?' после '+attempt+' авто-фиксов':'')+' и автотесты.'+codeBlock({l:'html',c:code})));
-    const acts=document.createElement('div');acts.className='acts';
+    /* FIXED: codeBlock outside md() */
+    const fin=addMsg('bot',md('✅ **Готово.** Код прошёл песочницу'+(attempt?' после '+attempt+' авто-фиксов':'')+' и автотесты.')+codeBlock({l:'html',c:code}));
+    const acts=document.createElement('div');acts.className='acts';acts.dataset.code=code;
     acts.innerHTML='<button class="act prime" data-a="heal">🔧 Починить/улучшить</button><button class="act" data-a="gh">🚀 GitHub</button><button class="act" data-a="dl">⬇️ Скачать</button><button class="act" data-a="qa">🧪 Тесты</button>';
-    acts.dataset.code=code;fin.querySelector('.bub').appendChild(acts);
+    fin.querySelector('.bub').appendChild(acts);
   }catch(e){
     setStep(run,'planner','fail');
-    addMsg('bot','❌ '+esc(e.message)+'<div class="acts"><button class="act prime" onclick="openSet()">⚙️ Открыть настройки</button><button class="act" onclick="useDemo()">🎮 Демо-режим</button></div>');
+    addMsg('bot','❌ '+esc(e.message)+'<div class="acts"><button class="act prime" onclick="openSet()">⚙️ Настройки</button><button class="act" onclick="useDemo()">🎮 Демо</button></div>');
     term('✖ '+e.message,'err');
   }
   busy=false;$('sendBtn').disabled=false;
 }
 cw.addEventListener('click',async e=>{
   const b=e.target.closest('[data-a]');if(!b)return;
-  const wrap=b.closest('.acts');const code=wrap?wrap.dataset.code:curCode;
-  if(b.dataset.a==='dl'){download(code);}
-  if(b.dataset.a==='qa'){loadToSandbox(code);}
-  if(b.dataset.a==='gh'){ghPush(code);}
+  const code=(b.closest('.acts')||{}).dataset?b.closest('.acts').dataset.code:curCode;
+  if(b.dataset.a==='dl')download(code);
+  if(b.dataset.a==='qa')loadToSandbox(code);
+  if(b.dataset.a==='gh')ghPush(code);
   if(b.dataset.a==='heal'){
-    const wish=prompt('Что улучшить/починить?','Исправь все найденные баги и улучши дизайн');
-    if(!wish)return;busy=true;
-    const fx=await chat([{role:'system',content:FIX_SYS},{role:'user',content:'Код:\n'+code+'\n\nЗамечания: '+wish+(SB.lastQA?'\nQA-отчёт: '+JSON.stringify(SB.lastQA):'')}]);
-    const nc=extractCode(fx);if(nc){curCode=nc;saveVersion(nc);addMsg('bot',md('🔧 **Улучшено:**')+codeBlock({l:'html',c:nc}));loadToSandbox(nc);}else toast('❌ Модель не вернула код');
+    const wish=prompt('Что улучшить/починить?','Исправь все баги и улучши дизайн');
+    if(!wish)return;
+    busy=true;
+    const fx=await chat([{role:'system',content:FIX_SYS},{role:'user',content:'Код:\n'+code+'\n\nЗамечания: '+wish+(SB.lastQA?'\nQA: '+JSON.stringify(SB.lastQA):'')}]);
+    const nc=extractCode(fx);
+    if(nc){curCode=nc;saveVersion(nc);addMsg('bot',md('🔧 **Улучшено:**')+codeBlock({l:'html',c:nc}));loadToSandbox(nc);}
+    else toast('❌ Модель не вернула код');
     busy=false;
   }
 });
@@ -563,7 +669,7 @@ function renderFiles(){
 }
 $('filesView').addEventListener('click',e=>{
   const o=e.target.closest('[data-fo]'),d=e.target.closest('[data-fd]'),x=e.target.closest('[data-fx]');
-  if(o){curCode=versions[+o.dataset.fo].code;loadToSandbox(curCode);toast('👁 Версия открыта в превью');}
+  if(o){curCode=versions[+o.dataset.fo].code;loadToSandbox(curCode);toast('👁 Версия открыта');}
   if(d)download(versions[+d.dataset.fd].code);
   if(x){versions.splice(+x.dataset.fx,1);LS('fm_ver',versions);renderFiles();}
 });
@@ -575,13 +681,13 @@ function download(code){
 }
 async function ghPush(code){
   if(!code){toast('❌ Нет кода');return;}
-  if(!S.ghToken||!S.ghRepo){toast('🔑 Укажи GitHub токен и репозиторий в ⚙️');openSet();return;}
+  if(!S.ghToken||!S.ghRepo){toast('🔑 Укажи токен и репозиторий в ⚙️');openSet();return;}
   term('▸ git: push в '+S.ghRepo+'…','info');
   try{
     const b64=btoa(unescape(encodeURIComponent(code)));
     const gh=async(m,p,b)=>{const r=await fetch('https://api.github.com/repos/'+S.ghRepo+'/contents/'+p,{method:m,headers:{Authorization:'Bearer '+S.ghToken,Accept:'application/vnd.github+json'},body:b?JSON.stringify(b):undefined});if(!r.ok)throw new Error(await readErr(r));return r.json();};
     let sha;try{sha=(await gh('GET','index.html')).sha}catch(e){}
-    await gh('PUT','index.html',{message:'feat: F-MINE AI generated build',content:b64,sha});
+    await gh('PUT','index.html',{message:'feat: F-MINE AI build',content:b64,sha});
     term('✔ push: index.html → '+S.ghRepo,'');toast('🚀 Отправлено на GitHub!');
   }catch(e){term('✖ git error: '+e.message,'err');toast('❌ '+e.message);}
 }
@@ -591,6 +697,8 @@ const CODE_RX=/(создай|сделай|напиши|сгенери|прило
 async function send(){
   const t=inp.value.trim();if(!t||busy)return;
   inp.value='';inp.style.height='auto';
+  /* auto-hide left panel on send (desktop) */
+  if(window.innerWidth>960)layout.classList.add('sbh');
   addMsg('user',esc(t));pushHist('user',t);
   stats.msg++;LS('fm_stats',stats);paintStats();
   if(CODE_RX.test(t))await pipeline(t);
@@ -598,7 +706,7 @@ async function send(){
     busy=true;$('sendBtn').disabled=true;
     const m=addMsg('bot','<em style="color:var(--tx3)">✦ печатает…</em>');
     const bub=m.querySelector('.bub');
-    const msgs=[{role:'system',content:'Ты — дружелюбный ассистент F-MINE. Отвечай кратко и по делу на '+(navigator.language.startsWith('ru')?'русском':'языке пользователя')+'.'}];
+    const msgs=[{role:'system',content:'Ты — дружелюбный ассистент F-MINE. Отвечай кратко и по делу.'}];
     history.slice(-8).forEach(h=>msgs.push({role:h.role==='user'?'user':'assistant',content:h.text}));
     msgs.push({role:'user',content:t});
     try{const out=await chat(msgs,streamTo(bub));pushHist('bot',out);}
@@ -609,7 +717,7 @@ async function send(){
 $('sendBtn').onclick=send;
 inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
 inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,140)+'px';
-  $('modeTag').textContent=inp.value.trim()?(CODE_RX.test(inp.value.trim())?'🛠 STUDIO':'💬 CHAT'):'AUTO';});
+  $('modeTag').textContent=inp.value.trim()?(CODE_RX.test(inp.value.trim())?'🛠 STUDIO':' CHAT'):'AUTO';});
 $('clrInp').onclick=()=>{inp.value='';inp.focus();};
 
 /* ═══ right panel ═══ */
@@ -626,8 +734,7 @@ document.querySelectorAll('.rp-tab').forEach(t=>t.onclick=()=>{
 });
 $('devBtn').onclick=()=>{const m=$('pvStage').classList.toggle('mob');$('devBtn').textContent=m?'📱':'';};
 $('rerunBtn').onclick=()=>{if(curCode)runSandbox(curCode);else toast('Нет кода');};
-$('openBtn').onclick=()=>{if(!curCode)return toast('Нет кода');const b=URL.createObjectURL(new Blob([curCode],{type:'text/html'}));window.open(b);};
-/* resize */
+$('openBtn').onclick=()=>{if(!curCode)return toast('Нет кода');window.open(URL.createObjectURL(new Blob([curCode],{type:'text/html'})));};
 (function(){
   const h=$('rpHandle');let drag=false;
   h.addEventListener('mousedown',()=>drag=true);
@@ -648,38 +755,41 @@ function useDemo(){S.provider='demo';LS('fm_set',S);paintProv();toast('🎮 Де
 window.useDemo=useDemo;
 $('obDemo').onclick=()=>{useDemo();$('obModal').classList.remove('show');};
 $('obSet').onclick=()=>{$('obModal').classList.remove('show');openSet();};
-$('thinkSw').onclick=()=>{S.thinking=!S.thinking;LS('fm_set',S);$('thinkSw').classList.toggle('on',S.thinking);toast(S.thinking?'🧠 Thinking ON — глубокие рассуждения':'Thinking OFF');};
+$('thinkSw').onclick=()=>{S.thinking=!S.thinking;LS('fm_set',S);$('thinkSw').classList.toggle('on',S.thinking);toast(S.thinking?'🧠 Thinking ON':'Thinking OFF');};
 function paintProv(){
-  const map={openrouter:['OR','OpenRouter'],groq:['GQ','Groq'],demo:['DM','Демо']};
-  $('provLbl').textContent=map[S.provider][0]+(S.thinking?' +🧠':'');
+  const map={openrouter:'OR',groq:'GQ',demo:'DM'};
+  $('provLbl').textContent=map[S.provider]+(S.thinking?' +🧠':'');
   $('provDot').classList.toggle('off',S.provider!=='demo'&&!S.key);
   $('thinkSw').classList.toggle('on',S.thinking);
 }
-/* header */
 $('dlBtn').onclick=()=>download(curCode);
 $('clearBtn').onclick=()=>{cw.innerHTML='';history=[];LS('fm_hist',history);renderHist();hero();toast('🗑 Очищено');};
-$('sbBtn').onclick=()=>$('sb').classList.toggle('open');
+$('sbBtn').onclick=()=>{
+  if(matchMedia('(max-width:960px)').matches)$('sb').classList.toggle('open');
+  else layout.classList.toggle('sbh');
+};
 $('upCard').onclick=()=>$('fileInput').click();
 $('fileInput').onchange=e=>{
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=async ev=>{
-    const code=ev.target.result;term('▸ upload: '+f.name+' ('+(f.size/1024).toFixed(1)+'KB) — индексация (RAG)…','info');
+    const code=ev.target.result;
+    term('▸ upload: '+f.name+' — индексация (RAG)…','info');
     saveVersion(code.includes('<html')?code:'<!DOCTYPE html><html><body><pre>'+esc(code)+'</pre></body></html>');
     addMsg('user','📁 Загружен файл: <b>'+esc(f.name)+'</b>');
     const m=addMsg('bot','<em style="color:var(--tx3)">✦ анализирую…</em>');
     try{const out=await chat([{role:'system',content:'Ты — code-reviewer. Проанализируй код, найди баги, предложи улучшения. Markdown.'},{role:'user',content:'Файл '+f.name+':\n'+code.slice(0,6000)}],streamTo(m.querySelector('.bub')));pushHist('bot',out);}
-    catch(e){m.querySelector('.bub').innerHTML='❌ '+esc(e.message);}
+    catch(err){m.querySelector('.bub').innerHTML='❌ '+esc(err.message);}
   };
   r.readAsText(f);e.target.value='';
 };
 document.querySelectorAll('.card[data-q]').forEach(c=>c.onclick=()=>{inp.value=c.dataset.q;send();$('sb').classList.remove('open');});
 
-/* ═══ hero / init ═══ */
+/* ═══ init ═══ */
 function hero(){
   const d=document.createElement('div');d.className='hero';
-  d.innerHTML='<h1>AI Code Studio — <em>планирует, кодит, тестирует сама</em></h1><p>🏗️ Planner+Coder · 🧪 Self-Healing Sandbox с авто-фиксами по стектрейсу · 🧠 Thinking-режим · 📂 RAG по твоему проекту · 🚀 GitHub push. Всё локально в браузере — сервер не нагружается.</p><div class="hero-chips">'+
-  ['🏗 Kanban с localStorage|Создай Kanban-доску с localStorage и тёмной темой','🎨 Неоновый лендинг|Сделай неоновый лендинг для космического стартапа','⚡ Pomodoro|Напиши таймер Pomodoro с анимациями и статистикой','🧮 Калькулятор|Сделай калькулятор с историей операций'].map(x=>{const[l,q]=x.split('|');return '<button class="hc" style="color:var(--v);border-color:rgba(167,139,250,.35)" data-q="'+esc(q)+'">'+l+'</button>';}).join('')+'</div>';
+  d.innerHTML='<h1>AI Code Studio — <em>планирует, кодит, тестирует сама</em></h1><p>🏗️ Planner+Coder · 🧪 Self-Healing Sandbox · 🧠 Thinking · 📂 RAG · 🚀 GitHub push. Всё локально в браузере.</p><div class="hero-chips">'+
+  ['🏗 Kanban|Создай Kanban-доску с localStorage и тёмной темой','🎨 Лендинг|Сделай неоновый лендинг для космического стартапа','⚡ Pomodoro|Напиши таймер Pomodoro с анимациями и статистикой','🧮 Калькулятор|Сделай калькулятор с историей операций'].map(x=>{const[l,q]=x.split('|');return '<button class="hc" data-q="'+esc(q)+'">'+l+'</button>';}).join('')+'</div>';
   cw.appendChild(d);
   d.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{inp.value=b.dataset.q;send();});
 }
