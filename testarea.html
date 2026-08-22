@@ -311,11 +311,20 @@ const cw=$('cw'),inp=$('inp'),frame=$('frame'),layout=$('layout');
 
 /* ═══ SYNTAX HIGHLIGHTER ═══ */
 function hl(code){
-  const re=/(<!--[\s\S]*?-->)|(\/\*[\s\S]*?\*\/)|(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)|(<\/?[a-zA-Z][\w-]*|\/?>)|(\b(?:const|let|var|function|return|if|else|for|while|do|class|new|await|async|import|from|export|try|catch|finally|throw|switch|case|break|continue|typeof|instanceof|of|in|delete|void|this|super|extends|static|get|set|yield|true|false|null|undefined)\b)|([{}();,])|(\b\d+(?:\.\d+)?(?:px|rem|em|vh|vw|s|ms|%)?\b)/g;
-  let out='',last=0,m;
+  var re=new RegExp(
+    '(\x3c!--[\\s\\S]*?--\x3e)|'+
+    '(\\/\\*[\\s\\S]*?\\*\\/)|'+
+    '(\\/\\/[^\\n]*)|'+
+    '("(?:[^"\\\\\\n]|\\\\.)*"|\'(?:[^\'\\\\\\n]|\\\\.)*\'|`(?:[^`\\\\]|\\\\.)*`)|'+
+    '(\x3c\\/?[a-zA-Z][\\w-]*|\\/?\x3e)|'+
+    '(\\b(?:const|let|var|function|return|if|else|for|while|do|class|new|await|async|import|from|export|try|catch|finally|throw|switch|case|break|continue|typeof|instanceof|of|in|delete|void|this|super|extends|static|get|set|yield|true|false|null|undefined)\\b)|'+
+    '([{}();,])|'+
+    '(\\b\\d+(?:\\.\\d+)?(?:px|rem|em|vh|vw|s|ms|%)?\\b)',
+    'g');
+  var out='',last=0,m;
   while((m=re.exec(code))){
     out+=esc(code.slice(last,m.index));
-    let cls='';
+    var cls='';
     if(m[1]||m[2]||m[3])cls='tok-c';
     else if(m[4])cls='tok-s';
     else if(m[5])cls='tok-t';
@@ -544,9 +553,14 @@ function extractCode(t){
   return '';
 }
 function buildIndex(code){
-  const ids=[...new Set([...code.matchAll(/id="([^"]+)"/g)].map(m=>m[1]))].slice(0,30);
-  const fns=[...new Set([...[...code.matchAll(/function\s+([A-Za-z_$][\w$]*)/g)].map(m=>m[1]),...[...code.matchAll(/(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=/g)].map(m=>m[1]))].slice(0,30);
-  return{ids,fns};
+  var ids=[],fns=[],m;
+  var reId=/id="([^"]+)"/g;
+  while((m=reId.exec(code))){if(ids.indexOf(m[1])<0&&ids.length<30)ids.push(m[1]);}
+  var reFn=/function\s+([A-Za-z_$][\w$]*)/g;
+  while((m=reFn.exec(code))){if(fns.indexOf(m[1])<0&&fns.length<30)fns.push(m[1]);}
+  var reC=/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/g;
+  while((m=reC.exec(code))){if(fns.indexOf(m[1])<0&&fns.length<30)fns.push(m[1]);}
+  return{ids:ids,fns:fns};
 }
 function ctxBlock(){
   if(!versions.length)return '';
