@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>F‑Mine · Multi-Agent AI Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070913; --bg2: #0d1022; --bg3: #12162d; --bg4: #191f3b;
+  --glass: rgba(255, 255, 255, .04); --glass2: rgba(255, 255, 255, .08); --glass3: rgba(255, 255, 255, .12);
+  --border: rgba(255, 255, 255, .08); --border2: rgba(255, 255, 255, .15);
+  --text: #f3f6ff; --text2: #abb4d6; --text3: #6d78a8;
+  --v: #a78bfa; --v2: #7c5cf6; --vg: rgba(167, 139, 250, .4);
+  --p: #fb7185; --pg: rgba(251, 113, 133, .35);
+  --c: #60c8ff; --cg: rgba(96, 200, 255, .35);
+  --g: #34d399; --gg: rgba(52, 211, 153, .35);
+  --a: #fbbf24; --ag: rgba(251, 191, 36, .35);
+  --r: #fb7185;
+  --sh-md: 0 4px 16px rgba(0, 0, 0, .6), 0 8px 32px rgba(0, 0, 0, .4), 0 0 0 1px rgba(255, 255, 255, .05);
+  --ease: .2s cubic-bezier(.4, 0, .2, 1);
+  --sbw: 260px;
+  --right-panel-w: 35vw; /* 25-35% экрана */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text);
+  min-height: 100vh; overflow-x: hidden;
+  background-image: radial-gradient(ellipse 80% 60% at 5% 0%, rgba(167, 139, 250, .08) 0%, transparent 55%),
+                    radial-gradient(ellipse 60% 45% at 95% 95%, rgba(251, 113, 133, .05) 0%, transparent 52%);
+}
+
+/* HEADER */
+.hd {
+  position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between;
+  padding: 12px clamp(12px, 3vw, 24px); background: rgba(7, 9, 19, .88); backdrop-filter: blur(28px);
+  border-bottom: 1px solid rgba(167, 139, 250, .14); gap: 10px;
+}
+.logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; text-decoration: none; display: flex; align-items: center; }
+.logo-f { color: var(--a); text-shadow: 0 0 20px var(--ag); }
+.logo-dot { width: 5px; height: 5px; background: var(--v); border-radius: 50%; margin: 0 4px; animation: pdot 2s ease-in-out infinite; }
+@keyframes pdot { 0%, 100% { box-shadow: 0 0 10px var(--vg); } 50% { box-shadow: 0 0 24px rgba(167, 139, 250, .8); } }
+.logo-mine { color: var(--text); }
+.hd-right { display: flex; gap: 6px; align-items: center; }
+.hd-btn {
+  padding: 6px 13px; border: 1.5px solid var(--border2); border-radius: 9px; background: var(--glass);
+  color: var(--text2); font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: var(--ease);
+}
+.hd-btn:hover { background: var(--glass3); border-color: var(--p); color: var(--p); }
+.hd-btn.active { background: var(--vg); border-color: var(--v); color: #fff; }
+
+/* LAYOUT: 3 Columns */
+.layout {
+  display: grid;
+  grid-template-columns: var(--sbw) 1fr 0px; /* Right panel hidden by default */
+  height: calc(100vh - 63px); position: relative; z-index: 1; transition: grid-template-columns 0.4s var(--ease);
+}
+.layout.preview-open { grid-template-columns: var(--sbw) 1fr var(--right-panel-w); }
+
+/* SIDEBAR */
+.sidebar { background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.sidebar-inner { overflow-y: auto; flex: 1; padding: 14px; }
+.sb-title { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: .14em; color: var(--text3); margin-bottom: 8px; }
+.sb-card {
+  background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 5px;
+  cursor: pointer; transition: var(--ease); display: flex; align-items: center; gap: 9px;
+}
+.sb-card:hover { background: rgba(251, 113, 133, .05); border-color: rgba(251, 113, 133, .25); transform: translateX(4px); }
+.sb-icon { font-size: 16px; }
+.sb-name { font-size: 12px; font-weight: 700; }
+.sb-desc { font-size: 10px; color: var(--text3); }
+
+/* CHAT MAIN */
+.chat-main { display: flex; flex-direction: column; height: 100%; overflow: hidden; min-width: 0; position: relative; }
+.chat-window { flex: 1; overflow-y: auto; padding: 20px clamp(12px, 3vw, 24px) 100px; display: flex; flex-direction: column; gap: 14px; }
+.msg-row { display: flex; gap: 8px; align-items: flex-end; animation: msgIn .28s ease both; }
+.msg-row.user { flex-direction: row-reverse; }
+@keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.msg-avatar { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.msg-avatar.bot-av { background: linear-gradient(135deg, var(--p), #db2777); box-shadow: 0 0 12px var(--pg); }
+.msg-avatar.user-av { background: linear-gradient(135deg, var(--c), #0ea5e9); box-shadow: 0 0 12px var(--cg); }
+.msg-avatar.agent-av { background: linear-gradient(135deg, var(--a), #f59e0b); box-shadow: 0 0 12px var(--ag); font-size: 11px; }
+.msg-bubble {
+  max-width: min(85%, 700px); padding: 11px 14px; border-radius: 15px; font-size: 13.5px; line-height: 1.75;
+  white-space: pre-wrap; word-break: break-word;
+}
+.msg-row.bot .msg-bubble { background: linear-gradient(145deg, rgba(14, 18, 38, 0.6) 0%, rgba(7, 9, 19, 0.85) 100%); border: 1px solid rgba(251, 113, 133, .22); border-bottom-left-radius: 3px; box-shadow: var(--sh-md); }
+.msg-row.user .msg-bubble { background: linear-gradient(135deg, rgba(96, 200, 255, .12), rgba(96, 200, 255, .04)); border: 1px solid rgba(96, 200, 255, .25); border-bottom-right-radius: 3px; }
+.msg-time { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); margin-top: 4px; }
+
+/* CODE BLOCKS */
+.code-block-wrapper { position: relative; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border2); overflow: hidden; background: #0d1117; }
+.code-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.05); border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text2); }
+.copy-btn { background: transparent; border: 1px solid var(--border2); color: var(--text3); padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; transition: var(--ease); }
+.copy-btn:hover { border-color: var(--g); color: var(--g); }
+.code-content { padding: 12px; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.5; color: #e6edf3; max-height: 400px; }
+
+/* THINKING & AGENT STATUS */
+.agent-status { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; font-size: 12px; color: var(--a); }
+.agent-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--a); animation: pulse 1s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+
+/* FLOATING INPUT */
+.input-bar { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: min(92%, 760px); z-index: 10; }
+.input-wrap {
+  display: flex; align-items: flex-end; gap: 7px; background: rgba(18, 22, 45, 0.85); backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, .1); border-radius: 16px; padding: 6px 8px 6px 14px; box-shadow: var(--sh-md); transition: var(--ease);
+}
+.input-wrap:focus-within { border-color: rgba(251, 113, 133, .55); box-shadow: 0 0 0 2px rgba(251, 113, 133, .15), 0 8px 32px rgba(0,0,0,0.6); }
+.msg-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13.5px; resize: none; min-height: 22px; max-height: 120px; padding: 3px 0; }
+.ib-btn { width: 36px; height: 36px; border-radius: 10px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--ease); flex-shrink: 0; font-size: 15px; background: var(--glass2); border: 1px solid var(--border2); color: var(--text2); }
+.ib-btn:hover { border-color: var(--p); color: var(--p); }
+.ib-send { background: linear-gradient(135deg, var(--p), #db2777); color: #fff; border: none; box-shadow: 0 4px 14px var(--pg); }
+.ib-send:hover { filter: brightness(1.15); transform: scale(1.04); }
+
+/* RIGHT PANEL (Preview / Terminal) */
+.right-panel {
+  background: var(--bg2); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.layout.preview-open .right-panel { opacity: 1; pointer-events: all; }
+.rp-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--bg3); }
+.rp-tab { flex: 1; padding: 10px; text-align: center; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; transition: var(--ease); }
+.rp-tab.active { color: var(--p); border-bottom-color: var(--p); background: rgba(251, 113, 133, 0.05); }
+.rp-content { flex: 1; position: relative; overflow: hidden; }
+.preview-frame { width: 100%; height: 100%; border: none; background: #fff; }
+.terminal { width: 100%; height: 100%; background: #0d1117; color: #34d399; font-family: 'DM Mono', monospace; font-size: 12px; padding: 12px; overflow-y: auto; white-space: pre-wrap; }
+.terminal-line { margin-bottom: 4px; }
+.terminal-line.error { color: var(--r); }
+.terminal-line.info { color: var(--c); }
+
+/* ACTION BUTTONS UNDER CODE */
+.code-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.action-btn { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border2); background: var(--glass); color: var(--text2); font-size: 11px; cursor: pointer; transition: var(--ease); display: flex; align-items: center; gap: 6px; }
+.action-btn:hover { border-color: var(--v); color: var(--v); background: var(--vg2); }
+.action-btn.primary { border-color: var(--g); color: var(--g); background: var(--gg); }
+
+/* TOAST */
+#toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(16px);
+  background: #0d1022; border: 1.5px solid var(--p); color: var(--text); border-radius: 999px;
+  padding: 10px 24px; font-size: 12px; font-weight: 700; opacity: 0; transition: all .3s ease; z-index: 9999; pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Responsive */
+@media(max-width:900px){
+  .layout { grid-template-columns: 1fr !important; }
+  .sidebar { position: fixed; left: 0; top: 63px; bottom: 0; z-index: 160; transform: translateX(-100%); transition: transform var(--ease); width: var(--sbw) !important; }
+  .sidebar.open { transform: translateX(0); }
+  .layout.preview-open { grid-template-columns: 1fr !important; } /* On mobile, preview replaces chat or overlays */
+  .right-panel { position: fixed; inset: 63px 0 0 0; z-index: 150; }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <a class="logo" href="#">
+    <span class="logo-f">F</span><span class="logo-dot"></span><span class="logo-mine">MINE</span>
+  </a>
+  <div class="hd-right">
+    <button class="hd-btn" id="thinkingToggle" onclick="toggleThinking()" title="Режим глубокого размышления (OpenRouter/Groq)">🧠 Thinking: OFF</button>
+    <button class="hd-btn" onclick="exportToZIP()" title="Скачать проект как ZIP">📦 ZIP</button>
+    <button class="hd-btn" onclick="clearChat()">🗑</button>
+    <button class="hd-btn" onclick="toggleSidebar()">☰</button>
+  </div>
+</header>
+
+<div class="layout" id="mainLayout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+      <div class="sb-title">Инструменты</div>
+      <div class="sb-card" onclick="triggerMultiAgent('Создай лендинг для кофейни с формой заявки')">
+        <div class="sb-icon">🏗️</div><div><div class="sb-name">Мульти-агент: Код</div><div class="sb-desc">Архитектор → Dev → Ревью</div></div>
+      </div>
+      <div class="sb-card" onclick="triggerMultiAgent('Напиши скрипт для сортировки данных на JS')">
+        <div class="sb-icon">⚡</div><div><div class="sb-name">Генерация скрипта</div><div class="sb-desc">С авто-проверкой ошибок</div></div>
+      </div>
+      <div class="sb-card" onclick="document.getElementById('fileInput').click()">
+        <div class="sb-icon">📁</div><div><div class="sb-name">Загрузить файл</div><div class="sb-desc">AI проанализирует код</div></div>
+      </div>
+      <input type="file" id="fileInput" style="display:none" accept=".html,.css,.js,.json,.txt" onchange="handleFileUpload(this)">
+      
+      <div class="sb-title" style="margin-top:16px">История (Local)</div>
+      <div id="historyList"></div>
+    </div>
+  </aside>
+
+  <!-- CHAT -->
+  <div class="chat-main">
+    <div class="chat-window" id="chatWindow"></div>
+    <div class="input-bar">
+      <div class="input-wrap">
+        <textarea class="msg-input" id="msgInput" placeholder="Опишите задачу или попросите написать код..." rows="1"></textarea>
+        <button class="ib-btn" onclick="clearInput()" title="Очистить">✕</button>
+        <button class="ib-btn ib-send" id="sendBtn" onclick="handleSend()" title="Отправить">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL (Preview / Terminal) -->
+  <div class="right-panel" id="rightPanel">
+    <div class="rp-tabs">
+      <div class="rp-tab active" onclick="switchTab('preview')">🌐 Превью</div>
+      <div class="rp-tab" onclick="switchTab('terminal')">💻 Терминал</div>
+      <div class="rp-tab" onclick="switchTab('files')">📂 Файлы</div>
+    </div>
+    <div class="rp-content">
+      <iframe id="previewFrame" class="preview-frame" sandbox="allow-scripts allow-modals allow-forms allow-same-origin"></iframe>
+      <div id="terminalView" class="terminal" style="display:none;"></div>
+      <div id="filesView" class="terminal" style="display:none; color: var(--text2);">
+        <div id="fileList">Нет сгенерированных файлов.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// CONFIG & STATE
+// ══════════════════════════════════════════════════════
+let isThinkingMode = false;
+let isBusy = false;
+let currentGeneratedCode = '';
+let chatHistory = JSON.parse(localStorage.getItem('fmine_chat_history') || '[]');
+
+// API Настройка (Если ключ есть в localStorage, используем прямой запрос к OpenRouter, иначе ваш прокси)
+const API_KEY = localStorage.getItem('fmine_api_key') || ''; 
+const API_URL = API_KEY ? 'https://openrouter.ai/api/v1/chat/completions' : '/api/chat-stream';
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+window.onload = () => {
+  renderHistory();
+  if (chatHistory.length === 0) {
+    addMessage('bot', '👋 Привет! Я **F-Mine Multi-Agent AI**.\n\nЯ умею:\n🏗️ Писать код в режиме 3-х агентов (Архитектор → Разработчик → Ревьюер).\n🌐 Показывать живой превью сайта справа.\n💻 Симулировать терминал и GitHub.\n🧠 Работать в режиме "Thinking" (DeepSeek R1 / Groq).\n\n💡 *Попробуй:* "Создай интерактивный лендинг с тёмной темой и анимацией"');
+  } else {
+    chatHistory.forEach(msg => addMessageToDOM(msg.role, msg.content, false));
+  }
+  updateThinkingUI();
+};
+
+// ══════════════════════════════════════════════════════
+// CORE FUNCTIONS
+// ══════════════════════════════════════════════════════
+function toggleThinking() {
+  isThinkingMode = !isThinkingMode;
+  updateThinkingUI();
+  showToast(isThinkingMode ? '🧠 Thinking Mode: ON (OpenRouter/Groq)' : '🧠 Thinking Mode: OFF');
+}
+
+function updateThinkingUI() {
+  const btn = document.getElementById('thinkingToggle');
+  btn.textContent = isThinkingMode ? '🧠 Thinking: ON' : '🧠 Thinking: OFF';
+  btn.classList.toggle('active', isThinkingMode);
+}
+
+function handleSend() {
+  const input = document.getElementById('msgInput').value.trim();
+  if (!input || isBusy) return;
+  
+  document.getElementById('msgInput').value = '';
+  document.getElementById('msgInput').style.height = 'auto';
+  
+  addMessage('user', input);
+  
+  if (input.toLowerCase().includes('код') || input.toLowerCase().includes('сайт') || input.toLowerCase().includes('html') || input.toLowerCase().includes('напиши')) {
+    triggerMultiAgent(input);
+  } else {
+    callSingleAI(input);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// MULTI-AGENT WORKFLOW (3 Агента)
+// ══════════════════════════════════════════════════════
+async function triggerMultiAgent(userPrompt) {
+  isBusy = true;
+  document.getElementById('sendBtn').disabled = true;
+  
+  // Агент 1: Архитектор
+  addAgentStatus('🏗️ Агент-Архитектор: Анализирует задачу и составляет план...');
+  const plan = await callAI(`Ты Senior Software Architect. Составь краткий план (3-4 пункта) для задачи: "${userPrompt}". Укажи, какие HTML/CSS/JS компоненты нужны. Отвечай кратко, только план.`);
+  removeAgentStatus();
+  addMessage('bot', `🏗️ **План Архитектора:**\n${plan}`);
+
+  // Агент 2: Разработчик
+  addAgentStatus('👨‍💻 Агент-Разработчик: Пишет чистый, рабочий код...');
+  const rawCode = await callAI(`Ты Senior Frontend Developer. Напиши ПОЛНЫЙ, РАБОЧИЙ одностраничный HTML файл (включая <style> и <script>) для задачи: "${userPrompt}". План: ${plan}. ВАЖНО: Оберни весь код в блок \`\`\`html ... \`\`\`. Никаких объяснений снаружи блока кода.`);
+  removeAgentStatus();
+  
+  // Извлекаем код
+  currentGeneratedCode = extractCode(rawCode);
+  addMessage('bot', `👨‍💻 **Код написан.**\n\n${formatCodeBlock(currentGeneratedCode, 'html')}`);
+  
+  // Автоматически показываем превью
+  openRightPanel();
+  renderPreview(currentGeneratedCode);
+  logTerminal(`[SUCCESS] Код сгенерирован агентом-разработчиком.`, 'info');
+  logTerminal(`[INFO] Размер файла: ${(currentGeneratedCode.length / 1024).toFixed(2)} KB`, 'info');
+
+  // Агент 3: Ревьюер (Самокоррекция)
+  addAgentStatus('🔍 Агент-Ревьюер: Проверяет код на ошибки, безопасность и UX...');
+  const reviewPrompt = `Ты Senior QA Engineer. Проверь этот код на ошибки, баги, проблемы с доступностью или безопасностью. Если есть ошибки, исправь их и верни ПОЛНЫЙ исправленный код в блоке \`\`\`html. Если ошибок нет, напиши "✅ Ошибок не найдено, код идеален." и верни исходный код в блоке.\n\nКод для проверки:\n${currentGeneratedCode}`;
+  
+  const reviewedCodeRaw = await callAI(reviewPrompt);
+  removeAgentStatus();
+  
+  const finalCode = extractCode(reviewedCodeRaw);
+  if (finalCode && finalCode !== currentGeneratedCode) {
+    currentGeneratedCode = finalCode;
+    addMessage('bot', `🔍 **Ревьюер нашёл и исправил ошибки!** Код обновлён.\n\n${formatCodeBlock(currentGeneratedCode, 'html')}`);
+    renderPreview(currentGeneratedCode);
+    logTerminal(`[FIXED] Ревьюер применил исправления.`, 'info');
+  } else {
+    addMessage('bot', `✅ **Ревьюер подтвердил:** Код чистый, ошибок не найдено. Готов к использованию!`);
+    logTerminal(`[PASS] Ревьюер не обнаружил ошибок.`, 'info');
+  }
+
+  // Добавляем кнопки действий
+  appendCodeActions();
+
+  isBusy = false;
+  document.getElementById('sendBtn').disabled = false;
+  saveHistory();
+}
+
+// ══════════════════════════════════════════════════════
+// AI API CALL (Универсальный)
+// ══════════════════════════════════════════════════════
+async function callAI(prompt) {
+  const modelName = isThinkingMode ? 'deepseek/deepseek-r1:free' : 'openrouter/auto'; // Или 'groq/llama-3.3-70b-versatile'
+  
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (API_KEY) headers['Authorization'] = `Bearer ${API_KEY}`;
+    if (API_KEY) headers['HTTP-Referer'] = window.location.href;
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        model: modelName,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: isThinkingMode ? 0.2 : 0.7
+      })
+    });
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || 'Ошибка: пустой ответ AI.';
+  } catch (e) {
+    console.error(e);
+    return `❌ Ошибка подключения к AI: ${e.message}. Проверьте API ключ или прокси.`;
+  }
+}
+
+async function callSingleAI(prompt) {
+  isBusy = true;
+  addAgentStatus('🤖 AI думает...');
+  const response = await callAI(prompt);
+  removeAgentStatus();
+  addMessage('bot', response);
+  isBusy = false;
+  saveHistory();
+}
+
+// ══════════════════════════════════════════════════════
+// UI & DOM HELPERS
+// ══════════════════════════════════════════════════════
+function addMessage(role, content, save = true) {
+  addMessageToDOM(role, content);
+  if (save) {
+    chatHistory.push({ role, content, timestamp: Date.now() });
+    saveHistory();
+  }
+}
+
+function addMessageToDOM(role, content, animate = true) {
+  const chatWindow = document.getElementById('chatWindow');
+  const row = document.createElement('div');
+  row.className = `msg-row ${role}`;
+  if (!animate) row.style.animation = 'none';
+  
+  const av = document.createElement('div');
+  av.className = `msg-avatar ${role === 'bot' ? 'bot-av' : 'user-av'}`;
+  av.textContent = role === 'bot' ? '🤖' : '👤';
+  
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = formatText(content);
+  
+  const time = document.createElement('div');
+  time.className = 'msg-time';
+  time.textContent = new Date().toLocaleTimeString('ru', {hour: '2-digit', minute:'2-digit'});
+  
+  const wrap = document.createElement('div');
+  wrap.appendChild(bubble);
+  wrap.appendChild(time);
+  
+  row.appendChild(av);
+  row.appendChild(wrap);
+  chatWindow.appendChild(row);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+function addAgentStatus(text) {
+  const chatWindow = document.getElementById('chatWindow');
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.id = 'agentStatusRow';
+  row.innerHTML = `
+    <div class="msg-avatar agent-av">🕸️</div>
+    <div class="agent-status"><div class="agent-dot"></div>${text}</div>
+  `;
+  chatWindow.appendChild(row);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+function removeAgentStatus() {
+  const el = document.getElementById('agentStatusRow');
+  if (el) el.remove();
+}
+
+function formatText(text) {
+  // Простой markdown парсер для жирного текста и переносов
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+    .replace(/\n/g, '<br>');
+}
+
+function formatCodeBlock(code, lang) {
+  const escaped = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `
+    <div class="code-block-wrapper">
+      <div class="code-header">
+        <span>${lang.toUpperCase()}</span>
+        <button class="copy-btn" onclick="copyCode(this)">📋 Копировать</button>
+      </div>
+      <pre class="code-content"><code>${escaped}</code></pre>
+    </div>
+  `;
+}
+
+function extractCode(text) {
+  const match = text.match(/```(?:html|xml)?\n([\s\S]*?)\n```/);
+  return match ? match[1].trim() : text.trim();
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-block-wrapper').querySelector('code').innerText;
+  navigator.clipboard.writeText(code);
+  btn.textContent = '✅ Скопировано!';
+  setTimeout(() => btn.textContent = '📋 Копировать', 2000);
+}
+
+function appendCodeActions() {
+  const chatWindow = document.getElementById('chatWindow');
+  const lastMsg = chatWindow.lastElementChild.querySelector('.msg-bubble');
+  const actions = document.createElement('div');
+  actions.className = 'code-actions';
+  actions.innerHTML = `
+    <button class="action-btn primary" onclick="triggerSelfCorrection()">🔍 Проверить и исправить ошибки</button>
+    <button class="action-btn" onclick="simulateGitHubPush()">🚀 Отправить на GitHub</button>
+    <button class="action-btn" onclick="exportToZIP()">💾 Скачать как ZIP</button>
+  `;
+  lastMsg.appendChild(actions);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════════
+// RIGHT PANEL: PREVIEW, TERMINAL, FILES
+// ══════════════════════════════════════════════════════
+function openRightPanel() {
+  document.getElementById('mainLayout').classList.add('preview-open');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.rp-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  document.getElementById('previewFrame').style.display = tab === 'preview' ? 'block' : 'none';
+  document.getElementById('terminalView').style.display = tab === 'terminal' ? 'block' : 'none';
+  document.getElementById('filesView').style.display = tab === 'files' ? 'block' : 'none';
+}
+
+function renderPreview(code) {
+  const frame = document.getElementById('previewFrame');
+  frame.srcdoc = code;
+  
+  // Обновляем список файлов
+  document.getElementById('fileList').innerHTML = `
+    <div style="padding:8px; border-bottom:1px solid var(--border)">📄 index.html (Сгенерирован)</div>
+    <div style="padding:8px; color:var(--text3)">💡 CSS и JS встроены в HTML для удобства превью.</div>
+  `;
+}
+
+function logTerminal(text, type = 'normal') {
+  const term = document.getElementById('terminalView');
+  const line = document.createElement('div');
+  line.className = `terminal-line ${type}`;
+  line.textContent = `> ${text}`;
+  term.appendChild(line);
+  term.scrollTop = term.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════════
+// SPECIAL FEATURES (Self-Correction, GitHub, ZIP, Upload)
+// ══════════════════════════════════════════════════════
+async function triggerSelfCorrection() {
+  if (!currentGeneratedCode) return;
+  logTerminal(`[ACTION] Запущена самокоррекция кода...`, 'info');
+  addAgentStatus('🔍 Агент-Ревьюер: Глубокая проверка кода...');
+  
+  const prompt = `Ты строгий QA Engineer. Найди ВСЕ ошибки в этом коде (логические, синтаксические, UX). Исправь их и верни ТОЛЬКО полный исправленный HTML код в блоке \`\`\`html.\nКод:\n${currentGeneratedCode}`;
+  
+  const result = await callAI(prompt);
+  removeAgentStatus();
+  const newCode = extractCode(result);
+  
+  if (newCode && newCode !== currentGeneratedCode) {
+    currentGeneratedCode = newCode;
+    renderPreview(currentGeneratedCode);
+    addMessage('bot', `✅ **Самокоррекция завершена!** Ошибки исправлены. Превью обновлено.\n\n${formatCodeBlock(currentGeneratedCode, 'html')}`);
+    logTerminal(`[SUCCESS] Самокоррекция успешно применена.`, 'info');
+  } else {
+    addMessage('bot', '✅ **Самокоррекция завершена.** Код оказался идеальным, изменений не требуется.');
+    logTerminal(`[PASS] Ошибок не найдено.`, 'info');
+  }
+  saveHistory();
+}
+
+function simulateGitHubPush() {
+  logTerminal(`[GIT] git init`, 'info');
+  setTimeout(() => logTerminal(`[GIT] git add .`, 'info'), 500);
+  setTimeout(() => logTerminal(`[GIT] git commit -m "feat: initial AI generated commit"`, 'info'), 1000);
+  setTimeout(() => {
+    logTerminal(`[WARNING] Для реального пуша требуется GitHub Personal Access Token.`, 'error');
+    logTerminal(`[INFO] Используйте GitHub Contents API: PUT /repos/{owner}/{repo}/contents/index.html`, 'info');
+    addMessage('bot', '🚀 **Симуляция GitHub завершена.**\n\nДля реальной отправки на GitHub вам нужно:\n1. Создать Personal Access Token в настройках GitHub.\n2. Использовать GitHub API (или я могу написать для вас скрипт на Node.js для автоматического деплоя).\n\n*Хотите, я напишу этот скрипт для деплоя?*');
+  }, 1500);
+}
+
+function exportToZIP() {
+  if (!currentGeneratedCode) {
+    showToast('❌ Нет кода для экспорта');
+    return;
+  }
+  // Создаём простой Blob и скачиваем его как HTML (в полноценном проекте здесь была бы библиотека JSZip)
+  const blob = new Blob([currentGeneratedCode], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'f-mine-project.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  logTerminal(`[EXPORT] Файл f-mine-project.html скачан.`, 'info');
+  showToast('📦 Проект скачан!');
+}
+
+function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const content = e.target.result;
+    addMessage('user', `📁 Загружен файл: **${file.name}**\nПроанализируй его.`);
+    logTerminal(`[UPLOAD] Загружен файл ${file.name} (${(file.size/1024).toFixed(2)} KB)`, 'info');
+    
+    callSingleAI(`Проанализируй этот код и предложи улучшения. Объясни, что он делает. Код:\n\`\`\`\n${content}\n\`\`\``);
+  };
+  reader.readAsText(file);
+  input.value = ''; // Сброс для повторной загрузки
+}
+
+// ══════════════════════════════════════════════════════
+// MEMORY & UTILS
+// ══════════════════════════════════════════════════════
+function saveHistory() {
+  localStorage.setItem('fmine_chat_history', JSON.stringify(chatHistory.slice(-50))); // Храним последние 50 сообщений
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  list.innerHTML = chatHistory.slice(-5).map((msg, i) => `
+    <div class="sb-card" style="padding:8px; font-size:11px; opacity:0.8">
+      <div class="sb-name">${msg.role === 'user' ? '👤 Вы' : '🤖 AI'}</div>
+      <div class="sb-desc">${msg.content.substring(0, 40)}...</div>
+    </div>
+  `).join('');
+}
+
+function clearChat() {
+  chatHistory = [];
+  localStorage.removeItem('fmine_chat_history');
+  document.getElementById('chatWindow').innerHTML = '';
+  document.getElementById('terminalView').innerHTML = '';
+  currentGeneratedCode = '';
+  document.getElementById('mainLayout').classList.remove('preview-open');
+  addMessage('bot', '🗑 История очищена. Начнём с чистого листа!');
+  showToast('Чат очищен');
+}
+
+function clearInput() {
+  document.getElementById('msgInput').value = '';
+  document.getElementById('msgInput').style.height = 'auto';
+  document.getElementById('msgInput').focus();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// Auto-resize textarea
+document.getElementById('msgInput').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+document.getElementById('msgInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+});
+</script>
+</body>
+</html>
