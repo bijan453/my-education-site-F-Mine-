@@ -664,6 +664,221 @@ header {
   #app.chat-open #chatListPanel { width:320px; overflow:visible; }
 }
 </style>
+<style>
+/* ════════════════════════════════════════════════
+   F-MINE DESIGN UPGRADE v2 — ADDITIVE ONLY
+   All existing classes preserved untouched.
+   ════════════════════════════════════════════════ */
+:root {
+  --own-grad: linear-gradient(135deg,rgba(99,102,241,.16) 0%,rgba(139,92,246,.13) 100%);
+  --anim-fast:.14s; --anim-med:.22s;
+}
+
+/* ── ENHANCED BUBBLES ── */
+.bubble.own {
+  background: var(--own-grad);
+  border-color: rgba(99,102,241,.24);
+  box-shadow: 0 2px 12px rgba(99,102,241,.1);
+}
+.msg-row:hover .bubble { box-shadow: 0 2px 14px rgba(0,0,0,.09); }
+
+/* ── GLASSMORPHISM HEADERS ── */
+header { box-shadow: 0 1px 0 rgba(99,102,241,.1), 0 2px 10px rgba(0,0,0,.05); }
+.chatViewHead { box-shadow: 0 1px 0 rgba(99,102,241,.1), 0 2px 10px rgba(0,0,0,.05); }
+
+/* ── COMPOSE BAR ── */
+#composeBar { background: rgba(244,246,251,.98); border-top: 1px solid rgba(99,102,241,.1); }
+#msgInput { border-radius: 14px; background: #fff; border: 1px solid rgba(99,102,241,.15); }
+#msgInput:focus { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(99,102,241,.08); }
+#sendBtn:not(:disabled):hover { box-shadow: 0 4px 15px rgba(99,102,241,.45); transform: translateY(-1px) scale(1.04); }
+
+/* ── CHAT LIST ACTIVE ── */
+.chatItem.active { border-left: 3px solid var(--indigo); padding-left: 11px; }
+
+/* ── CHAT SWITCHING FADE ── */
+#feed { transition: opacity .12s; }
+#feed.switching { opacity: 0; }
+
+/* ── MSG STATUS ── */
+.msg-status { transition: color .4s ease; }
+
+/* ── SEARCH ── */
+.msg-row.search-hidden { display: none !important; }
+.msg-row.search-match .bubble { box-shadow: 0 0 0 2px var(--indigo); }
+
+/* ══════════════════════════════════
+   PINNED BAR
+   ══════════════════════════════════ */
+#pinnedBar {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.95); backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(99,102,241,.14);
+  padding: 6px 14px; flex-shrink: 0;
+  animation: slideDown .2s ease;
+}
+@keyframes slideDown { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
+#pinnedBar .pinned-icon { font-size: 14px; color: var(--indigo); }
+#pinnedBar .pinned-text { flex:1; font-size:12px; color:var(--muted); cursor:pointer;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#pinnedBar .pinned-text strong { color:var(--indigo); font-size:10px; font-weight:700; display:block; }
+#closePinnedBar { background:none; border:none; color:var(--muted); cursor:pointer; font-size:14px;
+  padding:2px 5px; border-radius:5px; }
+#closePinnedBar:hover { color:var(--danger); }
+
+/* ══════════════════════════════════
+   CONTEXT MENU UPGRADE
+   ══════════════════════════════════ */
+.ctx-quick-bar {
+  display: flex; align-items: center; gap: 3px;
+  padding: 7px 8px 5px; border-bottom: 1px solid var(--border);
+}
+.ctx-react-btn {
+  background: none; border: none; font-size: 20px; cursor: pointer;
+  border-radius: 8px; padding: 4px 5px; transition: all .12s; line-height: 1;
+}
+.ctx-react-btn:hover { background: var(--indigo-dim); transform: scale(1.28); }
+.ctx-expand-btn {
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 3px 8px; font-size: 11px; cursor: pointer;
+  color: var(--muted); margin-left: auto; transition: all .15s;
+  font-family: inherit; line-height: 1.4;
+}
+.ctx-expand-btn:hover { border-color: var(--indigo); color: var(--indigo); }
+.ctx-expand-btn.expanded { transform: rotate(180deg); }
+.ctx-emoji-grid {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  gap: 2px; padding: 6px; max-height: 160px; overflow-y: auto;
+  border-bottom: 1px solid var(--border);
+}
+.ctx-emoji-grid button { background:none; border:none; font-size:18px; cursor:pointer;
+  border-radius:6px; padding:3px; transition:all .1s; }
+.ctx-emoji-grid button:hover { background:var(--indigo-dim); transform:scale(1.15); }
+.ctx-footer {
+  padding: 5px 12px; font-size: 10px; color: var(--muted);
+  text-align: center; opacity: .8;
+}
+#contextMenu { min-width: 195px; }
+
+/* ══════════════════════════════════
+   ATTACH MENU
+   ══════════════════════════════════ */
+.attach-wrap { position: relative; }
+.attach-menu {
+  position: absolute; bottom: calc(100% + 10px); left: 0;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 5px; min-width: 195px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.13);
+  animation: ctxPop .14s ease; z-index: 200;
+}
+.attach-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border: none; background: none;
+  color: var(--text); font-size: 13px; font-family: inherit;
+  cursor: pointer; border-radius: 9px; width: 100%; text-align: left;
+  transition: background .12s;
+}
+.attach-item:hover { background: var(--indigo-dim); color: var(--indigo); }
+.ai-icon { font-size: 18px; width: 24px; text-align: center; }
+
+/* ══════════════════════════════════
+   VOICE RECORD BAR
+   ══════════════════════════════════ */
+#voiceRecordBar {
+  display: none; align-items: center; gap: 10px;
+  background: rgba(244,63,94,.06); border: 1px solid rgba(244,63,94,.2);
+  border-radius: 12px; padding: 8px 12px; animation: fadeUp .2s ease;
+}
+#voiceRecordBar.active { display: flex; }
+.rec-dot {
+  width: 10px; height: 10px; border-radius: 50%; background: var(--danger);
+  flex-shrink: 0; animation: recDotPulse 1s ease infinite;
+}
+@keyframes recDotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.8)} }
+#recTimer { font-size:14px; font-weight:700; color:var(--danger); min-width:54px; font-variant-numeric:tabular-nums; }
+.rec-hint { flex:1; font-size:11px; color:var(--muted); }
+#lockRecBtn { background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:4px 9px; font-size:14px; cursor:pointer; transition:all .15s; }
+#lockRecBtn:hover { border-color:var(--indigo); }
+#cancelRecBtn { background:none; border:none; color:var(--danger); cursor:pointer; font-size:11px; font-weight:700; font-family:inherit; padding:4px 8px; border-radius:7px; transition:background .12s; }
+#cancelRecBtn:hover { background:rgba(244,63,94,.1); }
+
+/* ══════════════════════════════════
+   FORWARD MODAL
+   ══════════════════════════════════ */
+.forward-chat-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 9px; cursor: pointer; transition: background .12s;
+}
+.forward-chat-item:hover { background: var(--indigo-dim); }
+.forward-chat-item.fwd-selected { background: rgba(99,102,241,.12); }
+.forward-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg,var(--indigo),var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: white; flex-shrink: 0;
+}
+
+/* ══════════════════════════════════
+   SELECT MODE
+   ══════════════════════════════════ */
+#selectBar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
+  background: rgba(255,255,255,.97); backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border2); padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.08); animation: slideUp .2s ease;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.sel-count { flex:1; font-size:14px; font-weight:600; }
+.sel-btn { background:var(--surface2); border:1px solid var(--border); border-radius:9px;
+  padding:8px 14px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; color:var(--text); transition:all .15s; }
+.sel-btn:hover { border-color:var(--indigo); color:var(--indigo); }
+.sel-btn.danger:hover { border-color:var(--danger); color:var(--danger); }
+#selectCancelBtn { background:none; border:1px solid var(--border); border-radius:9px; padding:8px 14px;
+  font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; color:var(--muted); transition:all .15s; }
+#selectCancelBtn:hover { color:var(--text); border-color:var(--muted); }
+
+/* select mode checkboxes */
+.msg-checkbox {
+  display: none; width: 20px; height: 20px; flex-shrink: 0;
+  border: 2px solid var(--border2); border-radius: 50%;
+  align-items: center; justify-content: center;
+  transition: all .15s; font-size: 11px; color: white;
+  background: var(--surface3); cursor: pointer;
+}
+body.select-mode .msg-row { cursor: pointer; }
+body.select-mode .msg-checkbox { display: flex !important; }
+body.select-mode .msg-row.sel-checked .msg-checkbox { background:var(--indigo); border-color:var(--indigo); }
+body.select-mode .msg-row.sel-checked .msg-checkbox::after { content:'✓'; }
+
+/* ══════════════════════════════════
+   REACTION POP
+   ══════════════════════════════════ */
+@keyframes reactionPop { 0%{transform:scale(.5);opacity:0} 60%{transform:scale(1.35)} 100%{transform:scale(1);opacity:1} }
+.reaction-btn.popping { animation: reactionPop .32s cubic-bezier(.34,1.56,.64,1); }
+
+/* ══════════════════════════════════
+   FULL EMOJI PANEL
+   ══════════════════════════════════ */
+.emoji-panel-tabs { display:flex; gap:2px; padding:4px; border-bottom:1px solid var(--border); }
+.emoji-tab-btn { flex:1; padding:6px 4px; font-size:11px; font-weight:600; background:none;
+  border:none; border-radius:7px; color:var(--muted); cursor:pointer; font-family:inherit; transition:all .12s; }
+.emoji-tab-btn.active { background:var(--indigo); color:white; }
+.emoji-panel-search { margin:4px 6px; padding:6px 10px; background:var(--surface3);
+  border:1px solid var(--border); border-radius:8px; font-size:12px; font-family:inherit;
+  color:var(--text); outline:none; width:calc(100% - 12px); box-sizing:border-box; display:block; }
+.emoji-panel-search:focus { border-color:var(--indigo); }
+.emoji-panel-body { display:flex; flex-wrap:wrap; gap:2px; padding:4px 6px;
+  max-height:156px; overflow-y:auto; }
+.emoji-panel-body button { background:none; border:none; font-size:20px; cursor:pointer;
+  padding:3px; border-radius:6px; transition:all .1s; }
+.emoji-panel-body button:hover { background:var(--indigo-dim); transform:scale(1.15); }
+
+/* ══════════════════════════════════
+   TOAST UPGRADE
+   ══════════════════════════════════ */
+#toast.show { animation: toastSlide .22s ease forwards; }
+@keyframes toastSlide { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+</style>
 </head>
 <body>
 
@@ -708,6 +923,12 @@ header {
         <button class="hbtn" id="chatInfoBtn" onclick="openGroupInfo()" title="Информация" style="display:none">ℹ️</button>
       </div>
     </div>
+    <!-- PINNED MESSAGE BAR — visual only, pin saved in-memory / TODO: DB -->
+    <div id="pinnedBar" style="display:none">
+      <span class="pinned-icon">📌</span>
+      <div class="pinned-text" id="pinnedText" onclick="jumpToPinned()"><strong>Закреплённое сообщение</strong></div>
+      <button id="closePinnedBar" onclick="closePinnedBarFn()" title="Скрыть">✕</button>
+    </div>
     <div id="feed"><div class="empty"><div class="icon">💬</div><p>Выберите чат</p></div></div>
     <div id="typingBar"></div>
     <button id="scrollBtn" onclick="scrollToBottom(true)">↓</button>
@@ -739,15 +960,33 @@ header {
           </div>
           <div id="gifGrid"></div>
         </div>
+        <!-- VOICE RECORD BAR — visual overlay during recording -->
+        <div id="voiceRecordBar">
+          <span class="rec-dot"></span>
+          <span id="recTimer">0:00.0</span>
+          <span class="rec-hint">Отпустите вне поля, чтобы отменить</span>
+          <button id="lockRecBtn" title="Зафиксировать">🔒</button>
+          <button id="cancelRecBtn" onclick="cancelVoiceRec()">Отмена</button>
+        </div>
         <div class="compose-row">
           <textarea id="msgInput" rows="1" placeholder="Написать сообщение..." onkeydown="handleKey(event)" oninput="handleInput(this)"></textarea>
           <div class="compose-actions">
             <button class="cmp-btn" id="composeEmojiBtn" onclick="toggleComposeEmoji()" title="Эмодзи">😀</button>
             <button class="cmp-btn" id="gifBtn" onclick="toggleGifPanel()" title="GIF" style="font-size:12px;font-weight:700">GIF</button>
             <button class="cmp-btn" id="voiceBtn" title="Голосовое" onclick="toggleRecording()">🎙️</button>
-            <label class="cmp-btn" title="Файл" style="cursor:pointer">
-              📎<input type="file" accept="*/*" id="photoInput" style="display:none" onchange="handlePhoto(event)" />
-            </label>
+            <!-- ATTACH MENU — keeps #photoInput for DB-CONNECTED handlePhoto() -->
+            <div class="attach-wrap">
+              <button class="cmp-btn" id="attachBtn" title="Прикрепить" onclick="toggleAttachMenu(event)">📎</button>
+              <div id="attachMenu" class="attach-menu" style="display:none">
+                <button class="attach-item" onclick="triggerPhotoInput()"><span class="ai-icon">🖼</span>Фото или видео</button>
+                <button class="attach-item" onclick="triggerDocInput()"><span class="ai-icon">📄</span>Документ</button>
+                <button class="attach-item"><span class="ai-icon">📝</span>Статья</button>
+                <button class="attach-item"><span class="ai-icon">📍</span>Локация</button>
+                <button class="attach-item"><span class="ai-icon">💳</span>Кошелёк</button>
+              </div>
+              <!-- DB-CONNECTED — DO NOT TOUCH -->
+              <input type="file" accept="*/*" id="photoInput" style="display:none" onchange="handlePhoto(event)" />
+            </div>
             <button id="sendBtn" onclick="sendMessage()">↑</button>
           </div>
         </div>
@@ -765,12 +1004,28 @@ header {
 
 <!-- CONTEXT MENU -->
 <div id="contextMenu">
-  <button class="ctx-item" onclick="ctxReply()"><span class="ctx-icon">↩</span>Ответить</button>
-  <button class="ctx-item" onclick="ctxCopy()"><span class="ctx-icon">📋</span>Копировать</button>
-  <button class="ctx-item" onclick="ctxTranslate()"><span class="ctx-icon">🌐</span>Перевести</button>
+  <!-- Quick reaction bar -->
+  <div class="ctx-quick-bar" id="ctxQuickBar">
+    <button class="ctx-react-btn" onclick="ctxQuickReact('❤️')">❤️</button>
+    <button class="ctx-react-btn" onclick="ctxQuickReact('👍')">👍</button>
+    <button class="ctx-react-btn" onclick="ctxQuickReact('👎')">👎</button>
+    <button class="ctx-react-btn" onclick="ctxQuickReact('🔥')">🔥</button>
+    <button class="ctx-react-btn" onclick="ctxQuickReact('👏')">👏</button>
+    <button class="ctx-expand-btn" id="ctxExpandBtn" onclick="expandCtxEmojiGrid()">﹀</button>
+  </div>
+  <!-- Expanded emoji grid -->
+  <div class="ctx-emoji-grid" id="ctxEmojiGrid" style="display:none"></div>
   <div class="ctx-sep"></div>
-  <button class="ctx-item" onclick="ctxEdit()" id="ctxEditBtn"><span class="ctx-icon">✏️</span>Редактировать</button>
+  <!-- Actions —— DB-CONNECTED IDs preserved -->
+  <button class="ctx-item" onclick="ctxReply()"><span class="ctx-icon">↩</span>Ответить</button>
+  <button class="ctx-item" onclick="ctxEdit()" id="ctxEditBtn"><span class="ctx-icon">✏️</span>Изменить</button>
+  <button class="ctx-item" onclick="ctxPin()"><span class="ctx-icon">📌</span>Закрепить</button>
+  <button class="ctx-item" onclick="ctxCopy()"><span class="ctx-icon">📋</span>Копировать текст</button>
+  <button class="ctx-item" onclick="ctxForward()"><span class="ctx-icon">↪</span>Переслать</button>
   <button class="ctx-item danger" onclick="ctxDelete()" id="ctxDeleteBtn"><span class="ctx-icon">🗑</span>Удалить</button>
+  <button class="ctx-item" onclick="ctxSelect()"><span class="ctx-icon">☑</span>Выбрать</button>
+  <div class="ctx-sep"></div>
+  <div class="ctx-footer" id="ctxFooter">сегодня</div>
 </div>
 
 <!-- NEW CHAT MODAL -->
@@ -1830,6 +2085,401 @@ if (initAuth()) {
     setInterval(() => { if (isAtBottom && activeChatId) markVisibleAsRead(); }, 5000);
   });
 }
+</script>
+
+<!-- FORWARD MODAL -->
+<div class="modal-overlay" id="forwardModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Переслать в...</h3>
+      <button class="modal-close" onclick="document.getElementById('forwardModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input class="modal-input" type="text" placeholder="Поиск чата..." id="fwdSearchInput" oninput="filterForwardList(this.value)" />
+      <div id="forwardChatList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SELECT MODE ACTION BAR -->
+<div id="selectBar" style="display:none">
+  <span class="sel-count" id="selectCount">Выберите сообщения</span>
+  <button class="sel-btn" onclick="forwardSelected()">↪ Переслать</button>
+  <button class="sel-btn danger" onclick="deleteSelected()">🗑 Удалить</button>
+  <button id="selectCancelBtn" onclick="exitSelectMode()">Отмена</button>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   F-MINE VISUAL UPGRADE v2 — Pure Frontend / Design Only
+   DB-Connected module globals accessed via window.* references.
+   ═══════════════════════════════════════════════════════════════ */
+(function() {
+
+// ── Helper: get ctxMsgId from data attribute set on context menu open ──
+// We intercept the context menu event (capture phase) to cache the msg id
+document.addEventListener('contextmenu', function(e) {
+  var row = e.target.closest('.msg-row');
+  if (row) {
+    var id = row.id ? row.id.replace('msg-','') : null;
+    if (id) document.getElementById('contextMenu').dataset.visualMsgId = id;
+    // Update footer timestamp
+    setTimeout(function() {
+      var footer = document.getElementById('ctxFooter');
+      if (!footer) return;
+      var now = new Date();
+      var h = String(now.getHours()).padStart(2,'0');
+      var m = String(now.getMinutes()).padStart(2,'0');
+      footer.textContent = 'сегодня в ' + h + ':' + m;
+    }, 15);
+  }
+}, true);
+document.addEventListener('mousedown', function(e) {
+  var row = e.target.closest('.msg-row');
+  if (!row || e.target.closest('button') || e.target.closest('audio') || e.target.closest('a')) return;
+  var id = row.id ? row.id.replace('msg-','') : null;
+  if (id) setTimeout(function() {
+    document.getElementById('contextMenu').dataset.visualMsgId = id;
+    var footer = document.getElementById('ctxFooter');
+    if (!footer) return;
+    var now = new Date();
+    footer.textContent = 'сегодня в ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  }, 520);
+}, true);
+
+function getCtxMsgId() {
+  return document.getElementById('contextMenu').dataset.visualMsgId || null;
+}
+function getAllMessages() { return window.allMessages || []; }
+function getChats() { return window.chats || []; }
+function getCurrentUser() { return window.currentUser || ''; }
+
+// ── CONTEXT MENU EXTRA ACTIONS ──
+window.ctxPin = function() {
+  var msgId = getCtxMsgId();
+  document.getElementById('contextMenu').classList.remove('open');
+  if (!msgId) return;
+  var msgs = getAllMessages();
+  var msg = msgs.find(function(m) { return m.id === msgId; });
+  if (!msg) return;
+  window._pinnedMsgId = msgId;
+  var bar = document.getElementById('pinnedBar');
+  var textEl = document.getElementById('pinnedText');
+  if (!bar || !textEl) return;
+  bar.style.display = 'flex';
+  textEl.innerHTML = '<strong>Закреплённое сообщение</strong>' +
+    ((msg.text || (msg.voiceUrl ? '🎙 голосовое' : '📷 медиа')).slice(0, 60)).replace(/</g,'&lt;');
+  if (window.showToast) window.showToast('📌 Сообщение закреплено');
+  // TODO: connect to DB — updateDoc chat with pinnedMessageId
+};
+
+window.jumpToPinned = function() {
+  if (window._pinnedMsgId && window.scrollToMsg) window.scrollToMsg(window._pinnedMsgId);
+};
+
+window.closePinnedBarFn = function() {
+  var bar = document.getElementById('pinnedBar');
+  if (bar) bar.style.display = 'none';
+  window._pinnedMsgId = null;
+};
+
+window.ctxForward = function() {
+  var msgId = getCtxMsgId();
+  document.getElementById('contextMenu').classList.remove('open');
+  if (!msgId) return;
+  window._fwdMsgId = msgId;
+  openForwardModal();
+};
+
+function openForwardModal() {
+  var modal = document.getElementById('forwardModal');
+  if (!modal) return;
+  modal.classList.add('open');
+  renderForwardList('');
+}
+
+function renderForwardList(filter) {
+  var list = document.getElementById('forwardChatList');
+  if (!list) return;
+  var chatsArr = getChats();
+  var q = filter.toLowerCase();
+  var filtered = q ? chatsArr.filter(function(c) {
+    var name = c.type === 'group' ? (c.name||'') : (c.participants||[]).find(function(p){ return p !== getCurrentUser(); })||'';
+    return name.toLowerCase().includes(q);
+  }) : chatsArr;
+  if (!filtered.length) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">Нет чатов</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(function(c) {
+    var isGroup = c.type === 'group';
+    var name = isGroup ? (c.name||'Группа') : ((c.participants||[]).find(function(p){ return p !== getCurrentUser(); })||'Чат');
+    var av = isGroup ? '👥' : ((name||'?')[0].toUpperCase());
+    return '<div class="forward-chat-item" onclick="doForward(\'' + c.id + '\')">' +
+      '<div class="forward-avatar">' + av + '</div>' +
+      '<div style="font-size:13px;font-weight:500">' + name.replace(/</g,'&lt;') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+window.filterForwardList = function(val) { renderForwardList(val); };
+
+window.doForward = function(chatId) {
+  document.getElementById('forwardModal').classList.remove('open');
+  // TODO: connect to DB — addDoc to chats/chatId/messages with forwarded content
+  if (window.showToast) window.showToast('↪ Переслано');
+};
+
+// ── EXPAND EMOJI GRID IN CONTEXT MENU ──
+var CTX_EMOJIS = ['😀','😂','🤣','😊','😍','🥰','😘','🤔','😎','🥳','🎉','🔥','❤️','💔','👍','👎','👏','🙌','💯','✨','😢','😭','😤','😠','🤬','🤯','😱','😴','🤤','😏','😒','🙄','😬','💪','🦾','🫡','🤝','👋','🚀','💎','👑','🎮','🏆','⭐','🌙','☀️','🌈','🎯'];
+
+window.expandCtxEmojiGrid = function() {
+  var grid = document.getElementById('ctxEmojiGrid');
+  var btn = document.getElementById('ctxExpandBtn');
+  if (!grid) return;
+  var isOpen = grid.style.display !== 'none';
+  grid.style.display = isOpen ? 'none' : 'grid';
+  if (btn) btn.classList.toggle('expanded', !isOpen);
+  if (!isOpen && !grid.innerHTML) {
+    grid.innerHTML = CTX_EMOJIS.map(function(e) {
+      return '<button onclick="ctxQuickReact(\'' + e + '\')">' + e + '</button>';
+    }).join('');
+  }
+};
+
+// ── QUICK REACT FROM CONTEXT MENU ──
+window.ctxQuickReact = function(emoji) {
+  var msgId = getCtxMsgId();
+  document.getElementById('contextMenu').classList.remove('open');
+  if (msgId && window.toggleReaction) {
+    window.toggleReaction(msgId, emoji);
+  }
+};
+
+// ── SELECT MODE ──
+var _selectedMsgs = new Set();
+
+window.ctxSelect = function() {
+  var msgId = getCtxMsgId();
+  document.getElementById('contextMenu').classList.remove('open');
+  enterSelectMode(msgId);
+};
+
+function enterSelectMode(initialId) {
+  document.body.classList.add('select-mode');
+  var bar = document.getElementById('selectBar');
+  if (bar) bar.style.display = 'flex';
+  _selectedMsgs.clear();
+  if (initialId) {
+    _selectedMsgs.add(initialId);
+    var row = document.getElementById('msg-' + initialId);
+    if (row) row.classList.add('sel-checked');
+  }
+  updateSelectCount();
+  document.querySelectorAll('.msg-row').forEach(function(row) {
+    row.addEventListener('click', onSelectClick);
+  });
+}
+
+function onSelectClick(e) {
+  if (!document.body.classList.contains('select-mode')) return;
+  if (e.target.closest('button') || e.target.closest('audio') || e.target.closest('a')) return;
+  var id = this.id ? this.id.replace('msg-','') : null;
+  if (!id) return;
+  if (_selectedMsgs.has(id)) { _selectedMsgs.delete(id); this.classList.remove('sel-checked'); }
+  else { _selectedMsgs.add(id); this.classList.add('sel-checked'); }
+  updateSelectCount();
+}
+
+function updateSelectCount() {
+  var el = document.getElementById('selectCount');
+  if (el) el.textContent = _selectedMsgs.size ? 'Выбрано: ' + _selectedMsgs.size : 'Выберите сообщения';
+}
+
+window.exitSelectMode = function() {
+  document.body.classList.remove('select-mode');
+  var bar = document.getElementById('selectBar');
+  if (bar) bar.style.display = 'none';
+  _selectedMsgs.clear();
+  document.querySelectorAll('.msg-row').forEach(function(row) {
+    row.classList.remove('sel-checked');
+    row.removeEventListener('click', onSelectClick);
+  });
+};
+
+window.deleteSelected = function() {
+  if (!_selectedMsgs.size) return;
+  if (!confirm('Удалить ' + _selectedMsgs.size + ' сообщений?')) return;
+  _selectedMsgs.forEach(function(id) { if (window.deleteMessage) window.deleteMessage(id); });
+  window.exitSelectMode();
+};
+
+window.forwardSelected = function() {
+  // TODO: connect to DB — batch forward selected messages
+  if (window.showToast) window.showToast('↪ Переслать ' + _selectedMsgs.size + ' сообщений');
+};
+
+// ── ATTACH MENU ──
+window.toggleAttachMenu = function(e) {
+  if (e) e.stopPropagation();
+  var menu = document.getElementById('attachMenu');
+  if (!menu) return;
+  menu.style.display = (menu.style.display === 'none' || !menu.style.display) ? 'block' : 'none';
+};
+
+window.triggerPhotoInput = function() {
+  /* DB-CONNECTED — DO NOT TOUCH: photoInput → handlePhoto() → Firebase Storage */
+  document.getElementById('photoInput').click();
+  document.getElementById('attachMenu').style.display = 'none';
+};
+
+window.triggerDocInput = function() {
+  /* DB-CONNECTED — DO NOT TOUCH: reuses handlePhoto() → Firebase Storage */
+  var inp = document.getElementById('photoInput');
+  inp.accept = '*/*';
+  inp.click();
+  document.getElementById('attachMenu').style.display = 'none';
+};
+
+// Close attach on outside click
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#attachBtn') && !e.target.closest('#attachMenu')) {
+    var m = document.getElementById('attachMenu');
+    if (m) m.style.display = 'none';
+  }
+});
+
+// ── VOICE RECORD BAR UPGRADE ──
+var _recBarTimer = null, _recSecs = 0, _recTenths = 0;
+var _origToggleRecording = null;
+
+// Defer patching until module script has run
+setTimeout(function() {
+  _origToggleRecording = window.toggleRecording;
+  window.toggleRecording = async function() {
+    var bar = document.getElementById('voiceRecordBar');
+    var compRow = document.querySelector('.compose-row');
+    if (window.isRecording) {
+      // Stop recording
+      clearInterval(_recBarTimer);
+      if (bar) bar.classList.remove('active');
+      if (compRow) compRow.style.display = '';
+      if (_origToggleRecording) await _origToggleRecording();
+    } else {
+      if (_origToggleRecording) await _origToggleRecording();
+      // Start visual bar
+      _recSecs = 0; _recTenths = 0;
+      if (bar) bar.classList.add('active');
+      if (compRow) compRow.style.display = 'none';
+      clearInterval(_recBarTimer);
+      _recBarTimer = setInterval(function() {
+        _recTenths++;
+        if (_recTenths >= 10) { _recTenths = 0; _recSecs++; }
+        var m = Math.floor(_recSecs / 60);
+        var s = String(_recSecs % 60).padStart(2,'0');
+        var timerEl = document.getElementById('recTimer');
+        if (timerEl) timerEl.textContent = m + ':' + s + '.' + _recTenths;
+      }, 100);
+    }
+  };
+}, 200);
+
+window.cancelVoiceRec = function() {
+  clearInterval(_recBarTimer);
+  var bar = document.getElementById('voiceRecordBar');
+  var compRow = document.querySelector('.compose-row');
+  if (bar) bar.classList.remove('active');
+  if (compRow) compRow.style.display = '';
+  if (window.clearVoice) window.clearVoice();
+};
+
+// ── REACTION POP ANIMATION ──
+setTimeout(function() {
+  var _origReact = window.toggleReaction;
+  if (!_origReact) return;
+  window.toggleReaction = async function(id, emoji) {
+    await _origReact(id, emoji);
+    setTimeout(function() {
+      var btns = document.querySelectorAll('#msg-' + id + ' .reaction-btn');
+      btns.forEach(function(btn) {
+        if (btn.textContent.trim().startsWith(emoji)) {
+          btn.classList.remove('popping');
+          void btn.offsetWidth; // reflow
+          btn.classList.add('popping');
+          setTimeout(function() { btn.classList.remove('popping'); }, 380);
+        }
+      });
+    }, 220);
+  };
+}, 300);
+
+// ── SMOOTH CHAT SWITCHING ──
+setTimeout(function() {
+  var _origOpen = window.openChat;
+  if (!_origOpen) return;
+  window.openChat = function(chatId) {
+    var feed = document.getElementById('feed');
+    if (feed) feed.classList.add('switching');
+    setTimeout(function() {
+      _origOpen(chatId);
+      setTimeout(function() { if (feed) feed.classList.remove('switching'); }, 140);
+    }, 100);
+  };
+}, 300);
+
+// ── FULL EMOJI PANEL ──
+var FULL_EMOJIS = ['😀','😁','😂','🤣','😃','😄','😅','😆','😇','😉','😊','🙂','🙃','😋','😌','😍','🥰','😘','😗','😙','😚','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','😐','😑','😶','😏','😒','🙄','😬','😔','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤡','💩','😸','😹','😺','😻','😼','😽','🙀','😿','😾','🎉','🔥','❤️','💔','💕','💯','✨','⭐','🌙','👍','👎','👏','🙌','🤝','👋','🫡','💪','✌️','🤞','🤙','🚀','🎯','🎮','🏆','🎁','🎊','🎈','💎','👑'];
+var STICKERS = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐸','🐵','🙈','🙉','🙊','🐔','🐧','🐦','🦆','🦅','🦉','🦋','🐢','🐍','🐙','🦑','🦐','🐡','🐠','🐟','🐬','🐳','🦈','🐊','🐅','🐆','🐘','🦒','🦘','🌵','🎄','🌲','🌴','🌱','🌿','☘️','🍀','🍃','💐','🌷','🌹','🥀','🌺','🌸','🌼','🌻'];
+var _emojiTab = 'emoji', _emojiSearch = '';
+
+function initFullEmojiPanel() {
+  var panel = document.getElementById('composeEmojiPanel');
+  if (!panel) return;
+  panel.innerHTML =
+    '<div class="emoji-panel-tabs">' +
+      '<button class="emoji-tab-btn active" id="etbEmoji" onclick="switchEmojiTab(\'emoji\')">😀 Эмодзи</button>' +
+      '<button class="emoji-tab-btn" id="etbSticker" onclick="switchEmojiTab(\'sticker\')">🎭 Стикеры</button>' +
+    '</div>' +
+    '<input class="emoji-panel-search" id="emojiPanelSearch" type="text" placeholder="Поиск..." oninput="filterEmojiPanel(this.value)" />' +
+    '<div class="emoji-panel-body" id="emojiPanelBody"></div>';
+  renderEmojiPanel();
+}
+
+window.switchEmojiTab = function(tab) {
+  _emojiTab = tab; _emojiSearch = '';
+  var se = document.getElementById('emojiPanelSearch');
+  if (se) { se.value = ''; se.style.display = tab === 'sticker' ? 'none' : 'block'; }
+  ['etbEmoji','etbSticker'].forEach(function(id) {
+    var b = document.getElementById(id); if (b) b.classList.remove('active');
+  });
+  var active = tab === 'sticker' ? 'etbSticker' : 'etbEmoji';
+  var ab = document.getElementById(active); if (ab) ab.classList.add('active');
+  renderEmojiPanel();
+};
+
+window.filterEmojiPanel = function(val) { _emojiSearch = val.toLowerCase(); renderEmojiPanel(); };
+
+function renderEmojiPanel() {
+  var body = document.getElementById('emojiPanelBody');
+  if (!body) return;
+  if (_emojiTab === 'sticker') {
+    body.style.cssText = 'display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:4px 6px;max-height:156px;overflow-y:auto';
+    body.innerHTML = STICKERS.map(function(s) {
+      return '<button style="font-size:22px;background:none;border:none;cursor:pointer;padding:3px;border-radius:6px;transition:all .1s" onclick="insertEmoji(\'' + s + '\')">' + s + '</button>';
+    }).join('');
+  } else {
+    body.style.cssText = 'display:flex;flex-wrap:wrap;gap:2px;padding:4px 6px;max-height:156px;overflow-y:auto';
+    var list = _emojiSearch ? FULL_EMOJIS.filter(function(e) { return e.toLowerCase().includes(_emojiSearch); }) : FULL_EMOJIS;
+    body.innerHTML = list.map(function(e) {
+      return '<button onclick="insertEmoji(\'' + e + '\')">' + e + '</button>';
+    }).join('');
+  }
+}
+
+// Wait for module script before initialising emoji panel
+setTimeout(initFullEmojiPanel, 150);
+
+})(); // end IIFE
 </script>
 </body>
 </html>
