@@ -1046,71 +1046,91 @@ async function fetchWikiFacts(topic) {
 const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
   ? '' : 'https://my-education-site-f-mine.onrender.com';
 
+const FALLBACK_MODELS = [
+  'google/gemini-2.5-flash:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'deepseek/deepseek-r1:free',
+  'qwen/qwen-2.5-72b-instruct:free',
+  'meta-llama/llama-3-8b-instruct:free',
+  'mistralai/mistral-7b-instruct:free',
+  'openrouter/free'
+];
+
 async function callAI(systemPrompt, userMessage, onChunk) {
   setAiStatus('busy');
 
-  try {
-    const url = (API_BASE_URL || '') + '/api/chat-stream';
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'openrouter/free',
-        stream: !!onChunk,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userMessage }
-        ]
-      })
-    });
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userMessage }
+  ];
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errMsg = errorData.error?.message || `HTTP ${response.status}`;
-      setAiStatus('err');
-      throw new Error(errMsg);
-    }
+  let lastError = null;
 
-    if (onChunk && response.body) {
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let aiText = '';
-      let buffer = '';
+  for (const model of FALLBACK_MODELS) {
+    try {
+      const url = API_BASE + '/api/chat-stream';
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: model,
+          stream: !!onChunk,
+          messages: messages
+        })
+      });
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        
-        const lines = buffer.split('\n');
-        buffer = lines.pop();
-        
-        for (const line of lines) {
-          if (line.trim().startsWith('data: ')) {
-            const dataStr = line.trim().substring(6);
-            if (dataStr === '[DONE]') continue;
-            try {
-              const dataObj = JSON.parse(dataStr);
-              const delta = dataObj.choices?.[0]?.delta?.content || '';
-              if (delta) {
-                aiText += delta;
-                onChunk(aiText);
-              }
-            } catch (e) {}
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errMsg = errorData.error?.message || `HTTP ${response.status}`;
+        throw new Error(errMsg);
+      }
+
+      if (onChunk && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let aiText = '';
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+          
+          for (const line of lines) {
+            if (line.trim().startsWith('data: ')) {
+              const dataStr = line.trim().substring(6);
+              if (dataStr === '[DONE]') continue;
+              try {
+                const dataObj = JSON.parse(dataStr);
+                const delta = dataObj.choices?.[0]?.delta?.content || '';
+                if (delta) {
+                  aiText += delta;
+                  onChunk(aiText);
+                }
+              } catch (e) {}
+            }
           }
         }
+        setAiStatus('ready');
+        return aiText;
       }
-      setAiStatus('ready');
-      return aiText;
-    }
 
-    const data = await response.json();
-    setAiStatus('ready');
-    return data.choices?.[0]?.message?.content || '';
-  } catch (e) {
-    setAiStatus('err');
-    throw e;
+      const data = await response.json();
+      const reply = data.choices?.[0]?.message?.content || data.reply || '';
+      if (!reply) throw new Error("Empty response from AI");
+      setAiStatus('ready');
+      return reply;
+    } catch (err) {
+      console.warn(`Model ${model} failed:`, err);
+      lastError = err;
+    }
   }
+
+  setAiStatus('err');
+  throw lastError || new Error("All AI models failed");
 }
 
 // ══════════════════════════════════════════════════════
