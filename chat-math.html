@@ -5164,17 +5164,6 @@
         h += '<br><span style="color:var(--r);font-weight:800;font-size:15px">&#x2717; ' + (isEN() ? 'No real roots' : 'Нет действительных корней') + ' (D<0)</span>';
       }
 
-      // ── COMMON MISTAKES ──
-      h += '<br>' + (isEN() ? '<b style="color:var(--r);font-size:12px">&#x26A0;&#xFE0F; COMMON MISTAKES:</b>' : '<b style="color:var(--r);font-size:12px">&#x26A0;&#xFE0F; ТИПИЧНЫЕ ОШИБКИ:</b>');
-      var errs = isEN()
-        ? [['D = b²<b>+</b>4ac','Wrong sign! It must be b²<b>−</b>4ac (minus, not plus)'],
-           ['Forgetting the −b','The formula is x=(−b±√D)/2a — b must be negated!'],
-           ['Dividing only √D by 2a','Both −b and ±√D are divided by 2a — the entire numerator!']]
-        : [['D = b²<b>+</b>4ac','Неверный знак! Должно быть b²<b>−</b>4ac (минус, не плюс)'],
-           ['Забыть знак минус у −b','Формула: x=(−b±√D)/2a — b меняет знак!'],
-           ['Делить только √D на 2a','На 2a делится весь числитель: и −b, и ±√D!']];
-      errs.forEach(function(e){ h += '<div class="t-mistake"><b>' + e[0] + '</b> — ' + e[1] + '</div>'; });
-
       h += megaPractice(['x^2+2x-8=0', '3x^2-7x+2=0', 'x^2-9=0', '2x^2+4x+2=0']);
       return h;
     }
@@ -11130,25 +11119,21 @@
       }
 
       var html = '';
-      html += card('💡', 'СУТЬ', 'INTUITION', 'var(--a)', 'rgba(251,191,36,0.08)', 'rgba(251,191,36,0.3)', db.intuition[L]);
+      if (db.intuition && db.intuition[L]) {
+        html += card('💡', 'СУТЬ', 'INTUITION', 'var(--a)', 'rgba(251,191,36,0.08)', 'rgba(251,191,36,0.3)', db.intuition[L]);
+      }
       
       // Mnemonic Card
-      if (db.mnemonic) {
+      if (db.mnemonic && db.mnemonic[L]) {
         html += card('📐', 'МНЕМОНИКА', 'MNEMONIC', 'var(--c)', 'rgba(94,243,255,0.07)', 'rgba(94,243,255,0.25)', db.mnemonic[L]);
       }
-      
-      html += card('🔍', 'ПОЧЕМУ ЭТО РАБОТАЕТ', 'WHY IT WORKS', 'var(--c)', 'rgba(94,243,255,0.07)', 'rgba(94,243,255,0.25)', db.why[L]);
-      
-      if (db.history) {
-        html += card('🏛️', 'ИСТОРИЯ', 'HISTORY', 'var(--v)', 'rgba(184,157,255,0.08)', 'rgba(184,157,255,0.25)', db.history[L]);
-      }
-      if (db.realWorld) {
-        html += card('🌍', 'РЕАЛЬНЫЙ МИР', 'REAL WORLD', 'var(--g)', 'rgba(57,255,158,0.07)', 'rgba(57,255,158,0.25)', db.realWorld[L]);
-      }
 
-      html += card('⚠️', 'ТИПИЧНЫЕ ОШИБКИ', 'COMMON MISTAKES', 'var(--r)', 'rgba(255,107,122,0.07)', 'rgba(255,107,122,0.25)', (db.mistakes ? db.mistakes[L] : ''));
-      html += card('🏆', 'ПРОФИ-СОВЕТ', 'PRO TIP', 'var(--g)', 'rgba(57,255,158,0.07)', 'rgba(57,255,158,0.25)', (db.tip ? db.tip[L] : ''));
-      html += card('🎯', 'С ЧЕМ ЭТО СВЯЗАНО', 'CONNECTIONS', 'var(--p)', 'rgba(244,114,182,0.08)', 'rgba(244,114,182,0.25)', (db.connects ? db.connects[L] : ''));
+      if (!html) {
+        smartScroll('smooth');
+        isBusy = false; sendBtn.disabled = false;
+        finalizeBotBubble(bubble);
+        return;
+      }
 
       var content = document.createElement('div');
       deepSection.appendChild(header);
