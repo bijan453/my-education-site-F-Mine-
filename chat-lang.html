@@ -1056,7 +1056,7 @@ const FALLBACK_MODELS = [
   'openrouter/free'
 ];
 
-async function callAI(systemPrompt, userMessage, onChunk) {
+async function callAI(systemPrompt, userMessage) {
   setAiStatus('busy');
 
   const messages = [
@@ -1068,13 +1068,12 @@ async function callAI(systemPrompt, userMessage, onChunk) {
 
   for (const model of FALLBACK_MODELS) {
     try {
-      const url = API_BASE + '/api/chat-stream';
+      const url = API_BASE + '/api/chat';
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: model,
-          stream: !!onChunk,
           messages: messages
         })
       });
@@ -1085,41 +1084,8 @@ async function callAI(systemPrompt, userMessage, onChunk) {
         throw new Error(errMsg);
       }
 
-      if (onChunk && response.body) {
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let aiText = '';
-        let buffer = '';
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          
-          const lines = buffer.split('\n');
-          buffer = lines.pop();
-          
-          for (const line of lines) {
-            if (line.trim().startsWith('data: ')) {
-              const dataStr = line.trim().substring(6);
-              if (dataStr === '[DONE]') continue;
-              try {
-                const dataObj = JSON.parse(dataStr);
-                const delta = dataObj.choices?.[0]?.delta?.content || '';
-                if (delta) {
-                  aiText += delta;
-                  onChunk(aiText);
-                }
-              } catch (e) {}
-            }
-          }
-        }
-        setAiStatus('ready');
-        return aiText;
-      }
-
       const data = await response.json();
-      const reply = data.choices?.[0]?.message?.content || data.reply || '';
+      const reply = data.reply || data.choices?.[0]?.message?.content || '';
       if (!reply) throw new Error("Empty response from AI");
       setAiStatus('ready');
       return reply;
@@ -1482,17 +1448,10 @@ window.sendMessage = async () => {
   }
 
   try {
-    const aiResponse = await callAI(systemPrompt, textToSolve, (accumulatedText) => {
-      hasStreamed = true;
-      const b = ensureBotBubble();
-      b.innerHTML = formatText(accumulatedText);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    });
-
-    if (!hasStreamed && aiResponse) {
-      const b = ensureBotBubble();
-      await streamTypewriter(b, aiResponse);
-    }
+    const aiResponse = await callAI(systemPrompt, textToSolve);
+    hideThinking();
+    const b = ensureBotBubble();
+    await streamTypewriter(b, aiResponse);
   } catch (err) {
     hideThinking();
     if (botBubble) {
