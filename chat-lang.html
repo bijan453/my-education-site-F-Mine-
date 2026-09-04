@@ -1327,15 +1327,50 @@ function addMessage(sender, text) {
   const bubble = document.createElement('div');
   bubble.className = 'msg-bubble';
   
-  // Custom format text
-  let html = text
+function formatText(text) {
+  if (!text) return '';
+  return text
     .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
     .replace(/✅ ([^\n]+)/g, '<span class="section-head">✅ $1</span>')
     .replace(/❌ ([^\n]+)/g, '<div class="error-item">❌ $1</div>')
     .replace(/✏️ ([^\n]+)/g, '<div class="fix-item">✏️ $1</div>')
-    .replace(/💡 ([^\n]+)/g, '<div class="tip-box">💡 $1</div>');
+    .replace(/💡 ([^\n]+)/g, '<div class="tip-box">💡 $1</div>')
+    .replace(/\n/g, '<br>');
+}
+
+function streamTypewriter(element, text) {
+  return new Promise((resolve) => {
+    let index = 0;
+    const speed = 15;
+    const timer = setInterval(() => {
+      index += 3;
+      if (index >= text.length) {
+        index = text.length;
+        clearInterval(timer);
+        element.innerHTML = formatText(text);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        resolve();
+      } else {
+        element.innerHTML = formatText(text.substring(0, index));
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+    }, speed);
+  });
+}
+
+function addMessage(sender, text) {
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + sender;
   
-  bubble.innerHTML = html;
+  const av = document.createElement('div');
+  av.className = 'msg-avatar ' + (sender === 'bot' ? 'bot-av' : 'user-av');
+  av.textContent = sender === 'bot' ? '🤖' : '👤';
+  
+  const contentWrap = document.createElement('div');
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  
+  bubble.innerHTML = formatText(text);
   
   const time = document.createElement('div');
   time.className = 'msg-time';
@@ -1426,13 +1461,57 @@ window.sendMessage = async () => {
     }
   }
   
+  let botBubble = null;
+  let hasStreamed = false;
+
+  function ensureBotBubble() {
+    if (!botBubble) {
+      hideThinking();
+      const row = document.createElement('div');
+      row.className = 'msg-row bot';
+      
+      const av = document.createElement('div');
+      av.className = 'msg-avatar bot-av';
+      av.textContent = '🤖';
+      
+      const contentWrap = document.createElement('div');
+      botBubble = document.createElement('div');
+      botBubble.className = 'msg-bubble';
+      
+      const time = document.createElement('div');
+      time.className = 'msg-time';
+      time.textContent = new Date().toLocaleTimeString('ru', {hour: '2-digit', minute:'2-digit'});
+      
+      contentWrap.appendChild(botBubble);
+      contentWrap.appendChild(time);
+      row.appendChild(av);
+      row.appendChild(contentWrap);
+      
+      chatWindow.appendChild(row);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+    return botBubble;
+  }
+
   try {
-    const aiResponse = await callAI(systemPrompt, textToSolve);
-    hideThinking();
-    addMessage('bot', aiResponse);
+    const aiResponse = await callAI(systemPrompt, textToSolve, (accumulatedText) => {
+      hasStreamed = true;
+      const b = ensureBotBubble();
+      b.innerHTML = formatText(accumulatedText);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    });
+
+    if (!hasStreamed && aiResponse) {
+      const b = ensureBotBubble();
+      await streamTypewriter(b, aiResponse);
+    }
   } catch (err) {
     hideThinking();
-    addMessage('bot', t('noConn', err.message));
+    if (botBubble) {
+      botBubble.innerHTML += `<br><div class="error-item">${t('noConn', err.message)}</div>`;
+    } else {
+      addMessage('bot', t('noConn', err.message));
+    }
   }
   
   isBusy = false;
