@@ -1315,18 +1315,6 @@ let msgsCount = 0;
 let reportsCount = 0;
 let checksCount = 0;
 
-function addMessage(sender, text) {
-  const row = document.createElement('div');
-  row.className = 'msg-row ' + sender;
-  
-  const av = document.createElement('div');
-  av.className = 'msg-avatar ' + (sender === 'bot' ? 'bot-av' : 'user-av');
-  av.textContent = sender === 'bot' ? '🤖' : '👤';
-  
-  const contentWrap = document.createElement('div');
-  const bubble = document.createElement('div');
-  bubble.className = 'msg-bubble';
-  
 function formatText(text) {
   if (!text) return '';
   return text
